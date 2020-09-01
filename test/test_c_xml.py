@@ -5,6 +5,7 @@
 c_xml.py的测试文
 """
 
+import pytest
 from lxml import etree
 from imetadata.base.c_xml import CXml
 
@@ -65,35 +66,17 @@ class Test_Base_C_XML:
         xmlString = xml.to_xml()
         assert xmlString == '<root><element>hello</element></root>'
 
-    def test_xpath_one(self):
+    def test_xpath(self):
         """
         根据给定的xpath查询语句, 查询出合适的节点
         :return:
         """
-        xml_content = '''
-        <?xml version="1.0"?><root name="hello world"><hello name="中国"></hello>
-        </root>'''
         xml = CXml()
-        xml.load_xml(xml_content)
-        result = xml.xpath_one('/root/hello')
-
-        xml2 = CXml()
-        xml2.load_xml('<?xml version="1.0"?><hello name="中国"></hello>')
-        root = xml2.get_root()
-        assert CXml.is_element_equal(result, root)
-
-    def test_xpath_all(self):
-        """
-        根据给定的xpath查询语句, 查询出合适的节点
-        :return:
-        """
-        xml_content = '''
-        <root name="hello world"><hello name="中国"></hello><hello name="美国"></hello>
-        </root>'''
-        xml = CXml()
-        xml.load_xml(xml_content)
-        result = xml.xpath_all('/root/Hello')
-        assert len(result) == 0
+        xml_comment = u'<root name="hello world"><element name="zg">hello</element></root>'
+        xml.load_xml(xml_comment)
+        xmlString = xml.to_xml()
+        result = xml.xpath_one('./element')
+        assert CXml.get_element_xml(result) == '<element name="zg">hello</element>'
 
     def test_clone(self):
         """
@@ -103,8 +86,7 @@ class Test_Base_C_XML:
         xml = CXml()
         xml_comment = '''<root name="hello world"><element>hello</element></root>'''
         xml.load_xml(xml_comment)
-        element = CXml.clone(xml.xpath_all('/root'))
-        # print(type(xml.xpath_all('/root/element')))
+        element = CXml.clone(xml.__xml_root_node__)
         assert CXml.get_element_xml(element) == xml_comment
 
     def test_append(self):
@@ -116,9 +98,9 @@ class Test_Base_C_XML:
         xml = CXml()
         xml.load_xml(xml_content)
         child_element = etree.Element('train', name='wing')
-        element = xml.xpath_all('/root')
+        element = xml.__xml_root_node__
         CXml.append(element, child_element)
-        assert CXml.get_element_xml(element) == '<element name="hello"><train name="wing"/></element>'
+        assert CXml.get_element_xml(element) == '<root name="hello world"><train name="wing"/></root>'
 
     def test_creat_element(self):
         """
@@ -130,7 +112,7 @@ class Test_Base_C_XML:
             '''
         xml = CXml()
         xml.load_xml(xml_content)
-        element = CXml.clone(xml.xpath_all('/root'))
+        element = xml.__xml_root_node__
         CXml.create_element(element, "element1")
         assert CXml.get_element_xml(element) == '<root name="hello world"><element name="hello"/><element1/></root>'
 
@@ -142,7 +124,7 @@ class Test_Base_C_XML:
         xml_content = '''<root name="hello world"></root>'''
         xml = CXml()
         xml.load_xml(xml_content)
-        element = CXml.clone(xml.xpath_all('/root'))
+        element = xml.xpath_one('/root')
         CXml.set_attr(element, 'name', 'championing')
         assert CXml.get_element_xml(element) == '<root name="championing"/>'
 
@@ -151,12 +133,12 @@ class Test_Base_C_XML:
         获取一个属性的值, 如果属性不存在, 则返回默认值
         :return:
         """
-        xml_content = '''<root name="hello world"></root>'''
+        xml_content = '''<root name="hello world"><element hello="huhu"></element></root>'''
         xml = CXml()
         xml.load_xml(xml_content)
-        element = xml.xpath_one('/root')
-        value = CXml.get_attr(element, 'NAME', "null", False)
-        assert value == 'hello world'
+        element = xml.xpath('/root/element')[0]
+        value = CXml.get_attr(element, 'Hello', "null")
+        assert value == 'huhu'
 
     def test_set_element_text(self):
         """
@@ -166,9 +148,9 @@ class Test_Base_C_XML:
         xml_content = '''<root name="hello world"></root>'''
         xml = CXml()
         xml.load_xml(xml_content)
-        element = CXml.clone(xml.xpath_all('/root'))
+        element = xml.xpath('/root')[0]
         CXml.set_element_text(element, 'hello')
-        assert element.text == 'hello'
+        assert CXml.get_element_xml(element) == '<root name="hello world"><![CDATA[hello]]></root>'
 
     def test_get_element_text(self):
         """
@@ -178,9 +160,21 @@ class Test_Base_C_XML:
         xml_content = '''<root name="hello world"><element>world</element></root>'''
         xml = CXml()
         xml.load_xml(xml_content)
-        element = xml.xpath_one('/root')
+        element = xml.xpath('/root/element')[0]
         text = CXml.get_element_text(element)
-        assert text == ''
+        assert text == 'world'
+
+    def test_get_element_root(self):
+        """
+        获取节点的根节点
+        :return:
+        """
+        xml_content = '''<root name="hello world"><element>hello</element></root>'''
+        xml = CXml()
+        xml.load_xml(xml_content)
+        element = xml.__xml_root_node__[0]
+        rt = CXml.get_element_root(element)
+        assert CXml.get_element_xml(rt) == xml_content
 
     def test_get_element_xml(self):
         """
@@ -200,7 +194,7 @@ class Test_Base_C_XML:
         xml_content = '''<root name="hello world"><element>hello</element></root>'''
         xml = CXml()
         xml.load_xml(xml_content)
-        element = CXml.clone(xml.xpath_all('/root/element'))
+        element = xml.xpath('/root/element')[0]
         name = CXml.get_element_name(element)
         assert name == 'element'
 
@@ -211,7 +205,7 @@ class Test_Base_C_XML:
         xml_content = '''<root name="hello world"><element>hello</element></root>'''
         xml = CXml()
         xml.load_xml(xml_content)
-        element = CXml.clone(xml.xpath_all('/root/element'))
+        element = xml.xpath('/root/element')[0]
         flag = xml.is_element_comment(element)
         assert flag is False
 
@@ -223,7 +217,7 @@ class Test_Base_C_XML:
         xml_content = '''<root name="hello world"><element>hello</element></root>'''
         xml = CXml()
         xml.load_xml(xml_content)
-        element = CXml.clone(xml.xpath_all('/root'))
+        element = xml.__xml_root_node__
         tree = CXml.get_tree(element)
         assert CXml.get_element_xml(tree) == xml_content
 

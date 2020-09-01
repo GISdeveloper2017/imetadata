@@ -5,8 +5,9 @@
 
 from multiprocessing import Process, Semaphore, Queue, Lock, Event
 import time
+from imetadata.base.c_process import CProcess
 from imetadata.base.logger import Logger
-from imetadata.service import serviceConst
+from imetadata.base.core import const
 
 
 class CSentinel(Process):
@@ -33,7 +34,7 @@ class CSentinel(Process):
             if not self.__stop_event__.is_set():
                 break
 
-            self.check_process_alive()
+            # self.check_process_alive()
             time.sleep(15)
 
     def check_process_alive(self):
@@ -43,19 +44,19 @@ class CSentinel(Process):
                 subproc_dead_unfortunately = False
                 command = control_center_object.params
 
-                cmd_id = command[serviceConst.NAME_CMD_ID]
-                cmd_title = command[serviceConst.NAME_CMD_TITLE]
+                cmd_id = command.get(const.NAME_CMD_ID, '')
+                cmd_title = command.get(const.NAME_CMD_TITLE, '')
 
                 # 检查进程列表中的进程是否都可用
-                for subproc in control_center_object.subprocess_list:
+                for subproc_id in control_center_object.subprocess_list:
                     # 如果子进程已经不可用
-                    if not subproc.is_alive():
-                        control_center_object.subprocess_list.remove(subproc)
+                    if not CProcess.process_id_exist(subproc_id):
+                        control_center_object.subprocess_list.remove(subproc_id)
                         subproc_dead_unfortunately = True
 
                 # 如果有子进程不幸身亡, 则发送哨兵消息
                 if subproc_dead_unfortunately:
-                    queue_item = {serviceConst.NAME_CMD_ID: cmd_id, serviceConst.NAME_CMD_TITLE: cmd_title}
+                    queue_item = {const.NAME_CMD_ID: cmd_id, const.NAME_CMD_TITLE: cmd_title}
                     self.__sentinel_callback_queue__.put(queue_item)
         finally:
             self.__control_center_objects_locker__.release()

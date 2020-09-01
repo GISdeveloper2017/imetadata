@@ -1749,3 +1749,4 @@ COMMENT ON COLUMN public.dm2_storage_object.dsometadata_bus_parsememo IS '业务
 
 alter table dm2_storage_object add column dsometadata_bus_parsestatus integer DEFAULT 1;
 COMMENT ON COLUMN public.dm2_storage_object.dsometadata_bus_parsestatus IS '元数据提取状态;0-完成;1-待提取;2-提取中;3-提取有误';
+

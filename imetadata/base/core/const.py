@@ -19,7 +19,20 @@ class _const:
         self.__dict__[name] = value
 
 
-import sys
+const = _const()
+const.NAME_CMD_COMMAND = 'cmd_command'
+const.NAME_CMD_ID = 'cmd_id'
+const.NAME_CMD_TITLE = 'cmd_title'
+const.NAME_CMD_TRIGGER = 'cmd_trigger'
+const.NAME_CMD_ALGORITHM = 'cmd_algorithm'
+const.NAME_CMD_PARALLEL_COUNT = 'cmd_parallel_count'
+const.NAME_CMD_MAX_PARALLEL_COUNT = 'cmd_max_parallel_count'
 
-sys.modules[__name__] = _const()
+const.CMD_START = 'start'
+const.CMD_STOP = 'stop'
+const.CMD_SPEED_UP = 'speed_up'
+const.CMD_SPEED_DOWN = 'speed_down'
 
+const.NAME_PARAMS = 'params'
+const.NAME_STOP_EVENT = 'stop_event'
+const.NAME_SUBPROCESS_LIST = 'subprocess_list'

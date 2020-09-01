@@ -133,13 +133,40 @@ create index if not exists idx_sch_center_mission_status
 	on sch_center_mission (scmstatus);
 
 insert into sch_center_mission(
-    scmid, scmtitle
-    , scmcommand, scmstatus, scmprocessid, scmlastmodifytime, scmmemo, scmcenterid
+    scmid, scmtitle, scmcommand, scmstatus, scmprocessid, scmlastmodifytime, scmmemo, scmcenterid
     , scmtrigger, scmalgorithm, scmparallelcount, scmmaxparallelcount) values(
     'test', '测试', null, 0, null, null, null, '1'
     , null, 'sch_dm2_storage_parser', -1, 5
     );
 
 
+/*
+    2020-09-01 王西亚
+    .开始测试调度系统的运行情况, 增加对调度的启动, 停止, 加速, 减速等任务
+*/
 
+-- 启动调度
+update sch_center_mission
+set scmcommand = 'start',  scmstatus = 1, scmparallelcount = 3, scmprocessid = null
+where scmid = 'test';
+
+-- 停止调度
+update sch_center_mission
+set scmcommand = 'stop',  scmstatus = 1, scmparallelcount = 0, scmprocessid = null
+where scmid = 'test';
+
+-- 加速调度
+update sch_center_mission
+set scmcommand = 'speed_up',  scmstatus = 1, scmparallelcount = 0, scmprocessid = null
+where scmid = 'test';
+
+-- 减速调度
+update sch_center_mission
+set scmcommand = 'speed_down',  scmstatus = 1, scmparallelcount = 0, scmprocessid = null
+where scmid = 'test';
+
+-- 减速调度
+update sch_center_mission
+set scmcommand = 'close',  scmstatus = 0, scmparallelcount = -1, scmprocessid = null
+where scmid = 'test';
 
