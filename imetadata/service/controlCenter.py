@@ -126,7 +126,7 @@ class CControlCenter(Process):
         """
         while True:
             try:
-                sentinel_message = self.__sentinel_process__.get(False)
+                sentinel_message = self.__sentinel_queue__.get(False)
             except:
                 Logger().info('控制中心进程[{0}]处理完所有哨兵反馈的消息, 将退出...'.format(self.pid))
                 return
@@ -166,8 +166,8 @@ class CControlCenter(Process):
         :param sentinel_message:
         :return:
         """
-        cmd_id = sentinel_message[const.NAME_CMD_ID]
-        cmd_title = sentinel_message[const.NAME_CMD_TITLE]
+        cmd_id = sentinel_message.get(const.NAME_CMD_ID)
+        cmd_title = sentinel_message.get(const.NAME_CMD_TITLE)
         if cmd_id is None:
             return
 
@@ -216,9 +216,60 @@ class CControlCenter(Process):
         # 加入对象dict中记录！
         self.__control_center_objects__[cmd_id] = control_center_object
 
-        print(self.__control_center_objects__)
-
         Logger().info('调度{0}.{1}.{2}成功启动了{3}个并行进程...'.format(cmd_id, cmd_title, cmd_algorithm, cmd_parallel_count))
+
+    def command_stop(self, command):
+        cmd_id = command.get(const.NAME_CMD_ID, '')
+        cmd_title = command.get(const.NAME_CMD_TITLE, '')
+
+        Logger().info('控制中心开始停止调度[{0}.{1}]...'.format(cmd_id, cmd_title))
+
+        if self.__control_center_objects__ is None:
+            Logger().info('控制中心对象为None...')
+            return
+
+        if len(self.__control_center_objects__) == 0:
+            Logger().info('控制中心对象里没有任何池记录...')
+            return
+        try:
+            self.__control_center_objects_locker__.acquire()
+
+            control_center_object = self.__control_center_objects__.get(cmd_id)
+            if control_center_object is None:
+                Logger().warning('调度{0}进程池已经不存在, 无需停止...'.format(cmd_id))
+                return
+
+            # 给池里的所有进程，发送关闭信号！
+            stop_event = control_center_object.get(const.NAME_STOP_EVENT, None)
+            if stop_event is not None:
+                stop_event.set()
+                Logger().info('调度{0}.{1}的进程池中所有进程退出的信号已发出...'.format(cmd_id, cmd_title))
+
+            # 等待进程池全部退出
+            while True:
+                Logger().info('检查调度{0}.{1}的进程池中所有进程是否都已经退出...'.format(cmd_id, cmd_title))
+                all_subprocess_closed = True
+                subprocess_list = control_center_object.get(const.NAME_SUBPROCESS_LIST)
+                if subprocess_list is None:
+                    break
+
+                for subproc_id in subprocess_list:
+                    if CProcess.process_id_exist(subproc_id):
+                        Logger().info('检查调度{0}.{1}的进程池中进程{2}仍然在运行...'.format(cmd_id, cmd_title, subproc_id))
+                        all_subprocess_closed = False
+
+                if all_subprocess_closed:
+                    Logger().info('检查调度{0}.{1}的进程池中所有进程都已经不在...'.format(cmd_id, cmd_title))
+                    break
+                else:
+                    time.sleep(1)
+                    Logger().info('检查调度{0}.{1}的进程池中还有进程正在运行, 等待中...'.format(cmd_id, cmd_title))
+
+            Logger().info('调度{0}.{1}的进程池中所有进程均已退出...'.format(cmd_id, cmd_title))
+            self.__control_center_objects__.pop(cmd_id)
+        finally:
+            self.__control_center_objects_locker__.release()
+            Logger().info('控制中心已经停止调度[{0}.{1}]'.format(cmd_id, cmd_title))
 
     def before_stop(self):
         Logger().info('控制中心开始进行调度的清理工作...')
@@ -239,7 +290,6 @@ class CControlCenter(Process):
             return
 
         Logger().info('开始处理{0}个调度对象的进程池...'.format(len(self.__control_center_objects__)))
-        print(self.__control_center_objects__)
 
         try:
             self.__control_center_objects_locker__.acquire()
@@ -250,7 +300,7 @@ class CControlCenter(Process):
                 control_center_object = self.__control_center_objects__.get(control_center_object_key)
                 if control_center_object is None:
                     Logger().info('参数对象为None...')
-                    self.__control_center_objects__.pop(control_center_object)
+                    self.__control_center_objects__.pop(control_center_object_key)
                     continue
 
                 command = control_center_object.get(const.NAME_PARAMS, None)
@@ -258,7 +308,7 @@ class CControlCenter(Process):
 
                 if command is None:
                     Logger().info('参数对象为None...')
-                    self.__control_center_objects__.pop(control_center_object)
+                    self.__control_center_objects__.pop(control_center_object_key)
                     continue
 
                 cmd_id = command.get(const.NAME_CMD_ID, '')
@@ -302,42 +352,3 @@ class CControlCenter(Process):
         finally:
             self.__control_center_objects_locker__.release()
             Logger().info('控制中心的所有调度清理工作已完成，控制中心进程将关闭...')
-
-    def command_stop(self, command):
-        cmd_id = command[const.NAME_CMD_ID]
-
-        control_center_object = self.__control_center_objects__[cmd_id]
-        if control_center_object is None:
-            Logger().warning('调度{0}进程池已经不存在, 无需停止...'.format(cmd_id))
-            return
-
-        params = control_center_object.params
-        cmd_title = params[const.NAME_CMD_TITLE]
-        cmd_algorithm = params[const.NAME_CMD_ALGORITHM]
-
-        Logger().info('调度{0}.{1}.{2}将停止...'.format(cmd_id, cmd_title, cmd_algorithm))
-
-        if control_center_object.stop_event is not None:
-            control_center_object.stop_event.set()
-
-        if control_center_object.subprocess_list is not None:
-            # 这里将等待每一个worker进程关闭, 等待10秒
-            for proc in control_center_object.subprocess_list:
-                proc.join(30)
-
-            for proc in control_center_object.subprocess_list:
-                if proc.is_alive():
-                    proc.terminate()
-
-            for proc in control_center_object.subprocess_list:
-                if proc.is_alive():
-                    proc.join()
-
-            for proc in control_center_object.subprocess_list:
-                control_center_object.subprocess_list.remove(proc)
-
-        # 清除对象dict中记录！
-        self.__control_center_objects__[cmd_id] = None
-
-        Logger().info('调度{0}.{1}.{2}成功终止..'.format(cmd_id, cmd_title, cmd_algorithm))
-

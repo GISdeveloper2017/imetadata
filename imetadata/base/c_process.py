@@ -14,25 +14,33 @@ class CProcess:
         pass
 
     @classmethod
-    def process_name_exist(cls, process_name: str) -> bool:
-        pl = psutil.pids()
-        for pid in pl:
-            if psutil.Process(pid).name() == process_name:
-                return True
-        else:
-            return False
-
-    @classmethod
-    def process_id_exist(cls, process_id: int) -> bool:
+    def process_id_exist(cls, process_id: int, include_zombie: bool = False) -> bool:
+        """
+        检查指定进程标识是否在运行
+        :param process_id: 进程id=pid
+        :param include_zombie: 是否包含僵尸进程
+        :return:
+        """
         real_process_id = int(process_id)
-        for p in psutil.process_iter():
-            if p.pid == real_process_id:
-                return True
+        for process in psutil.process_iter():
+            if process.pid == real_process_id:
+                if include_zombie:
+                    return True
+                elif process.status() == 'running':
+                    return True
+                else:
+                    return False
 
         return False
 
 
 if __name__ == "__main__":
-    print("*"*10)
-    for p in psutil.process_iter():
-        print("{0}.{1} is running".format(p.pid, p.name))
+    # for p in psutil.process_iter():
+    #     print("{0}.{1} is running, status is {2}".format(p.pid, p.name, p.status()))
+
+    subprocess_list = ['physics', 'chemistry', '1997', '2000']
+    print(subprocess_list)
+    for subprocess_index in range(len(subprocess_list), 0, -1):
+        print(subprocess_list[subprocess_index-1])
+        subprocess_list.pop(subprocess_index-1)
+    print(subprocess_list)
