@@ -2,7 +2,7 @@
 # @Time : 2020/8/18 15:50 
 # @Author : 王西亚 
 # @File : worker.py
-
+import os
 from multiprocessing import Process, Semaphore, Queue, Lock, Event
 import time
 from imetadata.base.logger import Logger
@@ -52,7 +52,7 @@ class CWorker(Process):
                 if self.accept_stop_message():
                     Logger().info(
                         '调度{0}.{1}的进程{2}收到关闭事件, 将退出'.format(self.__cmd_title__, self.__cmd_algorithm__, self.pid))
-                    break
+                    return
                 else:
                     Logger().info(
                         '调度{0}.{1}的进程{2}未收到关闭事件, 将再休眠一段时间'.format(self.__cmd_title__, self.__cmd_algorithm__, self.pid))

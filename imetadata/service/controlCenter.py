@@ -12,6 +12,9 @@ from imetadata.base.logger import Logger
 from imetadata.base.utils import MetaDataUtils
 from imetadata.service.sentinel import CSentinel
 from imetadata.service.worker import CWorker
+import signal
+import os
+import errno
 
 
 class CControlCenter(Process):
@@ -38,6 +41,27 @@ class CControlCenter(Process):
         self.__shared_control_center_info__ = shared_control_center_info
 
     def run(self):
+        def wait_child(signum, frame):
+            Logger().info('收到SIGCHLD消息')
+            try:
+                while True:
+                    # -1 表示任意子进程
+                    # os.WNOHANG 表示如果没有可用的需要 wait 退出状态的子进程，立即返回不阻塞
+                    cpid, status = os.waitpid(-1, os.WNOHANG)
+                    if cpid == 0:
+                        Logger().info('没有子进程可以处理了.')
+                        break
+                    exitcode = status >> 8
+                    Logger().info('子进程{0}已退出, 退出码为{1}'.format(cpid, exitcode))
+            except OSError as e:
+                if e.errno == errno.ECHILD:
+                    Logger().info('当前进程没有等待结束的子进程了.')
+                else:
+                    raise
+            Logger().info('处理SIGCHLD消息结束...')
+
+        signal.signal(signal.SIGCHLD, wait_child)
+
         Logger().info('控制中心进程[{0}]启动运行...'.format(self.pid))
 
         Logger().info('控制中心进程[{0}]启动哨兵值守进程...'.format(self.pid))
@@ -220,7 +244,8 @@ class CControlCenter(Process):
         try:
             self.__control_center_objects_locker__.acquire()
 
-            for control_center_object_key in self.__control_center_objects__:
+            control_center_object_key_list = self.__control_center_objects__.keys()
+            for control_center_object_key in control_center_object_key_list:
                 Logger().info('已经提取出{0}进程池...'.format(control_center_object_key))
                 control_center_object = self.__control_center_objects__.get(control_center_object_key)
                 if control_center_object is None:
@@ -273,7 +298,7 @@ class CControlCenter(Process):
                         Logger().info('检查调度{0}.{1}的进程池中还有进程正在运行, 等待中...'.format(cmd_id, cmd_title))
 
                 Logger().info('调度{0}.{1}的进程池中所有进程均已退出...'.format(cmd_id, cmd_title))
-                self.__control_center_objects__.pop(control_center_object)
+                self.__control_center_objects__.pop(control_center_object_key)
         finally:
             self.__control_center_objects_locker__.release()
             Logger().info('控制中心的所有调度清理工作已完成，控制中心进程将关闭...')
