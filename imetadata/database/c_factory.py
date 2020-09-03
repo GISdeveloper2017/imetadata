@@ -4,26 +4,26 @@
 
 from __future__ import absolute_import
 from imetadata.base.core.singleton import singleton
-from imetadata.database.types.postgresql import PostgreSQL
-from imetadata.database.base.database import DataBase
+from imetadata.database.types.c_postgresql import CPostgreSQL
+from imetadata.database.base.c_database import CDataBase
 from imetadata import settings
 from imetadata.base.core.Exceptions import *
 
 
 @singleton
-class Factory:
+class CFactory:
     def __init__(self):
         pass
 
     @staticmethod
-    def create_db(database) -> DataBase:
-        if database['type'].strip().lower() == DataBase.DATABASE_POSTGRESQL:
-            return PostgreSQL(database)
+    def create_db(database) -> CDataBase:
+        if database['type'].strip().lower() == CDataBase.DATABASE_POSTGRESQL:
+            return CPostgreSQL(database)
         else:
             raise DBException(database['id'])
 
     @staticmethod
-    def give_me_db(db_id: str = '0') -> DataBase:
+    def give_me_db(db_id: str = '0') -> CDataBase:
         for database in settings.databases:
             if db_id == database['id']:
                 return __class__.create_db(database)

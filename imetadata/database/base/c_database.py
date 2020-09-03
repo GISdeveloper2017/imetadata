@@ -14,10 +14,10 @@ from sqlalchemy.orm import sessionmaker
 import urllib.parse
 from imetadata.base.core.Exceptions import *
 from sqlalchemy.engine import Engine
-from imetadata.database.base.dataset import DataSet
+from imetadata.database.base.c_dataset import CDataSet
 
 
-class DataBase:
+class CDataBase:
     """
     数据库对象
     """
@@ -51,7 +51,7 @@ class DataBase:
     def db_connection(self):
         return ''
 
-    def one_row(self, sql, params=None) -> DataSet:
+    def one_row(self, sql, params=None) -> CDataSet:
         eng = self.engine()
         try:
             session_maker = sessionmaker(bind=eng)
@@ -60,16 +60,16 @@ class DataBase:
                 cursor = session.execute(sql, params)
                 data = cursor.fetchone()
                 if data is None:
-                    return DataSet()
+                    return CDataSet()
                 else:
                     row_data = [data]
-                    return DataSet(row_data)
+                    return CDataSet(row_data)
             finally:
                 session.close()
         finally:
             eng.dispose()
 
-    def all_row(self, sql, params=None) -> DataSet:
+    def all_row(self, sql, params=None) -> CDataSet:
         eng = self.engine()
         try:
             session_maker = sessionmaker(bind=eng)
@@ -77,7 +77,7 @@ class DataBase:
             try:
                 cursor = session.execute(sql, params)
                 data = cursor.fetchall()
-                return DataSet(data)
+                return CDataSet(data)
             except:
                 raise DBSQLExecuteException(self.__db_conn_id__, sql)
             finally:

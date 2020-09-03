@@ -3,12 +3,12 @@
 
 import logging
 import argparse
-from imetadata.schedule.controlCenterExecute import controlCenterExecute
-from imetadata.base.logger import Logger
+from imetadata.schedule.c_controlCenterExecute import CControlCenterExecute
+from imetadata.base.c_logger import CLogger
 
 
 def start_schedule_creator():
-    runner = controlCenterExecute('0', 'sch_command_runner')
+    runner = CControlCenterExecute('0', CControlCenterExecute.TRIGGER_TYPE_DB_QUEUE, 'sch_command_runner')
     runner.start()
 
 
@@ -36,6 +36,6 @@ if __name__ == "__main__":
                             format="%(levelname)s - %(asctime)s - %(message)s",
                             datefmt="%m/%d/%Y %H:%M:%S %p")
 
-    Logger().info('start run_schedule')
+    CLogger().info('start run_schedule')
     start_schedule_creator()
-    Logger().info('end run_schedule')
+    CLogger().info('end run_schedule')

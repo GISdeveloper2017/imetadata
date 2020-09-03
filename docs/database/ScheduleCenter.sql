@@ -145,28 +145,16 @@ insert into sch_center_mission(
     .开始测试调度系统的运行情况, 增加对调度的启动, 停止, 加速, 减速等任务
 */
 
--- 启动调度
+--启动指定调度
 update sch_center_mission
 set scmcommand = 'start',  scmstatus = 1, scmparallelcount = 3, scmprocessid = null
 where scmid = 'test';
 
--- 停止调度
+--停止指定调度
 update sch_center_mission
-set scmcommand = 'stop',  scmstatus = 1, scmparallelcount = 0, scmprocessid = null
+set scmcommand = 'stop',  scmstatus = 1, scmprocessid = null
 where scmid = 'test';
 
--- 加速调度
+--退出服务
 update sch_center_mission
-set scmcommand = 'speed_up',  scmstatus = 1, scmparallelcount = 0, scmprocessid = null
-where scmid = 'test';
-
--- 减速调度
-update sch_center_mission
-set scmcommand = 'speed_down',  scmstatus = 1, scmparallelcount = 0, scmprocessid = null
-where scmid = 'test';
-
--- 减速调度
-update sch_center_mission
-set scmcommand = 'close',  scmstatus = 0, scmparallelcount = -1, scmprocessid = null
-where scmid = 'test';
-
+set scmstatus = 0, scmparallelcount = -1, scmprocessid = null;

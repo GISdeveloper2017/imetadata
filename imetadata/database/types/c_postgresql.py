@@ -17,12 +17,12 @@ engine = create_engine('postgresql+psycopg2://scott:tiger@localhost:port/mydatab
 engine = create_engine('postgresql+pg8000://scott:tiger@localhost:port/mydatabase')
 """
 
-from imetadata.database.base.database import DataBase
+from imetadata.database.base.c_database import CDataBase
 
 
-class PostgreSQL(DataBase):
+class CPostgreSQL(CDataBase):
     def __init__(self, database_option):
-        DataBase.__init__(self, database_option)
+        CDataBase.__init__(self, database_option)
 
     def db_connection(self):
         return "postgresql+psycopg2://{0}:{1}@{2}:{3}/{4}".format(

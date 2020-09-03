@@ -4,17 +4,16 @@
 from __future__ import absolute_import
 
 from imetadata.base.core.Exceptions import DBException
-from imetadata.base.utils import MetaDataUtils
-from imetadata.database.factory import Factory
-from imetadata.schedule.scheduleBase import scheduleBase
-from imetadata.base.logger import Logger
-from multiprocessing import Process, Semaphore, Queue, Lock, Manager, Event
+from imetadata.base.c_utils import CMetaDataUtils
+from imetadata.database.c_factory import CFactory
+from imetadata.schedule.type.c_DBQueueSchedule import CDBQueueSchedule
+from imetadata.base.c_logger import CLogger
 
 
-class sch_dm2_storage_parser(scheduleBase):
+class sch_dm2_storage_parser(CDBQueueSchedule):
     def process_mission(self, dataset):
         storage_id = dataset.value_by_name(0, 'root_directory_id', '')
-        Logger().debug('storage_id: {0}'.format(storage_id))
+        CLogger().debug('storage_id: {0}'.format(storage_id))
 
         process_sql = '''
 update dm2_storage 
@@ -23,13 +22,13 @@ where dstid = '{0}'
 '''.format(storage_id)
 
         try:
-            factory = Factory()
+            factory = CFactory()
             db = factory.give_me_db(self.get_mission_db_id())
             db.execute(process_sql)
         except DBException as err:
             pass
 
-        return MetaDataUtils.merge_result(MetaDataUtils.Success, '测试成功')
+        return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '测试成功')
 
     def get_mission_seize_sql(self) -> str:
         return '''

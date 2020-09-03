@@ -8,7 +8,7 @@ import logging
 
 
 @singleton
-class Logger:
+class CLogger:
     def __init__(self):
         pass
 

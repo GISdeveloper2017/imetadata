@@ -5,7 +5,7 @@
 
 
 import psutil
-from imetadata.base.logger import Logger
+from imetadata.base.c_logger import CLogger
 
 
 class CProcess:

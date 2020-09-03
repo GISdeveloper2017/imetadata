@@ -9,7 +9,7 @@ import sys
 import os
 from imetadata.base.c_file import CFile
 from imetadata.base.c_sys import CSys
-from imetadata.base.utils import MetaDataUtils
+from imetadata.base.c_utils import CMetaDataUtils
 
 sys.path.append(...)
 
@@ -22,7 +22,7 @@ class CObject:
     def create_business_instance(cls, package_dir, package_name, class_name, *args, **kwargs):
         dir_list = os.listdir(package_dir)
         for cur_file in dir_list:
-            if not MetaDataUtils.equal_ignore_case(CFile.file_main_name(cur_file), class_name):
+            if not CMetaDataUtils.equal_ignore_case(CFile.file_main_name(cur_file), class_name):
                 continue
 
             path = os.path.join(package_dir, cur_file)

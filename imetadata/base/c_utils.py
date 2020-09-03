@@ -5,7 +5,7 @@ import json
 import uuid
 
 
-class MetaDataUtils:
+class CMetaDataUtils:
     Success = -1
     Failure = 0
     Exception = 1
@@ -23,7 +23,7 @@ class MetaDataUtils:
     @classmethod
     def result_success(cls, text) -> bool:
         result = json.loads(text)
-        return result['result'] == MetaDataUtils.Success
+        return result['result'] == CMetaDataUtils.Success
 
     @classmethod
     def one_id(cls) -> str:

@@ -6,14 +6,14 @@
 import pytest
 
 from imetadata.base.core.Exceptions import DBException
-from imetadata.database.factory import Factory
-from imetadata.database.base.dataset import DataSet
+from imetadata.database.c_factory import CFactory
+from imetadata.database.base.c_dataset import CDataSet
 
 
 class Test_DataBase:
     def test_fatch_one_row(self):
         try:
-            factory = Factory()
+            factory = CFactory()
             db = factory.give_me_db('0')
 
             dataset = db.one_row("select * from dm2_storage where dstid = '1'")
@@ -23,7 +23,7 @@ class Test_DataBase:
 
     def test_fatch_multi_row(self):
         try:
-            factory = Factory()
+            factory = CFactory()
             db = factory.give_me_db('0')
 
             dataset = db.all_row("select * from dm2_storage where dstid = '1'")
@@ -33,7 +33,7 @@ class Test_DataBase:
 
     def test_if_exist(self):
         try:
-            factory = Factory()
+            factory = CFactory()
             db = factory.give_me_db('0')
             assert not db.if_exists("select * from dm2_storage where dstid = '0'")
         except DBException as err:

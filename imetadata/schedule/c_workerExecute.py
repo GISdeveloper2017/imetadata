@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/8/18 14:06 
 # @Author : 王西亚 
-# @File : scheduleExecute.py
+# @File : c_workerExecute.py
 
-from imetadata.schedule.scheduleBase import scheduleBase
-from imetadata.schedule.scheduleExecuteBase import scheduleExecuteBase
+from imetadata.schedule.type.c_DBQueueSchedule import CDBQueueSchedule
+from imetadata.schedule.execute.c_DBQueueScheduleExecute import CDBQueueScheduleExecute
 from imetadata.base.c_object import CObject
 from imetadata.base.c_sys import CSys
-from imetadata.database.factory import Factory
-from multiprocessing import Process, Semaphore, Queue, Lock, Event
+from multiprocessing import Event
 
 
-class scheduleExecute(scheduleExecuteBase):
+class CWorkerExecute(CDBQueueScheduleExecute):
     __stop_event__: Event = None
 
     def __init__(self, schedule_id, schedule_algorithm, stop_event: Event):
@@ -19,11 +18,11 @@ class scheduleExecute(scheduleExecuteBase):
         self.__stop_event__ = stop_event
         self.__schedule_algorithm__ = schedule_algorithm
 
-    def default_create_schedule(self, schedule_algorithm, *args, **kwargs) -> scheduleBase:
+    def default_create_sch_mission(self, schedule_algorithm, *args, **kwargs) -> CDBQueueSchedule:
         return CObject.create_business_instance(CSys.get_business_dir(), 'imetadata.business', schedule_algorithm, args, kwargs)
 
     def stop(self) -> bool:
         """
         如果事件被设置，则终止
         """
-        return self.__stop_event__.ev.is_set()
+        return self.__stop_event__.is_set()

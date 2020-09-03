@@ -5,7 +5,7 @@
 from sqlalchemy.engine.result import ResultProxy
 
 
-class DataSet:
+class CDataSet:
     __data__ = None
 
     def __init__(self, data=None):
