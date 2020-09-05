@@ -1,16 +1,18 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
+# @Time : 2020/8/12 17:28
+# @Author : 王西亚
+# @File : job_dm2_storage_parser.py
 
 from __future__ import absolute_import
-
 from imetadata.base.core.Exceptions import DBException
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.database.c_factory import CFactory
-from imetadata.schedule.type.c_DBQueueSchedule import CDBQueueSchedule
+from imetadata.schedule.job.c_dbQueueJob import CDBQueueJob
 from imetadata.base.c_logger import CLogger
 
 
-class sch_dm2_storage_parser(CDBQueueSchedule):
+class job_dm2_storage_parser(CDBQueueJob):
     def process_mission(self, dataset):
         storage_id = dataset.value_by_name(0, 'root_directory_id', '')
         CLogger().debug('storage_id: {0}'.format(storage_id))

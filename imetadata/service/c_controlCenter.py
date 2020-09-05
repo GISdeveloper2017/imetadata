@@ -3,13 +3,13 @@
 # @Author : 王西亚 
 # @File : c_controlCenter.py
 
-from imetadata.base.c_process import CProcess
-from imetadata.base.core import const
-from imetadata.base.core.const import *
+from imetadata.base.c_json import CJson
+from imetadata.base.c_processUtils import CProcessUtils
 from multiprocessing import Process, Semaphore, Queue, Lock, Event, Pool, Manager
 import time
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CMetaDataUtils
+from imetadata.service.c_process import CProcess
 from imetadata.service.c_sentinel import CSentinel
 from imetadata.service.c_worker import CWorker
 import signal
@@ -17,7 +17,7 @@ import os
 import errno
 
 
-class CControlCenter(Process):
+class CControlCenter(CProcess):
     const_command_queue_process_result_empty = 1
     const_command_queue_process_result_notify_terminal = 2
 
@@ -40,27 +40,27 @@ class CControlCenter(Process):
         self.__shared_control_center_info_locker__ = shared_control_center_info_locker
         self.__shared_control_center_info__ = shared_control_center_info
 
-    def run(self):
-        def wait_child(signum, frame):
-            CLogger().info('收到SIGCHLD消息')
-            try:
-                while True:
-                    # -1 表示任意子进程
-                    # os.WNOHANG 表示如果没有可用的需要 wait 退出状态的子进程，立即返回不阻塞
-                    cpid, status = os.waitpid(-1, os.WNOHANG)
-                    if cpid == 0:
-                        CLogger().info('没有子进程可以处理了.')
-                        break
-                    exitcode = status >> 8
-                    CLogger().info('子进程{0}已退出, 退出码为{1}'.format(cpid, exitcode))
-            except OSError as e:
-                if e.errno == errno.ECHILD:
-                    CLogger().info('当前进程没有等待结束的子进程了.')
-                else:
-                    raise
-            CLogger().info('处理SIGCHLD消息结束...')
+    def wait_child(self, signum, frame):
+        CLogger().info('收到SIGCHLD消息')
+        try:
+            while True:
+                # -1 表示任意子进程
+                # os.WNOHANG 表示如果没有可用的需要 wait 退出状态的子进程，立即返回不阻塞
+                cpid, status = os.waitpid(-1, os.WNOHANG)
+                if cpid == 0:
+                    CLogger().info('没有子进程可以处理了.')
+                    break
+                exitcode = status >> 8
+                CLogger().info('子进程{0}已退出, 退出码为{1}'.format(cpid, exitcode))
+        except OSError as e:
+            if e.errno == errno.ECHILD:
+                CLogger().info('当前进程没有等待结束的子进程了.')
+            else:
+                raise
+        CLogger().info('处理SIGCHLD消息结束...')
 
-        signal.signal(signal.SIGCHLD, wait_child)
+    def run(self):
+        signal.signal(signal.SIGCHLD, self.wait_child)
 
         CLogger().info('控制中心进程[{0}]启动运行...'.format(self.pid))
 
@@ -142,15 +142,18 @@ class CControlCenter(Process):
 
     def process_command(self, command):
         CLogger().info('控制中心进程[{0}]开始处理指令{1}...'.format(self.pid, command))
-        cmd_type = command.get(const.NAME_CMD_COMMAND, const.CMD_START)
-        cmd_title = command.get(const.NAME_CMD_TITLE, '')
+        cmd_type = command.get(self.NAME_CMD_COMMAND, self.CMD_START)
+        cmd_title = command.get(self.NAME_CMD_TITLE, '')
 
-        if CMetaDataUtils.equal_ignore_case(cmd_type, const.CMD_START):
+        if CMetaDataUtils.equal_ignore_case(cmd_type, self.CMD_START):
             CLogger().info('控制中心进程[{0}]收到了启动调度的指令...'.format(self.pid))
             self.command_start(command)
-        elif CMetaDataUtils.equal_ignore_case(cmd_type, const.CMD_STOP):
+        elif CMetaDataUtils.equal_ignore_case(cmd_type, self.CMD_STOP):
             CLogger().info('控制中心进程[{0}]收到了停止调度的指令...'.format(self.pid))
             self.command_stop(command)
+        elif CMetaDataUtils.equal_ignore_case(cmd_type, self.CMD_FORCE_STOP):
+            CLogger().info('控制中心进程[{0}]收到了强制停止调度的指令...'.format(self.pid))
+            self.command_force_stop(command)
 
     def process_sentinel_message(self, sentinel_message):
         """
@@ -158,8 +161,8 @@ class CControlCenter(Process):
         :param sentinel_message:
         :return:
         """
-        cmd_id = sentinel_message.get(const.NAME_CMD_ID)
-        cmd_title = sentinel_message.get(const.NAME_CMD_TITLE)
+        cmd_id = sentinel_message.get(self.NAME_CMD_ID)
+        cmd_title = sentinel_message.get(self.NAME_CMD_TITLE)
         if cmd_id is None:
             return
 
@@ -169,11 +172,15 @@ class CControlCenter(Process):
         pass
 
     def command_start(self, command):
-        cmd_id = command.get(const.NAME_CMD_ID, '')
-        cmd_title = command.get(const.NAME_CMD_TITLE, '')
-        cmd_algorithm = command.get(const.NAME_CMD_ALGORITHM, '')
-        cmd_trigger = command.get(const.NAME_CMD_TRIGGER, '')
-        cmd_parallel_count = command.get(const.NAME_CMD_PARALLEL_COUNT, 0)
+        cmd_id = command.get(self.NAME_CMD_ID, '')
+        cmd_title = command.get(self.NAME_CMD_TITLE, '')
+        cmd_algorithm = command.get(self.NAME_CMD_ALGORITHM, '')
+        cmd_trigger = command.get(self.NAME_CMD_TRIGGER, '')
+        cmd_params = command.get(self.NAME_CMD_PARAMS, '')
+        CLogger().info('调度{0}.{1}.{2}的调度参数为[{3}]...'.format(cmd_id, cmd_title, cmd_algorithm, cmd_params))
+
+        cmd_parallel_count = CJson.json_attr_value(cmd_params, self.Name_Parallel_Count, 1)
+        CLogger().info('调度{0}.{1}.{2}的调度并行个数为{3}...'.format(cmd_id, cmd_title, cmd_algorithm, cmd_parallel_count))
 
         if cmd_parallel_count <= 0:
             CLogger().info('调度{0}.{1}.{2}的目标并行数量为0, 系统直接进行调度的停止操作...'.format(cmd_id, cmd_title, cmd_algorithm))
@@ -189,18 +196,18 @@ class CControlCenter(Process):
 
         params = self.__control_center_manager__.dict()
 
-        params[const.NAME_CMD_ID] = cmd_id
-        params[const.NAME_CMD_TITLE] = cmd_title
-        params[const.NAME_CMD_ALGORITHM] = cmd_algorithm
-        params[const.NAME_CMD_TRIGGER] = cmd_trigger
-        params[const.NAME_CMD_PARALLEL_COUNT] = cmd_parallel_count
+        params[self.NAME_CMD_ID] = cmd_id
+        params[self.NAME_CMD_TITLE] = cmd_title
+        params[self.NAME_CMD_ALGORITHM] = cmd_algorithm
+        params[self.NAME_CMD_TRIGGER] = cmd_trigger
+        params[self.NAME_CMD_PARAMS] = cmd_params
 
         stop_event = self.__control_center_manager__.Event()
         subprocess_list = self.__control_center_manager__.list()
         control_center_object = dict()
-        control_center_object[const.NAME_PARAMS] = params
-        control_center_object[const.NAME_STOP_EVENT] = stop_event
-        control_center_object[const.NAME_SUBPROCESS_LIST] = subprocess_list
+        control_center_object[self.NAME_PARAMS] = params
+        control_center_object[self.NAME_STOP_EVENT] = stop_event
+        control_center_object[self.NAME_SUBPROCESS_LIST] = subprocess_list
 
         for i in range(cmd_parallel_count):
             proc = CWorker(stop_event, params)
@@ -214,8 +221,15 @@ class CControlCenter(Process):
         CLogger().info('调度{0}.{1}.{2}成功启动了{3}个并行进程...'.format(cmd_id, cmd_title, cmd_algorithm, cmd_parallel_count))
 
     def command_stop(self, command):
-        cmd_id = command.get(const.NAME_CMD_ID, '')
-        cmd_title = command.get(const.NAME_CMD_TITLE, '')
+        """
+        处理发来的停止命令
+
+        todo 这里使用了阻塞模式, 会导致永久停止等待子进程退出, 无法处理后面的强制停止模式!!!可以考虑将等待状态的处理放在哨兵进程中
+        :param command:
+        :return:
+        """
+        cmd_id = command.get(self.NAME_CMD_ID, '')
+        cmd_title = command.get(self.NAME_CMD_TITLE, '')
 
         CLogger().info('控制中心开始停止调度[{0}.{1}]...'.format(cmd_id, cmd_title))
 
@@ -235,7 +249,7 @@ class CControlCenter(Process):
                 return
 
             # 给池里的所有进程，发送关闭信号！
-            stop_event = control_center_object.get(const.NAME_STOP_EVENT, None)
+            stop_event = control_center_object.get(self.NAME_STOP_EVENT, None)
             if stop_event is not None:
                 stop_event.set()
                 CLogger().info('调度{0}.{1}的进程池中所有进程退出的信号已发出...'.format(cmd_id, cmd_title))
@@ -244,12 +258,12 @@ class CControlCenter(Process):
             while True:
                 CLogger().info('检查调度{0}.{1}的进程池中所有进程是否都已经退出...'.format(cmd_id, cmd_title))
                 all_subprocess_closed = True
-                subprocess_list = control_center_object.get(const.NAME_SUBPROCESS_LIST)
+                subprocess_list = control_center_object.get(self.NAME_SUBPROCESS_LIST)
                 if subprocess_list is None:
                     break
 
                 for subproc_id in subprocess_list:
-                    if CProcess.process_id_exist(subproc_id):
+                    if CProcessUtils.process_id_exist(subproc_id):
                         CLogger().info('检查调度{0}.{1}的进程池中进程{2}仍然在运行...'.format(cmd_id, cmd_title, subproc_id))
                         all_subprocess_closed = False
 
@@ -298,7 +312,7 @@ class CControlCenter(Process):
                     self.__control_center_objects__.pop(control_center_object_key)
                     continue
 
-                command = control_center_object.get(const.NAME_PARAMS, None)
+                command = control_center_object.get(self.NAME_PARAMS, None)
                 CLogger().info('已经提取出参数对象...')
 
                 if command is None:
@@ -306,8 +320,8 @@ class CControlCenter(Process):
                     self.__control_center_objects__.pop(control_center_object_key)
                     continue
 
-                cmd_id = command.get(const.NAME_CMD_ID, '')
-                cmd_title = command.get(const.NAME_CMD_TITLE, '')
+                cmd_id = command.get(self.NAME_CMD_ID, '')
+                cmd_title = command.get(self.NAME_CMD_TITLE, '')
 
                 CLogger().info('控制中心开始清理调度[{0}.{1}]的所有进程...'.format(cmd_id, cmd_title))
 
@@ -315,7 +329,7 @@ class CControlCenter(Process):
                     continue
 
                 # 给池里的所有进程，发送关闭信号！
-                stop_event = control_center_object.get(const.NAME_STOP_EVENT, None)
+                stop_event = control_center_object.get(self.NAME_STOP_EVENT, None)
                 if stop_event is None:
                     continue
 
@@ -326,12 +340,12 @@ class CControlCenter(Process):
                 while True:
                     CLogger().info('检查调度{0}.{1}的进程池中所有进程是否都已经退出...'.format(cmd_id, cmd_title))
                     all_subprocess_closed = True
-                    subprocess_list = control_center_object.get(const.NAME_SUBPROCESS_LIST)
+                    subprocess_list = control_center_object.get(self.NAME_SUBPROCESS_LIST)
                     if subprocess_list is None:
                         break
 
                     for subproc_id in subprocess_list:
-                        if CProcess.process_id_exist(subproc_id):
+                        if CProcessUtils.process_id_exist(subproc_id):
                             CLogger().info('检查调度{0}.{1}的进程池中进程{2}仍然在运行...'.format(cmd_id, cmd_title, subproc_id))
                             all_subprocess_closed = False
 
@@ -347,3 +361,48 @@ class CControlCenter(Process):
         finally:
             self.__control_center_objects_locker__.release()
             CLogger().info('控制中心的所有调度清理工作已完成，控制中心进程将关闭...')
+
+    def command_force_stop(self, command):
+        """
+        处理发来的强制停止命令
+
+        :param command:
+        :return:
+        """
+        cmd_id = command.get(self.NAME_CMD_ID, '')
+        cmd_title = command.get(self.NAME_CMD_TITLE, '')
+
+        CLogger().info('控制中心开始停止调度[{0}.{1}]...'.format(cmd_id, cmd_title))
+
+        if self.__control_center_objects__ is None:
+            CLogger().info('控制中心对象为None...')
+            return
+
+        if len(self.__control_center_objects__) == 0:
+            CLogger().info('控制中心对象里没有任何池记录...')
+            return
+        try:
+            self.__control_center_objects_locker__.acquire()
+
+            control_center_object = self.__control_center_objects__.get(cmd_id)
+            if control_center_object is None:
+                CLogger().warning('调度{0}进程池已经不存在, 无需停止...'.format(cmd_id))
+                return
+
+            # 给池里的所有进程，发送关闭信号！
+            stop_event = control_center_object.get(self.NAME_STOP_EVENT, None)
+            if stop_event is not None:
+                stop_event.set()
+                CLogger().info('调度{0}.{1}的进程池中所有进程退出的信号已发出...'.format(cmd_id, cmd_title))
+
+            # 直接杀死进程池中的全部子进程
+            subprocess_list = control_center_object.get(self.NAME_SUBPROCESS_LIST)
+            if subprocess_list is not None:
+                for subproc_id in subprocess_list:
+                    CProcessUtils.process_kill(subproc_id)
+
+            CLogger().info('调度{0}.{1}的进程池中所有进程均已退出...'.format(cmd_id, cmd_title))
+            self.__control_center_objects__.pop(cmd_id)
+        finally:
+            self.__control_center_objects_locker__.release()
+            CLogger().info('控制中心已经停止调度[{0}.{1}]'.format(cmd_id, cmd_title))

@@ -14,8 +14,12 @@ class CSys:
         return os.path.abspath('.')
 
     @classmethod
-    def get_business_dir(cls):
-        return os.path.join(cls.get_application_dir(), 'business')
+    def get_job_root_dir(cls):
+        return os.path.join(cls.get_application_dir(), 'job')
+
+    @classmethod
+    def get_job_package_root_name(cls):
+        return 'imetadata.job'
 
     @classmethod
     def get_execute_filename(cls):

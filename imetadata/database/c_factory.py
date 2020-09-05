@@ -17,7 +17,7 @@ class CFactory:
 
     @staticmethod
     def create_db(database) -> CDataBase:
-        if database['type'].strip().lower() == CDataBase.DATABASE_POSTGRESQL:
+        if database['job'].strip().lower() == CDataBase.DATABASE_POSTGRESQL:
             return CPostgreSQL(database)
         else:
             raise DBException(database['id'])

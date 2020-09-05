@@ -1,31 +1,19 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/8/12 17:28 
 # @Author : 王西亚
-# @File : sch_command_runner.py
-
+# @File : job_command_runner.py
 
 from __future__ import absolute_import
-
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.database.c_factory import CFactory
-from imetadata.schedule.type.c_DBQueueSchedule import CDBQueueSchedule
+from imetadata.schedule.job.c_dbQueueJob import CDBQueueJob
 from imetadata.base.c_logger import CLogger
 from multiprocessing import Queue, Lock, Manager
 from imetadata.service.c_controlCenter import CControlCenter
 import time
 
 
-class sch_command_runner(CDBQueueSchedule):
-    NAME_CMD_COMMAND = 'cmd_command'
-    NAME_CMD_ID = 'cmd_id'
-    NAME_CMD_TITLE = 'cmd_title'
-    NAME_CMD_TRIGGER = 'cmd_trigger'
-    NAME_CMD_ALGORITHM = 'cmd_algorithm'
-    NAME_CMD_PARALLEL_COUNT = 'cmd_parallel_count'
-
-    CMD_START = 'start'
-    CMD_STOP = 'stop'
-
+class job_command_runner(CDBQueueJob):
     __cmd_queue__ = None
     __locker__ = None
     __shared_control_center_info__ = None
@@ -55,7 +43,7 @@ where scmid = (
 
     def get_mission_info_sql(self):
         return '''
-select scmid, scmtitle, scmcommand, scmtrigger, scmalgorithm, scmparallelcount 
+select scmid, scmtitle, scmCommand, scmTrigger, scmAlgorithm, scmParams::text 
 from sch_center_mission 
 where scmprocessid = '{0}'        
         '''.format(self.SYSTEM_NAME_MISSION_ID)
@@ -85,7 +73,7 @@ where scmstatus = 2
             command_queue_item[self.NAME_CMD_COMMAND] = command_content
             command_queue_item[self.NAME_CMD_ALGORITHM] = dataset.value_by_name(0, 'scmalgorithm', '')
             command_queue_item[self.NAME_CMD_TRIGGER] = dataset.value_by_name(0, 'scmtrigger', '')
-            command_queue_item[self.NAME_CMD_PARALLEL_COUNT] = dataset.value_by_name(0, 'scmparallelcount', 0)
+            command_queue_item[self.NAME_CMD_PARAMS] = dataset.value_by_name(0, 'scmparams', '')
 
             CLogger().info('系统正在处理任务{0}.{1}, 开始发送任务队列'.format(mission_id, mission_title))
             self.__cmd_queue__.put(command_queue_item)

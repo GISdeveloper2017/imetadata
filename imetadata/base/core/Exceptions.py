@@ -10,6 +10,15 @@ class ConfigNotExistException(Exception):
         print("配置文件[{}]不存在, 系统无法运行! ".format(self.__file_name__))
 
 
+class BusinessNotExistException(Exception):
+    def __init__(self, type, message):
+        self.__message__ = message
+        self.__type__ = type
+
+    def __str__(self):
+        print("无法找到您需要的类型为[{0}]的类[{1}]! ".format(self.__type__, self.__message__))
+
+
 class DBException(Exception):
     def __init__(self, db_id):
         self.__db_id__ = db_id

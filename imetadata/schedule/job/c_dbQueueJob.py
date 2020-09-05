@@ -6,16 +6,10 @@ from imetadata.database.base.c_dataset import CDataSet
 from imetadata.database.c_factory import CFactory
 from imetadata.base.core.Exceptions import *
 from abc import abstractmethod
+from imetadata.schedule.job.c_job import CJob
 
 
-class CDBQueueSchedule:
-    SYSTEM_NAME_MISSION_ID = '{system.mission.id}'
-
-    __id__: str = None
-
-    def __init__(self, a_id: str):
-        self.__id__ = a_id
-
+class CDBQueueJob(CJob):
     def get_mission_db_id(self) -> str:
         return '0'
 
@@ -73,9 +67,3 @@ class CDBQueueSchedule:
                 db.execute(sql)
             except Exception as err:
                 pass
-
-    def before_execute(self):
-        pass
-
-    def before_stop(self):
-        pass

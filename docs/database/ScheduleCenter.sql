@@ -90,39 +90,28 @@ create table if not exists sch_center_mission
 	scmstatus integer default 1,
 	scmprocessid varchar(100),
 	scmlastmodifytime timestamp(6) default now(),
-	scmmemo text,
 	scmcenterid varchar(100),
 	scmtrigger text,
 	scmalgorithm varchar(200) not null,
-	scmparallelcount integer default 0,
-	scmmaxparallelcount integer default 1
+	scmparams jsonb,
+	scmmemo text
 );
 
 comment on table sch_center_mission is '调度-中心';
-
 comment on column sch_center_mission.scmid is '标识';
-
 comment on column sch_center_mission.scmtitle is '标题';
 
-comment on column sch_center_mission.scmtrigger is '触发器';
-
-comment on column sch_center_mission.scmalgorithm is '算法';
-
-comment on column sch_center_mission.scmparallelcount is '并行个数';
-
+comment on column sch_center_mission.scmcommand is '命令';
 comment on column sch_center_mission.scmstatus is '状态 0：完成，1：待处理，2：处理中';
-
 comment on column sch_center_mission.scmprocessid is '并行处理标识';
 
-comment on column sch_center_mission.scmlastmodifytime is '最后修改时间';
+comment on column sch_center_mission.scmtrigger is '触发器';
+comment on column sch_center_mission.scmalgorithm is '算法';
+comment on column sch_center_mission.scmparams is '详细参数';
 
 comment on column sch_center_mission.scmmemo is '备注';
-
 comment on column sch_center_mission.scmcenterid is '所属组标示';
-
-comment on column sch_center_mission.scmmaxparallelcount is '最大并行数';
-
-comment on column sch_center_mission.scmcommand is '命令';
+comment on column sch_center_mission.scmlastmodifytime is '最后修改时间';
 
 alter table sch_center_mission owner to postgres;
 
@@ -133,10 +122,12 @@ create index if not exists idx_sch_center_mission_status
 	on sch_center_mission (scmstatus);
 
 insert into sch_center_mission(
-    scmid, scmtitle, scmcommand, scmstatus, scmprocessid, scmlastmodifytime, scmmemo, scmcenterid
-    , scmtrigger, scmalgorithm, scmparallelcount, scmmaxparallelcount) values(
-    'test', '测试', null, 0, null, null, null, '1'
-    , null, 'sch_dm2_storage_parser', -1, 5
+    scmid, scmtitle, scmcommand, scmstatus, scmprocessid
+    , scmtrigger, scmalgorithm, scmParams
+    , scmlastmodifytime, scmmemo, scmcenterid) values(
+    'test', '测试', null, 0, null
+    , 'db_queue', 'dm2_storage_parser', '{"parallel_count": 3}'::json
+    , now(), null, '1'
     );
 
 
@@ -152,7 +143,7 @@ where scmid = 'test';
 
 --停止指定调度
 update sch_center_mission
-set scmcommand = 'stop',  scmstatus = 1, scmprocessid = null
+set scmcommand = 'should_stop',  scmstatus = 1, scmprocessid = null
 where scmid = 'test';
 
 --退出服务

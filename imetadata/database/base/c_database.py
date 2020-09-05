@@ -36,7 +36,7 @@ class CDataBase:
 
     def __init__(self, database_option):
         self.__db_conn_id__ = database_option['id']
-        self.__db_conn_type__ = database_option['type']
+        self.__db_conn_type__ = database_option['job']
         self.__db_conn_host__ = database_option['host']
         self.__db_conn_port__ = database_option['port']
         self.__db_conn_name__ = database_option['database']

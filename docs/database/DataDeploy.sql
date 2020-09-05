@@ -152,14 +152,14 @@
 <process>
   <before hint="在服务发布前处理">
     <serverid>-1</serverid>
-    <type>sql</type>
+    <job>sql</job>
     <content><![CDATA[
 delete from a_stat
     ]]></content>
   </before>
   <after hint="在服务中的每一个数据处理完之后处理">
     <serverid>-1</serverid>
-    <type>sql</type>
+    <job>sql</job>
     <content/>
   </after>
 </process>
@@ -168,9 +168,9 @@ delete from a_stat
         。before：服务发布前处理
         。after：服务发布后处理
         。下一级节点：
-          。type：
+          。job：
             。sql：处理的命令为sql；多个sql可以使用分号隔开
-            。business：业务命令，可调用特定的业务流程
+            。job：业务命令，可调用特定的业务流程
           。content：根据type类型不同，存储sql，或者业务命令的名称
           。serverid：处理sql时的数据库，仅仅在type=sql时有效
   。dp_v_qfg_schema_layer
@@ -227,21 +227,21 @@ select dlmc as subgroup, count(*) as stat_count, sum(tbmj) as stat_sum_area from
   ]]></stat>
   <before comment="处理当前数据文件前的操作">
     <serverid>-1</serverid>
-    <type>sql</type>
+    <job>sql</job>
     <content><![CDATA[
 delete from a_stat where sgroup = :query_file_object_id
     ]]></content>
   </before>
   <record comment="每一条统计结果，系统按如下方式处理">
     <serverid>-1</serverid>
-    <type>sql</type>
+    <job>sql</job>
     <content><![CDATA[
 insert into a_stat(sgroup, subgroup, stat_count, stat_sum_area) values(:query_file_object_id, :subgroup, :stat_count, :stat_sum_area)
     ]]></content>
   </record>
   <after comment="处理当前数据文件后的操作">
     <serverid>-1</serverid>
-    <type>sql</type>
+    <job>sql</job>
     <content/>
   </after>
 </process>
@@ -252,9 +252,9 @@ insert into a_stat(sgroup, subgroup, stat_count, stat_sum_area) values(:query_fi
         。record：
           。每一条统计结果，系统按方式要求处理
           。下一级节点：
-            。type：
+            。job：
               。sql：处理的命令为sql；多个sql可以使用分号隔开
-              。business：业务命令，可调用特定的业务流程
+              。job：业务命令，可调用特定的业务流程
               。node：命令节点，content可以直接作为命令节点运行，等同于command
             。content：根据type类型不同，存储sql，或者业务命令的名称
             。serverid：处理sql时的数据库，仅仅在type=sql时有效

@@ -15,10 +15,10 @@ def work(event):
         print('worker %s will sleep' % os.getpid())
         time.sleep(2)
         if event.is_set():
-            print('worker %s accept stop event' % os.getpid())
+            print('worker %s accept should_stop event' % os.getpid())
             break
         else:
-            print('worker %s can not accept stop event' % os.getpid())
+            print('worker %s can not accept should_stop event' % os.getpid())
 
     print('worker %s stoped' % os.getpid())
 
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     print('main %s will sleep' % os.getpid())
     time.sleep(10)
-    print('main %s will send stop event' % os.getpid())
+    print('main %s will send should_stop event' % os.getpid())
     event.set()
 
     for proc in processes:

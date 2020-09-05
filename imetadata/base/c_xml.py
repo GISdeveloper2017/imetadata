@@ -145,7 +145,6 @@ class CXml:
         """
         获取一个属性的值, 如果属性不存在, 则返回默认值
 
-        todo 未完成
         :param element:
         :param attr_name:
         :param attr_value_default:
@@ -154,8 +153,8 @@ class CXml:
         """
         if ignore_case is True:
             ac = element.keys()[0]
-            attrname = re.findall(attr_name, ac, re.IGNORECASE)
-            name = attrname[0]
+            attr_name = re.findall(attr_name, ac, re.IGNORECASE)
+            name = attr_name[0]
         else:
             name = attr_name
         value = element.get(name)

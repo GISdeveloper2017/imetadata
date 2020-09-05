@@ -4,23 +4,16 @@
 # @Author : 王西亚
 # @File : controlCenterExecute.py
 
-from imetadata.schedule.type.c_DBQueueSchedule import CDBQueueSchedule
-from imetadata.schedule.execute.c_DBQueueScheduleExecute import CDBQueueScheduleExecute
-from imetadata.base.c_object import CObject
-from imetadata.base.c_sys import CSys
+from imetadata.schedule.execute.c_dbQueueScheduleExecute import CDBQueueScheduleExecute
 from imetadata.database.c_factory import CFactory
 
 
 class CControlCenterExecute(CDBQueueScheduleExecute):
-
-    def default_create_sch_mission(self, schedule_algorithm, *args, **kwargs) -> CDBQueueSchedule:
-        return CObject.create_business_instance(CSys.get_business_dir(), 'imetadata.business', schedule_algorithm, args, kwargs)
-
-    def stop(self) -> bool:
+    def should_stop(self) -> bool:
         sql = '''
         select scmid
         from sch_center_mission
-        where scmparallelcount > -1 or scmstatus <> 0
+        where scmcommand <> 'shutdown' or scmstatus <> 0
         limit 1
         '''
 

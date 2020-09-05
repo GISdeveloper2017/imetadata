@@ -133,12 +133,12 @@ class Test_Base_C_XML:
         获取一个属性的值, 如果属性不存在, 则返回默认值
         :return:
         """
-        xml_content = '''<root name="hello world"><element hello="huhu"></element></root>'''
+        xml_content = '''<root name="hello world"><element hello="中国"></element><element hello="美国"></element></root>'''
         xml = CXml()
         xml.load_xml(xml_content)
-        element = xml.xpath('/root/element')[0]
+        element = xml.xpath('/root/element')[1]
         value = CXml.get_attr(element, 'Hello', "null")
-        assert value == 'huhu'
+        assert value == '美国'
 
     def test_set_element_text(self):
         """

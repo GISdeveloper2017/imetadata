@@ -7,7 +7,7 @@ import pytest
 import os
 import random
 import allure
-from imetadata.base.c_process import CProcess
+from imetadata.base.c_processUtils import CProcessUtils
 
 
 class Test_C_Process:
@@ -17,7 +17,7 @@ class Test_C_Process:
 
     @allure.title('测试自己的进程是否存在')
     def test_process_id_exist(self):
-        if CProcess.process_id_exist(os.getpid()):
+        if CProcessUtils.process_id_exist(os.getpid()):
             assert True
         else:
             assert False
@@ -25,7 +25,7 @@ class Test_C_Process:
     @allure.title('测试一个随机进程是否存在')
     def test_random_process_id_exist(self):
         process_id = random.randint(40000, 60000)
-        if CProcess.process_id_exist(self.show_process_id(process_id)):
+        if CProcessUtils.process_id_exist(self.show_process_id(process_id)):
             assert False
         else:
             assert True
@@ -33,7 +33,7 @@ class Test_C_Process:
     @allure.title('测试一个指定的进程是否存在')
     def test_main_process_id_exist(self):
         process_id = 46137
-        if CProcess.process_id_exist(process_id):
+        if CProcessUtils.process_id_exist(process_id):
             assert True
         else:
             assert False

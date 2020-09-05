@@ -26,7 +26,7 @@ python.exe ScheduleCreator.py -log /your_log_file_path
    * other: 其他, 暂未扩展. 
 1. 调度表sch_center_mission中的scmCommand和scmStatus配合, 完成并行的控制, 目前提供如下调度控制:
    * scmCommand=start&scmStatus=1: 启动调度
-   * scmCommand=stop&scmStatus=1: 停止调度
+   * scmCommand=should_stop&scmStatus=1: 停止调度
    如果需要加速或减速, 只能停止调度->修改调度配置->启动调度
 1. 调度表sch_center_mission中的scmParallelCount和scmStatus配合, 完成并行系统的退出:
    * scmStatus=0&scmParallelCount=0: 调度系统关闭退出

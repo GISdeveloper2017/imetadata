@@ -35,3 +35,16 @@ class CMetaDataUtils:
     @classmethod
     def equal_ignore_case(cls, str1: str, str2: str) -> bool:
         return str1.strip().lower() == str2.strip().lower()
+
+    @classmethod
+    def dict_value_by_name(cls, dict_obj: dict, name: str, ignore_case=True) -> any:
+        keys = dict_obj.keys()
+        for key in keys:
+            if ignore_case:
+                if cls.equal_ignore_case(key, name):
+                    return dict_obj[key]
+            else:
+                if key.strip() == name.strip():
+                    return dict_obj[key]
+        else:
+            return None
