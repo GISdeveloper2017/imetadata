@@ -7,7 +7,7 @@ import pytest
 from imetadata.base.c_json import CJson
 
 
-class Test_C_Json:
+class T_C_Json:
     test_filename: str = r"C:\Users\Clare\PycharmProjects\pythonProject\test1.xml"
     test_text: str = '{"a":1,"b":2,"c":3,"d":4,"中文属性":5, "student": [{"name":"小明", "birthday": "2020-1-1"}, {"name":"小王", "birthday": "2020-2-1"}]}'
 

@@ -2,7 +2,7 @@
 # @Time : 2020/9/4 08:14 
 # @Author : 王西亚 
 # @File : c_scheduleExecute.py
-
+from imetadata.base.c_json import CJson
 from imetadata.base.c_object import CObject
 from imetadata.base.c_sys import CSys
 from abc import abstractmethod
@@ -16,7 +16,9 @@ class CScheduleExecute:
     TRIGGER_TYPE_QUEUE = 'queue'
     TRIGGER_TYPE_NONE = 'none'
 
-    TRIGGER_Interval_Params_Interval = 'interval'
+    TRIGGER_Params = 'trigger'
+
+    TRIGGER_Interval_Params_Seconds = 'seconds'
 
     __schedule_id__: str = None
     __schedule_trigger__: str = None
@@ -51,3 +53,12 @@ class CScheduleExecute:
     @abstractmethod
     def start(self):
         pass
+
+    def params_value_by_name(self, attr_name: str, default_value):
+        """
+        通过解析传入参数, 直接获取任务执行方面的参数, 该参数都存储在trigger对象下
+        :param attr_name:
+        :param default_value:
+        :return:
+        """
+        return CJson().json_attr_value(self.__schedule_params__, '{0}.{1}'.format(self.TRIGGER_Params, attr_name), default_value)

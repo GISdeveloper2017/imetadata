@@ -3,7 +3,6 @@
 # @Author : 王西亚 
 # @File : c_intervalScheduleExecute.py
 
-from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
 from imetadata.schedule.execute.c_timeScheduleExecute import CTimeScheduleExecute
 from apscheduler.triggers.interval import IntervalTrigger
@@ -24,7 +23,7 @@ class CTrigger(IntervalTrigger):
 class CIntervalScheduleExecute(CTimeScheduleExecute):
 
     def get_or_create_trigger(self) -> BaseTrigger:
-        interval = CJson.json_attr_value(self.__schedule_params__, self.TRIGGER_Interval_Params_Interval, 5)
+        seconds = super().params_value_by_name(self.TRIGGER_Interval_Params_Seconds, 5)
         CLogger().info(
-            '调度{0}.{1}设置的定时间隔为{2}秒...'.format(self.__schedule_id__, self.__schedule_trigger__, interval))
-        return CTrigger(seconds=interval)
+            '调度{0}.{1}设置的定时间隔为{2}秒...'.format(self.__schedule_id__, self.__schedule_trigger__, seconds))
+        return CTrigger(seconds=seconds)

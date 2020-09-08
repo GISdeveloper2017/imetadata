@@ -10,8 +10,14 @@ from imetadata.schedule.job.c_job import CJob
 
 
 class CDBQueueJob(CJob):
+    __mission_db_id__: str
+
+    def custom_init(self):
+        super().custom_init()
+        self.__mission_db_id__ = super().params_value_by_name(self.Job_Params_DB_Server_ID, '0')
+
     def get_mission_db_id(self) -> str:
-        return '0'
+        return self.__mission_db_id__
 
     @abstractmethod
     def get_mission_seize_sql(self) -> str:

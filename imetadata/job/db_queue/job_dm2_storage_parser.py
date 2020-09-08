@@ -13,25 +13,6 @@ from imetadata.base.c_logger import CLogger
 
 
 class job_dm2_storage_parser(CDBQueueJob):
-    def process_mission(self, dataset):
-        storage_id = dataset.value_by_name(0, 'root_directory_id', '')
-        CLogger().debug('storage_id: {0}'.format(storage_id))
-
-        process_sql = '''
-update dm2_storage 
-set dstscanstatus = 0
-where dstid = '{0}'
-'''.format(storage_id)
-
-        try:
-            factory = CFactory()
-            db = factory.give_me_db(self.get_mission_db_id())
-            db.execute(process_sql)
-        except DBException as err:
-            pass
-
-        return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '测试成功')
-
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage 
@@ -56,3 +37,22 @@ update dm2_storage
 set dstscanstatus = 1, dstprocessid = null 
 where dstscanstatus = 2
         '''
+
+    def process_mission(self, dataset):
+        storage_id = dataset.value_by_name(0, 'root_directory_id', '')
+        CLogger().debug('storage_id: {0}'.format(storage_id))
+
+        process_sql = '''
+update dm2_storage 
+set dstscanstatus = 0
+where dstid = '{0}'
+'''.format(storage_id)
+
+        try:
+            factory = CFactory()
+            db = factory.give_me_db(self.get_mission_db_id())
+            db.execute(process_sql)
+        except DBException as err:
+            pass
+
+        return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '测试成功')

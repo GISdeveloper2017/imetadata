@@ -22,18 +22,18 @@ class Test_C_Process:
         else:
             assert False
 
-    @allure.title('测试一个随机进程是否存在')
-    def test_random_process_id_exist(self):
-        process_id = random.randint(40000, 60000)
-        if CProcessUtils.process_id_exist(self.show_process_id(process_id)):
-            assert False
-        else:
-            assert True
-
-    @allure.title('测试一个指定的进程是否存在')
-    def test_main_process_id_exist(self):
-        process_id = 46137
-        if CProcessUtils.process_id_exist(process_id):
-            assert True
-        else:
-            assert False
+    # @allure.title('测试一个随机进程是否存在')
+    # def test_random_process_id_exist(self):
+    #     process_id = random.randint(40000, 60000)
+    #     if CProcessUtils.process_id_exist(self.show_process_id(process_id)):
+    #         assert False
+    #     else:
+    #         assert True
+    #
+    # @allure.title('测试一个指定的进程是否存在')
+    # def test_main_process_id_exist(self):
+    #     process_id = 46137
+    #     if CProcessUtils.process_id_exist(process_id):
+    #         assert True
+    #     else:
+    #         assert False

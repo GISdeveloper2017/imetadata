@@ -9,18 +9,59 @@ python.exe ScheduleCreator.py
 python.exe ScheduleCreator.py -log /your_log_file_path
 ```
 
+# 说明
+## 任务登记
+1. 任务是指需要运行的并行或定时处理的工作, 包括一系列的判断, 处理, 操作目录和数据库等等(理解即可)
+1. 任务的代码, 在一个特定类中编写, 这个类要依照特定的规范, 存储在特定的目录下(开发人员了解即可)
+1. 任务的启动, 停止等管理, 在数据表sch_center_mission表中
+1. 每一条记录, 是一个任务, 根据scmTrigger的不同, 可以分类为:
+   * db_queue: 数据库队列, 特点: 从数据库队列中抢任务执行, 直至数据库队列中无任务
+   * cron: 基于cron语法的时间调度, 特点: 如果任务时间长, 期间应执行的调度, 将被"消化"掉, 仅仅在任务执行完毕后的下一次运行
+   * interval: 每隔x秒指定的任务, 特点: 从上次任务结束后, 再过x秒, 下一次任务才执行
+   * date: 指定时间运行一次的任务, 特点: 在规定的日期时间启动, 只运行一次
+   * mem_queue: 后续会与rabbitmq, 或者redis等内存队列对接(暂未实现)
+   * other: 其他(暂未实现)
+1. 调度表sch_center_mission中的scmCommand和scmStatus配合, 完成并行的控制, 目前提供如下调度控制:
+   * scmCommand=start&scmStatus=1: 启动调度
+   * scmCommand=should_stop&scmStatus=1: 停止调度
+   如果需要加速或减速, 只能停止调度->修改调度配置->启动调度
+1. 调度表sch_center_mission中的scmParallelCount和scmStatus配合, 完成并行系统的退出:
+   * scmStatus=0&scmParallelCount=0: 调度系统关闭退出
+1. sch_center_mission中可以登记的任务, 其处理算法为特定类, 该类存储在imetadata\job子目录下, 该子目录下子目录是任务触发的类型, 具体参见上面对
+scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下的类名称(不包含.py扩展名), 如:
+   * db_queue类型下有job_dm2_storage_parser.py
+     就可以在数据表中登记: 
+
+     |scmTrigger|scmAlgorithm|
+     |  ----  | ----  |
+     |db_queue|jbo_dm2_storage_parser|
+
+1. scmParams是具体任务执行的参数, 格式为Json, 根据不同的scmTrigger, 参数可以进行自定义:
+
+     |scmTrigger|scmParams|说明|样例|
+     |  ----  | ----  | ----  | ----  |
+     |interval|start_date|可选, 任务调度的有效开始时间|{"trigger": {"start_date": "2020-01-01 11:11:11"}|
+     |interval|end_date|可选, 任务调度的有效结束时间|{"trigger": {"end_date": "2020-01-20 11:11:11"}|
+     |interval|seconds|可选, 但是下面的时间间隔至少有一个!, 每隔x秒执行一次|{"trigger": {"seconds": 30}|
+     |interval|minutes|可选, 每隔x分钟执行一次|{"trigger": {"minutes": 30}|
+     |interval|hours|可选, 每隔x小时执行一次|{"trigger": {"hours": 2}|
+     |interval|days|可选, 每隔x小时执行一次|{"trigger": {"days": 2}|
+     |interval|weeks|可选, 每隔x星期执行一次|{"trigger": {"weeks": 2}|
+     |db_queue|db_server_id|数据库队列, 引用的数据库的标识, 该标识在settings.py中定义|{"job": {"db_server_id": 2}|
+
+
 # RoadMap
-1. 测试完成sch_dm2_storage_parser和sch_dm2_storage_directory_parser
+1. 测试完成job_dm2_storage_parser和job_dm2_storage_directory_parser
 
 # 2020-09-05
 扩展trigger的类型为
-1.数据库队列触发器
-2.时间触发器
-  2.1.指定时间触发一次
-  2.2.间隔指定秒数触发一次(注意:是从上次执行结束时间开始, 重新计时)
-  2.3.根据cron语法, 定时触发(cron语法中有每隔n秒执行一次, 这里的计算, 将不考虑执行中所损耗的时间, 但中间积累的任务将被忽略)
-重新调整体系架构目录, 对重要的对象, 目录名称都进行了重新定义, 使结构更加清晰
-修改了数据表结构, 将数据库队列中的配置信息, 如并行个数等等, 都移到scmParams这个json字段中
+1. 数据库队列触发器
+2. 时间触发器
+  * 指定时间触发一次
+  * 间隔指定秒数触发一次(注意:是从上次执行结束时间开始, 重新计时)
+  * 根据cron语法, 定时触发(cron语法中有每隔n秒执行一次, 这里的计算, 将不考虑执行中所损耗的时间, 但中间积累的任务将被忽略)
+1. 重新调整体系架构目录, 对重要的对象, 目录名称都进行了重新定义, 使结构更加清晰
+1. 修改了数据表结构, 将数据库队列中的配置信息, 如并行个数等等, 都移到scmParams这个json字段中
 调度执行器execute和调度工人job都可以访问这个参数, 进行个性化的处理
 系统进行了基础测试, 主体架构基本成型.
 
