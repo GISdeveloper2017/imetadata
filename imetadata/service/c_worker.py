@@ -62,21 +62,3 @@ class CWorker(CProcess):
             return CCronWorkerExecute(work_id, work_trigger, work_algorithm, work_params, stop_event)
         else:
             return None
-
-"""
-    def run(self):
-        # 在终止进程时，部分进程将得到信号，进入运行机制，但此之前，停止信号应该已经设置！！！进程将直接结束
-        if not self.accept_stop_message():
-            self.__runner__ = CIntervalWorkerExecute(self.__cmd_id__, self.__cmd_trigger__, self.__cmd_algorithm__, self.__cmd_params__, self.__stop_event__)
-            # self.__runner__ = scheduleExecute(self.__cmd_id__, self.__cmd_algorithm__, self.__stop_event__)
-            # self.__runner__.start()
-            while True:
-                time.sleep(5)
-                if self.accept_stop_message():
-                    CLogger().info(
-                        '调度{0}.{1}的进程{2}收到关闭事件, 将退出'.format(self.__cmd_title__, self.__cmd_algorithm__, self.pid))
-                    return
-                else:
-                    CLogger().info(
-                        '调度{0}.{1}的进程{2}未收到关闭事件, 将再休眠一段时间'.format(self.__cmd_title__, self.__cmd_algorithm__, self.pid))
-"""

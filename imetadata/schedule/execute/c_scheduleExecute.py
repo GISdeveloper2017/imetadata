@@ -3,6 +3,7 @@
 # @Author : 王西亚 
 # @File : c_scheduleExecute.py
 from imetadata.base.c_json import CJson
+from imetadata.base.c_logger import CLogger
 from imetadata.base.c_object import CObject
 from imetadata.base.c_sys import CSys
 from abc import abstractmethod
@@ -23,7 +24,7 @@ class CScheduleExecute:
     __schedule_id__: str = None
     __schedule_trigger__: str = None
     __schedule_algorithm__: str = None
-    __schedule_params__: str = None
+    __schedule_params__ = None
 
     def __init__(self, schedule_id, schedule_trigger, schedule_algorithm, schedule_params=None):
         self.__schedule_id__ = schedule_id

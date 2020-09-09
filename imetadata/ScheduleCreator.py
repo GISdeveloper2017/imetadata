@@ -8,7 +8,7 @@ from imetadata.base.c_logger import CLogger
 
 
 def start_schedule_creator():
-    runner = CControlCenterExecute('0', CControlCenterExecute.TRIGGER_TYPE_DB_QUEUE, 'job_command_runner', '{"test":"1"}')
+    runner = CControlCenterExecute('0', CControlCenterExecute.TRIGGER_TYPE_DB_QUEUE, 'job_command_runner')
     runner.start()
 
 

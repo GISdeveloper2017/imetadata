@@ -3,6 +3,7 @@
 # @Author : 王西亚 
 # @File : c_job.py
 from imetadata.base.c_json import CJson
+from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CMetaDataUtils
 from abc import abstractmethod
 
@@ -25,9 +26,9 @@ class CJob:
     Job_Params_DB_Server_ID = 'db_server_id'
 
     __id__: str = None
-    __params__: str = None
+    __params__ = None
 
-    def __init__(self, job_id: str, job_params: str):
+    def __init__(self, job_id: str, job_params):
         self.__id__ = job_id
         self.__params__ = job_params
         self.custom_init()
@@ -39,7 +40,10 @@ class CJob:
         :param default_value:
         :return:
         """
-        return CJson().json_attr_value(self.__params__, '{0}.{1}'.format(self.NAME_JOB, attr_name), default_value)
+        if self.__params__ is None:
+            return default_value
+        else:
+            return CJson().json_attr_value(self.__params__, '{0}.{1}'.format(self.NAME_JOB, attr_name), default_value)
 
     @abstractmethod
     def execute(self) -> str:

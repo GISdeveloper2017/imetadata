@@ -121,12 +121,17 @@ create index if not exists idx_sch_center_mission_processid
 create index if not exists idx_sch_center_mission_status
 	on sch_center_mission (scmstatus);
 
+/*
+    测试任务
+*/
+
+delete from sch_center_mission where scmid = 'test';
 insert into sch_center_mission(
     scmid, scmtitle, scmcommand, scmstatus, scmprocessid
     , scmtrigger, scmalgorithm, scmParams
     , scmlastmodifytime, scmmemo, scmcenterid) values(
     'test', '测试', null, 0, null
-    , 'db_queue', 'dm2_storage_parser', '{"parallel_count": 3}'::json
+    , 'db_queue', 'job_dm2_storage_parser', '{"process": {"parallel_count": 1}}'::json
     , now(), null, '1'
     );
 
@@ -136,16 +141,17 @@ insert into sch_center_mission(
     .开始测试调度系统的运行情况, 增加对调度的启动, 停止, 加速, 减速等任务
 */
 
+
 --启动指定调度
 update sch_center_mission
-set scmcommand = 'start',  scmstatus = 1, scmparallelcount = 3, scmprocessid = null
+set scmcommand = 'start',  scmstatus = 1, scmprocessid = null
 where scmid = 'test';
 
 --停止指定调度
 update sch_center_mission
-set scmcommand = 'should_stop',  scmstatus = 1, scmprocessid = null
+set scmcommand = 'stop',  scmstatus = 1, scmprocessid = null
 where scmid = 'test';
 
 --退出服务
 update sch_center_mission
-set scmstatus = 0, scmparallelcount = -1, scmprocessid = null;
+set scmstatus = 0, scmcommand = 'shutdown';

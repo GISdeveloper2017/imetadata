@@ -3,7 +3,6 @@
 # @Author : 王西亚 
 # @File : c_controlCenter.py
 
-from imetadata.base.c_json import CJson
 from imetadata.base.c_processUtils import CProcessUtils
 from multiprocessing import Process, Semaphore, Queue, Lock, Event, Pool, Manager
 import time
@@ -179,7 +178,7 @@ class CControlCenter(CProcess):
         cmd_params = command.get(self.NAME_CMD_PARAMS, '')
         CLogger().info('调度{0}.{1}.{2}的调度参数为[{3}]...'.format(cmd_id, cmd_title, cmd_algorithm, cmd_params))
 
-        cmd_parallel_count = CJson.json_attr_value(cmd_params, self.Name_Parallel_Count, 1)
+        cmd_parallel_count = super().params_value_by_name(cmd_params, self.Name_Parallel_Count, 1)
         CLogger().info('调度{0}.{1}.{2}的调度并行个数为{3}...'.format(cmd_id, cmd_title, cmd_algorithm, cmd_parallel_count))
 
         if cmd_parallel_count <= 0:
@@ -224,7 +223,6 @@ class CControlCenter(CProcess):
         """
         处理发来的停止命令
 
-        todo 这里使用了阻塞模式, 会导致永久停止等待子进程退出, 无法处理后面的强制停止模式!!!可以考虑将等待状态的处理放在哨兵进程中
         :param command:
         :return:
         """
@@ -252,30 +250,9 @@ class CControlCenter(CProcess):
             stop_event = control_center_object.get(self.NAME_STOP_EVENT, None)
             if stop_event is not None:
                 stop_event.set()
-                CLogger().info('调度{0}.{1}的进程池中所有进程退出的信号已发出...'.format(cmd_id, cmd_title))
-
-            # 等待进程池全部退出
-            while True:
-                CLogger().info('检查调度{0}.{1}的进程池中所有进程是否都已经退出...'.format(cmd_id, cmd_title))
-                all_subprocess_closed = True
-                subprocess_list = control_center_object.get(self.NAME_SUBPROCESS_LIST)
-                if subprocess_list is None:
-                    break
-
-                for subproc_id in subprocess_list:
-                    if CProcessUtils.process_id_exist(subproc_id):
-                        CLogger().info('检查调度{0}.{1}的进程池中进程{2}仍然在运行...'.format(cmd_id, cmd_title, subproc_id))
-                        all_subprocess_closed = False
-
-                if all_subprocess_closed:
-                    CLogger().info('检查调度{0}.{1}的进程池中所有进程都已经不在...'.format(cmd_id, cmd_title))
-                    break
-                else:
-                    time.sleep(1)
-                    CLogger().info('检查调度{0}.{1}的进程池中还有进程正在运行, 等待中...'.format(cmd_id, cmd_title))
-
-            CLogger().info('调度{0}.{1}的进程池中所有进程均已退出...'.format(cmd_id, cmd_title))
-            self.__control_center_objects__.pop(cmd_id)
+                CLogger().info('调度{0}.{1}的进程池中所有进程退出的信号已发出, 进程池的检查和关闭, 将在哨兵进程中处理...'.format(cmd_id, cmd_title))
+            else:
+                CLogger().info('调度{0}.{1}的进程池退出信号灯已经无效, 进程池的检查和关闭, 将在哨兵进程中处理...'.format(cmd_id, cmd_title))
         finally:
             self.__control_center_objects_locker__.release()
             CLogger().info('控制中心已经停止调度[{0}.{1}]'.format(cmd_id, cmd_title))

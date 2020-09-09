@@ -19,6 +19,8 @@
 from __future__ import absolute_import
 import demjson
 import jsonpath
+
+from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CMetaDataUtils
 
 
@@ -85,7 +87,7 @@ class CJson:
             return result_list
 
     @classmethod
-    def json_attr_value(cls, json_text: str, json_path_str: str, attr_value_default) -> any:
+    def json_attr_value(cls, json_text, json_path_str: str, attr_value_default) -> any:
         """
         获取一个属性的值, 如果属性不存在, 则返回默认值
 
@@ -96,9 +98,11 @@ class CJson:
         """
         if json_text is None:
             return attr_value_default
-        elif json_text.strip() == '':
-            return attr_value_default
         else:
             json = CJson()
-            json.load_json_text(json_text)
-            return json.xpath_one(json_path_str, attr_value_default)
+            CLogger().debug('Json解析{0}'.format(json_text))
+            try:
+                json.load_json_text(json_text)
+                return json.xpath_one(json_path_str, attr_value_default)
+            except Exception as err:
+                return attr_value_default

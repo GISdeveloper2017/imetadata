@@ -26,9 +26,9 @@ class CDBQueueScheduleExecute(CScheduleExecute):
     def start(self):
         schedule = self.get_or_create_sch_job()
         if schedule is None:
+            CLogger().warning('无法创建Job对象: {0}.{1}.{2}'.format(self.__schedule_id__, self.__schedule_trigger__, self.__schedule_algorithm__))
             return
 
-        CLogger().info(schedule.__params__)
         schedule.before_execute()
         schedule.abnormal_mission_restart()
         while True:

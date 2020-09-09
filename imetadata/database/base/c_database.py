@@ -12,9 +12,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import urllib.parse
+
+from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.base.core.Exceptions import *
 from sqlalchemy.engine import Engine
 from imetadata.database.base.c_dataset import CDataSet
+from sqlalchemy import text
 
 
 class CDataBase:
@@ -51,13 +54,30 @@ class CDataBase:
     def db_connection(self):
         return ''
 
+    def __prepare_params_of_execute_sql__(self, engine, sql, params):
+        if params is None:
+            return None
+        else:
+            statement = text(sql)
+            exe_params = statement.compile(engine).params
+            new_params = {}
+            exe_params_names = exe_params.keys()
+            new_params = dict()
+            for exe_param_name in exe_params_names:
+                exe_param_value = CMetaDataUtils.dict_value_by_name(params, exe_param_name)
+                if exe_param_value is not None:
+                    new_params[exe_param_name] = str(exe_param_value)
+                else:
+                    new_params[exe_param_name] = None
+            return new_params
+
     def one_row(self, sql, params=None) -> CDataSet:
         eng = self.engine()
         try:
             session_maker = sessionmaker(bind=eng)
             session = session_maker()
             try:
-                cursor = session.execute(sql, params)
+                cursor = session.execute(sql, self.__prepare_params_of_execute_sql__(eng, sql, params))
                 data = cursor.fetchone()
                 if data is None:
                     return CDataSet()
@@ -75,7 +95,7 @@ class CDataBase:
             session_maker = sessionmaker(bind=eng)
             session = session_maker()
             try:
-                cursor = session.execute(sql, params)
+                cursor = session.execute(sql, self.__prepare_params_of_execute_sql__(eng, sql, params))
                 data = cursor.fetchall()
                 return CDataSet(data)
             except:
@@ -91,7 +111,7 @@ class CDataBase:
             session_maker = sessionmaker(bind=eng)
             session = session_maker()
             try:
-                cursor = session.execute(sql, params)
+                cursor = session.execute(sql, self.__prepare_params_of_execute_sql__(eng, sql, params))
                 session.commit()
                 return True
             except Exception as ee:

@@ -36,18 +36,19 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
      |  ----  | ----  |
      |db_queue|jbo_dm2_storage_parser|
 
-1. scmParams是具体任务执行的参数, 格式为Json, 根据不同的scmTrigger, 参数可以进行自定义:
+1. scmParams是具体任务执行的参数, 格式为Json, 根据不同的scmTrigger, 参数可以进行自定义, 多个参数, 可以结合:
 
      |scmTrigger|scmParams|说明|样例|
      |  ----  | ----  | ----  | ----  |
-     |interval|start_date|可选, 任务调度的有效开始时间|{"trigger": {"start_date": "2020-01-01 11:11:11"}|
-     |interval|end_date|可选, 任务调度的有效结束时间|{"trigger": {"end_date": "2020-01-20 11:11:11"}|
-     |interval|seconds|可选, 但是下面的时间间隔至少有一个!, 每隔x秒执行一次|{"trigger": {"seconds": 30}|
-     |interval|minutes|可选, 每隔x分钟执行一次|{"trigger": {"minutes": 30}|
-     |interval|hours|可选, 每隔x小时执行一次|{"trigger": {"hours": 2}|
-     |interval|days|可选, 每隔x小时执行一次|{"trigger": {"days": 2}|
-     |interval|weeks|可选, 每隔x星期执行一次|{"trigger": {"weeks": 2}|
-     |db_queue|db_server_id|数据库队列, 引用的数据库的标识, 该标识在settings.py中定义|{"job": {"db_server_id": 2}|
+     |interval|trigger.start_date|可选, 任务调度的有效开始时间|{"trigger": {"start_date": "2020-01-01 11:11:11"}}|
+     |interval|trigger.end_date|可选, 任务调度的有效结束时间|{"trigger": {"end_date": "2020-01-20 11:11:11"}}|
+     |interval|trigger.seconds|可选, 但是下面的时间间隔至少有一个!, 每隔x秒执行一次|{"trigger": {"seconds": 30}}|
+     |interval|trigger.minutes|可选, 每隔x分钟执行一次|{"trigger": {"minutes": 30}}|
+     |interval|trigger.hours|可选, 每隔x小时执行一次|{"trigger": {"hours": 2}}|
+     |interval|trigger.days|可选, 每隔x小时执行一次|{"trigger": {"days": 2}}|
+     |interval|trigger.weeks|可选, 每隔x星期执行一次|{"trigger": {"weeks": 2}}|
+     |db_queue|job.db_server_id|数据库队列, 引用的数据库的标识, 该标识在settings.py中定义|{"job": {"db_server_id": 2}}|
+     |db_queue|process.parallel_count|数据库队列, 引用的数据库的标识, 该标识在settings.py中定义|{"process": {"parallel_count": 1}}|
 
 
 # RoadMap

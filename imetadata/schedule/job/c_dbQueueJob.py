@@ -14,7 +14,7 @@ class CDBQueueJob(CJob):
 
     def custom_init(self):
         super().custom_init()
-        self.__mission_db_id__ = super().params_value_by_name(self.Job_Params_DB_Server_ID, '0')
+        self.__mission_db_id__ = str(super().params_value_by_name(self.Job_Params_DB_Server_ID, '0'))
 
     def get_mission_db_id(self) -> str:
         return self.__mission_db_id__

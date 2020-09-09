@@ -235,7 +235,6 @@ CREATE TABLE public.dm2_storage_directory
     dsdaddtime timestamp(6) without time zone DEFAULT now(),
     dsdlastmodifytime timestamp(6) without time zone,
     dsddirectoryname character varying(1000) COLLATE pg_catalog."default",
-    dsdmetadata json,
     dsd_object_type character varying(100) COLLATE pg_catalog."default",
     dsd_object_confirm integer DEFAULT 0,
     dsd_object_id character varying(200) COLLATE pg_catalog."default",
@@ -286,9 +285,6 @@ COMMENT ON COLUMN public.dm2_storage_directory.dsdlastmodifytime
 
 COMMENT ON COLUMN public.dm2_storage_directory.dsddirectoryname
     IS '目录名称 dir2 ';
-
-COMMENT ON COLUMN public.dm2_storage_directory.dsdmetadata
-    IS '元数据图层格式化（gdb\mdb）';
 
 COMMENT ON COLUMN public.dm2_storage_directory.dsd_object_type
     IS '数据对象类型';

@@ -5,6 +5,8 @@
 # @File : job_dm2_storage_parser.py
 
 from __future__ import absolute_import
+
+from imetadata.base.c_file import CFile
 from imetadata.base.core.Exceptions import DBException
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.database.c_factory import CFactory
@@ -40,9 +42,34 @@ where dstscanstatus = 2
 
     def process_mission(self, dataset):
         storage_id = dataset.value_by_name(0, 'root_directory_id', '')
-        CLogger().debug('storage_id: {0}'.format(storage_id))
+        storage_root_path = dataset.value_by_name(0, 'root_directory', '')
 
-        process_sql = '''
+        CLogger().debug('storage_id: {0}'.format(storage_id))
+        sql_check_root_storage_dir_exist = '''
+        select dsdid
+        from dm2_storage_directory
+        where dsdStorageId = '{0}' and dsdid = '{0}'
+        '''.format(storage_id)
+
+        sql_update_root_storage_dir = '''
+        update dm2_storage_directory
+        set dsdParentID = '-1', dsdDirectory = '', dsdDirtype = 3
+            , dsdDirectoryName = '', dsdPath = ''
+            , dsdDirCreateTime = :dsddircreatetime, dsdDirLastModifyTime = :dsddirlastmodifytime
+            , dsdLastModifyTime = Now()
+        where dsdStorageId = '{0}' and dsdid = '{0}'
+        '''.format(storage_id)
+
+        sql_insert_root_storage_dir = '''
+        insert into dm2_storage_directory(
+            dsdid, dsdparentid, dsdstorageid, dsddirectory, dsddirtype, dsdlastmodifytime
+            , dsddirectoryname, dsd_directory_valid, dsdpath, dsddircreatetime, dsddirlastmodifytime)
+        values('{0}', '-1', '{0}', '', 3, Now()
+            , '', -1, '', :dsddircreatetime, :dsddirlastmodifytime
+        )
+        '''.format(storage_id)
+
+        sql_on_mission_finished = '''
 update dm2_storage 
 set dstscanstatus = 0
 where dstid = '{0}'
@@ -51,8 +78,17 @@ where dstid = '{0}'
         try:
             factory = CFactory()
             db = factory.give_me_db(self.get_mission_db_id())
-            db.execute(process_sql)
-        except DBException as err:
-            pass
+            params = dict()
+            if CFile.file_or_path_exist(storage_root_path):
+                params['dsddircreatetime'] = CFile.file_modify_time(storage_root_path)
+                params['dsddirlastmodifytime'] = CFile.file_modify_time(storage_root_path)
 
-        return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '测试成功')
+            if db.if_exists(sql_check_root_storage_dir_exist):
+                db.execute(sql_update_root_storage_dir, params)
+            else:
+                db.execute(sql_insert_root_storage_dir, params)
+
+            db.execute(sql_on_mission_finished)
+            return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '存储扫描处理成功')
+        except DBException as err:
+            return CMetaDataUtils.merge_result(CMetaDataUtils.Exception, '存储扫描失败, 原因为{0}'.format(err.__str__()))
