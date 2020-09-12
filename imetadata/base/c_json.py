@@ -106,3 +106,10 @@ class CJson:
                 return json.xpath_one(json_path_str, attr_value_default)
             except Exception as err:
                 return attr_value_default
+
+    @classmethod
+    def json_join(cls, json_path: str, *json_suffix) -> str:
+        result_path = json_path
+        for suffix in json_suffix:
+            result_path = '{0}.{1}'.format(result_path, suffix)
+        return result_path

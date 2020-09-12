@@ -53,7 +53,7 @@ where dstscanstatus = 2
 
         sql_update_root_storage_dir = '''
         update dm2_storage_directory
-        set dsdParentID = '-1', dsdDirectory = '', dsdDirtype = 3
+        set dsdParentID = '-1', dsdDirectory = '', dsdDirtype = :dsdDirType
             , dsdDirectoryName = '', dsdPath = ''
             , dsdDirCreateTime = :dsddircreatetime, dsdDirLastModifyTime = :dsddirlastmodifytime
             , dsdLastModifyTime = Now()
@@ -64,7 +64,7 @@ where dstscanstatus = 2
         insert into dm2_storage_directory(
             dsdid, dsdparentid, dsdstorageid, dsddirectory, dsddirtype, dsdlastmodifytime
             , dsddirectoryname, dsd_directory_valid, dsdpath, dsddircreatetime, dsddirlastmodifytime)
-        values('{0}', '-1', '{0}', '', 3, Now()
+        values('{0}', '-1', '{0}', '', :dsdDirType, Now()
             , '', -1, '', :dsddircreatetime, :dsddirlastmodifytime
         )
         '''.format(storage_id)
@@ -79,6 +79,7 @@ where dstid = '{0}'
             factory = CFactory()
             db = factory.give_me_db(self.get_mission_db_id())
             params = dict()
+            params['dsdDirType'] = self.Dir_Type_Root
             if CFile.file_or_path_exist(storage_root_path):
                 params['dsdDirCreateTime'] = CFile.file_modify_time(storage_root_path)
                 params['dsddirlastmodifytime'] = CFile.file_modify_time(storage_root_path)

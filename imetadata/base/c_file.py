@@ -5,6 +5,8 @@
 from __future__ import absolute_import
 import os
 import time
+import glob
+from fnmatch import fnmatch, fnmatchcase
 
 
 class CFile:
@@ -59,6 +61,14 @@ class CFile:
         return os.listdir(path)
 
     @classmethod
+    def search_file_or_subpath_of_path(cls, path: str, match_str: str, recursive: bool) -> list:
+        return glob.glob(cls.join_file(path, match_str), recursive)
+
+    @classmethod
+    def join_file(cls, path, file_name: str) -> str:
+        return os.path.join(path, file_name)
+
+    @classmethod
     def remove_file(cls, file_name_with_path: str):
         os.remove(file_name_with_path)
 
@@ -75,6 +85,14 @@ class CFile:
         return time.strftime(time_format_str, time.localtime(os.path.getmtime(file_name_with_path)))
 
     @classmethod
+    def file_create_time(cls, file_name_with_path: str, time_format_str: str = '%Y-%m-%d %H:%M:%S'):
+        return time.strftime(time_format_str, time.localtime(os.path.getctime(file_name_with_path)))
+
+    @classmethod
+    def file_access_time(cls, file_name_with_path: str, time_format_str: str = '%Y-%m-%d %H:%M:%S'):
+        return time.strftime(time_format_str, time.localtime(os.path.getatime(file_name_with_path)))
+
+    @classmethod
     def file_size(cls, file_name_with_path: str):
         return os.path.getsize(file_name_with_path)
 
@@ -89,6 +107,10 @@ class CFile:
     @classmethod
     def file_or_path_exist(cls, dir_name_with_path: str):
         return os.path.exists(dir_name_with_path)
+
+    @classmethod
+    def file_match(cls, file_name_with_path: str, pattern: str):
+        return fnmatch(file_name_with_path, pattern)
 
 
 if __name__ == '__main__':

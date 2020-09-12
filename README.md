@@ -51,13 +51,13 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 
 
 # RoadMap
-1. 完成
+1. 进度报告
 
      |进度|开发人|类型|算法|说明|
      |  ----  |  ----  |  ----  | ----  | ----  |
      | 已完成 |wangxy|db_queue|job_dm_root_parser|根目录扫描调度, 处理dm2_storage表队列, dsStatus:0->1->2->0|
-     | 建设中 |wangxy|db_queue|job_dm_path2object|目录识别对象调度, 处理dm2_storage_directory表队列, dsScanStatus:0->1->2->0|
-     | 建设中 |zhaoyf|db_queue|job_dm_path_parser|目录下的子目录扫描调度, 处理dm2_storage_directory表队列, dsScanFileStatus:0->1->2->0|
+     | 建设中 |zhaoyf|db_queue|job_dm_path2object|目录识别对象调度, 处理dm2_storage_directory表队列, dsScanStatus:0->1->2->0|
+     | 建设中 |wangxy|db_queue|job_dm_path_parser|目录下的子目录扫描调度, 处理dm2_storage_directory表队列, dsScanFileStatus:0->1->2->0|
 
 
 # 2020-09-05

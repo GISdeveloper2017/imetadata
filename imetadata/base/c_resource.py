@@ -38,3 +38,14 @@ class CResource:
     Name_Process = 'process'
 
     Status_Finish = 0
+
+    Name_White_List = 'white_list'
+    Name_Black_List = 'black_list'
+
+    Name_Filter = 'filter'
+    Name_Directory = 'directory'
+    Name_File = 'file'
+
+    Dir_Type_Directory = 1
+    Dir_Type_VirtualDirectory = 2
+    Dir_Type_Root = 3
