@@ -21,14 +21,26 @@ class CDBQueueJob(CJob):
 
     @abstractmethod
     def get_mission_seize_sql(self) -> str:
+        """
+        任务捕捉使用的sql
+        :return:
+        """
         return None
 
     @abstractmethod
     def get_mission_info_sql(self) -> str:
+        """
+        任务领取的sql
+        :return:
+        """
         return None
 
     @abstractmethod
     def get_abnormal_mission_restart_sql(self) -> str:
+        """
+        异常任务重启的sql
+        :return:
+        """
         return None
 
     @abstractmethod

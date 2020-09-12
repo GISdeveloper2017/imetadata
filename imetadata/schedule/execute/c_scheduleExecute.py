@@ -5,22 +5,12 @@
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_object import CObject
+from imetadata.base.c_resource import CResource
 from imetadata.base.c_sys import CSys
 from abc import abstractmethod
 
 
-class CScheduleExecute:
-    TRIGGER_TYPE_DB_QUEUE = 'db_queue'
-    TRIGGER_TYPE_DATE = 'date'
-    TRIGGER_TYPE_INTERVAL = 'interval'
-    TRIGGER_TYPE_CRON = 'cron'
-    TRIGGER_TYPE_QUEUE = 'queue'
-    TRIGGER_TYPE_NONE = 'none'
-
-    TRIGGER_Params = 'trigger'
-
-    TRIGGER_Interval_Params_Seconds = 'seconds'
-
+class CScheduleExecute(CResource):
     __schedule_id__: str = None
     __schedule_trigger__: str = None
     __schedule_algorithm__: str = None

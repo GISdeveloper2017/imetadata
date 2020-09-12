@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 # @Time : 2020/8/12 17:28
 # @Author : 王西亚
-# @File : job_dm2_storage_parser.py
+# @File : job_dm_root_parser.py
 
 from __future__ import absolute_import
 
@@ -14,7 +14,7 @@ from imetadata.schedule.job.c_dbQueueJob import CDBQueueJob
 from imetadata.base.c_logger import CLogger
 
 
-class job_dm2_storage_parser(CDBQueueJob):
+class job_dm_root_parser(CDBQueueJob):
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage 
@@ -80,7 +80,7 @@ where dstid = '{0}'
             db = factory.give_me_db(self.get_mission_db_id())
             params = dict()
             if CFile.file_or_path_exist(storage_root_path):
-                params['dsddircreatetime'] = CFile.file_modify_time(storage_root_path)
+                params['dsdDirCreateTime'] = CFile.file_modify_time(storage_root_path)
                 params['dsddirlastmodifytime'] = CFile.file_modify_time(storage_root_path)
 
             if db.if_exists(sql_check_root_storage_dir_exist):
@@ -92,3 +92,11 @@ where dstid = '{0}'
             return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '存储扫描处理成功')
         except DBException as err:
             return CMetaDataUtils.merge_result(CMetaDataUtils.Exception, '存储扫描失败, 原因为{0}'.format(err.__str__()))
+
+
+if __name__ == '__main__':
+    """
+    Job对象的简洁测试模式
+    创建时, 以sch_center_mission表的scmid, scmParams的内容初始化即可, 调用其execute方法, 即是一次并行调度要运行的主要过程
+    """
+    job_dm_root_parser('', '').execute()

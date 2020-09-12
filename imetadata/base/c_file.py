@@ -55,8 +55,8 @@ class CFile:
             return file_name_with_path
 
     @classmethod
-    def file_of_path(cls, file_name_with_path: str) -> list:
-        return os.listdir(file_name_with_path)
+    def file_or_subpath_of_path(cls, path: str) -> list:
+        return os.listdir(path)
 
     @classmethod
     def remove_file(cls, file_name_with_path: str):

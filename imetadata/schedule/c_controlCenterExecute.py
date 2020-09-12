@@ -13,9 +13,9 @@ class CControlCenterExecute(CDBQueueScheduleExecute):
         sql = '''
         select scmid
         from sch_center_mission
-        where scmcommand <> 'shutdown' or scmstatus <> 0
+        where scmcommand <> '{0}' or scmstatus <> {1}
         limit 1
-        '''
+        '''.format(self.CMD_SHUTDOWN, self.Status_Finish)
 
         try:
             factory = CFactory()

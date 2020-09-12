@@ -1746,3 +1746,109 @@ COMMENT ON COLUMN public.dm2_storage_object.dsometadata_bus_parsememo IS '业务
 alter table dm2_storage_object add column dsometadata_bus_parsestatus integer DEFAULT 1;
 COMMENT ON COLUMN public.dm2_storage_object.dsometadata_bus_parsestatus IS '元数据提取状态;0-完成;1-待提取;2-提取中;3-提取有误';
 
+/*
+    2020-09-01
+    支持即时服务产品, dm2_storage_object_def中扩展对业务数据集类型的支持
+*/
+
+ALTER TABLE public.dm2_storage_object_def
+    ADD COLUMN dsodcode character varying(100) COLLATE pg_catalog."default";
+
+COMMENT ON COLUMN public.dm2_storage_object_def.dsodcode IS '类型编码';
+
+ALTER TABLE public.dm2_storage_object_def ADD COLUMN dsocatalog integer;
+
+COMMENT ON COLUMN public.dm2_storage_object_def.dsocatalog IS '数据类别：0-普通 1-业务单体 2-业务数据集';
+
+ALTER TABLE public.dm2_storage_object
+    ADD COLUMN dsolastprocess_starttime timestamp(6) without time zone;
+
+COMMENT ON COLUMN public.dm2_storage_object.dsolastprocess_starttime
+    IS '任务领取时间';
+
+
+ALTER TABLE public.dm2_storage_object ADD COLUMN dsolastprocess_endtime timestamp without time zone;
+
+COMMENT ON COLUMN public.dm2_storage_object.dsolastprocess_endtime IS '任务处理完成时间';
+
+
+ALTER TABLE public.dm2_storage_object ADD COLUMN dsolastprocess_status character varying(5) COLLATE pg_catalog."default" DEFAULT 3;
+
+COMMENT ON COLUMN public.dm2_storage_object.dsolastprocess_status
+    IS '元数据信息同步状态,0-完成;01-完成，业务元数据异常;02-完成,空间信息异常;03-完成,业务元数据和空间信息异常;04-完成,其他信息异常;1-处理中;2-处理异常;3-处理默认值未处理';
+
+
+/*
+    2020-09-09
+    支持数据规则自定义模式, 支持对特定的目录, 自定义数据扫描规则
+*/
+
+ALTER TABLE public.dm2_storage_directory
+    ADD COLUMN dsdscanrule xml;
+
+COMMENT ON COLUMN public.dm2_storage_directory.dsdscanrule
+    IS '扫描的规则-metadata.rule文件内容';
+
+
+/*
+    2020-09-09
+    考虑为用户提供更加丰富的功能, 特扩展storage, directory, file, object等表结构
+*/
+
+
+alter table dm2_storage add column dst_volumn_max bigint default 0;
+COMMENT ON COLUMN dm2_storage.dst_volumn_max IS '存储-容积-最大值';
+alter table dm2_storage add column dst_volumn_warn bigint default 0;
+COMMENT ON COLUMN dm2_storage.dst_volumn_warn IS '存储-容积-警告值';
+alter table dm2_storage add column dst_volumn_now bigint default 0;
+COMMENT ON COLUMN dm2_storage.dst_volumn_now IS '存储-容积-当前值';
+
+
+alter table dm2_storage_directory add column dsd_volumn_now bigint default 0;
+COMMENT ON COLUMN dm2_storage_directory.dsd_volumn_now IS '存储-容积-当前值';
+
+
+alter table dm2_storage_object add column dso_volumn_now bigint default 0;
+COMMENT ON COLUMN dm2_storage_object.dso_volumn_now IS '存储-容积-当前值';
+
+-- Table: public.dm2_storage_object_spatial
+
+-- DROP TABLE public.dm2_storage_object_spatial;
+
+CREATE TABLE public.dm2_storage_object_spatial
+(
+    dsos_id character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    dsos_geo_bb_native geometry,
+    dsos_geo_native geometry,
+    dsos_center_native geometry,
+
+    dsos_geo_bb_wgs84 geometry,
+    dsos_geo_wgs84 geometry,
+    dsos_center_wgs84 geometry,
+
+    area double precision default 0.0,
+    length bigint default 0,
+
+    CONSTRAINT dm2_storage_object_spatial_pkey PRIMARY KEY (dsos_id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.dm2_storage_object_spatial
+    OWNER to postgres;
+COMMENT ON TABLE public.dm2_storage_object_spatial
+    IS '数管-对象-空间';
+
+COMMENT ON COLUMN public.dm2_storage_object_spatial.dsos_id IS '对象标识';
+COMMENT ON COLUMN public.dm2_storage_object_spatial.dsos_geo_bb_native IS '对象-原始-外包框';
+COMMENT ON COLUMN public.dm2_storage_object_spatial.dsos_geo_native IS '对象-原始-外边框';
+COMMENT ON COLUMN public.dm2_storage_object_spatial.dsos_center_native IS '对象-原始-中心点';
+COMMENT ON COLUMN public.dm2_storage_object_spatial.dsos_geo_bb_wgs84 IS '对象-WGS84-外包框';
+COMMENT ON COLUMN public.dm2_storage_object_spatial.dsos_geo_wgs84 IS '对象-WGS84-外边框';
+COMMENT ON COLUMN public.dm2_storage_object_spatial.dsos_center_wgs84 IS '对象-WGS84-中心点';
+
+COMMENT ON COLUMN public.dm2_storage_object_spatial.area IS '面积';
+COMMENT ON COLUMN public.dm2_storage_object_spatial.length IS '长度';
+

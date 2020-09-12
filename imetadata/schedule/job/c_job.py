@@ -4,31 +4,17 @@
 # @File : c_job.py
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
+from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CMetaDataUtils
 from abc import abstractmethod
 
 
-class CJob:
-    SYSTEM_NAME_MISSION_ID = '{system.mission.id}'
-
-    NAME_CMD_COMMAND = 'cmd_command'
-    NAME_CMD_ID = 'cmd_id'
-    NAME_CMD_TITLE = 'cmd_title'
-    NAME_CMD_TRIGGER = 'cmd_trigger'
-    NAME_CMD_ALGORITHM = 'cmd_algorithm'
-    NAME_CMD_PARAMS = 'cmd_params'
-
-    NAME_JOB = 'job'
-
-    CMD_START = 'start'
-    CMD_STOP = 'stop'
-
-    Job_Params_DB_Server_ID = 'db_server_id'
+class CJob(CResource):
 
     __id__: str = None
-    __params__ = None
+    __params__: str = None
 
-    def __init__(self, job_id: str, job_params):
+    def __init__(self, job_id: str, job_params: str):
         self.__id__ = job_id
         self.__params__ = job_params
         self.custom_init()
