@@ -10,11 +10,11 @@ from imetadata.base.c_file import CFile
 from imetadata.base.core.Exceptions import DBException
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.database.c_factory import CFactory
-from imetadata.schedule.job.c_dbQueueJob import CDBQueueJob
+from imetadata.job.db_queue.c_dmBaseJob import CDMBaseJob
 from imetadata.base.c_logger import CLogger
 
 
-class job_dm_root_parser(CDBQueueJob):
+class job_dm_root_parser(CDMBaseJob):
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage 

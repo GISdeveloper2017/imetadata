@@ -10,11 +10,11 @@ from imetadata.base.c_json import CJson
 from imetadata.base.core.Exceptions import DBException
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.database.c_factory import CFactory
-from imetadata.schedule.job.c_dbQueueJob import CDBQueueJob
 from imetadata.base.c_logger import CLogger
+from imetadata.job.db_queue.c_dmBaseJob import CDMBaseJob
 
 
-class job_dm_path_parser(CDBQueueJob):
+class job_dm_path_parser(CDMBaseJob):
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage_directory 
@@ -75,7 +75,7 @@ where dsdscandirstatus = 2
             for file_name in file_list:
                 file_name_with_path = CFile.join_file(ds_subpath, file_name)
                 ds_path_with_relation_path = CFile.file_relation_path(file_name_with_path, ds_root_path)
-                if self.bus_white_black_valid(ds_path_with_relation_path, ds_storage_option,
+                if super().bus_white_black_valid(ds_path_with_relation_path, ds_storage_option,
                                               CFile.is_dir(file_name_with_path)):
                     if CFile.is_dir(file_name_with_path):
                         CLogger().debug('发现子目录: {0}'.format(file_name_with_path))
@@ -175,38 +175,6 @@ where dsddirectory = :dsdDirectory and dsdstorageid = :dsdStorageID
         :return:
         """
         pass
-
-    def bus_white_black_valid(self, ds_path_with_relation_path, ds_storage_option, is_dir: bool):
-        if ds_storage_option == '' or ds_storage_option is None:
-            return True
-
-        dir_filter_white_list = CJson.json_attr_value(ds_storage_option,
-                                                      CJson.json_join(self.Name_Filter, self.Name_Directory,
-                                                                      self.Name_White_List), '')
-        dir_filter_black_list = CJson.json_attr_value(ds_storage_option,
-                                                      CJson.json_join(self.Name_Filter, self.Name_Directory,
-                                                                      self.Name_Black_List), '')
-        file_filter_white_list = CJson.json_attr_value(ds_storage_option,
-                                                       CJson.json_join(self.Name_Filter, self.Name_File,
-                                                                       self.Name_White_List), '')
-        file_filter_black_list = CJson.json_attr_value(ds_storage_option,
-                                                       CJson.json_join(self.Name_Filter, self.Name_File,
-                                                                       self.Name_Black_List), '')
-
-        if is_dir:
-            if dir_filter_white_list != '':
-                return CFile.file_match(ds_path_with_relation_path, dir_filter_white_list)
-            elif dir_filter_black_list != '':
-                return not CFile.file_match(ds_path_with_relation_path, dir_filter_black_list)
-            else:
-                return True
-        else:
-            if file_filter_white_list != '':
-                return CFile.file_match(ds_path_with_relation_path, file_filter_white_list)
-            elif file_filter_black_list != '':
-                return not CFile.file_match(ds_path_with_relation_path, file_filter_black_list)
-            else:
-                return True
 
 
 if __name__ == '__main__':
