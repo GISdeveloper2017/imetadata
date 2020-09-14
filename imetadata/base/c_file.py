@@ -114,6 +114,8 @@ class CFile:
 
 
 if __name__ == '__main__':
+    print('文件:{0}'.format(CFile.join_file(r'/Users/Clare', '')))
+
     # print(CFile.file_main_name(r'/Users/Clare/gf1.tar.gz', 'tar.gz'))
     # print(CFile.file_relation_path(r'/Users/Users/Clare/gf1.tar.gz', '/Users'))
     # file_name = '/Users/wangxiya/Documents/我的文稿/私人/我的/重要/ADSL.docx'
@@ -125,5 +127,5 @@ if __name__ == '__main__':
     #     print('修改时间:{0}'.format(CFile.file_modify_time(file_name)))
     #     print('大小:{0}'.format(CFile.file_size(file_name)))
 
-    for file_or_path in CFile.file_of_path('/Users/wangxiya/Documents/交换/1.给我的/get_luotu'):
-        print(file_or_path)
+    # for file_or_path in CFile.file_of_path('/Users/wangxiya/Documents/交换/1.给我的/get_luotu'):
+    #     print(file_or_path)

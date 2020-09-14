@@ -6,6 +6,7 @@
 from __future__ import absolute_import
 
 from imetadata.base.c_file import CFile
+from imetadata.base.c_xml import CXml
 from imetadata.base.core.Exceptions import DBException
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.database.c_factory import CFactory
@@ -67,27 +68,72 @@ where dsdscanstatus = 2
             ds_subpath = CFile.join_file(dataset.value_by_name(0, 'query_rootpath', ''), ds_subpath)
         CLogger().debug('处理的子目录为: {0}'.format(ds_subpath))
 
-        if CFile.file_or_path_exist(ds_subpath):
-            self.bus_file_and_path_invalid(dataset, ds_subpath)
+        if not CFile.file_or_path_exist(ds_subpath):
+            self.bus_path_invalid(dataset, ds_subpath)
             return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_subpath))
+        else:
+            self.bus_path_valid(dataset, ds_subpath)
 
-    def bus_file_and_path_invalid(self, dataset, ds_subpath):
+    def bus_path_invalid(self, dataset, path_name_with_full_path):
+        """
+        处理目录不存在时的业务
+        :param dataset:
+        :param path_name_with_full_path:
+        :return:
+        """
+        path_name_with_relation_path = dataset.value_by_name(0, 'query_subpath', '')
+        path_name_with_relation_path = CFile.join_file(path_name_with_relation_path, '')
+
+        params = dict()
+        params['dsdStorageID'] = dataset.value_by_name(0, 'query_storage_id', '')
+        params['dsdSubDirectory'] = path_name_with_relation_path
+
+        sql_update_file_invalid = '''
+        update dm2_storage_file
+        set dsffilevalid = 0, dsfscanstatus = 0
+        where dsfdirectoryid in (
+            select dsdid
+            from dm2_storage_directory
+            where dsdstorageid = '1'
+              and dsdstorageid = :dsdStorageID and position(:dsdSubDirectory in dsddirectory) = 1
+        )
+        '''
+
         sql_update_path_invalid = '''
 update dm2_storage_directory
 set dsd_directory_valid = 0, dsdscanstatus = 0, dsdscanfilestatus = 0, dsdscandirstatus = 0
-where dsdid in
-(
-	select A.dsdid from (
-	  with recursive iter as (
-		select * from dm2_storage_directory where dsdid = :dsdid
-		union all 
-		select result.* from dm2_storage_directory as result inner join iter
-		on result.dsdparentid = iter.dsdid
-	 )
-	 select * from iter
-	) a 
-)
+where dsdstorageid = :dsdStorageID and position(:dsdSubDirectory in dsddirectory) = 1
         '''
+
+        CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_file_invalid, params)
+        CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_path_invalid, params)
+
+    def bus_path_valid(self, dataset, path_name_with_full_path):
+        """
+        处理目录存在时的业务:
+        1. 检查目录下是否有metadata.rule
+        :param dataset:
+        :param path_name_with_full_path:
+        :return:
+        """
+
+        params = dict()
+        params['dsdID'] = dataset.value_by_name(0, 'query_dir_id', '')
+        if CFile.file_or_path_exist(CFile.join_file(path_name_with_full_path, 'metadata.rule')):
+            try:
+                params['dsdScanRule'] = CXml.file_2_str(CFile.join_file(path_name_with_full_path, 'metadata.rule'))
+            except:
+                params['dsdScanRule'] = None
+
+        sql_update_path_valid = '''
+        update dm2_storage_directory
+        set dsd_directory_valid = -1, dsdscanrule = :dsdScanRule
+        where dsdid = :dsdID
+        '''
+
+        CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_path_valid, params)
+
+
 
 
 if __name__ == '__main__':

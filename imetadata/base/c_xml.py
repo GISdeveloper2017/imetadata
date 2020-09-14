@@ -235,3 +235,9 @@ class CXml:
         :return:
         """
         return tree.getroot()
+
+    @classmethod
+    def file_2_str(cls, filename) -> str:
+        xml_obj = CXml()
+        xml_obj.load_file(filename)
+        return xml_obj.to_xml()
