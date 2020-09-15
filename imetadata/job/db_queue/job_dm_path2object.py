@@ -7,7 +7,6 @@ from __future__ import absolute_import
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_xml import CXml
-from imetadata.base.core.Exceptions import DBException
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.database.c_factory import CFactory
 from imetadata.base.c_logger import CLogger
@@ -121,7 +120,7 @@ where dsdstorageid = :dsdStorageID and position(:dsdSubDirectory in dsddirectory
         params['dsdID'] = dataset.value_by_name(0, 'query_dir_id', '')
         if CFile.file_or_path_exist(CFile.join_file(path_name_with_full_path, 'metadata.rule')):
             try:
-                params['dsdScanRule'] = CXml.file_2_str(CFile.join_file(path_name_with_full_path, 'metadata.rule'))
+                params['dsdScanRule'] = CXml.file_2_str(CFile.join_file(path_name_with_full_path, self.FileName_MetaData_Rule))
             except:
                 params['dsdScanRule'] = None
 
@@ -132,8 +131,6 @@ where dsdstorageid = :dsdStorageID and position(:dsdSubDirectory in dsddirectory
         '''
 
         CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_path_valid, params)
-
-
 
 
 if __name__ == '__main__':

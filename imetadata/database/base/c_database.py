@@ -7,6 +7,8 @@
 @desc 本模块是一个数据库的操作对象，其中负责数据库的连接池的维护，并设计了基础的数据库处理模式
 @date 2020-06-02
 说明：
+2020-09-15 王西亚
+.增加session的获取, 关闭, 执行sql, 提交和撤销动作, 以支持自定义的数据库事务
 """
 
 from sqlalchemy import create_engine
@@ -18,6 +20,7 @@ from imetadata.base.core.Exceptions import *
 from sqlalchemy.engine import Engine
 from imetadata.database.base.c_dataset import CDataSet
 from sqlalchemy import text
+from sqlalchemy.orm.session import Session
 
 
 class CDataBase:
@@ -123,6 +126,24 @@ class CDataBase:
         finally:
             eng.dispose()
 
+    def execute(self, sql, params=None) -> bool:
+        eng = self.engine()
+        try:
+            session_maker = sessionmaker(bind=eng)
+            session = session_maker()
+            try:
+                cursor = session.execute(sql, self.__prepare_params_of_execute_sql__(eng, sql, params))
+                session.commit()
+                return True
+            except Exception as ee:
+                session.rollback()
+                raise DBSQLExecuteException(self.__db_conn_id__, sql)
+                # print(cursor.lastrowid)
+            finally:
+                session.close()
+        finally:
+            eng.dispose()
+
     def if_exists(self, sql, params=None) -> bool:
         data = self.one_row(sql, params)
         return not data.is_empty()
@@ -132,3 +153,54 @@ class CDataBase:
             return create_engine(self.db_connection(), echo=True, max_overflow=5)
         except:
             raise DBLinkException(self.__db_conn_id__)
+
+    def give_me_session(self, engine_obj: Engine = None):
+        """
+        为了自行控制数据库事务, 这里可以直接创建session
+        :return:
+        """
+        if engine_obj is None:
+            eng = self.engine()
+        else:
+            eng = engine_obj
+        session_maker = sessionmaker(bind=eng)
+        session = session_maker()
+        session.autocommit = False
+        return session
+
+    def session_close(self, session: Session):
+        """
+        session必须手工在finally里关闭
+        :param session:
+        :return:
+        """
+        eng = session.get_bind()
+        session.close()
+        if eng is not None:
+            eng.dispose()
+
+    def session_execute(self, session: Session, sql: str, params=None):
+        """
+        session执行sql
+        :param session:
+        :param sql:
+        :param params:
+        :return:
+        """
+        session.execute(sql, self.__prepare_params_of_execute_sql__(session.get_bind(), sql, params))
+
+    def session_commit(self, session: Session):
+        """
+        session的Commit操作
+        :param session:
+        :return:
+        """
+        session.commit()
+
+    def session_rollback(self, session: Session):
+        """
+        session的rollback操作
+        :param session:
+        :return:
+        """
+        session.rollback()

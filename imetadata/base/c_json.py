@@ -40,7 +40,7 @@ class CJson:
         :param filename:
         :return:
         """
-        self.__json_obj__ = demjson.encode(filename)
+        self.__json_obj__ = demjson.decode_file(filename)
 
     def load_json_text(self, json_content: str):
         """
@@ -59,6 +59,12 @@ class CJson:
         :return:
         """
         self.load_json_text(demjson.encode(obj))
+
+    def to_json(self) -> str:
+        return demjson.encode(self.__json_obj__)
+
+    def to_file(self, filename):
+        demjson.encode_to_file(filename, self.__json_obj__, overwrite=True)
 
     def xpath_one(self, query, attr_value_default) -> any:
         """
@@ -113,3 +119,9 @@ class CJson:
         for suffix in json_suffix:
             result_path = '{0}.{1}'.format(result_path, suffix)
         return result_path
+
+    @classmethod
+    def file_2_str(cls, filename) -> str:
+        json = CJson()
+        json.load_file(filename)
+        return json.to_json()

@@ -49,3 +49,5 @@ class CResource:
     Dir_Type_Directory = 1
     Dir_Type_VirtualDirectory = 2
     Dir_Type_Root = 3
+
+    FileName_MetaData_Rule = 'metadata.rule'
