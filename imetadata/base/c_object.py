@@ -9,6 +9,7 @@ import os
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.base.core.Exceptions import BusinessNotExistException
+from imetadata.business.base.c_plugins import CPlugins
 
 
 class CObject:
@@ -16,7 +17,7 @@ class CObject:
         pass
 
     @classmethod
-    def create_business_instance(cls, package_directory, package_root_name, package_subdir, package_name, *args, **kwargs):
+    def create_job_instance(cls, package_directory, package_root_name, package_subdir, package_name, *args, **kwargs):
         package_root = os.path.join(package_directory, package_subdir)
         dir_list = os.listdir(package_root)
         for cur_file in dir_list:
@@ -35,3 +36,12 @@ class CObject:
                 return obj
         else:
             raise BusinessNotExistException(package_subdir, package_name)
+
+    @classmethod
+    def create_plugins_instance(cls, package_root_name, package_name, target_file_or_path_name, target_type, target_id) -> CPlugins:
+        package_full_name = '{0}.{1}'.format(package_root_name, package_name)
+        package_obj = importlib.import_module(package_full_name)
+        class_meta = getattr(package_obj, package_name)
+        class_meta_one = class_meta
+        obj = class_meta_one(target_file_or_path_name, target_type, target_id)
+        return obj

@@ -31,8 +31,8 @@ class CScheduleExecute(CResource):
         :param kwargs:
         :return:
         """
-        return CObject.create_business_instance(CSys.get_job_root_dir(), CSys.get_job_package_root_name(), schedule_trigger,
-                                                schedule_algorithm, args, kwargs)
+        return CObject.create_job_instance(CSys.get_job_root_dir(), CSys.get_job_package_root_name(), schedule_trigger,
+                                           schedule_algorithm, args, kwargs)
 
     def should_stop(self) -> bool:
         """

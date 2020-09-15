@@ -7,6 +7,7 @@ import os
 import time
 import glob
 from fnmatch import fnmatch, fnmatchcase
+from sortedcontainers import SortedList
 
 
 class CFile:
@@ -57,16 +58,19 @@ class CFile:
             return file_name_with_path
 
     @classmethod
-    def file_or_subpath_of_path(cls, path: str) -> list:
-        return os.listdir(path)
+    def file_or_subpath_of_path(cls, path: str) -> SortedList:
+        return SortedList(os.listdir(path))
 
     @classmethod
-    def search_file_or_subpath_of_path(cls, path: str, match_str: str, recursive: bool) -> list:
-        return glob.glob(cls.join_file(path, match_str), recursive)
+    def search_file_or_subpath_of_path(cls, path: str, match_str: str) -> SortedList:
+        return SortedList(glob.glob(cls.join_file(path, match_str)))
 
     @classmethod
     def join_file(cls, path, file_name: str) -> str:
-        return os.path.join(path, file_name)
+        real_file_name = file_name
+        if file_name.startswith(r'/') or file_name.startswith(r'\\'):
+            real_file_name = real_file_name[1:len(real_file_name)]
+        return os.path.join(path, real_file_name)
 
     @classmethod
     def remove_file(cls, file_name_with_path: str):
@@ -114,7 +118,7 @@ class CFile:
 
 
 if __name__ == '__main__':
-    print('文件:{0}'.format(CFile.join_file(r'/Users/Clare', '')))
+    print('文件:{0}'.format(CFile.join_file(r'/Users/Clare', 'abcd/dddd')))
 
     # print(CFile.file_main_name(r'/Users/Clare/gf1.tar.gz', 'tar.gz'))
     # print(CFile.file_relation_path(r'/Users/Users/Clare/gf1.tar.gz', '/Users'))

@@ -51,3 +51,13 @@ class CResource:
     Dir_Type_Root = 3
 
     FileName_MetaData_Rule = 'metadata.rule'
+
+    Plugins_Target_Type_File = 'file'
+    Plugins_Target_Type_Path = 'path'
+    Plugins_Target_Type_Vector_Layer = 'vector_layer'
+
+    Object_Confirm_IUnKnown = 0
+    Object_Confirm_Maybe = 1
+    Object_Confirm_IKnown = -1
+
+
