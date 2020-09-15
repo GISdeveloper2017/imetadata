@@ -18,7 +18,7 @@ class CFile:
     def file_ext(cls, file_name_with_path: str) -> str:
         file_name = CFile.file_name(file_name_with_path)
         file_main_name = CFile.file_main_name(file_name_with_path)
-        file_ext = file_name.replace(file_name,file_main_name,1)
+        file_ext = file_name.replace(file_main_name,'',1)
         return file_ext
 
     @classmethod

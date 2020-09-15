@@ -229,7 +229,7 @@ where dsffilerelationname = :dsfFileRelationName and dsfstorageid = :dsfStorageI
             if file_size == int(dataset_existed.value_by_name(0, 'dsffilesize', 0)):
                 print('相等{0} {1}'.format(file_m_date,dataset_existed.value_by_name(0, 'dsffilemodifytime', None)))
             else:
-                print('不相等{0} {1}'.format(file_m_date,dataset_existed.value_by_name(0, 'dsffilemodifytime', None)))
+                print('不相等{0} {1}'.format(file_m_date,dataset_existed.value_by_name(0, 'dsffilemodifytime', None)))                
             '''
 
             if file_m_date == str(dataset_existed.value_by_name(0, 'dsffilemodifytime', None)) and str(file_size) == str(dataset_existed.value_by_name(0, 'dsffilesize', 0)):
@@ -240,7 +240,10 @@ where dsffilerelationname = :dsfFileRelationName and dsfstorageid = :dsfStorageI
                 update dm2_storage_file
                 set dsfdirectoryid = :dsfdirectoryid
                     , dsffilecreatetime = :dsffilecreatetime
-                    , dsffilemodifytime = :dsffilemodifytime
+                    , dsffilemodifytime = :dsffilemodifytime                    
+                    , dsffilename = :dsffilename
+                    , dsffilemainname = :dsffilemainname
+                    , dsfext = :dsfext                    
                     , dsflastmodifytime = now()
                     , dsffilesize = :dsffilesize    
                 where dsfid = :dsfid
@@ -250,6 +253,9 @@ where dsffilerelationname = :dsfFileRelationName and dsfstorageid = :dsfStorageI
                 params['dsfdirectoryid'] = dataset.value_by_name(0, 'query_dir_id', '')
                 params['dsffilecreatetime'] = CFile.file_create_time(file_name_with_path)
                 params['dsffilemodifytime'] = CFile.file_modify_time(file_name_with_path)
+                params['dsffilename'] = CFile.file_name(file_name_with_path)
+                params['dsffilemainname'] = CFile.file_main_name(file_name_with_path)
+                params['dsfext'] = CFile.file_ext(file_name_with_path)
                 params['dsf_object_type'] = None
                 params['dsffileattr'] = 32
                 params['dsffilesize'] = CFile.file_size(file_name_with_path)
