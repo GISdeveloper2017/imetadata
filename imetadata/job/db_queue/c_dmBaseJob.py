@@ -16,10 +16,11 @@ from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.business.base.c_plugins import CPlugins
 from imetadata.database.c_factory import CFactory
 from imetadata.schedule.job.c_dbQueueJob import CDBQueueJob
+from imetadata.job.db_queue.c_dbBusJob import CDBBusJob
 from imetadata.base.c_logger import CLogger
 
 
-class CDMBaseJob(CDBQueueJob):
+class CDMBaseJob(CDBBusJob):
     def bus_white_black_valid(self, ds_path_with_relation_path, ds_storage_option, is_dir: bool):
         if ds_storage_option == '' or ds_storage_option is None:
             return True

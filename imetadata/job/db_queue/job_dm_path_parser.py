@@ -232,6 +232,7 @@ where dsffilerelationname = :dsfFileRelationName and dsfstorageid = :dsfStorageI
                 print('不相等{0} {1}'.format(file_m_date,dataset_existed.value_by_name(0, 'dsffilemodifytime', None)))                
             '''
 
+            # 根据文件修改时间、文件大小是否都相等判断文件是否需要更新
             if file_m_date == str(dataset_existed.value_by_name(0, 'dsffilemodifytime', None)) and str(file_size) == str(dataset_existed.value_by_name(0, 'dsffilesize', 0)):
                 return CMetaDataUtils.merge_result(CMetaDataUtils.Success,
                                                    '文件[{0}]自上次入库后无变化, 本次将被忽略!'.format(file_name_with_path))
