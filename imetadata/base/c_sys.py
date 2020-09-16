@@ -57,3 +57,10 @@ class CSys:
     @classmethod
     def get_execute_os_name(cls):
         return os.name
+
+
+if __name__ == '__main__':
+    print(CSys.get_plugins_package_root_name())
+    print(CSys.get_plugins_root_dir())
+    print(CSys.get_job_package_root_name())
+    print(CSys.get_job_root_dir())
