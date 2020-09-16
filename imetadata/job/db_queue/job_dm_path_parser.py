@@ -138,7 +138,7 @@ where dsddirectory = :dsdDirectory and dsdstorageid = :dsdStorageID
             CFactory().give_me_db(self.get_mission_db_id()).execute(sql_insert, params)
         else:
             file_m_date = CFile.file_modify_time(file_name_with_path)
-            if file_m_date == dataset_existed.value_by_name(0, 'dsddirlastmodifytime', None):
+            if file_m_date == str(dataset_existed.value_by_name(0, 'dsddirlastmodifytime', None)):
                 return CMetaDataUtils.merge_result(CMetaDataUtils.Success,
                                                    '目录[{0}]自上次入库后无变化, 本次将被忽略!'.format(file_name_with_path))
             else:
@@ -157,6 +157,7 @@ where dsddirectory = :dsdDirectory and dsdstorageid = :dsdStorageID
                 params = dict()
                 params['dsdid'] = dataset_existed.value_by_name(0, 'exist_dir_id', '')
                 params['dsddirectory'] = ds_path_with_relation_path
+                params['dsdparentid'] = dataset.value_by_name(0, 'query_dir_id', '')
                 params['dsddirtype'] = self.Dir_Type_Directory
                 params['dsddirectoryname'] = CFile.file_name(file_name_with_path)
                 params['dsdpath'] = CFile.file_path(ds_path_with_relation_path)
@@ -174,7 +175,92 @@ where dsddirectory = :dsdDirectory and dsdstorageid = :dsdStorageID
         :param file_name_with_path: 完整路径的文件名
         :return:
         """
-        pass
+        storage_id = dataset.value_by_name(0, 'query_storage_id', '')
+        ds_root_path = dataset.value_by_name(0, 'query_rootpath', '')
+        ds_path_with_relation_path = CFile.file_relation_path(file_name_with_path, ds_root_path)
+
+        sql_get_exist = '''
+select dsfid as exist_file_id, dsffilemodifytime, dsffilesize
+from dm2_storage_file
+where dsffilerelationname = :dsfFileRelationName and dsfstorageid = :dsfStorageID
+                '''
+
+        params = dict()
+        params['dsfFileRelationName'] = ds_path_with_relation_path
+        params['dsfStorageID'] = storage_id
+        dataset_existed = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_exist, params)
+        if dataset_existed.is_empty():
+            sql_insert = '''
+            insert into dm2_storage_file(
+                dsfid, dsfstorageid, dsfdirectoryid, dsffilerelationname
+                , dsffilename, dsffilemainname, dsfext, dsffilecreatetime, dsffilemodifytime, dsf_object_type
+                , dsffileattr, dsffilesize,  dsfparentobjid
+            ) VALUES(
+                uuid_generate_v4(), :dsfstorageid, :dsfdirectoryid, :dsffilerelationname
+                , :dsffilename, :dsffilemainname, :dsfext, :dsffilecreatetime, :dsffilemodifytime, :dsf_object_type
+                , :dsffileattr, :dsffilesize,  :dsfparentobjid       
+            ) 
+            '''
+            params = dict()
+            params['dsfstorageid'] = storage_id
+            params['dsfdirectoryid'] = dataset.value_by_name(0, 'query_dir_id', '')
+            params['dsffilerelationname'] = ds_path_with_relation_path
+            params['dsffilename'] = CFile.file_name(file_name_with_path)
+            params['dsffilemainname'] = CFile.file_main_name(file_name_with_path)
+            params['dsfext'] = CFile.file_ext(file_name_with_path)
+            params['dsffilecreatetime'] = CFile.file_create_time(file_name_with_path)
+            params['dsffilemodifytime'] = CFile.file_modify_time(file_name_with_path)
+            params['dsf_object_type'] = None
+            params['dsffileattr'] = 32
+            params['dsffilesize'] = CFile.file_size(file_name_with_path)
+            params['dsfparentobjid'] = None #dataset.value_by_name(0, 'query_dir_parent_objid', None)
+
+            CFactory().give_me_db(self.get_mission_db_id()).execute(sql_insert, params)
+        else:
+            file_m_date = CFile.file_modify_time(file_name_with_path)
+            file_size= CFile.file_size(file_name_with_path)
+
+            ''' 测试代码
+            if file_m_date == str(dataset_existed.value_by_name(0, 'dsffilemodifytime', None)):
+                print('相等{0} {1}'.format(file_m_date,dataset_existed.value_by_name(0, 'dsffilemodifytime', None)))
+            else:
+                print('不相等{0} {1}'.format(file_m_date,dataset_existed.value_by_name(0, 'dsffilemodifytime', None)))
+
+            if file_size == int(dataset_existed.value_by_name(0, 'dsffilesize', 0)):
+                print('相等{0} {1}'.format(file_m_date,dataset_existed.value_by_name(0, 'dsffilemodifytime', None)))
+            else:
+                print('不相等{0} {1}'.format(file_m_date,dataset_existed.value_by_name(0, 'dsffilemodifytime', None)))                
+            '''
+
+            if file_m_date == str(dataset_existed.value_by_name(0, 'dsffilemodifytime', None)) and str(file_size) == str(dataset_existed.value_by_name(0, 'dsffilesize', 0)):
+                return CMetaDataUtils.merge_result(CMetaDataUtils.Success,
+                                                   '文件[{0}]自上次入库后无变化, 本次将被忽略!'.format(file_name_with_path))
+            else:
+                sql_update = '''
+                update dm2_storage_file
+                set dsfdirectoryid = :dsfdirectoryid
+                    , dsffilecreatetime = :dsffilecreatetime
+                    , dsffilemodifytime = :dsffilemodifytime                    
+                    , dsffilename = :dsffilename
+                    , dsffilemainname = :dsffilemainname
+                    , dsfext = :dsfext                    
+                    , dsflastmodifytime = now()
+                    , dsffilesize = :dsffilesize    
+                where dsfid = :dsfid
+                '''
+                params = dict()
+                params['dsfid'] = dataset_existed.value_by_name(0, 'exist_file_id', '')
+                params['dsfdirectoryid'] = dataset.value_by_name(0, 'query_dir_id', '')
+                params['dsffilecreatetime'] = CFile.file_create_time(file_name_with_path)
+                params['dsffilemodifytime'] = CFile.file_modify_time(file_name_with_path)
+                params['dsffilename'] = CFile.file_name(file_name_with_path)
+                params['dsffilemainname'] = CFile.file_main_name(file_name_with_path)
+                params['dsfext'] = CFile.file_ext(file_name_with_path)
+                params['dsf_object_type'] = None
+                params['dsffileattr'] = 32
+                params['dsffilesize'] = CFile.file_size(file_name_with_path)
+
+                CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update, params)
 
 
 if __name__ == '__main__':

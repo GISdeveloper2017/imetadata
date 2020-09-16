@@ -15,6 +15,13 @@ class CFile:
         pass
 
     @classmethod
+    def file_ext(cls, file_name_with_path: str) -> str:
+        file_name = CFile.file_name(file_name_with_path)
+        file_main_name = CFile.file_main_name(file_name_with_path)
+        file_ext = file_name.replace(file_main_name,'',1)
+        return file_ext
+
+    @classmethod
     def file_name(cls, file_name_with_path: str) -> str:
         return os.path.basename(file_name_with_path)
 
@@ -67,6 +74,13 @@ class CFile:
 
     @classmethod
     def join_file(cls, path, file_name: str) -> str:
+        real_file_name = file_name
+        if file_name.startswith(r'/') or file_name.startswith('\\'):
+            real_file_name = real_file_name[1:len(real_file_name)]
+        return os.path.join(path, real_file_name)
+
+    @classmethod
+    def join_file_bak(cls, path, file_name: str) -> str:
         real_file_name = file_name
         if file_name.startswith(r'/') or file_name.startswith(r'\\'):
             real_file_name = real_file_name[1:len(real_file_name)]
