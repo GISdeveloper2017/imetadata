@@ -4,6 +4,7 @@
 # @File : c_resource.py
 
 class CResource:
+    Name_Application = 'imetadata'
     SYSTEM_NAME_MISSION_ID = '{system.mission.id}'
 
     NAME_CMD_COMMAND = 'cmd_command'
@@ -59,5 +60,15 @@ class CResource:
     Object_Confirm_IUnKnown = 0
     Object_Confirm_Maybe = 1
     Object_Confirm_IKnown = -1
+
+    Name_Result = 'result'
+    Name_Message = 'message'
+
+    Success = -1
+    Failure = 0
+    Exception = 1
+
+    Name_Business = 'business'
+    Name_Plugins = 'plugins'
 
 

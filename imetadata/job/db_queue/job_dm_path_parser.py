@@ -183,7 +183,7 @@ where dsddirectory = :dsdDirectory and dsdstorageid = :dsdStorageID
 select dsfid as exist_file_id, dsffilemodifytime, dsffilesize
 from dm2_storage_file
 where dsffilerelationname = :dsfFileRelationName and dsfstorageid = :dsfStorageID
-                '''
+        '''
 
         params = dict()
         params['dsfFileRelationName'] = ds_path_with_relation_path
@@ -194,11 +194,11 @@ where dsffilerelationname = :dsfFileRelationName and dsfstorageid = :dsfStorageI
             insert into dm2_storage_file(
                 dsfid, dsfstorageid, dsfdirectoryid, dsffilerelationname
                 , dsffilename, dsffilemainname, dsfext, dsffilecreatetime, dsffilemodifytime, dsf_object_type
-                , dsffileattr, dsffilesize,  dsfparentobjid
+                , dsffileattr, dsffilesize,  dsfparentobjid, dsflastmodifytime
             ) VALUES(
                 uuid_generate_v4(), :dsfstorageid, :dsfdirectoryid, :dsffilerelationname
                 , :dsffilename, :dsffilemainname, :dsfext, :dsffilecreatetime, :dsffilemodifytime, :dsf_object_type
-                , :dsffileattr, :dsffilesize,  :dsfparentobjid       
+                , :dsffileattr, :dsffilesize, :dsfparentobjid, now()       
             ) 
             '''
             params = dict()
@@ -213,12 +213,12 @@ where dsffilerelationname = :dsfFileRelationName and dsfstorageid = :dsfStorageI
             params['dsf_object_type'] = None
             params['dsffileattr'] = 32
             params['dsffilesize'] = CFile.file_size(file_name_with_path)
-            params['dsfparentobjid'] = None #dataset.value_by_name(0, 'query_dir_parent_objid', None)
+            params['dsfparentobjid'] = dataset.value_by_name(0, 'query_dir_parent_objid', None)
 
             CFactory().give_me_db(self.get_mission_db_id()).execute(sql_insert, params)
         else:
             file_m_date = CFile.file_modify_time(file_name_with_path)
-            file_size= CFile.file_size(file_name_with_path)
+            file_size = CFile.file_size(file_name_with_path)
 
             ''' 测试代码
             if file_m_date == str(dataset_existed.value_by_name(0, 'dsffilemodifytime', None)):
@@ -245,7 +245,8 @@ where dsffilerelationname = :dsfFileRelationName and dsfstorageid = :dsfStorageI
                     , dsffilemainname = :dsffilemainname
                     , dsfext = :dsfext                    
                     , dsflastmodifytime = now()
-                    , dsffilesize = :dsffilesize    
+                    , dsffilesize = :dsffilesize  
+                    , dsfparentobjid = :dsfparentobjid 
                 where dsfid = :dsfid
                 '''
                 params = dict()
@@ -259,6 +260,7 @@ where dsffilerelationname = :dsfFileRelationName and dsfstorageid = :dsfStorageI
                 params['dsf_object_type'] = None
                 params['dsffileattr'] = 32
                 params['dsffilesize'] = CFile.file_size(file_name_with_path)
+                params['dsfparentobjid'] = dataset.value_by_name(0, 'query_dir_parent_objid', None)
 
                 CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update, params)
 

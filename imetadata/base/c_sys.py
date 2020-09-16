@@ -3,48 +3,49 @@
 
 import os
 import sys
+from imetadata.base.c_resource import CResource
 
 
-class CSys:
+class CSys(CResource):
     def __init__(self):
         pass
 
     @classmethod
     def get_application_name(cls):
-        return 'imetadata'
+        return cls.Name_Application
 
     @classmethod
     def get_application_dir(cls):
         cur_path = os.path.abspath(os.path.dirname(__file__))
-        return os.path.join(cur_path[:cur_path.find("imetadata/") + len("imetadata/") - 1], cls.get_application_name())
+        return os.path.join(cur_path[:cur_path.find(cls.get_application_name()) + len(cls.get_application_name())], cls.get_application_name())
 
     @classmethod
     def get_application_package_name(cls):
-        return 'imetadata'
+        return cls.Name_Application
 
     @classmethod
     def get_business_root_dir(cls):
-        return os.path.join(cls.get_application_dir(), 'business')
+        return os.path.join(cls.get_application_dir(), cls.Name_Business)
 
     @classmethod
     def get_business_package_root_name(cls):
-        return '{0}.business'.format(cls.get_application_name())
+        return '{0}.{1}'.format(cls.get_application_name(), cls.Name_Business)
 
     @classmethod
     def get_plugins_root_dir(cls):
-        return os.path.join(cls.get_business_root_dir(), 'plugins')
+        return os.path.join(cls.get_business_root_dir(), cls.Name_Plugins)
 
     @classmethod
     def get_plugins_package_root_name(cls):
-        return '{0}.plugins'.format(cls.get_business_package_root_name())
+        return '{0}.{1}'.format(cls.get_business_package_root_name(), cls.Name_Plugins)
 
     @classmethod
     def get_job_root_dir(cls):
-        return os.path.join(cls.get_application_dir(), 'job')
+        return os.path.join(cls.get_application_dir(), cls.NAME_JOB)
 
     @classmethod
     def get_job_package_root_name(cls):
-        return '{0}.job'.format(cls.get_application_name())
+        return '{0}.{1}'.format(cls.get_application_name(), cls.NAME_JOB)
 
     @classmethod
     def get_execute_filename(cls):
@@ -60,6 +61,7 @@ class CSys:
 
 
 if __name__ == '__main__':
+    print(CSys.get_application_dir())
     print(CSys.get_plugins_package_root_name())
     print(CSys.get_plugins_root_dir())
     print(CSys.get_job_package_root_name())

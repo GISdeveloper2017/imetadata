@@ -12,5 +12,4 @@ class Test_C_File:
 
     @allure.title('测试文件名是否获取完整')
     def test_file_main_name(self):
-        assert CFile.file_main_name(r'/Users/Clare/gf1.tar.gz') == r'gf1.tar'
-        assert CFile.file_main_name(r'/Users/Clare/gf1.tar.gz', 'tar.gz') == r'gf1'
+        assert CFile.file_main_name(r'/Users/Clare/gf1.tar.gz') == r'gf1'

@@ -11,6 +11,8 @@ from sortedcontainers import SortedList
 
 
 class CFile:
+    __special_file_ext_list__ = ['tar.gz']
+
     def __init__(self):
         pass
 
@@ -18,7 +20,7 @@ class CFile:
     def file_ext(cls, file_name_with_path: str) -> str:
         file_name = CFile.file_name(file_name_with_path)
         file_main_name = CFile.file_main_name(file_name_with_path)
-        file_ext = file_name.replace(file_main_name,'',1)
+        file_ext = file_name.replace('{0}.'.format(file_main_name), '', 1)
         return file_ext
 
     @classmethod
@@ -31,22 +33,19 @@ class CFile:
         return input_file_path
 
     @classmethod
-    def file_main_name(cls, file_name_with_path: str, file_ext_whitelist: str = '',
-                       file_ext_whitelist_seperator: str = ';'):
+    def file_main_name(cls, file_name_with_path: str):
         filename_without_path = cls.file_name(file_name_with_path)
 
-        if (file_ext_whitelist is None) or (file_ext_whitelist == ''):
+        for ext_white in cls.__special_file_ext_list__:
+            if filename_without_path.lower().endswith(ext_white.lower()):
+                return filename_without_path[:len(filename_without_path) - len(ext_white) - 1]
+        else:
             file_info = os.path.splitext(filename_without_path)
             return file_info[0]
-        else:
-            ext_white_list = file_ext_whitelist.split(file_ext_whitelist_seperator)
-            for ext_white in ext_white_list:
-                if filename_without_path.lower().endswith(ext_white.lower()):
-                    return filename_without_path[:len(filename_without_path) - len(ext_white) - 1]
 
     @classmethod
     def check_and_create_directory(cls, file_name_with_path: str) -> bool:
-        return cls.check_and_create_dir(cls.file_path(file_name_with_path))
+        return cls.check_and_create_directory_itself(cls.file_path(file_name_with_path))
 
     @classmethod
     def check_and_create_directory_itself(cls, file_path: str) -> bool:
@@ -76,13 +75,6 @@ class CFile:
     def join_file(cls, path, file_name: str) -> str:
         real_file_name = file_name
         if file_name.startswith(r'/') or file_name.startswith('\\'):
-            real_file_name = real_file_name[1:len(real_file_name)]
-        return os.path.join(path, real_file_name)
-
-    @classmethod
-    def join_file_bak(cls, path, file_name: str) -> str:
-        real_file_name = file_name
-        if file_name.startswith(r'/') or file_name.startswith(r'\\'):
             real_file_name = real_file_name[1:len(real_file_name)]
         return os.path.join(path, real_file_name)
 
@@ -132,9 +124,10 @@ class CFile:
 
 
 if __name__ == '__main__':
-    print('文件:{0}'.format(CFile.join_file(r'/Users/Clare', 'abcd/dddd')))
-
-    # print(CFile.file_main_name(r'/Users/Clare/gf1.tar.gz', 'tar.gz'))
+    print(CFile.file_main_name(r'/Users/Clare/gf1.tar.gz'))
+    print(CFile.file_ext(r'/Users/Clare/gf1.tar.gz'))
+    print(CFile.file_main_name(r'/Users/Clare/gf1.xls'))
+    print(CFile.file_ext(r'/Users/Clare/gf1.xls'))
     # print(CFile.file_relation_path(r'/Users/Users/Clare/gf1.tar.gz', '/Users'))
     # file_name = '/Users/wangxiya/Documents/我的文稿/私人/我的/重要/ADSL.docx'
     # print('文件:{0}'.format(file_name))

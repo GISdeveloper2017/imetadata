@@ -19,19 +19,17 @@
 from __future__ import absolute_import
 import demjson
 import jsonpath
-
 from imetadata.base.c_logger import CLogger
-from imetadata.base.c_utils import CMetaDataUtils
 
 
 class CJson:
     Encoding_UTF8 = 'UTF-8'
     Encoding_GBK = 'GB2312'
 
-    __json_obj__: object
+    __json_obj__ = None
 
     def __init__(self):
-        pass
+        self.__json_obj__ = dict()
 
     def load_file(self, filename):
         """
@@ -65,6 +63,9 @@ class CJson:
 
     def to_file(self, filename):
         demjson.encode_to_file(filename, self.__json_obj__, overwrite=True)
+
+    def set_value_of_name(self, name, value):
+        self.__json_obj__[name] = value
 
     def xpath_one(self, query, attr_value_default) -> any:
         """
@@ -125,3 +126,12 @@ class CJson:
         json = CJson()
         json.load_file(filename)
         return json.to_json()
+
+
+if __name__ == '__main__':
+    json_obj = CJson()
+    json_obj.set_value_of_name('test', 'value')
+    json_obj.set_value_of_name('test1', 2)
+    print(json_obj.to_json())
+    print(json_obj.xpath_one('test1', 'nothing'))
+

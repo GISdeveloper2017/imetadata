@@ -1,29 +1,27 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
 
-import json
 import uuid
+from imetadata.base.c_json import CJson
+from imetadata.base.c_resource import CResource
 
 
-class CMetaDataUtils:
-    Success = -1
-    Failure = 0
-    Exception = 1
+class CMetaDataUtils(CResource):
 
     @classmethod
     def merge_result(cls, result, message=None, base=None) -> str:
-        new_result = json.loads('{}')
+        new_result = CJson()
         if base is not None:
-            new_result = json.loads(base)
-        new_result['result'] = result
+            new_result.load_json_text(base)
+
+        new_result.set_value_of_name(cls.Name_Result, result)
         if message is not None:
-            new_result['message'] = message
-        return json.dumps(new_result)
+            new_result.set_value_of_name(cls.Name_Message, message)
+        return new_result.to_json()
 
     @classmethod
     def result_success(cls, text) -> bool:
-        result = json.loads(text)
-        return result['result'] == CMetaDataUtils.Success
+        return CJson.json_attr_value(text, cls.Name_Result, cls.Failure) == cls.Success
 
     @classmethod
     def one_id(cls) -> str:
@@ -48,3 +46,17 @@ class CMetaDataUtils:
                     return dict_obj[key]
         else:
             return None
+
+
+if __name__ == '__main__':
+    json_obj = CJson()
+    json_obj.set_value_of_name('test', 'value')
+    json_obj.set_value_of_name('test1', 2)
+    print(json_obj.to_json())
+    text = CMetaDataUtils.merge_result(CMetaDataUtils.Failure, 'message is test', json_obj.to_json())
+    print(text)
+    if CMetaDataUtils.result_success(text):
+        print('success')
+    else:
+        print('not success')
+
