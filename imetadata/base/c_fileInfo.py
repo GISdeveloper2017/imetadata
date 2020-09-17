@@ -15,7 +15,7 @@ class CFileInfo(CResource):
     __file_ext__: str
     __file_path__: str
 
-    __file_type__: int
+    __file_type__: str
     __file_existed__: bool
 
     __file_size__: int = 0

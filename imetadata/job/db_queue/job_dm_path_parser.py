@@ -80,14 +80,14 @@ where dsdscandirstatus = 2
                 if CFile.is_dir(file_name_with_path):
                     CLogger().debug('发现子目录: {0}'.format(file_name_with_path))
                     path_obj = CDMPathInfo(file_name_with_path, ds_root_path, dataset.value_by_name(0, 'query_storage_id', ''),
-                                           dataset.value_by_name(0, 'query_dir_id', ''))
+                                           dataset.value_by_name(0, 'query_dir_id', ''), self.get_mission_db_id())
 
                     if path_obj.white_black_valid(ds_storage_option):
                         path_obj.update_db()
                 else:
                     CLogger().debug('发现文件: {0}'.format(file_name_with_path))
                     file_obj = CDMFileInfo(file_name_with_path, ds_root_path, dataset.value_by_name(0, 'query_storage_id', ''),
-                                           dataset.value_by_name(0, 'query_dir_id', ''))
+                                           dataset.value_by_name(0, 'query_dir_id', ''), self.get_mission_db_id())
                     if file_obj.white_black_valid(ds_storage_option):
                         file_obj.update_db()
 

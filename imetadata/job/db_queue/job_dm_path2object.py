@@ -9,6 +9,7 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_xml import CXml
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.business.metadata.base.job.c_dbBusJob import CDBBusJob
+from imetadata.business.metadata.base.job.c_dmPathInfo import CDMPathInfo
 from imetadata.database.c_factory import CFactory
 from imetadata.base.c_logger import CLogger
 
@@ -61,6 +62,8 @@ where dsdscanstatus = 2
     def process_mission(self, dataset) -> str:
         ds_subpath = dataset.value_by_name(0, 'query_subpath', '')
         ds_rootpath = dataset.value_by_name(0, 'query_rootpath', '')
+        ds_storage_id = dataset.value_by_name(0, 'query_storage_id', '')
+        ds_id = dataset.value_by_name(0, 'query_dir_id', '')
 
         if ds_subpath == '':
             ds_path_full_name = ds_rootpath
@@ -68,138 +71,38 @@ where dsdscanstatus = 2
             ds_path_full_name = CFile.join_file(ds_rootpath, ds_subpath)
         CLogger().debug('处理的子目录为: {0}'.format(ds_path_full_name))
 
-        if not CFile.file_or_path_exist(ds_path_full_name):
-            self.bus_path_invalid(dataset, ds_path_full_name)
-            return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path_full_name))
+        path_obj = CDMPathInfo(ds_path_full_name, ds_rootpath, ds_storage_id, ds_id, self.get_mission_db_id())
+        if not path_obj.__file_existed__:
+            path_obj.db_update_status_on_path_invalid()
+            return CMetaDataUtils.merge_result(CMetaDataUtils.Success,
+                                               '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path_full_name))
         else:
-            self.bus_path_valid(dataset, ds_path_full_name)
-
-    def bus_path_invalid(self, dataset, path_name_with_full_path):
-        """
-        处理目录不存在时的业务
-        :param dataset:
-        :param path_name_with_full_path:
-        :return:
-        """
-        path_name_with_relation_path = dataset.value_by_name(0, 'query_subpath', '')
-        path_name_with_relation_path = CFile.join_file(path_name_with_relation_path, '')
-
-        params = dict()
-        params['dsdStorageID'] = dataset.value_by_name(0, 'query_storage_id', '')
-        params['dsdSubDirectory'] = path_name_with_relation_path
-
-        sql_update_file_invalid = '''
-        update dm2_storage_file
-        set dsffilevalid = 0, dsfscanstatus = 0
-        where dsfdirectoryid in (
-            select dsdid
-            from dm2_storage_directory
-            where dsdstorageid = '1'
-              and dsdstorageid = :dsdStorageID and position(:dsdSubDirectory in dsddirectory) = 1
-        )
-        '''
-
-        sql_update_path_invalid = '''
-update dm2_storage_directory
-set dsd_directory_valid = 0, dsdscanstatus = 0, dsdscanfilestatus = 0, dsdscandirstatus = 0
-where dsdstorageid = :dsdStorageID and position(:dsdSubDirectory in dsddirectory) = 1
-        '''
-
-        CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_file_invalid, params)
-        CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_path_invalid, params)
-
-    def bus_path_valid(self, dataset, path_name_with_full_path):
-        """
-        处理目录存在时的业务:
-        1. 检查目录下是否有metadata.rule
-        :param dataset:
-        :param path_name_with_full_path:
-        :return:
-        """
-
-        query_dir_object_id = dataset.value_by_name(0, 'query_dir_object_id', '')
-        query_dir_object_type = dataset.value_by_name(0, 'query_dir_object_type', '')
-        params = dict()
-        params['dsdID'] = dataset.value_by_name(0, 'query_dir_id', '')
-        if CFile.file_or_path_exist(CFile.join_file(path_name_with_full_path, self.FileName_MetaData_Rule)):
-            try:
-                params['dsdScanRule'] = CXml.file_2_str(CFile.join_file(path_name_with_full_path, self.FileName_MetaData_Rule))
-            except:
-                params['dsdScanRule'] = None
-
-        sql_update_path_valid = '''
-        update dm2_storage_directory
-        set dsd_directory_valid = -1, dsdscanrule = :dsdScanRule
-        where dsdid = :dsdID
-        '''
-
-        CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_path_valid, params)
-
-        classified_obj = super().plugins_classified(dataset.value_by_name(0, 'query_subpath_name', ''), self.Plugins_Target_Type_Path, dataset.value_by_name(0, 'query_dir_id', ''))
-        if classified_obj is None:
-            sql_update_path_object = '''
-            update dm2_storage_directory
-            set dsd_object_confirm = 0, dsd_object_id = null, dsd_object_type = null
-                , dsdscanfilestatus = 1, dsdscandirstatus = 1
-            where dsdid = :dsdid
+            '''
+            1. 检查目录下是否有metadata.rule文件是否和记录中的不同
+               1.1 如果不同
+                    1.1.1 如果和记录中的不同
+                        删除当前目录下的所有子目录, 文件 和对象
+                        更新记录中的规则
+                        设置子目录扫描状态为正常
+                        直接返回
+            2. 检查目录的最后修改时间和上次时间是否一致
+                2.1. 如果无更新
+                    直接返回
+                2.2. 如果有更新
+                    2.2.1. 如果目录已经是对象
+                        删除对象记录
+                        清理对象字段
+                    2.2.2. 重新识别
+                    2.2.3. 更新对象字段
             '''
 
-            CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_path_object, params)
-            if query_dir_object_id != '':
-                sql_clear_old_path_object = '''
-                delete from dm2_storage_object where dsoid = :dsoid
-                '''
-                params = dict()
-                params['dsoid'] = query_dir_object_id
-
-                CFactory().give_me_db(self.get_mission_db_id()).execute(sql_clear_old_path_object, params)
-        else:
-            object_name = classified_obj.get_classified_object_name()
-            object_confirm = classified_obj.get_classified_object_confirm()
-            object_type = classified_obj.get_id()
-            if not CMetaDataUtils.equal_ignore_case(object_type, query_dir_object_type):
-                if query_dir_object_type != '':
-                    sql_clear_old_path_object = '''
-                    delete from dm2_storage_object where dsoid = :dsoid
-                    '''
-                    params = dict()
-                    params['dsoid'] = query_dir_object_id
-
-                    CFactory().give_me_db(self.get_mission_db_id()).execute(sql_clear_old_path_object, params)
-
-                new_dso_id = CMetaDataUtils.one_id()
-                sql_insert_object = '''
-                insert into dm2_storage_object(dsoid, dsoobjectname, dsoobjecttype, dsodatatype, dsoalphacode, dsoaliasname, dsoparentobjid) 
-                values(:dsoid, :dsoobjectname, :dsoobjecttype, :dsodatatype, :dsoalphacode, :dsoaliasname, :dsoparentobjid)
-                '''
-                params = dict()
-                params['dsoid'] = new_dso_id
-                params['dsoobjectname'] = object_name
-                params['dsoobjecttype'] = object_type
-                params['dsodatatype'] = 'dir'
-                params['dsoalphacode'] = object_name
-                params['dsoaliasname'] = object_name
-                params['dsoparentobjid'] = dataset.value_by_name(0, 'query_dir_parent_objid', '')
-                CFactory().give_me_db(self.get_mission_db_id()).execute(sql_insert_object, params)
-
-                sql_update_path_object = '''
-                update dm2_storage_directory
-                set dsd_object_confirm = :ObjectConfirm, dsd_object_id = :Object_ID, dsd_object_type = :ObjectType
-                    , dsdscanfilestatus = 0, dsdscandirstatus = 0
-                where dsdid = :dsdid
-                '''
-                params = dict()
-                params['dsdid'] = dataset.value_by_name(0, 'query_dir_id', '')
-                params['ObjectConfirm'] = object_confirm
-                params['Object_ID'] = new_dso_id
-                params['ObjectType'] = object_type
-                CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_path_object, params)
+            path_obj.path2object()
 
         sql_update_directory_status = '''
-        update dm2_storage_directory
-        set dsdscanstatus = 0, dsdlastmodifytime = now()
-        where dsdid = :dsdid
-        '''
+            update dm2_storage_directory
+            set dsdscanstatus = 0, dsdlastmodifytime = now()
+            where dsdid = :dsdid
+            '''
         params = dict()
         params['dsdid'] = dataset.value_by_name(0, 'query_dir_id', '')
         CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_directory_status, params)

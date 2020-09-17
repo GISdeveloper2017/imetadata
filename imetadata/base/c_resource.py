@@ -53,10 +53,6 @@ class CResource:
 
     FileName_MetaData_Rule = 'metadata.rule'
 
-    Plugins_Target_Type_File = 'file'
-    Plugins_Target_Type_Path = 'path'
-    Plugins_Target_Type_Vector_Layer = 'vector_layer'
-
     Object_Confirm_IUnKnown = 0
     Object_Confirm_Maybe = 1
     Object_Confirm_IKnown = -1
@@ -75,6 +71,6 @@ class CResource:
 
     FileExt_Py = 'py'
 
-    FileType_Unknown = 0
-    FileType_File = 1
-    FileType_Path = 2
+    FileType_Unknown = 'none'
+    FileType_File = 'file'
+    FileType_Path = 'path'
