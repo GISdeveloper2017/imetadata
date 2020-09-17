@@ -24,22 +24,6 @@ class CSys(CResource):
         return cls.Name_Application
 
     @classmethod
-    def get_metadata_root_dir(cls):
-        return os.path.join(cls.get_application_dir(), cls.Name_MetaData)
-
-    @classmethod
-    def get_metadata_package_root_name(cls):
-        return '{0}.{1}'.format(cls.get_application_name(), cls.Name_MetaData)
-
-    @classmethod
-    def get_plugins_root_dir(cls):
-        return os.path.join(cls.get_metadata_root_dir(), cls.Name_Plugins)
-
-    @classmethod
-    def get_plugins_package_root_name(cls):
-        return '{0}.{1}'.format(cls.get_metadata_package_root_name(), cls.Name_Plugins)
-
-    @classmethod
     def get_job_root_dir(cls):
         return os.path.join(cls.get_application_dir(), cls.NAME_JOB)
 
@@ -58,6 +42,30 @@ class CSys(CResource):
     @classmethod
     def get_execute_os_name(cls):
         return os.name
+
+    @classmethod
+    def get_business_root_dir(cls):
+        return os.path.join(cls.get_application_dir(), cls.Name_Business)
+
+    @classmethod
+    def get_business_package_root_name(cls):
+        return '{0}.{1}'.format(cls.get_application_name(), cls.Name_Business)
+
+    @classmethod
+    def get_metadata_root_dir(cls):
+        return os.path.join(cls.get_business_root_dir(), cls.Name_MetaData)
+
+    @classmethod
+    def get_metadata_package_root_name(cls):
+        return '{0}.{1}'.format(cls.get_business_package_root_name(), cls.Name_MetaData)
+
+    @classmethod
+    def get_plugins_root_dir(cls):
+        return os.path.join(cls.get_metadata_root_dir(), cls.Name_Plugins)
+
+    @classmethod
+    def get_plugins_package_root_name(cls):
+        return '{0}.{1}'.format(cls.get_metadata_package_root_name(), cls.Name_Plugins)
 
 
 if __name__ == '__main__':

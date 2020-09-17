@@ -60,6 +60,7 @@ class CResource:
     Object_Confirm_IUnKnown = 0
     Object_Confirm_Maybe = 1
     Object_Confirm_IKnown = -1
+    Object_Confirm_IKnown_Not = 2
 
     Name_Result = 'result'
     Name_Message = 'message'
@@ -70,5 +71,10 @@ class CResource:
 
     Name_MetaData = 'metadata'
     Name_Plugins = 'plugins'
+    Name_Business = 'business'
 
     FileExt_Py = 'py'
+
+    FileType_Unknown = 0
+    FileType_File = 1
+    FileType_Path = 2

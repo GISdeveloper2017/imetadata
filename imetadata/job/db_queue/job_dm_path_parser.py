@@ -8,6 +8,8 @@ from __future__ import absolute_import
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.business.metadata.base.job.c_dbBusJob import CDBBusJob
+from imetadata.business.metadata.base.job.c_dmFileInfo import CDMFileInfo
+from imetadata.business.metadata.base.job.c_dmPathInfo import CDMPathInfo
 from imetadata.database.c_factory import CFactory
 from imetadata.base.c_logger import CLogger
 
@@ -66,21 +68,28 @@ where dsdscandirstatus = 2
             ds_subpath = CFile.join_file(ds_root_path, ds_subpath)
         CLogger().debug('处理的子目录为: {0}'.format(ds_subpath))
 
-        if not CFile.file_or_path_exist(ds_subpath):
+        path_obj = CDMPathInfo(ds_subpath, ds_root_path, dataset.value_by_name(0, 'query_storage_id', ''), dataset.value_by_name(0, 'query_dir_id', ''))
+        if not path_obj.__file_existed__:
+            path_obj.update_db()
             return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_subpath))
         else:
             file_list = CFile.file_or_subpath_of_path(ds_subpath)
             for file_name in file_list:
                 file_name_with_path = CFile.join_file(ds_subpath, file_name)
-                ds_path_with_relation_path = CFile.file_relation_path(file_name_with_path, ds_root_path)
-                if super().bus_white_black_valid(ds_path_with_relation_path, ds_storage_option,
-                                              CFile.is_dir(file_name_with_path)):
-                    if CFile.is_dir(file_name_with_path):
-                        CLogger().debug('发现子目录: {0}'.format(file_name_with_path))
-                        self.save_subpath(dataset, file_name_with_path)
-                    else:
-                        CLogger().debug('发现文件: {0}'.format(file_name_with_path))
-                        self.save_file(dataset, file_name_with_path)
+
+                if CFile.is_dir(file_name_with_path):
+                    CLogger().debug('发现子目录: {0}'.format(file_name_with_path))
+                    path_obj = CDMPathInfo(file_name_with_path, ds_root_path, dataset.value_by_name(0, 'query_storage_id', ''),
+                                           dataset.value_by_name(0, 'query_dir_id', ''))
+
+                    if path_obj.white_black_valid(ds_storage_option):
+                        path_obj.update_db()
+                else:
+                    CLogger().debug('发现文件: {0}'.format(file_name_with_path))
+                    file_obj = CDMFileInfo(file_name_with_path, ds_root_path, dataset.value_by_name(0, 'query_storage_id', ''),
+                                           dataset.value_by_name(0, 'query_dir_id', ''))
+                    if file_obj.white_black_valid(ds_storage_option):
+                        file_obj.update_db()
 
             CFactory().give_me_db(self.get_mission_db_id()).execute(
                 '''
@@ -168,7 +177,6 @@ where dsddirectory = :dsdDirectory and dsdstorageid = :dsdStorageID
     def save_file(self, dataset, file_name_with_path):
         """
         在这里将指定文件入库
-        todo 文件入库
         :param dataset: 数据集
         :param file_name_with_path: 完整路径的文件名
         :return:

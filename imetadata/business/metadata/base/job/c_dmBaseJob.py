@@ -12,11 +12,11 @@ from imetadata.base.c_resource import CResource
 from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
-from imetadata.business.metadata.base.job.c_dbBusJob import CDBBusJob
 from imetadata.base.c_logger import CLogger
+from imetadata.schedule.job.c_dbQueueJob import CDBQueueJob
 
 
-class CDMBaseJob(CDBBusJob):
+class CDMBaseJob(CDBQueueJob):
 
     def plugins_classified(self, target: str, target_type: str, target_id: str) -> CPlugins:
         plugins_root_package_name = '{0}.{1}'.format(CSys.get_plugins_package_root_name(), target_type)
