@@ -71,4 +71,4 @@ class CResource:
     Name_Business = 'business'
     Name_Plugins = 'plugins'
 
-
+    FileExt_Py = 'py'

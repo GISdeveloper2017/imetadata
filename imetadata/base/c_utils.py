@@ -31,6 +31,15 @@ class CMetaDataUtils(CResource):
         return uuid_text
 
     @classmethod
+    def plugins_id_by_file_main_name(cls, file_main_name) -> str:
+        super_id = file_main_name
+        id_list = super_id.split('_', 2)
+        if len(id_list) > 2:
+            return id_list[2]
+        else:
+            return super_id
+
+    @classmethod
     def equal_ignore_case(cls, str1: str, str2: str) -> bool:
         return str1.strip().lower() == str2.strip().lower()
 
@@ -49,14 +58,5 @@ class CMetaDataUtils(CResource):
 
 
 if __name__ == '__main__':
-    json_obj = CJson()
-    json_obj.set_value_of_name('test', 'value')
-    json_obj.set_value_of_name('test1', 2)
-    print(json_obj.to_json())
-    text = CMetaDataUtils.merge_result(CMetaDataUtils.Failure, 'message is test', json_obj.to_json())
-    print(text)
-    if CMetaDataUtils.result_success(text):
-        print('success')
-    else:
-        print('not success')
+    pass
 

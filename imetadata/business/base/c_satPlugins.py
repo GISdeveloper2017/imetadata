@@ -11,3 +11,4 @@ from imetadata.base.c_logger import CLogger
 class CSatPlugins(CPlugins):
     def get_group_name(self) -> str:
         return 'sat'
+

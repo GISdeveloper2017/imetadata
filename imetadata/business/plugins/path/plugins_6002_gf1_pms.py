@@ -8,8 +8,6 @@ from imetadata.business.base.c_satPlugins import CSatPlugins
 
 
 class plugins_6002_gf1_pms(CSatPlugins):
-    def get_id(self) -> str:
-        return 'gf1-pms'
 
     def classified(self):
         self.__object_confirm__ = self.Object_Confirm_IUnKnown

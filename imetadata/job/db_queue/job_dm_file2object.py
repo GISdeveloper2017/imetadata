@@ -138,7 +138,7 @@ where dsdstorageid = :dsdStorageID and position(:dsdSubDirectory in dsddirectory
 
         CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_path_valid, params)
 
-        classified_obj = super().classified(dataset.value_by_name(0, 'query_subpath_name', ''), self.Plugins_Target_Type_Path, dataset.value_by_name(0, 'query_dir_id', ''))
+        classified_obj = super().plugins_classified(dataset.value_by_name(0, 'query_subpath_name', ''), self.Plugins_Target_Type_Path, dataset.value_by_name(0, 'query_dir_id', ''))
         if classified_obj is None:
             sql_update_path_object = '''
             update dm2_storage_directory

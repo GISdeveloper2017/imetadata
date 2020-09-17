@@ -4,6 +4,8 @@
 # @File : c_plugins.py
 
 from abc import abstractmethod, ABC
+
+from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CMetaDataUtils
@@ -27,6 +29,7 @@ class CPlugins(CResource, ABC):
             * Plugins_Target_Type_File = 'file'
             * Plugins_Target_Type_Path = 'path'
             * Plugins_Target_Type_Vector_Layer = 'vector_layer'
+        :param target_id:  目标文件或路径在数据库中的标识, 具体意义根据数据库设计自行使用
         """
         self.__target_file_or_path_name__ = target_file_or_path_name
         self.__target_type__ = target_type
@@ -42,9 +45,8 @@ class CPlugins(CResource, ABC):
     def get_group_name(self) -> str:
         pass
 
-    @abstractmethod
     def get_id(self) -> str:
-        pass
+        return CMetaDataUtils.plugins_id_by_file_main_name(CFile.file_main_name(__file__))
 
     @abstractmethod
     def classified(self):

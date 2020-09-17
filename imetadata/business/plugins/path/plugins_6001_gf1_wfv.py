@@ -9,9 +9,6 @@ from imetadata.business.base.c_satPlugins import CSatPlugins
 
 class plugins_6001_gf1_wfv(CSatPlugins):
 
-    def get_id(self) -> str:
-        return 'gf1-wfv'
-
     def classified(self):
         self.__object_confirm__ = self.Object_Confirm_IUnKnown
         self.__object_name__ = None
