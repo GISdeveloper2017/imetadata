@@ -27,7 +27,7 @@ class CPlugins(CResource, ABC):
         :param target_file_or_path_name:  目标文件或路径的名称
         :param target_type: 对象是文件, 目录, 还是数据集的数据层
             * Plugins_Target_Type_File = 'file'
-            * Plugins_Target_Type_Path = 'path'
+            * Plugins_Target_Type_Path = 'dir'
             * Plugins_Target_Type_Vector_Layer = 'vector_layer'
         :param target_id:  目标文件或路径在数据库中的标识, 具体意义根据数据库设计自行使用
         """
@@ -46,7 +46,7 @@ class CPlugins(CResource, ABC):
         pass
 
     def get_id(self) -> str:
-        return CMetaDataUtils.plugins_id_by_file_main_name(CFile.file_main_name(__file__))
+        return CMetaDataUtils.plugins_id_by_file_main_name(type(self).__name__)
 
     @abstractmethod
     def classified(self):

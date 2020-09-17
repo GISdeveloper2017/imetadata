@@ -6,7 +6,6 @@
 from __future__ import absolute_import
 
 from imetadata.base.c_file import CFile
-from imetadata.base.c_xml import CXml
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.business.metadata.base.job.c_dbBusJob import CDBBusJob
 from imetadata.business.metadata.base.job.c_dmPathInfo import CDMPathInfo
@@ -32,7 +31,8 @@ where dsdid = (
     def get_mission_info_sql(self) -> str:
         return '''
 select 
-    dm2_storage.dstunipath as query_rootpath
+    dm2_storage.dstunipath as query_root_path
+  , dm2_storage_directory.dsdparentid as query_dir_parent_id
   , dm2_storage_directory.dsddirectory as query_subpath
   , dm2_storage.dstunipath || dm2_storage_directory.dsdpath as query_dir_full_path
   , dm2_storage_directory.dsddirectoryname as query_subpath_name
@@ -61,17 +61,19 @@ where dsdscanstatus = 2
 
     def process_mission(self, dataset) -> str:
         ds_subpath = dataset.value_by_name(0, 'query_subpath', '')
-        ds_rootpath = dataset.value_by_name(0, 'query_rootpath', '')
+        ds_root_path = dataset.value_by_name(0, 'query_root_path', '')
         ds_storage_id = dataset.value_by_name(0, 'query_storage_id', '')
         ds_id = dataset.value_by_name(0, 'query_dir_id', '')
+        owner_obj_id = dataset.value_by_name(0, 'query_dir_parent_objid', '')
+        parent_id = dataset.value_by_name(0, 'query_dir_parent_id', '')
 
         if ds_subpath == '':
-            ds_path_full_name = ds_rootpath
+            ds_path_full_name = ds_root_path
         else:
-            ds_path_full_name = CFile.join_file(ds_rootpath, ds_subpath)
+            ds_path_full_name = CFile.join_file(ds_root_path, ds_subpath)
         CLogger().debug('处理的子目录为: {0}'.format(ds_path_full_name))
 
-        path_obj = CDMPathInfo(ds_path_full_name, ds_rootpath, ds_storage_id, ds_id, self.get_mission_db_id())
+        path_obj = CDMPathInfo(ds_path_full_name, ds_root_path, ds_storage_id, ds_id, parent_id, owner_obj_id, self.get_mission_db_id())
         if not path_obj.__file_existed__:
             path_obj.db_update_status_on_path_invalid()
             return CMetaDataUtils.merge_result(CMetaDataUtils.Success,
@@ -95,8 +97,9 @@ where dsdscanstatus = 2
                     2.2.2. 重新识别
                     2.2.3. 更新对象字段
             '''
+            path_obj.db_check_and_update_metadata_rule(CFile.join_file(ds_path_full_name, self.FileName_MetaData_Rule))
 
-            path_obj.path2object()
+            path_obj.db_path2object()
 
         sql_update_directory_status = '''
             update dm2_storage_directory

@@ -10,15 +10,23 @@ from imetadata.base.c_object import CObject
 from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
+from imetadata.database.base.c_dataset import CDataSet
+from imetadata.database.c_factory import CFactory
 
 
 class CDMFilePathInfoEx(CFileInfoEx):
-    __db_server_id__: str
+    __db_server_id__ = None
+    __parent_id__ = None
+    __owner_obj_id__ = None
 
-    __storage_id__: str
+    __storage_id__ = None
     __my_id__ = None
 
-    def __init__(self, file_name_with_full_path, root_path, storage_id, file_or_path_id, db_server_id):
+    __ds_storage__ = None
+    __ds_file_or_path__ = None
+
+    def __init__(self, file_name_with_full_path, root_path, storage_id, file_or_path_id, parent_id, owner_obj_id,
+                 db_server_id):
         """
 
         :param file_name_with_full_path:
@@ -32,6 +40,8 @@ class CDMFilePathInfoEx(CFileInfoEx):
         self.__storage_id__ = storage_id
         self.__my_id__ = file_or_path_id
         self.__db_server_id__ = db_server_id
+        self.__parent_id__ = parent_id
+        self.__owner_obj_id__ = owner_obj_id
         self.custom_init()
 
     def custom_init(self):
@@ -41,10 +51,18 @@ class CDMFilePathInfoEx(CFileInfoEx):
         """
         pass
 
-    def white_black_valid(self, ds_storage_option):
+    def db_delete_object_by_id(self, object_id):
+        sql_delete_object_by_id = '''
+        delete from dm2_storage_object
+        where dsoid = :dsoID
+        '''
+        CFactory.give_me_db(self.__db_server_id__).execute(sql_delete_object_by_id, {'dsoid': object_id})
+
+    def white_black_valid(self):
         """
         检查指定文件是否符合白名单, 黑名单验证
         """
+        ds_storage_option = self.__ds_storage__.value_by_name(0, 'dstotheroption', None)
         if ds_storage_option == '' or ds_storage_option is None:
             return True
 
@@ -86,7 +104,7 @@ class CDMFilePathInfoEx(CFileInfoEx):
                 return True
 
     def plugins_classified(self) -> CPlugins:
-        target = self.__file_path_with_rel_path__
+        target = self.__file_main_name__
         target_type = self.__file_type__
         target_id = self.__my_id__
         plugins_root_package_name = '{0}.{1}'.format(CSys.get_plugins_package_root_name(), target_type)
@@ -107,7 +125,7 @@ class CDMFilePathInfoEx(CFileInfoEx):
             return None
 
     def plugins(self, plugins_id: str) -> CPlugins:
-        target = self.__file_path_with_rel_path__
+        target = self.__file_main_name__
         target_type = self.__file_type__
         target_id = self.__my_id__
         plugins_root_package_name = '{0}.{1}'.format(CSys.get_plugins_package_root_name(), target_type)

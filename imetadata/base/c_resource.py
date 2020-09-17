@@ -73,4 +73,4 @@ class CResource:
 
     FileType_Unknown = 'none'
     FileType_File = 'file'
-    FileType_Path = 'path'
+    FileType_Dir = 'dir'

@@ -32,7 +32,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.log_filepath is not None:
-        logging.basicConfig(filename=args.log_filepath + '/schedule.log', level=logging.WARNING,
+        logging.basicConfig(filename=args.log_filepath + '/schedule.log', level=logging.ERROR,
                             format="%(levelname)s - %(asctime)s - %(message)s",
                             datefmt="%m/%d/%Y %H:%M:%S %p")
 

@@ -39,7 +39,7 @@ class CFileInfo(CResource):
                 self.__file_type__ = self.FileType_File
                 self.__file_size__ = CFile.file_size(self.__file_name_with_full_path__)
             else:
-                self.__file_type__ = self.FileType_Path
+                self.__file_type__ = self.FileType_Dir
 
             self.__file_create_time__ = CFile.file_create_time(self.__file_name_with_full_path__)
             self.__file_access_time__ = CFile.file_access_time(self.__file_name_with_full_path__)
