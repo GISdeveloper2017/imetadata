@@ -8,12 +8,12 @@ from __future__ import absolute_import
 from imetadata.base.c_file import CFile
 from imetadata.base.c_xml import CXml
 from imetadata.base.c_utils import CMetaDataUtils
+from imetadata.business.metadata.base.job.c_dbBusJob import CDBBusJob
 from imetadata.database.c_factory import CFactory
 from imetadata.base.c_logger import CLogger
-from imetadata.job.db_queue.c_dmBaseJob import CDMBaseJob
 
 
-class job_dm_path2object(CDMBaseJob):
+class job_dm_path2object(CDBBusJob):
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage_directory 

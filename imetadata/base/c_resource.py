@@ -68,7 +68,7 @@ class CResource:
     Failure = 0
     Exception = 1
 
-    Name_Business = 'business'
+    Name_MetaData = 'metadata'
     Name_Plugins = 'plugins'
 
     FileExt_Py = 'py'

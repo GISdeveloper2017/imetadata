@@ -4,7 +4,7 @@
 # @File : plugins_6001_gf1_wfv.py
 
 from imetadata.base.c_file import CFile
-from imetadata.business.base.c_satPlugins import CSatPlugins
+from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
 
 
 class plugins_6001_gf1_wfv(CSatPlugins):

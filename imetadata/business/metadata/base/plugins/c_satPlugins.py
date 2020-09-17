@@ -3,9 +3,7 @@
 # @Author : 王西亚 
 # @File : c_satPlugins.py
 
-from imetadata.business.base.c_plugins import CPlugins
-from abc import abstractmethod, ABC
-from imetadata.base.c_logger import CLogger
+from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
 
 
 class CSatPlugins(CPlugins):

@@ -9,7 +9,7 @@ import os
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.base.core.Exceptions import BusinessNotExistException
-from imetadata.business.base.c_plugins import CPlugins
+from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
 
 
 class CObject:
