@@ -74,3 +74,8 @@ class CResource:
     FileType_Unknown = 'none'
     FileType_File = 'file'
     FileType_Dir = 'dir'
+
+    File_Status_Valid = -1
+    File_Status_Invalid = 0
+    File_Status_Unknown = 1
+

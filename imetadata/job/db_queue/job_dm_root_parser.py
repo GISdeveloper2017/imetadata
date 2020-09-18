@@ -56,16 +56,17 @@ where dstscanstatus = 2
         set dsdParentID = '-1', dsdDirectory = '', dsdDirtype = :dsdDirType
             , dsdDirectoryName = '', dsdPath = ''
             , dsdDirCreateTime = :dsddircreatetime, dsdDirLastModifyTime = :dsddirlastmodifytime
-            , dsdLastModifyTime = Now()
+            , dsdLastModifyTime = Now(), dsd_directory_valid = 1
         where dsdStorageId = '{0}' and dsdid = '{0}'
         '''.format(storage_id)
 
         sql_insert_root_storage_dir = '''
         insert into dm2_storage_directory(
             dsdid, dsdparentid, dsdstorageid, dsddirectory, dsddirtype, dsdlastmodifytime
-            , dsddirectoryname, dsd_directory_valid, dsdpath, dsddircreatetime, dsddirlastmodifytime)
+            , dsddirectoryname, dsd_directory_valid, dsdpath, dsddircreatetime, dsddirlastmodifytime
+            , dsd_directory_valid)
         values('{0}', '-1', '{0}', '', :dsdDirType, Now()
-            , '', -1, '', :dsddircreatetime, :dsddirlastmodifytime
+            , '', -1, '', :dsddircreatetime, :dsddirlastmodifytime, 1
         )
         '''.format(storage_id)
 

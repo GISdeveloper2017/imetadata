@@ -4,7 +4,6 @@
 # @File : job_dm_path_parser.py
 
 from __future__ import absolute_import
-
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.base.c_xml import CXml
@@ -19,11 +18,11 @@ class job_dm_path_parser(CDBBusJob):
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage_directory 
-set dsdscandirprocessid = '{0}', dsdscandirstatus = 2
+set dsdscanfileprocessid = '{0}', dsdscanfilestatus = 2
 where dsdid = (
   select dsdid  
   from   dm2_storage_directory 
-  where  dsdscandirstatus = 1 
+  where  dsdscanfilestatus = 1 
     and dsdscanstatus = 0  
     and dsd_directory_valid = -1
     and dsddirtype <> '2'
@@ -49,61 +48,80 @@ select
 from dm2_storage_directory 
   left join dm2_storage on dm2_storage.dstid = dm2_storage_directory.dsdstorageid 
   left join dm2_storage_object on dm2_storage_object.dsoid = COALESCE(dm2_storage_directory.dsd_object_id, dm2_storage_directory.dsdparentobjid) 
-where dm2_storage_directory.dsdscandirprocessid = '{0}'
+where dm2_storage_directory.dsdscanfileprocessid = '{0}'
             '''.format(self.SYSTEM_NAME_MISSION_ID)
 
     def get_abnormal_mission_restart_sql(self) -> str:
         return '''
 update dm2_storage_directory 
-set dsdscandirstatus = 1, dsdscandirprocessid = null 
-where dsdscandirstatus = 2
+set dsdscanfilestatus = 1, dsdscanfileprocessid = null 
+where dsdscanfilestatus = 2
         '''
 
-
     def process_mission(self, dataset) -> str:
-        ds_subpath = dataset.value_by_name(0, 'query_subpath', '')
-        ds_root_path = dataset.value_by_name(0, 'query_rootpath', '')
-        ds_storage_option = dataset.value_by_name(0, 'query_storage_OtherOption', '')
+        ds_id = dataset.value_by_name(0, 'query_dir_id', '')
 
-        if ds_subpath == '':
-            ds_subpath = ds_root_path
-        else:
-            ds_subpath = CFile.join_file(ds_root_path, ds_subpath)
-        CLogger().debug('处理的子目录为: {0}'.format(ds_subpath))
+        # 将所有子目录, 文件的可用性, 都改为未知
+        self.init_file_or_subpath_valid_unknown(ds_id)
+        try:
+            ds_subpath = dataset.value_by_name(0, 'query_subpath', '')
+            ds_root_path = dataset.value_by_name(0, 'query_rootpath', '')
 
-        path_obj = CDMPathInfo(ds_subpath, ds_root_path, dataset.value_by_name(0, 'query_storage_id', ''), dataset.value_by_name(0, 'query_dir_id', ''), self.get_mission_db_id())
-        if not path_obj.__file_existed__:
-            #path_obj.update_db()
-            return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_subpath))
-        else:
-            file_list = CFile.file_or_subpath_of_path(ds_subpath)
-            for file_name in file_list:
-                file_name_with_path = CFile.join_file(ds_subpath, file_name)
+            if ds_subpath == '':
+                ds_subpath = ds_root_path
+            else:
+                ds_subpath = CFile.join_file(ds_root_path, ds_subpath)
+            CLogger().debug('处理的目录为: {0}'.format(ds_subpath))
 
-                if CFile.is_dir(file_name_with_path):
-                    CLogger().debug('发现子目录: {0}'.format(file_name_with_path))
-                    path_obj = CDMPathInfo(file_name_with_path, ds_root_path, dataset.value_by_name(0, 'query_storage_id', ''),
-                                           dataset.value_by_name(0, 'query_dir_id', ''), self.get_mission_db_id())
+            self.parser_path(dataset, ds_subpath)
+        finally:
+            self.exchange_file_or_subpath_valid_unknown2invalid(ds_id)
 
-                    if path_obj.white_black_valid(ds_storage_option):
-                        #path_obj.update_db(dataset)
-                        self.save_subpath(dataset,file_name_with_path)
+    def parser_path(self, dataset, ds_path):
+        """
+        处理目录(完整路径)下的子目录和文件
+        :param ds_path:
+        :return:
+        """
+        file_list = CFile.file_or_subpath_of_path(ds_path)
+        for file_name in file_list:
+            file_name_with_full_path = CFile.join_file(ds_path, file_name)
+
+            if CFile.is_dir(file_name_with_full_path):
+                CLogger().debug('在目录{0}下发现子目录: {1}'.format(ds_path, file_name))
+                path_obj = CDMPathInfo(self.FileType_Dir, file_name_with_full_path,
+                                       dataset.value_by_name(0, 'query_storage_id', ''),
+                                       None,
+                                       dataset.value_by_name(0, 'query_dir_id', ''),
+                                       dataset.value_by_name(0, 'query_dir_parent_objid', ''),
+                                       self.get_mission_db_id())
+
+                if path_obj.white_black_valid():
+                    path_obj.db_check_and_update()
                 else:
-                    CLogger().debug('发现文件: {0}'.format(file_name_with_path))
-                    file_obj = CDMFileInfo(file_name_with_path, ds_root_path, dataset.value_by_name(0, 'query_storage_id', ''),
-                                           dataset.value_by_name(0, 'query_dir_id', ''), self.get_mission_db_id())
-                    if file_obj.white_black_valid(ds_storage_option):
-                        #file_obj.update_db(dataset)
-                        self.save_file(dataset,file_name_with_path)
+                    CLogger().info('目录[{0}]未通过黑白名单检验, 不允许入库! '.format(file_name_with_full_path))
+            elif CFile.is_file(file_name_with_full_path):
+                CLogger().debug('在目录{0}下发现文件: {1}'.format(ds_path, file_name))
+                file_obj = CDMFileInfo(self.FileType_File, file_name_with_full_path,
+                                       dataset.value_by_name(0, 'query_storage_id', ''),
+                                       None,
+                                       dataset.value_by_name(0, 'query_dir_id', ''),
+                                       dataset.value_by_name(0, 'query_dir_parent_objid', ''),
+                                       self.get_mission_db_id())
+                if file_obj.white_black_valid():
+                    file_obj.db_check_and_update()
+                    self.save_file(dataset, file_name_with_full_path)
+                else:
+                    CLogger().info('文件[{0}]未通过黑白名单检验, 不允许入库! '.format(file_name_with_full_path))
 
-            CFactory().give_me_db(self.get_mission_db_id()).execute(
-                '''
-                update dm2_storage_directory
-                set dsdscandirstatus = 0, dsddirscanpriority = 0
-                where dsdid = '{0}'
-                '''.format(dataset.value_by_name(0, 'query_dir_id', ''))
-            )
-            return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_subpath))
+        CFactory().give_me_db(self.get_mission_db_id()).execute(
+            '''
+            update dm2_storage_directory
+            set dsdscandirstatus = 0, dsddirscanpriority = 0
+            where dsdid = '{0}'
+            '''.format(dataset.value_by_name(0, 'query_dir_id', ''))
+        )
+        return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path))
 
     def save_subpath(self, dataset, file_name_with_path):
         """
@@ -165,7 +183,7 @@ where dsddirectory = :dsdDirectory and dsdstorageid = :dsdStorageID
 
             CFactory().give_me_db(self.get_mission_db_id()).execute(sql_insert, params)
         else:
-            #数据库记录存在，则先判断记录中的ruletype值与文件rule的类型是否相同
+            # 数据库记录存在，则先判断记录中的ruletype值与文件rule的类型是否相同
             query_dir_scanrule = str(dataset_existed.value_by_name(0, 'query_dir_scanrule', None))
             if query_dir_scanrule != path_rule_type:
                 '''
@@ -271,7 +289,8 @@ where dsffilerelationname = :dsfFileRelationName and dsfstorageid = :dsfStorageI
             '''
 
             # 根据文件修改时间、文件大小是否都相等判断文件是否需要更新
-            if file_m_date == str(dataset_existed.value_by_name(0, 'dsffilemodifytime', None)) and str(file_size) == str(dataset_existed.value_by_name(0, 'dsffilesize', 0)):
+            if file_m_date == str(dataset_existed.value_by_name(0, 'dsffilemodifytime', None)) and str(
+                    file_size) == str(dataset_existed.value_by_name(0, 'dsffilesize', 0)):
                 return CMetaDataUtils.merge_result(CMetaDataUtils.Success,
                                                    '文件[{0}]自上次入库后无变化, 本次将被忽略!'.format(file_name_with_path))
             else:
@@ -302,6 +321,40 @@ where dsffilerelationname = :dsfFileRelationName and dsfstorageid = :dsfStorageI
                 params['dsfparentobjid'] = dataset.value_by_name(0, 'query_dir_parent_objid', None)
 
                 CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update, params)
+
+    def init_file_or_subpath_valid_unknown(self, ds_id):
+        """
+        将指定目录标识下的子目录和文件都更新为未知
+        :param ds_id:
+        :return:
+        """
+        CFactory().give_me_db(self.get_mission_db_id()).execute('''
+            update dm2_storage_directory
+            set dsd_directory_valid = {0}
+            where dsdparentid = :id
+            '''.format(self.File_Status_Unknown), {'id': ds_id})
+        CFactory().give_me_db(self.get_mission_db_id()).execute('''
+            update dm2_storage_file
+            set dsffilevalid = {0}
+            where dsfdirectoryid = :id
+            '''.format(self.File_Status_Unknown), {'id': ds_id})
+
+    def exchange_file_or_subpath_valid_unknown2invalid(self, ds_id):
+        """
+        将指定目录标识下的子目录和文件中, 可用性为未知的, 都更新为不可用
+        :param ds_id:
+        :return:
+        """
+        CFactory().give_me_db(self.get_mission_db_id()).execute('''
+                    update dm2_storage_directory
+                    set dsd_directory_valid = {0}
+                    where dsdparentid = :id and dsd_directory_valid = {1}
+                    '''.format(self.File_Status_Invalid, self.File_Status_Unknown), {'id': ds_id})
+        CFactory().give_me_db(self.get_mission_db_id()).execute('''
+                    update dm2_storage_file
+                    set dsffilevalid = {0}
+                    where dsfdirectoryid = :id and dsffilevalid = {1}
+                    '''.format(self.File_Status_Invalid, self.File_Status_Unknown), {'id': ds_id})
 
 
 if __name__ == '__main__':

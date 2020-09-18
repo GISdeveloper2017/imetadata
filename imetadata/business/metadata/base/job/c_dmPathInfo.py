@@ -17,9 +17,6 @@ class CDMPathInfo(CDMFilePathInfoEx):
         :return:
         """
         engine = CFactory().give_me_db(self.__db_server_id__)
-        self.__ds_storage__ = engine.one_row(
-            'select dstid, dsttitle, dstunipath, dstotheroption from dm2_storage where dstid = :dstID',
-            {'dstid': self.__storage_id__})
         if self.__my_id__ is None:
             self.__ds_file_or_path__ = engine.one_row(
                 'select dsdid, dsdparentid, dsddirectory, dsddirtype, dsddirectoryname, dsd_object_type, \
@@ -82,64 +79,52 @@ class CDMPathInfo(CDMFilePathInfoEx):
 
     def db_path2object(self):
         """
-        处理目录存在时的业务:
-        1. 目录是否是对象
-            1.1 不知道是不是对象
-                开始判断是不是对象
-            1.2 是, 可能是, 不是
-                判断目录的最后修改时间和上次时间是否一致
-                2.1. 如果无更新
-                    直接返回
-                2.2. 如果有更新
-                    删除对象记录
-                    清理对象字段
-                    重新识别
-                    更新对象字段
         :return:
         """
 
-        db_object_confirm = self.__ds_file_or_path__.value_by_name(0, 'dsd_object_confirm', self.Object_Confirm_IUnKnown)
+        db_object_confirm = self.__ds_file_or_path__.value_by_name(0, 'dsd_object_confirm',
+                                                                   self.Object_Confirm_IUnKnown)
 
-        if db_object_confirm != self.Object_Confirm_IUnKnown:
+        if (db_object_confirm == self.Object_Confirm_IKnown) or (db_object_confirm == self.Object_Confirm_Maybe):
             db_path_modify_time = self.__ds_file_or_path__.value_by_name(0, 'dsddirlastmodifytime', '')
-            if CMetaDataUtils.equal_ignore_case(str(db_path_modify_time), str(self.__file_modify_time__)):
+            if CMetaDataUtils.equal_ignore_case(CMetaDataUtils.any_2_str(db_path_modify_time),
+                                                CMetaDataUtils.any_2_str(self.__file_modify_time__)):
+                CLogger().info('目录[{0}]的最后修改时间, 和库中登记的没有变化, 对象识别将被忽略! '.format(self.__file_name_with_full_path__))
                 return
             else:
                 # 删除对象记录, 清理对象字段
                 db_object_id = self.__ds_file_or_path__.value_by_name(0, 'dsd_object_id', '')
                 db_object_type = self.__ds_file_or_path__.value_by_name(0, 'dsd_object_type', '')
-                CLogger().debug('系统发现目录{0}的最后修改时间有变化, 将删除它关联的对象{1}.{2}, 重新识别'.format(self.__file_main_name__, db_object_type, db_object_id))
+                CLogger().debug(
+                    '系统发现目录{0}的最后修改时间有变化, 将删除它关联的对象{1}.{2}, 重新识别'.format(self.__file_main_name__, db_object_type,
+                                                                         db_object_id))
                 self.db_delete_object_by_id(db_object_id)
 
-        params = dict()
-        params['dsdID'] = self.__my_id__
-
-        classified_obj = self.plugins_classified()
-        if classified_obj is None:
+        classified_obj, object_confirm, object_name = self.plugins_classified()
+        if (classified_obj is None) or (object_confirm == self.Object_Confirm_IKnown_Not):
             sql_update_path_object = '''
                 update dm2_storage_directory
                 set dsd_object_confirm = 0, dsd_object_id = null, dsd_object_type = null
-                    , dsdscanfilestatus = 1, dsdscandirstatus = 1
+                    , dsdscanfilestatus = 1, dsdscandirstatus = 1, dsd_directory_valid = -1, dsddirlastmodifytime = :fileModifyTime
                 where dsdid = :dsdid
                 '''
-
-            CFactory().give_me_db(self.__db_server_id__).execute(sql_update_path_object, params)
+            CFactory().give_me_db(self.__db_server_id__).execute(sql_update_path_object, {'dsdid': self.__my_id__,
+                                                                                          'fileModifyTime': CMetaDataUtils.any_2_str(
+                                                                                              self.__file_modify_time__)})
         else:
-            object_name = classified_obj.get_classified_object_name()
-            object_confirm = classified_obj.get_classified_object_confirm()
             object_type = classified_obj.get_id()
 
             sql_insert_object = '''
-                    insert into dm2_storage_object(dsoid, dsoobjectname, dsoobjecttype, dsodatatype, dsoalphacode, dsoaliasname, dsoparentobjid) 
-                    values(:dsoid, :dsoobjectname, :dsoobjecttype, :dsodatatype, :dsoalphacode, :dsoaliasname, :dsoparentobjid)
-                    '''
+                insert into dm2_storage_object(dsoid, dsoobjectname, dsoobjecttype, dsodatatype, dsoalphacode, dsoaliasname, dsoparentobjid) 
+                values(:dsoid, :dsoobjectname, :dsoobjecttype, :dsodatatype, :dsoalphacode, :dsoaliasname, :dsoparentobjid)
+                '''
 
             new_dso_id = CMetaDataUtils.one_id()
 
             sql_update_path_object = '''
                 update dm2_storage_directory
                 set dsd_object_confirm = :dsd_object_confirm, dsd_object_id = :dsd_object_id, dsd_object_type = :dsd_object_type
-                    , dsdscanfilestatus = 0, dsdscandirstatus = 0
+                    , dsdscanfilestatus = 0, dsdscandirstatus = 0, dsd_directory_valid = -1, dsddirlastmodifytime = :fileModifyTime
                 where dsdid = :dsdid
                 '''
 
@@ -161,6 +146,7 @@ class CDMPathInfo(CDMFilePathInfoEx):
                 params['dsd_object_confirm'] = object_confirm
                 params['dsd_object_id'] = new_dso_id
                 params['dsd_object_type'] = object_type
+                params['fileModifyTime'] = CMetaDataUtils.any_2_str(self.__file_modify_time__)
                 engine.session_execute(session, sql_update_path_object, params)
 
                 engine.session_commit(session)
@@ -189,7 +175,8 @@ class CDMPathInfo(CDMFilePathInfoEx):
             except:
                 pass
 
-        if CMetaDataUtils.equal_ignore_case(metadata_rule_content, self.__ds_file_or_path__.value_by_name(0, 'dsdscanrule', '')):
+        if CMetaDataUtils.equal_ignore_case(metadata_rule_content,
+                                            self.__ds_file_or_path__.value_by_name(0, 'dsdscanrule', '')):
             return
 
         sql_update_path_scan_rule = '''
@@ -237,3 +224,54 @@ class CDMPathInfo(CDMFilePathInfoEx):
             engine.session_rollback(session)
         finally:
             engine.session_close(session)
+
+    def db_check_and_update(self):
+        """
+        检查并更新dm2_storage_directory表中记录
+        :return:
+        """
+        if not self.__ds_file_or_path__.is_empty():
+            # 如果记录已经存在
+            db_path_modify_time = self.__ds_file_or_path__.value_by_name(0, 'dsddirlastmodifytime', '')
+            if CMetaDataUtils.equal_ignore_case(CMetaDataUtils.any_2_str(db_path_modify_time),
+                                                CMetaDataUtils.any_2_str(self.__file_modify_time__)):
+                CLogger().info('目录[{0}]的最后修改时间, 和库中登记的没有变化, 子目录将被设置为忽略刷新! '.format(self.__file_name_with_full_path__))
+                CFactory().give_me_db(self.__db_server_id__).execute('''
+                    update dm2_storage_directory set dsdScanStatus = 0, dsdScanFileStatus = 0, dsd_directory_valid = -1
+                    where dsdid = :dsdid 
+                    ''', {'dsdid': self.__my_id__})
+            else:
+                CLogger().info('目录[{0}]的最后修改时间, 和库中登记的有变化, 子目录将被设置为重新刷新! '.format(self.__file_name_with_full_path__))
+                CFactory().give_me_db(self.__db_server_id__).execute('''
+                    update dm2_storage_directory set dsdScanStatus = 1, dsdScanFileStatus = 1, dsd_directory_valid = -1
+                    where dsdid = :dsdid 
+                    ''', {'dsdid': self.__my_id__})
+        else:
+            CLogger().info('目录[{0}]未在库中登记, 系统将登记该记录! '.format(self.__file_name_with_full_path__))
+            self.db_insert()
+
+    def db_insert(self):
+        """
+        将当前目录, 创建一条新记录到dm2_storage_directory表中
+        :return:
+        """
+        sql_insert = '''
+        insert into dm2_storage_directory(dsdid, dsdparentid, dsdstorageid, dsddirectory, dsddirtype, dsdlastmodifytime, 
+            dsddirectoryname, dsdpath, dsddircreatetime, dsddirlastmodifytime, dsdparentobjid, 
+            dsdscanstatus, dsdscanfilestatus, dsdscandirstatus, dsd_directory_valid) 
+        values(:dsdid, :dsdparentid, :dsdstorageid, :dsddirectory, :dsddirtype, now(), 
+            :dsddirectoryname, :dsdpath, :dsddircreatetime, :dsddirlastmodifytime, :dsdparentobjid,
+            1, 1, 1, -1)
+        '''
+        params = dict()
+        params['dsdid'] = self.__my_id__
+        params['dsdparentid'] = self.__parent_id__
+        params['dsdstorageid'] = self.__storage_id__
+        params['dsddirectory'] = self.__file_name_with_rel_path__
+        params['dsddirtype'] = self.FileType_Dir
+        params['dsddirectoryname'] = self.__file_name_without_path__
+        params['dsdpath'] = self.__file_path_with_rel_path__
+        params['dsddircreatetime'] = self.__file_create_time__
+        params['dsddirlastmodifytime'] = self.__file_modify_time__
+        params['dsdparentobjid'] = self.__owner_obj_id__
+        CFactory().give_me_db(self.__db_server_id__).execute(sql_insert, params)
