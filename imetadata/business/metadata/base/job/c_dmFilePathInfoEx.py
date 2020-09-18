@@ -25,7 +25,7 @@ class CDMFilePathInfoEx(CFileInfoEx):
     __ds_storage__ = None
     __ds_file_or_path__ = None
 
-    def __init__(self, file_name_with_full_path, root_path, storage_id, file_or_path_id, parent_id, owner_obj_id,
+    def __init__(self, file_type, file_name_with_full_path, root_path, storage_id, file_or_path_id, parent_id, owner_obj_id,
                  db_server_id):
         """
 
@@ -36,7 +36,7 @@ class CDMFilePathInfoEx(CFileInfoEx):
             如果为None, 则首先根据文件相对路径和storage_id, 查找数据库中登记的标识, 如果不存在, 则自行创建uuid;
             如果不为空, 则表明数据库中已经存储该文件标识
         """
-        super().__init__(file_name_with_full_path, root_path)
+        super().__init__(file_type, file_name_with_full_path, root_path)
         self.__storage_id__ = storage_id
         self.__my_id__ = file_or_path_id
         self.__db_server_id__ = db_server_id

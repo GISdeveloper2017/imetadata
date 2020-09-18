@@ -56,6 +56,13 @@ class CMetaDataUtils(CResource):
         else:
             return None
 
+    @classmethod
+    def any_2_str(cls, obj) -> str:
+        if obj is None:
+            return ''
+        else:
+            return str(obj)
+
 
 if __name__ == '__main__':
     pass

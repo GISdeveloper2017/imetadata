@@ -73,7 +73,7 @@ where dsdscanstatus = 2
             ds_path_full_name = CFile.join_file(ds_root_path, ds_subpath)
         CLogger().debug('处理的子目录为: {0}'.format(ds_path_full_name))
 
-        path_obj = CDMPathInfo(ds_path_full_name, ds_root_path, ds_storage_id, ds_id, parent_id, owner_obj_id, self.get_mission_db_id())
+        path_obj = CDMPathInfo(self.FileType_Dir, ds_path_full_name, ds_root_path, ds_storage_id, ds_id, parent_id, owner_obj_id, self.get_mission_db_id())
         if not path_obj.__file_existed__:
             path_obj.db_update_status_on_path_invalid()
             return CMetaDataUtils.merge_result(CMetaDataUtils.Success,

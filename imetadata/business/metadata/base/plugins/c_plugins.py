@@ -9,31 +9,23 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CMetaDataUtils
+from imetadata.business.metadata.base.job.c_dmFilePathInfoEx import CDMFilePathInfoEx
 
 
 class CPlugins(CResource, ABC):
     """
     数据识别插件
     """
-    __target_file_or_path_name__: str
-    __target_type__: str
-    __target_id__: str
+    __file_info__: CDMFilePathInfoEx
 
     __object_confirm__: int
     __object_name__: str
 
-    def __init__(self, target_file_or_path_name, target_type, target_id):
+    def __init__(self, file_info: CDMFilePathInfoEx):
         """
-        :param target_file_or_path_name:  目标文件或路径的名称
-        :param target_type: 对象是文件, 目录, 还是数据集的数据层
-            * Plugins_Target_Type_File = 'file'
-            * Plugins_Target_Type_Path = 'dir'
-            * Plugins_Target_Type_Vector_Layer = 'vector_layer'
-        :param target_id:  目标文件或路径在数据库中的标识, 具体意义根据数据库设计自行使用
+        :param file_info:  目标文件或路径的名称
         """
-        self.__target_file_or_path_name__ = target_file_or_path_name
-        self.__target_type__ = target_type
-        self.__target_id__ = target_id
+        self.__file_info__ = file_info
 
     def get_classified_object_confirm(self):
         return self.__object_confirm__

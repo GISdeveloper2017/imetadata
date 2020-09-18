@@ -21,6 +21,8 @@ from lxml import etree
 from copy import deepcopy
 import re
 
+from imetadata.base.c_file import CFile
+
 
 class CXml:
     Encoding_UTF8 = 'UTF-8'
@@ -106,7 +108,8 @@ class CXml:
         :param element:
         :return:
         """
-        return deepcopy(element)
+        if element is not None:
+            return deepcopy(element)
 
     @classmethod
     def append(cls, element, child_element):
@@ -116,7 +119,8 @@ class CXml:
         :param child_element:
         :return:
         """
-        return element.append(child_element)
+        if element is not None:
+            return element.append(child_element)
 
     @classmethod
     def create_element(cls, element, element_name):
@@ -126,7 +130,8 @@ class CXml:
         :param element_name:
         :return:
         """
-        return etree.SubElement(element, element_name)
+        if element is not None:
+            return etree.SubElement(element, element_name)
 
     @classmethod
     def set_attr(cls, element, attr_name, attr_value):
@@ -138,7 +143,8 @@ class CXml:
         :param attr_value:
         :return:
         """
-        element.set(attr_name, attr_value)
+        if element is not None:
+            element.set(attr_name, attr_value)
 
     @classmethod
     def get_attr(cls, element, attr_name, attr_value_default, ignore_case=True) -> str:
@@ -151,6 +157,9 @@ class CXml:
         :param ignore_case:
         :return:
         """
+        if element is None:
+            return attr_value_default
+
         if ignore_case is True:
             ac = element.keys()[0]
             attr_name = re.findall(attr_name, ac, re.IGNORECASE)
@@ -171,7 +180,8 @@ class CXml:
         :param text:
         :return:
         """
-        element.text = etree.CDATA(text)
+        if element is not None:
+            element.text = etree.CDATA(text)
 
     @classmethod
     def get_element_text(cls, element):
@@ -180,7 +190,10 @@ class CXml:
         :param element:
         :return:
         """
-        return element.text
+        if element is None:
+            return ''
+        else:
+            return element.text
 
     @classmethod
     def get_element_xml(cls, element) -> str:
@@ -189,7 +202,10 @@ class CXml:
         :param element:
         :return:
         """
-        return bytes.decode(etree.tostring(element, xml_declaration=False))
+        if element is None:
+            return ''
+        else:
+            return bytes.decode(etree.tostring(element, xml_declaration=False))
 
     @classmethod
     def get_element_root(cls, element):
@@ -198,7 +214,10 @@ class CXml:
         :param element:
         :return:
         """
-        return element.getparent()
+        if element is None:
+            return None
+        else:
+            return element.getparent()
 
     @classmethod
     def get_element_name(cls, element) -> etree:
@@ -207,7 +226,10 @@ class CXml:
         :param element:
         :return:
         """
-        return element.tag
+        if element is None:
+            return None
+        else:
+            return element.tag
 
     @classmethod
     def is_element_comment(cls, element) -> bool:
@@ -216,7 +238,10 @@ class CXml:
         :param element:
         :return:
         """
-        return isinstance(element, etree._Comment)
+        if element is None:
+            return False
+        else:
+            return isinstance(element, etree._Comment)
 
     @classmethod
     def get_tree(cls, element):
@@ -225,7 +250,10 @@ class CXml:
         :param element:
         :return:
         """
-        return etree.ElementTree(element)
+        if element is None:
+            return None
+        else:
+            return etree.ElementTree(element)
 
     @classmethod
     def get_tree_root(cls, tree) -> etree:
@@ -234,10 +262,16 @@ class CXml:
         :param tree:
         :return:
         """
-        return tree.getroot()
+        if tree is None:
+            return None
+        else:
+            return tree.getroot()
 
     @classmethod
     def file_2_str(cls, filename) -> str:
+        if not CFile.file_or_path_exist(filename):
+            return ''
+
         xml_obj = CXml()
         xml_obj.load_file(filename)
         return xml_obj.to_xml()

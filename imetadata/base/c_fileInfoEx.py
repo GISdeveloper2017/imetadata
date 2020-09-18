@@ -13,8 +13,8 @@ class CFileInfoEx(CFileInfo):
 
     __root_path__ = str
 
-    def __init__(self, file_name_with_full_path, root_path):
-        super().__init__(file_name_with_full_path)
+    def __init__(self, file_type, file_name_with_full_path, root_path):
+        super().__init__(file_type, file_name_with_full_path)
         self.__root_path__ = root_path
 
         self.__file_name_with_rel_path__ = CFile.file_relation_path(self.__file_name_with_full_path__, self.__root_path__)

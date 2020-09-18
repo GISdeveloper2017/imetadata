@@ -72,6 +72,11 @@ class CFile:
         return SortedList(glob.glob(cls.join_file(path, match_str)))
 
     @classmethod
+    def find_file_or_subpath_of_path(cls, path: str, match_str: str) -> bool:
+        list_files = cls.search_file_or_subpath_of_path(path, match_str)
+        return len(list_files) > 0
+
+    @classmethod
     def join_file(cls, path, file_name: str) -> str:
         real_file_name = file_name
         if file_name.startswith(r'/') or file_name.startswith('\\'):

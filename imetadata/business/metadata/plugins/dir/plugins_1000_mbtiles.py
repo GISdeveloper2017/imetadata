@@ -1,21 +1,24 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/9/17 16:51 
 # @Author : 王西亚 
-# @File : plugins_1000_xzqh.py
+# @File : plugins_1000_mbtiles.py
 
 
 from imetadata.base.c_file import CFile
 from imetadata.business.metadata.base.plugins.c_pathPlugins import CPathPlugins
 
 
-class plugins_1000_xzqh(CPathPlugins):
+class plugins_1000_mbtiles(CPathPlugins):
 
     def classified(self):
         self.__object_confirm__ = self.Object_Confirm_IUnKnown
         self.__object_name__ = None
-        if CFile.file_match(self.__target_file_or_path_name__.lower(), '*行政区划*'):
+
+        current_path = self.__file_info__.__file_name_with_full_path__
+        if CFile.find_file_or_subpath_of_path(current_path, '*_0.mbtiles') \
+                and CFile.find_file_or_subpath_of_path(current_path, '*.xml'):
             self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = self.__target_file_or_path_name__
+            self.__object_name__ = self.__file_info__.__file_main_name__
         return self.__object_confirm__, self.__object_name__
 
     def parser_metadata(self):
