@@ -7,6 +7,7 @@ from __future__ import absolute_import
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CMetaDataUtils
+from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.job.c_dbBusJob import CDBBusJob
 from imetadata.business.metadata.base.job.c_dmFileInfo import CDMFileInfo
 from imetadata.business.metadata.base.job.c_dmPathInfo import CDMPathInfo
@@ -40,6 +41,7 @@ select
   , dm2_storage_directory.dsdid as query_dir_id
   , dm2_storage_directory.dsddirtype as query_dir_type
   , dm2_storage_directory.dsddirscanpriority as query_dir_scan_priority
+  , dm2_storage_directory.dsdscanrule as query_dir_scanrule
   , dm2_storage.dstid as query_storage_id
   , dm2_storage.dstOtherOption as query_storage_OtherOption  
   , COALESCE(dm2_storage_directory.dsd_object_id, dm2_storage_directory.dsdparentobjid)  as query_dir_parent_objid
@@ -57,6 +59,7 @@ set dsdscandirstatus = 1, dsdscandirprocessid = null
 where dsdscandirstatus = 2
         '''
 
+
     def process_mission(self, dataset) -> str:
         ds_subpath = dataset.value_by_name(0, 'query_subpath', '')
         ds_root_path = dataset.value_by_name(0, 'query_rootpath', '')
@@ -68,9 +71,9 @@ where dsdscandirstatus = 2
             ds_subpath = CFile.join_file(ds_root_path, ds_subpath)
         CLogger().debug('处理的子目录为: {0}'.format(ds_subpath))
 
-        path_obj = CDMPathInfo(ds_subpath, ds_root_path, dataset.value_by_name(0, 'query_storage_id', ''), dataset.value_by_name(0, 'query_dir_id', ''))
+        path_obj = CDMPathInfo(ds_subpath, ds_root_path, dataset.value_by_name(0, 'query_storage_id', ''), dataset.value_by_name(0, 'query_dir_id', ''), self.get_mission_db_id())
         if not path_obj.__file_existed__:
-            path_obj.update_db()
+            #path_obj.update_db()
             return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_subpath))
         else:
             file_list = CFile.file_or_subpath_of_path(ds_subpath)
@@ -83,13 +86,15 @@ where dsdscandirstatus = 2
                                            dataset.value_by_name(0, 'query_dir_id', ''), self.get_mission_db_id())
 
                     if path_obj.white_black_valid(ds_storage_option):
-                        path_obj.update_db()
+                        #path_obj.update_db(dataset)
+                        self.save_subpath(dataset,file_name_with_path)
                 else:
                     CLogger().debug('发现文件: {0}'.format(file_name_with_path))
                     file_obj = CDMFileInfo(file_name_with_path, ds_root_path, dataset.value_by_name(0, 'query_storage_id', ''),
                                            dataset.value_by_name(0, 'query_dir_id', ''), self.get_mission_db_id())
                     if file_obj.white_black_valid(ds_storage_option):
-                        file_obj.update_db()
+                        #file_obj.update_db(dataset)
+                        self.save_file(dataset,file_name_with_path)
 
             CFactory().give_me_db(self.get_mission_db_id()).execute(
                 '''
@@ -111,6 +116,21 @@ where dsdscandirstatus = 2
         ds_root_path = dataset.value_by_name(0, 'query_rootpath', '')
         ds_path_with_relation_path = CFile.file_relation_path(file_name_with_path, ds_root_path)
 
+        # 判断目录下是否存在 metadata.rule文件,存在则获取内容、内容里面的类型(DEM/DOM/...)
+        path_rule_str = None
+        path_rule_type = None
+        if CFile.file_or_path_exist(CFile.join_file(file_name_with_path, self.FileName_MetaData_Rule)):
+            try:
+                path_rule_str = CXml.file_2_str(
+                    CFile.join_file(file_name_with_path, self.FileName_MetaData_Rule))
+                # 解析rule文件获取type类型值
+                xml_obj = CXml()
+                xml_obj.load_xml(path_rule_str)
+                node = xml_obj.xpath_one('/root/type')
+                path_rule_type = xml_obj.get_element_text(node)
+            except:
+                path_rule = None
+
         sql_get_exist = '''
 select dsdid as exist_dir_id, dsddirlastmodifytime
 from dm2_storage_directory 
@@ -124,10 +144,10 @@ where dsddirectory = :dsdDirectory and dsdstorageid = :dsdStorageID
         if dataset_existed.is_empty():
             sql_insert = '''
             insert into dm2_storage_directory(
-                dsdid, dsdparentid, dsdstorageid, dsddirectory, dsddirtype
+                dsdid, dsdparentid, dsdstorageid, dsddirectory, dsddirtype, dsdScanRule
                 , dsddirectoryname, dsdpath, dsddircreatetime, dsddirlastmodifytime, dsdparentobjid
             ) VALUES(
-                uuid_generate_v4(), :dsdparentid, :dsdstorageid, :dsddirectory, :dsddirtype
+                uuid_generate_v4(), :dsdparentid, :dsdstorageid, :dsddirectory, :dsddirtype, :dsdScanRule
                 , :dsddirectoryname, :dsdpath, :dsddircreatetime, :dsddirlastmodifytime, :dsdparentobjid     
             ) 
             '''
@@ -141,38 +161,50 @@ where dsddirectory = :dsdDirectory and dsdstorageid = :dsdStorageID
             params['dsddircreatetime'] = CFile.file_create_time(file_name_with_path)
             params['dsddirlastmodifytime'] = CFile.file_modify_time(file_name_with_path)
             params['dsdparentobjid'] = dataset.value_by_name(0, 'query_dir_parent_objid', None)
+            params['dsdScanRule'] = path_rule_str
 
             CFactory().give_me_db(self.get_mission_db_id()).execute(sql_insert, params)
         else:
-            file_m_date = CFile.file_modify_time(file_name_with_path)
-            if file_m_date == str(dataset_existed.value_by_name(0, 'dsddirlastmodifytime', None)):
-                return CMetaDataUtils.merge_result(CMetaDataUtils.Success,
-                                                   '目录[{0}]自上次入库后无变化, 本次将被忽略!'.format(file_name_with_path))
-            else:
-                sql_update = '''
-                update dm2_storage_directory
-                set dsdparentid = :dsdparentid
-                    , dsddirectory = :dsddirectory
-                    , dsddirtype = :dsddirtype
-                    , dsddirectoryname = :dsddirectoryname
-                    , dsdpath = :dsdpath
-                    , dsddircreatetime = :dsddircreatetime
-                    , dsddirlastmodifytime = :dsddirlastmodifytime
-                    , dsdparentobjid = :dsdparentobjid    
-                where dsdid = :dsdid
+            #数据库记录存在，则先判断记录中的ruletype值与文件rule的类型是否相同
+            query_dir_scanrule = str(dataset_existed.value_by_name(0, 'query_dir_scanrule', None))
+            if query_dir_scanrule != path_rule_type:
                 '''
-                params = dict()
-                params['dsdid'] = dataset_existed.value_by_name(0, 'exist_dir_id', '')
-                params['dsddirectory'] = ds_path_with_relation_path
-                params['dsdparentid'] = dataset.value_by_name(0, 'query_dir_id', '')
-                params['dsddirtype'] = self.Dir_Type_Directory
-                params['dsddirectoryname'] = CFile.file_name(file_name_with_path)
-                params['dsdpath'] = CFile.file_path(ds_path_with_relation_path)
-                params['dsddircreatetime'] = CFile.file_create_time(file_name_with_path)
-                params['dsddirlastmodifytime'] = CFile.file_modify_time(file_name_with_path)
-                params['dsdparentobjid'] = dataset.value_by_name(0, 'query_dir_parent_objid', None)
+                   当数据库中的rule值与文件rule的值不一致时候， 删除当前目录下的所有子目录，文件 和对象
+                   更新记录中的规则
+                   设置子目录扫描状态为正常
+                   直接返回
+                '''
 
-                CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update, params)
+            else:
+                file_m_date = CFile.file_modify_time(file_name_with_path)
+                if file_m_date == str(dataset_existed.value_by_name(0, 'dsddirlastmodifytime', None)):
+                    return CMetaDataUtils.merge_result(CMetaDataUtils.Success,
+                                                       '目录[{0}]自上次入库后无变化, 本次将被忽略!'.format(file_name_with_path))
+                else:
+                    sql_update = '''
+                    update dm2_storage_directory
+                    set dsdparentid = :dsdparentid
+                        , dsddirectory = :dsddirectory
+                        , dsddirtype = :dsddirtype
+                        , dsddirectoryname = :dsddirectoryname
+                        , dsdpath = :dsdpath
+                        , dsddircreatetime = :dsddircreatetime
+                        , dsddirlastmodifytime = :dsddirlastmodifytime
+                        , dsdparentobjid = :dsdparentobjid    
+                    where dsdid = :dsdid
+                    '''
+                    params = dict()
+                    params['dsdid'] = dataset_existed.value_by_name(0, 'exist_dir_id', '')
+                    params['dsddirectory'] = ds_path_with_relation_path
+                    params['dsdparentid'] = dataset.value_by_name(0, 'query_dir_id', '')
+                    params['dsddirtype'] = self.Dir_Type_Directory
+                    params['dsddirectoryname'] = CFile.file_name(file_name_with_path)
+                    params['dsdpath'] = CFile.file_path(ds_path_with_relation_path)
+                    params['dsddircreatetime'] = CFile.file_create_time(file_name_with_path)
+                    params['dsddirlastmodifytime'] = CFile.file_modify_time(file_name_with_path)
+                    params['dsdparentobjid'] = dataset.value_by_name(0, 'query_dir_parent_objid', None)
+
+                    CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update, params)
 
     def save_file(self, dataset, file_name_with_path):
         """

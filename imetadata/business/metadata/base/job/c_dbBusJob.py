@@ -58,6 +58,130 @@ class CDBBusJob(CDMBaseJob):
         :param directoryid:
         :return:
         """
+
+        sql_list =[]
+        # 1.file表中的object对象对应的detail表记录
+        sql_detail_in_file = '''
+          DELETE
+          FROM
+	          dm2_storage_obj_detail
+          WHERE
+	          dodobjectid IN (
+		          SELECT 
+			          dsf_object_id
+		          FROM
+			          dm2_storage_file
+		          WHERE
+			          dsf_object_id IS NOT NULL 
+                    AND dsf_object_id != ''
+		            AND dsfdirectoryid IN (
+                        SELECT
+                            dsdid
+                        FROM
+                            dm2_storage_directory 
+                        WHERE
+                            dsdstorageid = ( SELECT dsdstorageid FROM dm2_storage_directory WHERE dsdid = '{0}}' ) 
+                            AND (
+                                dsddirectory = ( SELECT dsddirectory FROM dm2_storage_directory WHERE dsdid = '{0}' ) 
+                            OR dsddirectory LIKE ( SELECT REPLACE ( dsddirectory , '\' , '\\' ) || '\\%' FROM dm2_storage_directory WHERE dsdid = '{0}' ) 
+                            ) 
+	            )
+	          ); 
+        '''.format(directoryid)
+
+        # 2.directory表中的object对象对应的detail表记录
+        sql_detail_in_directory = '''
+          DELETE
+          FROM
+	          dm2_storage_obj_detail
+          WHERE
+	          dodobjectid IN (
+		          SELECT
+			          dsd_object_id
+		          FROM
+			          dm2_storage_directory
+		          WHERE
+			          dsd_object_id IS NOT NULL
+		          AND dsd_object_id != ''
+		          AND dsdparentid IN (
+	            	SELECT
+                        dsdid
+                    FROM
+                        dm2_storage_directory 
+                    WHERE
+                        dsdstorageid = ( SELECT dsdstorageid FROM dm2_storage_directory WHERE dsdid = '{0}' ) 
+                        AND (
+                            dsddirectory = ( SELECT dsddirectory FROM dm2_storage_directory WHERE dsdid = '{0}' ) 
+                        OR dsddirectory LIKE ( SELECT REPLACE ( dsddirectory , '\' , '\\' ) || '\\%' FROM dm2_storage_directory WHERE dsdid = '{0}' ) 
+                        )
+	            )
+	          );
+        '''.format(directoryid)
+
+        # 3.file表中的object对象记录
+        sql_object_in_file = '''
+          DELETE
+          FROM
+	          dm2_storage_object
+          WHERE
+	          dsoid IN (
+		          SELECT
+			          dsf_object_id
+		          FROM
+			          dm2_storage_file
+		          WHERE
+			          dsf_object_id IS NOT NULL 
+                    AND dsf_object_id != ''
+		            AND dsfdirectoryid IN (
+                        SELECT
+                            dsdid
+                        FROM
+                            dm2_storage_directory 
+                        WHERE
+                            dsdstorageid = ( SELECT dsdstorageid FROM dm2_storage_directory WHERE dsdid = '{0}' ) 
+                            AND (
+                                dsddirectory = ( SELECT dsddirectory FROM dm2_storage_directory WHERE dsdid = '{0}' ) 
+                            OR dsddirectory LIKE ( SELECT REPLACE ( dsddirectory , '\' , '\\' ) || '\\%' FROM dm2_storage_directory WHERE dsdid = '{0}' ) 
+                           )
+                    )
+	          );
+                '''.format(directoryid)
+
+        # 4.directory表中的object对象记录
+        sql_object_in_directory = '''
+            DELETE
+            FROM
+              dm2_storage_object
+            WHERE
+              dsoid IN (
+                  SELECT
+                      dsd_object_id
+                  FROM
+                      dm2_storage_directory
+                  WHERE
+                      dsd_object_id IS NOT NULL
+                  AND dsd_object_id != ''
+                  AND dsdparentid IN (
+                        SELECT
+                        dsdid
+                        FROM
+                            dm2_storage_directory 
+                        WHERE
+                            dsdstorageid = ( SELECT dsdstorageid FROM dm2_storage_directory WHERE dsdid = '$directoryid$' ) 
+                            AND (
+                                dsddirectory = ( SELECT dsddirectory FROM dm2_storage_directory WHERE dsdid = '$directoryid$' ) 
+                            OR dsddirectory LIKE ( SELECT REPLACE ( dsddirectory , '\' , '\\' ) || '\\%' FROM dm2_storage_directory WHERE dsdid = '$directoryid$' ) 
+                            )
+                    )
+                );
+            '''.format(directoryid)
+
+        #sql_list.append(sql_detail_in_file)
+        #sql_list.append(sql_detail_in_directory)
+        sql_list.append(sql_object_in_file)
+        sql_list.append(sql_object_in_directory)
+
+
         pass
 
     def clear_data_no_valid(self):
