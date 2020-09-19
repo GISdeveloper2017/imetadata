@@ -4,9 +4,6 @@
 # @File : c_dbBusJob.py
 
 from __future__ import absolute_import
-
-from imetadata.base.c_file import CFile
-from imetadata.base.c_json import CJson
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
 
 

@@ -23,7 +23,7 @@ class CDMPathInfo(CDMFilePathInfoEx):
                         dsd_object_confirm, dsd_object_id, dsd_directory_valid, dsdpath, dsddircreatetime, \
                         dsddirlastmodifytime, dsdparentobjid, dsdscanrule from dm2_storage_directory \
                         where dsdstorageid = :dsdStorageID and dsddirectory = :dsdDirectory',
-                {'dsdStorageID': self.__storage_id__, 'dsdDirectory': self.__file_path_with_rel_path__})
+                {'dsdStorageID': self.__storage_id__, 'dsdDirectory': self.__file_name_with_rel_path__})
             if not self.__ds_file_or_path__.is_empty():
                 self.__my_id__ = self.__ds_file_or_path__.value_by_name(0, 'dsdid', None)
             if self.__my_id__ is None:
@@ -156,7 +156,7 @@ class CDMPathInfo(CDMFilePathInfoEx):
             finally:
                 engine.session_close(session)
 
-    def db_check_and_update_metadata_rule(self, metadata_rule_file_name) -> bool:
+    def db_check_and_update_metadata_rule(self, metadata_rule_file_name):
         """
         检查并判断指定的元数据扫描规则文件是否与数据库中的记录相等
         1. 如果和记录中的不同
@@ -172,12 +172,21 @@ class CDMPathInfo(CDMFilePathInfoEx):
         if CFile.file_or_path_exist(metadata_rule_file_name):
             try:
                 metadata_rule_content = CXml.file_2_str(metadata_rule_file_name)
+                CLogger().debug('在目录[{0}]下发现元数据规则文件, 它的内容为[{1}]'.format(self.__file_name_with_full_path__, metadata_rule_content))
             except:
                 pass
 
-        if CMetaDataUtils.equal_ignore_case(metadata_rule_content,
-                                            self.__ds_file_or_path__.value_by_name(0, 'dsdscanrule', '')):
+        db_metadata_rule_content = self.__ds_file_or_path__.value_by_name(0, 'dsdscanrule', '')
+        CLogger().debug(
+            '目录[{0}]在库中登记的规则内容为[{1}]'.format(self.__file_name_with_full_path__, db_metadata_rule_content))
+
+        if CMetaDataUtils.equal_ignore_case(metadata_rule_content, db_metadata_rule_content):
+            CLogger().debug(
+                '目录[{0}]的规则内容与库中的相同'.format(self.__file_name_with_full_path__))
             return
+        else:
+            CLogger().debug(
+                '目录[{0}]的规则内容与库中的不同, 将清理目录下的文件, 重新入库!'.format(self.__file_name_with_full_path__))
 
         sql_update_path_scan_rule = '''
             update dm2_storage_directory
@@ -213,7 +222,7 @@ class CDMPathInfo(CDMFilePathInfoEx):
             params = dict()
             params['dsdID'] = self.__my_id__
             params['dsdStorageID'] = self.__storage_id__
-            params['dsdSubDirectory'] = CFile.join_file(self.__file_path_with_rel_path__, '')
+            params['dsdSubDirectory'] = CFile.join_file(self.__file_name_with_rel_path__, '')
 
             engine.session_execute(session, sql_clear_files_of_path, params)
             engine.session_execute(session, sql_clear_subpath_of_path, params)
@@ -268,7 +277,7 @@ class CDMPathInfo(CDMFilePathInfoEx):
         params['dsdparentid'] = self.__parent_id__
         params['dsdstorageid'] = self.__storage_id__
         params['dsddirectory'] = self.__file_name_with_rel_path__
-        params['dsddirtype'] = self.FileType_Dir
+        params['dsddirtype'] = self.Dir_Type_Directory
         params['dsddirectoryname'] = self.__file_name_without_path__
         params['dsdpath'] = self.__file_path_with_rel_path__
         params['dsddircreatetime'] = self.__file_create_time__

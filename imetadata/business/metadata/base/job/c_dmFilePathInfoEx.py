@@ -10,7 +10,6 @@ from imetadata.base.c_object import CObject
 from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
-from imetadata.database.base.c_dataset import CDataSet
 from imetadata.database.c_factory import CFactory
 
 
@@ -37,6 +36,10 @@ class CDMFilePathInfoEx(CFileInfoEx):
             如果不为空, 则表明数据库中已经存储该文件标识
         """
         self.__storage_id__ = storage_id
+        self.__my_id__ = file_or_path_id
+        self.__db_server_id__ = db_server_id
+        self.__parent_id__ = parent_id
+        self.__owner_obj_id__ = owner_obj_id
 
         self.__ds_storage__ = CFactory().give_me_db(self.__db_server_id__).one_row(
             'select dstid, dsttitle, dstunipath, dstotheroption from dm2_storage where dstid = :dstID',
@@ -44,10 +47,6 @@ class CDMFilePathInfoEx(CFileInfoEx):
 
         root_path = self.__ds_storage__.value_by_name(0, 'dstunipath', '')
         super().__init__(file_type, file_name_with_full_path, root_path)
-        self.__my_id__ = file_or_path_id
-        self.__db_server_id__ = db_server_id
-        self.__parent_id__ = parent_id
-        self.__owner_obj_id__ = owner_obj_id
         self.custom_init()
 
     def custom_init(self):
@@ -154,8 +153,7 @@ class CDMFilePathInfoEx(CFileInfoEx):
                                                                  '{0}_*.{1}'.format(self.Name_Plugins, self.FileExt_Py))
         for file_name_with_path in plugins_file_list:
             file_main_name = CFile.file_main_name(file_name_with_path)
-            class_classified_obj = CObject.create_plugins_instance(plugins_root_package_name, file_main_name,
-                                                                   target, target_type, target_id)
+            class_classified_obj = CObject.create_plugins_instance(plugins_root_package_name, file_main_name, self)
             object_confirm, object_name = class_classified_obj.classified()
             if object_confirm != self.Object_Confirm_IUnKnown:
                 CLogger().debug(

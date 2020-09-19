@@ -3,25 +3,23 @@
 # @Author : 王西亚 
 # @File : c_plugins.py
 
-from abc import abstractmethod, ABC
+from abc import abstractmethod
 
-from imetadata.base.c_file import CFile
-from imetadata.base.c_logger import CLogger
+from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CMetaDataUtils
-from imetadata.business.metadata.base.job.c_dmFilePathInfoEx import CDMFilePathInfoEx
 
 
-class CPlugins(CResource, ABC):
+class CPlugins(CResource):
     """
     数据识别插件
     """
-    __file_info__: CDMFilePathInfoEx
+    __file_info__: CFileInfoEx
 
     __object_confirm__: int
     __object_name__: str
 
-    def __init__(self, file_info: CDMFilePathInfoEx):
+    def __init__(self, file_info: CFileInfoEx):
         """
         :param file_info:  目标文件或路径的名称
         """

@@ -12,9 +12,9 @@ class plugins_6002_gf1_pms(CSatPlugins):
     def classified(self):
         self.__object_confirm__ = self.Object_Confirm_IUnKnown
         self.__object_name__ = None
-        if CFile.file_match(self.__target_file_or_path_name__.lower(), 'gf1-pms*'):
+        if CFile.file_match(self.__file_info__.__file_main_name__.lower(), 'gf1-pms*'):
             self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = self.__target_file_or_path_name__
+            self.__object_name__ = self.__file_info__.__file_main_name__
         return self.__object_confirm__, self.__object_name__
 
     def parser_metadata(self):
