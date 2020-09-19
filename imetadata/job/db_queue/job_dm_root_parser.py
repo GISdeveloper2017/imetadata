@@ -9,12 +9,12 @@ from __future__ import absolute_import
 from imetadata.base.c_file import CFile
 from imetadata.base.core.Exceptions import DBException
 from imetadata.base.c_utils import CMetaDataUtils
-from imetadata.business.metadata.base.job.c_dbBusJob import CDBBusJob
+from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
 from imetadata.database.c_factory import CFactory
 from imetadata.base.c_logger import CLogger
 
 
-class job_dm_root_parser(CDBBusJob):
+class job_dm_root_parser(CDMBaseJob):
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage 

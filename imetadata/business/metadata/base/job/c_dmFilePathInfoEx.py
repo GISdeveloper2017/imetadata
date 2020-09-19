@@ -157,7 +157,7 @@ class CDMFilePathInfoEx(CFileInfoEx):
             object_confirm, object_name = class_classified_obj.classified()
             if object_confirm != self.Object_Confirm_IUnKnown:
                 CLogger().debug(
-                    '{0} is plugins_classified as {1}.{2}'.format(target, class_classified_obj.get_group_name(),
+                    '{0} is plugins_classified as {1}.{2}'.format(target, class_classified_obj.get_information(),
                                                                   class_classified_obj.get_id()))
                 return class_classified_obj, object_confirm, object_name
         else:

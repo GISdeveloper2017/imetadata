@@ -31,12 +31,13 @@ class CPlugins(CResource):
     def get_classified_object_name(self):
         return self.__object_name__
 
-    @abstractmethod
-    def get_group_name(self) -> str:
-        pass
+    def get_information(self) -> dict:
+        information = dict()
+        information[self.Name_ID] = self.get_id()
+        return information
 
     def get_id(self) -> str:
-        return CMetaDataUtils.plugins_id_by_file_main_name(type(self).__name__)
+        return type(self).__name__
 
     @abstractmethod
     def classified(self):

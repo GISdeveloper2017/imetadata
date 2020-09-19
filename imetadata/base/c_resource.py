@@ -79,3 +79,17 @@ class CResource:
     File_Status_Invalid = 0
     File_Status_Unknown = 1
 
+    Name_ID = 'id'
+    Name_Name = 'name'
+    Name_Code = 'code'
+    Name_Catalog = 'catalog'
+    Name_Title = 'title'
+    Name_Type = 'type'
+    name_MetaData_Engine = 'metadata_engine'
+    name_Bus_MetaData_Engine = 'bus_metadata_engine'
+    name_tags_Engine = 'tags_engine'
+    name_Detail_Engine = 'detail_engine'
+    name_QC_Engine = 'qc_engine'
+
+
+

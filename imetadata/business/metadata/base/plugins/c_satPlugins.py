@@ -7,5 +7,4 @@ from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
 
 
 class CSatPlugins(CPlugins):
-    def get_group_name(self) -> str:
-        return 'sat'
+    pass
