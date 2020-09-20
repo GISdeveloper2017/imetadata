@@ -36,6 +36,7 @@ class CVectorMDReader(CMDReader):
                 json_vector.set_value_of_name('result', self.Failure)
                 json_vector.set_value_of_name('message', message)
                 json_vector.to_file(file_name_with_path)
+                return
                 #return CMetaDataUtils.merge_result(CMetaDataUtils.Failure,
                 #                                   '文件[{0}]打开失败!'.format(self.__file_name_with_path__))
             shp_lyr = vector_ds.GetLayer(0)
@@ -44,6 +45,7 @@ class CVectorMDReader(CMDReader):
                 json_vector.set_value_of_name('result', self.Failure)
                 json_vector.set_value_of_name('message', message)
                 json_vector.to_file(file_name_with_path)
+                return
                 #return CMetaDataUtils.merge_result(CMetaDataUtils.Failure,
                 #                                   '文件[{0}]读取图层失败!'.format(self.__file_name_with_path__))
             driver = vector_ds.GetDriver()
@@ -52,6 +54,7 @@ class CVectorMDReader(CMDReader):
                 json_vector.set_value_of_name('result', self.Failure)
                 json_vector.set_value_of_name('message', message)
                 json_vector.to_file(file_name_with_path)
+                return
                 #return CMetaDataUtils.merge_result(CMetaDataUtils.Failure,
                 #                                   '文件[{0}]读取驱动失败!'.format(self.__file_name_with_path__))
 
