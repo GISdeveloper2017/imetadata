@@ -59,6 +59,174 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
      | 建设中 |zhaoyf, wangxy|db_queue|job_dm_path2object|目录识别对象调度, 处理dm2_storage_directory表队列, dsScanStatus:0->1->2->0|
      | 建设中 |zhaoyf, wangxy|db_queue|job_dm_path_parser|目录下的子目录扫描调度, 处理dm2_storage_directory表队列, dsScanFileStatus:0->1->2->0|
 
+# 2020-09-18
+## 数据管理并行处理算法
+### 根目录扫描调度
+1. 名称: job_dm_root_parser
+1. 类型: db_queue
+1. 算法:
+   1. 抢占dm2_storage表中dstScanStatus=1的记录, 状态更新为2
+   1. 检查dm2_storage_directory表中是否有对应的根目录, 加入到dm2_storage_directory表中, 注意设置如下状态:
+        * dsd_directory_valid=1(待确认)
+        * dsdScanFileStatus=1
+        * scanStatus=1
+   1. 将处理成功的记录, dm2_storage表dstScanStatus设置为0
+
+### 目录识别调度
+1. 名称: job_dm_path2object
+1. 类型: db_queue
+1. 算法:
+   1. 抢占dm2_storage_directory表中dsdScanStatus=1的记录, 状态更新为2
+   1. 检查目录是否存在
+        1. 目录不存在:
+            * 标记当前目录及以下的文件(递归)的dsfFileValid=0无效(为了高效处理)
+                * dsfScanStatus=0
+                * dsfFileValid=0
+            * 标记当前目录及以下的子目录(递归)为dsd_directory_valid=0无效(为了高效处理)
+                * dsdScanStatus=0
+                * dsdScanFileStatus=0
+                * dsdScanDirStatus=0
+                * dsd_directory_valid=0
+        1. 目录存在:
+            * 检查并判断指定的元数据扫描规则文件是否与数据库中的记录相等(都是空也算相等)
+                * 如果和记录中的不同
+                    * 删除当前目录下的所有子目录, 文件 和对象
+                    * 更新记录中的规则
+                    * 设置子目录扫描状态为正常
+                        * dsdScanFileStatus=1
+                        * dsdScanDirStatus=1
+                        * dsd_directory_valid=-1
+                * 如果和记录中的相同
+                    * 不处理
+            * 设置当前目录的dsd_directory_valid=-1有效
+            * 目录当前情况下是否是对象
+                * 不知道是不是对象
+                    * 开始判断是何种对象
+                    * 更新对象字段
+                * 是, 可能是, 不是
+                    * 判断目录的最后修改时间和记录中的时间是否一致
+                        * 如果无更新: 不再继续
+                        * 如果有更新
+                            * ***更新最后修改时间到记录中!!!(这里做, 因此, 在[目录扫描文件和子目录调度]中不能做!)***
+                            * 删除旧的对象记录
+                    * 开始判断是何种对象
+                    * 更新对象字段
+                * 识别后的结果:
+                    * 不知道是不是对象
+                        * dsdScanFileStatus=1
+                        * dsdScanDirStatus=1
+                        * dsd_directory_valid=-1
+                    * 是, 可能是, 不是
+                        * dsdScanFileStatus=0
+                        * dsdScanDirStatus=0
+                        * dsd_directory_valid=-1
+   1. 将处理成功的dm2_storage_directory记录
+        1. dsdScanStatus=0
+   
+### 目录扫描文件和子目录调度
+1. 名称: job_dm_path_parser
+1. 类型: db_queue
+1. 算法:
+   1. 抢占dm2_storage_directory表中dsdScanStatus=0&dsdScanFileStatus=1&dsd_directory_valid=-1(存在)的记录, 状态dsdScanFileStatus更新为2
+   1. 将当前目录下的子目录的dsd_directory_valid改为1(待确认), 注意不是递归
+   1. 将当前目录下的文件的dsfFileValid改为1(待确认), 注意不是递归
+   1. 扫描目录下的文件和子目录:
+        1. 黑白名单检化验
+            1. 未通过
+                1. 不处理, 进行下一个
+            1. 通过
+                1. 如果是子目录
+                    1. 检查dm2_storage_directory中是否有匹配的记录
+                        1. 如有对应记录
+                            1. 检查目录最后修改时间, 与匹配的记录是否相同
+                                1. 如果相同
+                                    * dsdScanStatus=0
+                                    * dsdScanFileStatus=0
+                                    * dsd_directory_valid=-1 
+                                1. 如果不同
+                                    * ***这里不能更新记录的信息, 否则在对象识别调度中就无法判断时间有效性了!!!***
+                                    * dsdScanStatus=1
+                                    * dsdScanFileStatus=1
+                                    * dsd_directory_valid=1 (这里是1或-1都无关系, 对象识别时, 还是要判断一下) 
+                        1. 如果没有对应记录
+                            1. 添加记录
+                            1. 注意如下状态:
+                               * dsdScanStatus=1
+                               * dsdScanFileStatus=1
+                               * dsd_directory_valid=-1 (这里是1或-1都无关系, 对象识别时, 还是要判断一下)
+                1. 如果是文件
+                    1. 检查dm2_storage_file中是否有匹配的记录
+                        1. 如有对应记录
+                            1. 检查文件的大小和最后修改时间, 与匹配的记录是否相同
+                                1. 如果相同
+                                    * dsfScanStatus=0
+                                    * dsdFileValid=-1 
+                                1. 如果不同
+                                    * ***这里不能更新记录的信息, 否则在对象识别调度中就无法判断时间有效性了!!!***
+                                    * dsdScanStatus=1
+                                    * dsdFileValid=1 (这里是1或-1都无关系, 对象识别时, 还是要判断一下)
+                        1. 如果没有对应记录
+                            1. 添加记录
+                            1. 注意如下状态:
+                               * dsdScanStatus=1
+                               * dsdFileValid=-1 (这里是1或-1都无关系, 对象识别时, 还是要判断一下)
+   1. 将当前目录下的子目录的dsd_directory_valid=1(待确认)的, 都改为0(无效), 注意不是递归
+   1. 将当前目录下的文件的dsfFileValid=1(待确认)的, 都改为0(无效), 注意不是递归
+   1. 将处理成功的dm2_storage_directory记录
+        1. dsdScanFileStatus=0
+        1. dsdScanDirStatus=0
+
+### 文件识别调度
+1. 名称: job_dm_file2object
+1. 类型: db_queue
+1. 算法:
+   1. 抢占dm2_storage_file表中dsfScanStatus=1的记录, 状态更新为2
+   1. 检查文件是否存在
+        1. 如果文件不存在:
+            * 标记当前文件的dsfFileValid=0无效
+        1. 文件存在:
+            * 设置当前文件的dsfFileValid=-1有效
+            * 文件当前情况下是否是对象
+                * 不知道是不是对象
+                    * 开始判断是何种对象
+                    * 更新对象字段
+                * 是, 可能是, 不是
+                    * 判断文件的大小, 最后修改时间和记录中的是否一致
+                        * 如果无更新: 不再继续
+                        * 如果有更新
+                            * ***更新最后修改时间到记录中!!!(这里做, 因此, 在[目录扫描文件和子目录调度]中不能做!)***
+                            * 删除旧的对象记录(?要不要删除, 还是直接刷新呢?附属文件变化, 如何探测?)
+                    * 开始判断是何种对象
+                    * 更新对象字段
+   1. 将处理成功的dm2_storage_file记录
+        1. dsfScanStatus=0
+
+### 对象处理调度
+#### 对象标签处理调度
+1. 名称: job_dm_object_tag_parser
+1. 类型: db_queue
+1. 算法:
+   1. 抢占dm2_storage_object表中dsoMetaDataScanStatus=1的记录, 状态更新为2
+   1. 检查文件是否存在
+        1. 如果文件不存在:
+            * 标记当前文件的dsfFileValid=0无效
+        1. 文件存在:
+            * 设置当前文件的dsfFileValid=-1有效
+            * 文件当前情况下是否是对象
+                * 不知道是不是对象
+                    * 开始判断是何种对象
+                    * 更新对象字段
+                * 是, 可能是, 不是
+                    * 判断文件的大小, 最后修改时间和记录中的是否一致
+                        * 如果无更新: 不再继续
+                        * 如果有更新
+                            * ***更新最后修改时间到记录中!!!(这里做, 因此, 在[目录扫描文件和子目录调度]中不能做!)***
+                            * 删除旧的对象记录(?要不要删除, 还是直接刷新呢?附属文件变化, 如何探测?)
+                    * 开始判断是何种对象
+                    * 更新对象字段
+   1. 将处理成功的dm2_storage_file记录
+        1. dsfScanStatus=0
+
 
 # 2020-09-05
 扩展trigger的类型为

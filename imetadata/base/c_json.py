@@ -21,7 +21,6 @@ import demjson
 import jsonpath
 from imetadata.base.c_logger import CLogger
 
-
 class CJson:
     Encoding_UTF8 = 'UTF-8'
     Encoding_GBK = 'GB2312'
@@ -105,9 +104,10 @@ class CJson:
         """
         if json_text is None:
             return attr_value_default
+        elif str(json_text) == '':
+            return attr_value_default
         else:
             json = CJson()
-            CLogger().debug('Json解析{0}'.format(json_text))
             try:
                 json.load_json_text(json_text)
                 return json.xpath_one(json_path_str, attr_value_default)

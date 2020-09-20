@@ -8,10 +8,25 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.base.c_xml import CXml
-from imetadata.business.metadata.base.plugins.c_pathPlugins import CPathPlugins
+from imetadata.business.metadata.base.plugins.c_dirPlugins import CDirPlugins
 
 
-class plugins_0500_dataset_21at(CPathPlugins):
+class plugins_0500_dataset_21at(CDirPlugins):
+    def get_information(self) -> dict:
+        information = super().get_information()
+        information[self.Name_Title] = '二十一世纪空间数据集'
+        information[self.Name_Name] = ''
+        information[self.Name_Code] = '110001'
+        information[self.Name_Catalog] = '业务数据集'
+        information[self.Name_Type] = 'business_data_set'
+        information[self.name_MetaData_Engine] = None
+        information[self.name_Bus_MetaData_Engine] = None
+        information[self.name_tags_Engine] = 'global_dim'
+        information[self.name_Detail_Engine] = 'same_file_mainname'
+        information[self.name_QC_Engine] = None
+
+        return information
+
     __classified_object_type__ = None
 
     def get_id(self) -> str:

@@ -38,10 +38,10 @@ class CObject:
             raise BusinessNotExistException(package_subdir, package_name)
 
     @classmethod
-    def create_plugins_instance(cls, package_root_name, package_name, target_file_or_path_name, target_type, target_id) -> CPlugins:
+    def create_plugins_instance(cls, package_root_name, package_name, file_info_ex) -> CPlugins:
         package_full_name = '{0}.{1}'.format(package_root_name, package_name)
         package_obj = importlib.import_module(package_full_name)
         class_meta = getattr(package_obj, package_name)
         class_meta_one = class_meta
-        obj = class_meta_one(target_file_or_path_name, target_type, target_id)
+        obj = class_meta_one(file_info_ex)
         return obj

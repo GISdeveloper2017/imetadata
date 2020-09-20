@@ -5,10 +5,10 @@
 
 
 from imetadata.base.c_file import CFile
-from imetadata.business.metadata.base.plugins.c_pathPlugins import CPathPlugins
+from imetadata.business.metadata.base.plugins.c_dirPlugins import CDirPlugins
 
 
-class plugins_2000_gdb(CPathPlugins):
+class plugins_2000_gdb(CDirPlugins):
 
     def classified(self):
         self.__object_confirm__ = self.Object_Confirm_IUnKnown

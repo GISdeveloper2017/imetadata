@@ -9,12 +9,12 @@ from __future__ import absolute_import
 from imetadata.base.c_file import CFile
 from imetadata.base.core.Exceptions import DBException
 from imetadata.base.c_utils import CMetaDataUtils
-from imetadata.business.metadata.base.job.c_dbBusJob import CDBBusJob
+from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
 from imetadata.database.c_factory import CFactory
 from imetadata.base.c_logger import CLogger
 
 
-class job_dm_root_parser(CDBBusJob):
+class job_dm_root_parser(CDMBaseJob):
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage 
@@ -48,51 +48,50 @@ where dstscanstatus = 2
         sql_check_root_storage_dir_exist = '''
         select dsdid
         from dm2_storage_directory
-        where dsdStorageId = '{0}' and dsdid = '{0}'
-        '''.format(storage_id)
+        where dsdid = :dsdid
+        '''
 
         sql_update_root_storage_dir = '''
         update dm2_storage_directory
-        set dsdParentID = '-1', dsdDirectory = '', dsdDirtype = :dsdDirType
+        set dsdParentID = '-1', dsdDirectory = '', dsdDirtype = 3
             , dsdDirectoryName = '', dsdPath = ''
             , dsdDirCreateTime = :dsddircreatetime, dsdDirLastModifyTime = :dsddirlastmodifytime
-            , dsdLastModifyTime = Now()
-        where dsdStorageId = '{0}' and dsdid = '{0}'
-        '''.format(storage_id)
+            , dsdLastModifyTime = Now(), dsd_directory_valid = 1
+        where dsdid = :dsdid
+        '''
 
         sql_insert_root_storage_dir = '''
         insert into dm2_storage_directory(
             dsdid, dsdparentid, dsdstorageid, dsddirectory, dsddirtype, dsdlastmodifytime
             , dsddirectoryname, dsd_directory_valid, dsdpath, dsddircreatetime, dsddirlastmodifytime)
-        values('{0}', '-1', '{0}', '', :dsdDirType, Now()
-            , '', -1, '', :dsddircreatetime, :dsddirlastmodifytime
+        values(:dsdid, '-1', :dsdStorageID, '', 3, Now()
+            , '', 1, '', :dsddircreatetime, :dsddirlastmodifytime
         )
-        '''.format(storage_id)
+        '''
 
         sql_on_mission_finished = '''
 update dm2_storage 
 set dstscanstatus = 0
-where dstid = '{0}'
-'''.format(storage_id)
+where dstid = :dstid
+'''
 
         try:
-            factory = CFactory()
-            db = factory.give_me_db(self.get_mission_db_id())
+            db = CFactory().give_me_db(self.get_mission_db_id())
             params = dict()
-            params['dsdDirType'] = self.Dir_Type_Root
+            params['dsdid'] = storage_id
+            params['dsdStorageID'] = storage_id
             if CFile.file_or_path_exist(storage_root_path):
                 params['dsdDirCreateTime'] = CFile.file_modify_time(storage_root_path)
                 params['dsddirlastmodifytime'] = CFile.file_modify_time(storage_root_path)
 
-            if db.if_exists(sql_check_root_storage_dir_exist):
+            if db.if_exists(sql_check_root_storage_dir_exist, params):
                 db.execute(sql_update_root_storage_dir, params)
             else:
                 db.execute(sql_insert_root_storage_dir, params)
-
-            db.execute(sql_on_mission_finished)
+            db.execute(sql_on_mission_finished, {'dstid': storage_id})
             return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '存储扫描处理成功')
         except DBException as err:
-            return CMetaDataUtils.merge_result(CMetaDataUtils.Exception, '存储扫描失败, 原因为{0}'.format(err.__str__()))
+            return CMetaDataUtils.merge_result(CMetaDataUtils.Exception, '存储扫描失败, 原因为{0}'.format(err.__str__))
 
 
 if __name__ == '__main__':

@@ -34,7 +34,7 @@ class DBLinkException(DBException):
 
 class DBSQLExecuteException(DBException):
     def __init__(self, db_id, sql):
-        super.__init__(db_id)
+        super().__init__(db_id)
         self.__sql__ = sql
 
     def __str__(self):
