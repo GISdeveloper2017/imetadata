@@ -2,6 +2,7 @@
 # @Time : 2020/9/18 09:56 
 # @Author : 王西亚 
 # @File : c_vectorMDReader.py
+from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CMetaDataUtils
@@ -35,29 +36,31 @@ class CVectorMDReader(CMDReader):
                 message = '文件[{0}]打开失败!'.format(self.__file_name_with_path__)
                 json_vector.set_value_of_name('result', self.Failure)
                 json_vector.set_value_of_name('message', message)
+                # 判断路径是否存在，不存在则创建
+                CFile.check_and_create_directory(file_name_with_path)
                 json_vector.to_file(file_name_with_path)
-                return
-                #return CMetaDataUtils.merge_result(CMetaDataUtils.Failure,
-                #                                   '文件[{0}]打开失败!'.format(self.__file_name_with_path__))
+                return CMetaDataUtils.merge_result(CMetaDataUtils.Failure,
+                                                   '文件[{0}]打开失败!'.format(self.__file_name_with_path__))
             shp_lyr = vector_ds.GetLayer(0)
             if shp_lyr is None:
                 message = '文件[{0}]读取图层失败!'.format(self.__file_name_with_path__)
                 json_vector.set_value_of_name('result', self.Failure)
                 json_vector.set_value_of_name('message', message)
+                # 判断路径是否存在，不存在则创建
+                CFile.check_and_create_directory(file_name_with_path)
                 json_vector.to_file(file_name_with_path)
-                return
-                #return CMetaDataUtils.merge_result(CMetaDataUtils.Failure,
-                #                                   '文件[{0}]读取图层失败!'.format(self.__file_name_with_path__))
+                return CMetaDataUtils.merge_result(CMetaDataUtils.Failure,
+                                                   '文件[{0}]读取图层失败!'.format(self.__file_name_with_path__))
             driver = vector_ds.GetDriver()
             if driver is None:
                 message = '文件[{0}]读取驱动失败!'.format(self.__file_name_with_path__)
                 json_vector.set_value_of_name('result', self.Failure)
                 json_vector.set_value_of_name('message', message)
+                # 判断路径是否存在，不存在则创建
+                CFile.check_and_create_directory(file_name_with_path)
                 json_vector.to_file(file_name_with_path)
-                return
-                #return CMetaDataUtils.merge_result(CMetaDataUtils.Failure,
-                #                                   '文件[{0}]读取驱动失败!'.format(self.__file_name_with_path__))
-
+                return CMetaDataUtils.merge_result(CMetaDataUtils.Failure,
+                                                   '文件[{0}]读取驱动失败!'.format(self.__file_name_with_path__))
 
             # 定义datasource子节点,并添加到矢量json对象中
             json_datasource = CJson()
@@ -106,18 +109,22 @@ class CVectorMDReader(CMDReader):
                 json_vector.set_value_of_name('layers', list_json_layers)
             json_shp_str = json_vector.to_json()
             print(json_shp_str)
+            # 判断路径是否存在，不存在则创建
+            CFile.check_and_create_directory(file_name_with_path)
             json_vector.to_file(file_name_with_path)
             CLogger().info('文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
-            #return CMetaDataUtils.merge_result(CMetaDataUtils.Success,
-            #                                   '文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
+            return CMetaDataUtils.merge_result(CMetaDataUtils.Success,
+                                               '文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
         except Exception as error:
             CLogger().info('get_metadata_2_file解析错误：{0}'.format(error))
             message = 'get_metadata_2_file解析错误：文件：｛0｝,错误信息为{1}'.format(self.__file_name_with_path__, error)
             json_vector.set_value_of_name('result', self.Failure)
             json_vector.set_value_of_name('message', message)
+            # 判断路径是否存在，不存在则创建
+            CFile.check_and_create_directory(file_name_with_path)
             json_vector.to_file(file_name_with_path)
-            #return CMetaDataUtils.merge_result(CMetaDataUtils.Failure,
-            #                                   '文件[{0}]读取异常!｛1｝'.format(self.__file_name_with_path__,error))
+            return CMetaDataUtils.merge_result(CMetaDataUtils.Failure,
+                                               '文件[{0}]读取异常!｛1｝'.format(self.__file_name_with_path__,error))
         finally:
             if vector_ds is not None:
                 vector_ds.Destroy()
@@ -257,5 +264,5 @@ if __name__ == '__main__':
     # CVectorMDReader('/aa/bb/cc1.shp').get_metadata_2_file('/aa/bb/cc1.json')
     # CVectorMDReader('/aa/bb/cc2.gdb').get_metadata_2_file('/aa/bb/cc2.json')
     # CVectorMDReader(r'D:\data\0生态审计\少量数据测试_修改后\重大工程项目_曲靖市_2019.shp').get_metadata_2_file(r'C:\app\cc1.json')
-     CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb.gdb').get_metadata_2_file(r'C:\app\cc4.json')
+     CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb.gdb').get_metadata_2_file(r'C:\app2\cc4.json')
     # CVectorMDReader(r'D:\data\0test\jbnt_2010.shp').test_json()
