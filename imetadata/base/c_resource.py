@@ -67,6 +67,7 @@ class CResource:
 
     Name_MetaData = 'metadata'
     Name_Plugins = 'plugins'
+    Name_WorkDir = 'workdir'
     Name_Business = 'business'
 
     FileExt_Py = 'py'
@@ -85,11 +86,6 @@ class CResource:
     Name_Catalog = 'catalog'
     Name_Title = 'title'
     Name_Type = 'type'
-    name_MetaData_Engine = 'metadata_engine'
-    name_Bus_MetaData_Engine = 'bus_metadata_engine'
-    name_tags_Engine = 'tags_engine'
-    name_Detail_Engine = 'detail_engine'
-    name_QC_Engine = 'qc_engine'
 
-
-
+    Path_MD_Rule_Content_ProductType = '/root/ProductType'
+    Path_MD_Rule_Content_ProductName = '/root/DNName'

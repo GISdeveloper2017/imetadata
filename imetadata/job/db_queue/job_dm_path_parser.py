@@ -7,8 +7,8 @@ from __future__ import absolute_import
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
-from imetadata.business.metadata.base.job.c_dmFileInfo import CDMFileInfo
-from imetadata.business.metadata.base.job.c_dmPathInfo import CDMPathInfo
+from imetadata.business.metadata.base.fileinfo.c_dmFileInfo import CDMFileInfo
+from imetadata.business.metadata.base.fileinfo.c_dmPathInfo import CDMPathInfo
 from imetadata.database.c_factory import CFactory
 from imetadata.base.c_logger import CLogger
 
@@ -59,11 +59,23 @@ where dsdscanfilestatus = 2
 
     def process_mission(self, dataset) -> str:
         ds_id = dataset.value_by_name(0, 'query_dir_id', '')
+        ds_storage_id = dataset.value_by_name(0, 'query_storage_id', '')
 
         # 将所有子目录, 文件的可用性, 都改为未知
         self.init_file_or_subpath_valid_unknown(ds_id)
         ds_subpath = dataset.value_by_name(0, 'query_subpath', '')
         ds_root_path = dataset.value_by_name(0, 'query_rootpath', '')
+
+        sql_get_rule = '''
+        select dsdScanRule
+        from dm2_storage_directory
+        where dsdStorageid = :dsdStorageID and Position(dsddirectory || '/' in :dsdDirectory) = 1
+            and dsdScanRule is not null
+        order by dsddirectory desc
+        limit 1
+        '''
+        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {'dsdStorageID': ds_storage_id, 'dsdDirectory': ds_subpath})
+        ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
 
         if ds_subpath == '':
             ds_subpath = ds_root_path
@@ -71,14 +83,14 @@ where dsdscanfilestatus = 2
             ds_subpath = CFile.join_file(ds_root_path, ds_subpath)
         CLogger().debug('处理的目录为: {0}'.format(ds_subpath))
         try:
-            self.parser_path(dataset, ds_id, ds_subpath)
+            self.parser_path(dataset, ds_id, ds_subpath, ds_rule_content)
             return CMetaDataUtils.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_subpath))
         except:
             return CMetaDataUtils.merge_result(self.Failure, '目录为[{0}]下的文件和子目录扫描处理出现错误!'.format(ds_subpath))
         finally:
             self.exchange_file_or_subpath_valid_unknown2invalid(ds_id)
 
-    def parser_path(self, dataset, ds_id, ds_path):
+    def parser_path(self, dataset, ds_id, ds_path, ds_rule_content):
         """
         处理目录(完整路径)下的子目录和文件
         :param dataset: 数据集
@@ -97,7 +109,8 @@ where dsdscanfilestatus = 2
                                        None,
                                        ds_id,
                                        dataset.value_by_name(0, 'query_dir_parent_objid', ''),
-                                       self.get_mission_db_id())
+                                       self.get_mission_db_id(),
+                                       ds_rule_content)
 
                 if path_obj.white_black_valid():
                     path_obj.db_check_and_update()
@@ -110,7 +123,8 @@ where dsdscanfilestatus = 2
                                        None,
                                        ds_id,
                                        dataset.value_by_name(0, 'query_dir_parent_objid', ''),
-                                       self.get_mission_db_id())
+                                       self.get_mission_db_id(),
+                                       ds_rule_content)
                 if file_obj.white_black_valid():
                     file_obj.db_check_and_update()
                 else:

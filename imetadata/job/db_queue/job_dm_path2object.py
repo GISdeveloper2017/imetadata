@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
-from imetadata.business.metadata.base.job.c_dmPathInfo import CDMPathInfo
+from imetadata.business.metadata.base.fileinfo.c_dmPathInfo import CDMPathInfo
 from imetadata.database.c_factory import CFactory
 from imetadata.base.c_logger import CLogger
 

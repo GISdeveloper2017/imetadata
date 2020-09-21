@@ -67,6 +67,10 @@ class CSys(CResource):
     def get_plugins_package_root_name(cls):
         return '{0}.{1}'.format(cls.get_metadata_package_root_name(), cls.Name_Plugins)
 
+    @classmethod
+    def get_work_root_dir(cls):
+        return os.path.join(cls.get_application_dir(), cls.Name_WorkDir)
+
 
 if __name__ == '__main__':
     print(CSys.get_application_dir())
@@ -74,3 +78,4 @@ if __name__ == '__main__':
     print(CSys.get_plugins_root_dir())
     print(CSys.get_job_package_root_name())
     print(CSys.get_job_root_dir())
+    print(CSys.get_work_root_dir())

@@ -5,10 +5,24 @@
 
 
 from imetadata.base.c_file import CFile
-from imetadata.business.metadata.base.plugins.c_dirPlugins import CDirPlugins
+from imetadata.business.metadata.base.plugins.c_filePlugins import CFilePlugins
 
 
-class plugins_1000_mbtiles(CDirPlugins):
+class plugins_1000_mbtiles(CFilePlugins):
+
+    def get_information(self) -> dict:
+        information = super().get_information()
+        information[self.Plugins_Info_Title] = '二十一世纪公司切片'
+        information[self.Plugins_Info_Name] = '21at_mbtiles'
+        information[self.Plugins_Info_Code] = None
+        information[self.Plugins_Info_Catalog] = '切片'
+        information[self.Plugins_Info_Type] = 'tiles'
+        information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_21AT_MBTiles
+        information[self.Plugins_Info_BusMetaDataEngine] = None
+        information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
+        information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
+        information[self.Plugins_Info_QCEngine] = None
+        return information
 
     def classified(self):
         self.__object_confirm__ = self.Object_Confirm_IUnKnown
@@ -20,18 +34,3 @@ class plugins_1000_mbtiles(CDirPlugins):
             self.__object_confirm__ = self.Object_Confirm_IKnown
             self.__object_name__ = self.__file_info__.__file_main_name__
         return self.__object_confirm__, self.__object_name__
-
-    def parser_metadata(self):
-        pass
-
-    def parser_bus_metadata(self):
-        pass
-
-    def parser_spatial_metadata(self) -> str:
-        pass
-
-    def parser_tags_metadata(self) -> list:
-        pass
-
-    def parser_time_metadata(self) -> str:
-        pass

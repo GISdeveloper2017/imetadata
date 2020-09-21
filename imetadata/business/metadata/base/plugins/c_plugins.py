@@ -7,13 +7,117 @@ from abc import abstractmethod
 
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_resource import CResource
-from imetadata.base.c_utils import CMetaDataUtils
+from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
 
 
 class CPlugins(CResource):
+
     """
     数据识别插件
+        处理数据识别和元数据处理的标准模式:
+            . 是不是对象
+            . 对象的类型
+            . 对象的详情: 附属文件
+            . 对象的标签: 基于对象的相对路径, 文件名等信息, 进行自动的词库识别, 初步定义对象的归类
+            . 对象的质检: 对对象的质量进行检验
+            . 对象的基础元数据: 基于对象的数据格式, 提取的对象的元数据, 如矢量, 影像, 图片Exif, 文档, 其中包括空间地理方面的属性
+            . 对象的业务元数据: 基于对象的行业标准规范, 提取的对象的业务元数据, 如三调, 地理国情, 单景正射影像
+            . 对象的可视元数据: 快视, 缩略图
+            . 对象的优化:
+                . 影像: 空间外包框 -> 影像外边框
+        根据处理效率:
+            . 是不是对象: 快
+            . 对象的类型: 快
+            . 对象的标签: 快
+            . 对象的详情: 快
+            . 对象的质检: 慢
+            . 对象的基础元数据:
+                . 成果数据: 快
+                . 卫星数据: 慢
+            . 对象的业务元数据: 快
+            . 对象的可视元数据: 慢
+            . 对象的元数据优化: 慢
+        根据处理阶段:
+            . 是不是对象: 第一阶段, 可以分类统计+浏览+检索
+            . 对象的类型: 第一阶段, 可以分类统计+浏览+检索
+            . 对象的标签: 第一阶段, 可以分类统计+浏览+检索
+
+            . 对象的详情: 第二阶段, 可以查看详情+高级检索
+            . 对象的基础元数据: 第二阶段, 可以查看详情+高级检索
+            . 对象的业务元数据: 第二阶段, 可以查看详情+高级检索
+            . 对象的可视元数据: 第三阶段, 可以查看快视
+            . 对象的元数据优化: 第三阶段, 可以查看更好的快视效果
+            . 对象的质检: 第三阶段, 可以查看质量信息
+        根据处理所需条件:
+            . 是不是对象: 无需打开数据实体
+            . 对象的类型: 无需打开数据实体
+            . 对象的标签: 无需打开数据实体
+            . 对象的详情: 无需打开数据实体
+            . 对象的业务元数据: 无需打开数据实体
+
+            . 对象的基础元数据: 需要打开数据实体
+            . 对象的可视元数据: 需要打开数据实体
+            . 对象的元数据优化: 需要打开数据实体
+            . 对象的质检: 需要打开数据实体
+
+        根据上述分析, 确定插件的处理分为如下步骤:
+        . 识别-classified:
+            . 是不是对象: 无需打开数据实体
+            . 对象的类型: 无需打开数据实体
+        . 标签解析:
+            . 对象的标签: 无需打开数据实体
+        . 详情解析:
+            . 对象的详情: 无需打开数据实体
+        . 元数据解析:
+            . 对象的业务元数据: 无需打开数据实体
+            . 对象的基础元数据: 需要打开数据实体
+            . 对象的质检: 需要打开数据实体
+            . 对象的可视元数据: 需要打开数据实体
+        . 后处理:
+            . 对象的元数据优化: 需要打开数据实体
     """
+    # 插件标识-内置
+    Plugins_Info_ID = 'dsodid'
+    # 插件英文描述-内置
+    Plugins_Info_Name = 'dsodname'
+    # 插件中文描述-内置
+    Plugins_Info_Title = 'dsodtitle'
+    # 插件英文编码-业务
+    Plugins_Info_Code = 'dsodcode'
+    # 插件中文编码-业务
+    Plugins_Info_Catalog = 'dsodcatalog'
+    # 插件大类-英文-内置
+    Plugins_Info_Type = 'dsodtype'
+    # 插件大类-中文-内置
+    Plugins_Info_Type_Title = 'dsodtype_title'
+
+    # 插件处理引擎-内置-元数据处理
+    Plugins_Info_MetaDataEngine = 'dsod_metadata_engine'
+    # 插件处理引擎-内置-业务元数据处理
+    Plugins_Info_BusMetaDataEngine = 'dsod_bus_metadata_engine'
+    # 插件处理引擎-内置-对象详情处理
+    Plugins_Info_DetailEngine = 'dsod_detail_engine'
+    # 插件处理引擎-内置-标签处理
+    Plugins_Info_TagsEngine = 'dsod_tags_engine'
+    # 插件处理引擎-内置-对象质检
+    Plugins_Info_QCEngine = 'dsod_check_engine'
+
+    MetaDataEngine_Raster = 'raster'
+    MetaDataEngine_Vector = 'vector'
+    MetaDataEngine_Document = 'document'
+    MetaDataEngine_21AT_MBTiles = '21at_mbtiles'
+    MetaDataEngine_Custom = 'custom'
+
+    DetailEngine_Same_File_Main_Name = 'same_file_main_name'
+    DetailEngine_File_Of_Same_Dir = 'file_of_same_dir'
+    DetailEngine_All_File_Of_Same_Dir = 'all_file_of_same_dir'
+    DetailEngine_File_Of_Dir = 'file_of_dir'
+    DetailEngine_All_File_Of_Dir = 'all_file_of_dir'
+
+    TagEngine_Global_Dim_In_RelationName = 'global_dim_in_relation_name'
+    TagEngine_Global_Dim_In_MainName = 'global_dim_in_main_name'
+
+    __file_content__: CVirtualContent
     __file_info__: CFileInfoEx
 
     __object_confirm__: int
@@ -33,7 +137,7 @@ class CPlugins(CResource):
 
     def get_information(self) -> dict:
         information = dict()
-        information[self.Name_ID] = self.get_id()
+        information[self.Plugins_Info_ID] = self.get_id()
         return information
 
     def get_id(self) -> str:
@@ -50,47 +154,41 @@ class CPlugins(CResource):
         pass
 
     @abstractmethod
+    def quality_evaluate(self) -> list:
+        """
+        对目标目录或文件的质量评估
+        :return:
+        """
+        pass
+
+    @abstractmethod
+    def parser_tags(self) -> list:
+        """
+        对目标目录或文件的标签进行解析
+        :return:
+        """
+        pass
+
+    @abstractmethod
+    def parser_detail(self) -> str:
+        """
+        对目标目录或文件的详情进行解析
+        :return:
+        """
+        pass
+
+    @abstractmethod
     def parser_metadata(self):
         """
         对目标目录或文件的元数据进行提取
-        :return: 返回三个结果
-        .[0]: 元数据的类型, 0-txt,1-json,2-xml
-        .[1]: 元数据的返回格式: 0-文本,1-文件
-        .[2]: 元数据的存储名称: 如果[1]=文本, 则[2]中直接返回元数据的内容; 如果[1]=文件, 则[2]中直接返回元数据内容存储的文件名
+        :return: 返回
         """
         pass
 
     @abstractmethod
-    def parser_bus_metadata(self):
+    def parser_last_process(self):
         """
-        对目标目录或文件的业务元数据进行提取
-        :return: 返回三个结果
-        .[0]: 元数据的类型, 0-txt,1-json,2-xml
-        .[1]: 元数据的返回格式: 0-文本,1-文件
-        .[2]: 元数据的存储名称: 如果[1]=文本, 则[2]中直接返回元数据的内容; 如果[1]=文件, 则[2]中直接返回元数据内容存储的文件名
-        """
-        pass
-
-    @abstractmethod
-    def parser_spatial_metadata(self) -> str:
-        """
-        对目标目录或文件的空间信息进行提取
-        :return:
-        """
-        pass
-
-    @abstractmethod
-    def parser_tags_metadata(self) -> list:
-        """
-        对目标目录或文件的元数据进行提取
-        :return:
-        """
-        pass
-
-    @abstractmethod
-    def parser_time_metadata(self) -> str:
-        """
-        对目标目录或文件的元数据进行提取
-        :return:
+        后处理
+        :return: 返回
         """
         pass

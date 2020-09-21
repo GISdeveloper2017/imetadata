@@ -25,7 +25,7 @@ class CDMFilePathInfoEx(CFileInfoEx):
     __ds_file_or_path__ = None
 
     def __init__(self, file_type, file_name_with_full_path, storage_id, file_or_path_id, parent_id, owner_obj_id,
-                 db_server_id):
+                 db_server_id, rule_content):
         """
 
         :param file_name_with_full_path:
@@ -46,7 +46,7 @@ class CDMFilePathInfoEx(CFileInfoEx):
             {'dstid': self.__storage_id__})
 
         root_path = self.__ds_storage__.value_by_name(0, 'dstunipath', '')
-        super().__init__(file_type, file_name_with_full_path, root_path)
+        super().__init__(file_type, file_name_with_full_path, root_path, rule_content)
         self.custom_init()
 
     def custom_init(self):

@@ -6,7 +6,7 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CMetaDataUtils
 from imetadata.base.c_xml import CXml
-from imetadata.business.metadata.base.job.c_dmFilePathInfoEx import CDMFilePathInfoEx
+from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.database.c_factory import CFactory
 
 

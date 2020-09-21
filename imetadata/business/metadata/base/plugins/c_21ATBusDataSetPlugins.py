@@ -11,23 +11,26 @@ from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.plugins.c_dirPlugins import CDirPlugins
 
 
-class plugins_0500_dataset_21at(CDirPlugins):
+class C21ATBusDataSetPlugins(CDirPlugins):
+    __classified_object_type__ = None
+    __metadata_xml_obj__ = None
+
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Name_Title] = '二十一世纪空间数据集'
-        information[self.Name_Name] = ''
-        information[self.Name_Code] = '110001'
-        information[self.Name_Catalog] = '业务数据集'
-        information[self.Name_Type] = 'business_data_set'
-        information[self.name_MetaData_Engine] = None
-        information[self.name_Bus_MetaData_Engine] = None
-        information[self.name_tags_Engine] = 'global_dim'
-        information[self.name_Detail_Engine] = 'same_file_mainname'
-        information[self.name_QC_Engine] = None
+        if self.__metadata_xml_obj__ is not None:
+            information[self.Plugins_Info_Title] = CXml.get_element_text(self.__metadata_xml_obj__.xpath_one(self.Path_MD_Rule_Content_ProductName))
+            information[self.Plugins_Info_Name] = None
+        information[self.Plugins_Info_Code] = '110001'
+        information[self.Plugins_Info_Catalog] = '业务数据集'
+        information[self.Plugins_Info_Type_Title] = '业务数据集'
+        information[self.Plugins_Info_Type] = 'business_data_set'
+        information[self.Plugins_Info_MetaDataEngine] = None
+        information[self.Plugins_Info_BusMetaDataEngine] = None
+        information[self.Plugins_Info_TagsEngine] = 'global_dim'
+        information[self.Plugins_Info_DetailEngine] = 'same_file_mainname'
+        information[self.Plugins_Info_QCEngine] = None
 
         return information
-
-    __classified_object_type__ = None
 
     def get_id(self) -> str:
         if self.__classified_object_type__ is not None:
@@ -42,13 +45,14 @@ class plugins_0500_dataset_21at(CDirPlugins):
         current_path = self.__file_info__.__file_name_with_full_path__
         metadata_file_name = CFile.join_file(current_path, 'metadata.21at')
         if CFile.file_or_path_exist(metadata_file_name):
-            xml_obj = CXml()
+            self.__metadata_xml_obj__ = CXml()
             try:
-                xml_obj.load_file(metadata_file_name)
-                self.__classified_object_type__ = CXml.get_element_text(xml_obj.xpath_one('/root/ProductType'))
+                self.__metadata_xml_obj__.load_file(metadata_file_name)
+                self.__classified_object_type__ = CXml.get_element_text(self.__metadata_xml_obj__.xpath_one(self.Path_MD_Rule_Content_ProductType))
                 self.__object_confirm__ = self.Object_Confirm_IKnown
-                self.__object_name__ = CXml.get_element_text(xml_obj.xpath_one('/root/DSName'))
+                self.__object_name__ = CXml.get_element_text(self.__metadata_xml_obj__.xpath_one('/root/DSName'))
             except:
+                self.__metadata_xml_obj__ = None
                 CLogger().warning('发现文件{0}符合二十一世纪业务数据集标准, 但该文件格式有误, 无法打开! ')
 
         return self.__object_confirm__, self.__object_name__
