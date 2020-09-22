@@ -3,6 +3,7 @@
 # @Author : 王西亚 
 # @File : plugins_1000_dom_10.py
 from imetadata.base.c_file import CFile
+from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
 
@@ -30,7 +31,7 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
         if not check_file_main_name_length:
             return self.__object_confirm__, self.Object_Confirm_IUnKnown
 
-        file_metadata_name_with_path = CFile.join_file(self.__file_info__.__file_path_with_rel_path__, file_main_name)
+        file_metadata_name_with_path = CFile.join_file(self.__file_info__.__file_path__, file_main_name)
         check_file_metadata_name_exist = \
             CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'xls')) \
             or CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'xlsx')) \
@@ -59,3 +60,21 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
         else:
             self.__object_confirm__ = self.Object_Confirm_IKnown_Not
             self.__object_name__ = None
+
+        return self.__object_confirm__, self.__object_name__
+
+
+if __name__ == '__main__':
+    file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
+                            '/Users/wangxiya/Documents/交换/1.给我的/DOM/H49G001026/H49G001026.tif',
+                            '/Users/wangxiya/Documents/交换', '<root><type>dom</type></root>')
+    plugins = plugins_1000_dom_10(file_info)
+    object_confirm, object_name = plugins.classified()
+    if object_confirm == plugins_1000_dom_10.Object_Confirm_IUnKnown:
+        print('对不起, 您给你的文件, 我不认识')
+    elif object_confirm == plugins_1000_dom_10.Object_Confirm_IKnown_Not:
+        print('您给你的文件, 我确认它不是对象')
+    elif object_confirm == plugins_1000_dom_10.Object_Confirm_IKnown:
+        print('您给你的文件, 我确认它的类型是[{0}], 对象名称为[{1}]'.format(plugins.get_id(), object_name))
+    elif object_confirm == plugins_1000_dom_10.Object_Confirm_Maybe:
+        print('您给你的文件, 我确认它的类型是[{0}], 对象名称为[{1}]'.format(plugins.get_id(), object_name))

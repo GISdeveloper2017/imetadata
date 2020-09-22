@@ -94,7 +94,10 @@ class CXml:
         :param query:
         :return:
         """
-        return self.__xml_tree__.xpath(query)[0]
+        if self.__xml_tree__ is None:
+            return None
+        else:
+            return self.__xml_tree__.xpath(query)[0]
 
     def xpath(self, query) -> list:
         """
