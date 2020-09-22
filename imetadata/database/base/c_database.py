@@ -11,16 +11,17 @@
 .增加session的获取, 关闭, 执行sql, 提交和撤销动作, 以支持自定义的数据库事务
 """
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 import urllib.parse
 
-from imetadata.base.c_utils import CMetaDataUtils
-from imetadata.base.core.Exceptions import *
-from sqlalchemy.engine import Engine
-from imetadata.database.base.c_dataset import CDataSet
+from sqlalchemy import create_engine
 from sqlalchemy import text
+from sqlalchemy.engine import Engine
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
+
+from imetadata.base.c_utils import CUtils
+from imetadata.base.Exceptions import *
+from imetadata.database.base.c_dataset import CDataSet
 
 
 class CDataBase:
@@ -67,7 +68,7 @@ class CDataBase:
             exe_params_names = exe_params.keys()
             new_params = dict()
             for exe_param_name in exe_params_names:
-                exe_param_value = CMetaDataUtils.dict_value_by_name(params, exe_param_name)
+                exe_param_value = CUtils.dict_value_by_name(params, exe_param_name)
                 if exe_param_value is not None:
                     new_params[exe_param_name] = str(exe_param_value)
                 else:

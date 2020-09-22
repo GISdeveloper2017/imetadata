@@ -102,27 +102,27 @@
 
 CREATE TABLE public.dm2_storage
 (
-    dstid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dsttitle character varying(200) COLLATE pg_catalog."default" NOT NULL,
-    dstunipath character varying(4000) COLLATE pg_catalog."default",
-    dstwatch integer,
-    dstwatchperiod character varying(50) COLLATE pg_catalog."default",
-    dstscanlasttime timestamp(6) without time zone,
-    dstscanstatus integer DEFAULT 1,
-    dstprocessid character varying(100) COLLATE pg_catalog."default",
-    dstaddtime timestamp(6) without time zone DEFAULT now(),
+    dstid             character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    dsttitle          character varying(200) COLLATE pg_catalog."default" NOT NULL,
+    dstunipath        character varying(4000) COLLATE pg_catalog."default",
+    dstwatch          integer,
+    dstwatchperiod    character varying(50) COLLATE pg_catalog."default",
+    dstscanlasttime   timestamp(6) without time zone,
+    dstscanstatus     integer                        DEFAULT 1,
+    dstprocessid      character varying(100) COLLATE pg_catalog."default",
+    dstaddtime        timestamp(6) without time zone DEFAULT now(),
     dstlastmodifytime timestamp(6) without time zone,
-    dstmemo character varying(200) COLLATE pg_catalog."default",
-    dstwhitelist character varying(1000) COLLATE pg_catalog."default",
-    dstblacklist character varying(1000) COLLATE pg_catalog."default",
-    dstfileext character varying(1000) COLLATE pg_catalog."default",
-    dstotheroption character varying(2000) COLLATE pg_catalog."default",
+    dstmemo           character varying(200) COLLATE pg_catalog."default",
+    dstwhitelist      character varying(1000) COLLATE pg_catalog."default",
+    dstblacklist      character varying(1000) COLLATE pg_catalog."default",
+    dstfileext        character varying(1000) COLLATE pg_catalog."default",
+    dstotheroption    character varying(2000) COLLATE pg_catalog."default",
     CONSTRAINT dm2_storage_pkey PRIMARY KEY (dstid)
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+    )
+    TABLESPACE pg_default;
 
 ALTER TABLE public.dm2_storage
     OWNER to postgres;
@@ -180,7 +180,7 @@ COMMENT ON COLUMN public.dm2_storage.dstotheroption
 
 CREATE INDEX idx_dm2_storage_processid
     ON public.dm2_storage USING btree
-    (dstprocessid COLLATE pg_catalog."default")
+        (dstprocessid COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_scanstatus
@@ -189,7 +189,7 @@ CREATE INDEX idx_dm2_storage_processid
 
 CREATE INDEX idx_dm2_storage_scanstatus
     ON public.dm2_storage USING btree
-    (dstscanstatus)
+        (dstscanstatus)
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_title
@@ -198,7 +198,7 @@ CREATE INDEX idx_dm2_storage_scanstatus
 
 CREATE INDEX idx_dm2_storage_title
     ON public.dm2_storage USING btree
-    (dsttitle COLLATE pg_catalog."default")
+        (dsttitle COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_watch
@@ -207,7 +207,7 @@ CREATE INDEX idx_dm2_storage_title
 
 CREATE INDEX idx_dm2_storage_watch
     ON public.dm2_storage USING btree
-    (dstwatch)
+        (dstwatch)
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_watchperiod
@@ -216,40 +216,40 @@ CREATE INDEX idx_dm2_storage_watch
 
 CREATE INDEX idx_dm2_storage_watchperiod
     ON public.dm2_storage USING btree
-    (dstwatchperiod COLLATE pg_catalog."default")
+        (dstwatchperiod COLLATE pg_catalog."default")
     TABLESPACE pg_default;
-    
+
 -- Table: public.dm2_storage_directory
 
 -- DROP TABLE public.dm2_storage_directory;
 
 CREATE TABLE public.dm2_storage_directory
 (
-    dsdid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dsdparentid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dsdstorageid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dsddirectory character varying(4000) COLLATE pg_catalog."default" NOT NULL,
-    dsddirtype character varying(100) COLLATE pg_catalog."default",
-    dsdscanstatus integer DEFAULT 1,
-    dsdprocessid character varying(100) COLLATE pg_catalog."default",
-    dsdaddtime timestamp(6) without time zone DEFAULT now(),
-    dsdlastmodifytime timestamp(6) without time zone,
-    dsddirectoryname character varying(1000) COLLATE pg_catalog."default",
-    dsd_object_type character varying(100) COLLATE pg_catalog."default",
-    dsd_object_confirm integer DEFAULT 0,
-    dsd_object_id character varying(200) COLLATE pg_catalog."default",
-    dsd_directory_valid integer DEFAULT '-1'::integer,
-    dsdscanfilestatus integer DEFAULT 1,
+    dsdid                character varying(100) COLLATE pg_catalog."default"  NOT NULL,
+    dsdparentid          character varying(100) COLLATE pg_catalog."default"  NOT NULL,
+    dsdstorageid         character varying(100) COLLATE pg_catalog."default"  NOT NULL,
+    dsddirectory         character varying(4000) COLLATE pg_catalog."default" NOT NULL,
+    dsddirtype           character varying(100) COLLATE pg_catalog."default",
+    dsdscanstatus        integer                        DEFAULT 1,
+    dsdprocessid         character varying(100) COLLATE pg_catalog."default",
+    dsdaddtime           timestamp(6) without time zone DEFAULT now(),
+    dsdlastmodifytime    timestamp(6) without time zone,
+    dsddirectoryname     character varying(1000) COLLATE pg_catalog."default",
+    dsd_object_type      character varying(100) COLLATE pg_catalog."default",
+    dsd_object_confirm   integer                        DEFAULT 0,
+    dsd_object_id        character varying(200) COLLATE pg_catalog."default",
+    dsd_directory_valid  integer                        DEFAULT '-1'::integer,
+    dsdscanfilestatus    integer                        DEFAULT 1,
     dsdscanfileprocessid character varying(100) COLLATE pg_catalog."default",
-    dsdscandirstatus integer DEFAULT 1,
-    dsdscandirprocessid character varying(100) COLLATE pg_catalog."default",
-    dsdpath character varying(4000) COLLATE pg_catalog."default",
+    dsdscandirstatus     integer                        DEFAULT 1,
+    dsdscandirprocessid  character varying(100) COLLATE pg_catalog."default",
+    dsdpath              character varying(4000) COLLATE pg_catalog."default",
     CONSTRAINT dm2_storage_directory_pkey PRIMARY KEY (dsdid)
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+    )
+    TABLESPACE pg_default;
 
 ALTER TABLE public.dm2_storage_directory
     OWNER to postgres;
@@ -319,7 +319,7 @@ COMMENT ON COLUMN public.dm2_storage_directory.dsdpath
 
 CREATE INDEX idx_dm2_storage_directory_directoryname
     ON public.dm2_storage_directory USING btree
-    (dsddirectoryname COLLATE pg_catalog."default")
+        (dsddirectoryname COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_directory_dirtype
@@ -328,7 +328,7 @@ CREATE INDEX idx_dm2_storage_directory_directoryname
 
 CREATE INDEX idx_dm2_storage_directory_dirtype
     ON public.dm2_storage_directory USING btree
-    (dsddirtype COLLATE pg_catalog."default")
+        (dsddirtype COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_directory_dsddirectory
@@ -337,7 +337,7 @@ CREATE INDEX idx_dm2_storage_directory_dirtype
 
 CREATE INDEX idx_dm2_storage_directory_dsddirectory
     ON public.dm2_storage_directory USING btree
-    (dsddirectory COLLATE pg_catalog."default")
+        (dsddirectory COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_directory_dsdscandirprocessid
@@ -346,7 +346,7 @@ CREATE INDEX idx_dm2_storage_directory_dsddirectory
 
 CREATE INDEX idx_dm2_storage_directory_dsdscandirprocessid
     ON public.dm2_storage_directory USING btree
-    (dsdscandirprocessid COLLATE pg_catalog."default")
+        (dsdscandirprocessid COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_directory_dsdscandirstatus
@@ -355,7 +355,7 @@ CREATE INDEX idx_dm2_storage_directory_dsdscandirprocessid
 
 CREATE INDEX idx_dm2_storage_directory_dsdscandirstatus
     ON public.dm2_storage_directory USING btree
-    (dsdscandirstatus)
+        (dsdscandirstatus)
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_directory_dsdscanfileprocessid
@@ -364,7 +364,7 @@ CREATE INDEX idx_dm2_storage_directory_dsdscandirstatus
 
 CREATE INDEX idx_dm2_storage_directory_dsdscanfileprocessid
     ON public.dm2_storage_directory USING btree
-    (dsdscanfileprocessid COLLATE pg_catalog."default")
+        (dsdscanfileprocessid COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_directory_dsdscanfilestatus
@@ -373,7 +373,7 @@ CREATE INDEX idx_dm2_storage_directory_dsdscanfileprocessid
 
 CREATE INDEX idx_dm2_storage_directory_dsdscanfilestatus
     ON public.dm2_storage_directory USING btree
-    (dsdscanfilestatus)
+        (dsdscanfilestatus)
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_directory_id
@@ -382,7 +382,7 @@ CREATE INDEX idx_dm2_storage_directory_dsdscanfilestatus
 
 CREATE INDEX idx_dm2_storage_directory_id
     ON public.dm2_storage_directory USING btree
-    (dsdid COLLATE pg_catalog."default")
+        (dsdid COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_directory_parentid
@@ -391,7 +391,7 @@ CREATE INDEX idx_dm2_storage_directory_id
 
 CREATE INDEX idx_dm2_storage_directory_parentid
     ON public.dm2_storage_directory USING btree
-    (dsdparentid COLLATE pg_catalog."default")
+        (dsdparentid COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_directory_processid
@@ -400,7 +400,7 @@ CREATE INDEX idx_dm2_storage_directory_parentid
 
 CREATE INDEX idx_dm2_storage_directory_processid
     ON public.dm2_storage_directory USING btree
-    (dsdprocessid COLLATE pg_catalog."default")
+        (dsdprocessid COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_directory_scanfileprocessid
@@ -409,7 +409,7 @@ CREATE INDEX idx_dm2_storage_directory_processid
 
 CREATE INDEX idx_dm2_storage_directory_scanfileprocessid
     ON public.dm2_storage_directory USING btree
-    (dsdscanfileprocessid COLLATE pg_catalog."default")
+        (dsdscanfileprocessid COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_directory_scanstatus
@@ -418,40 +418,40 @@ CREATE INDEX idx_dm2_storage_directory_scanfileprocessid
 
 CREATE INDEX idx_dm2_storage_directory_scanstatus
     ON public.dm2_storage_directory USING btree
-    (dsdscanstatus)
+        (dsdscanstatus)
     TABLESPACE pg_default;
-    
+
 -- Table: public.dm2_storage_file
 
 -- DROP TABLE public.dm2_storage_file;
 
 CREATE TABLE public.dm2_storage_file
 (
-    dsfid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dsfstorageid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dsfdirectoryid character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    dsfid               character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    dsfstorageid        character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    dsfdirectoryid      character varying(100) COLLATE pg_catalog."default" NOT NULL,
     dsffilerelationname character varying(4000) COLLATE pg_catalog."default",
-    dsffilename character varying(1000) COLLATE pg_catalog."default",
-    dsffilemainname character varying(1000) COLLATE pg_catalog."default",
-    dsfext character varying(100) COLLATE pg_catalog."default",
-    dsffilecreatetime timestamp(6) without time zone,
-    dsffilemodifytime timestamp(6) without time zone,
-    dsfaddtime timestamp(6) without time zone DEFAULT now(),
-    dsflastmodifytime timestamp(6) without time zone,
-    dsffilevalid integer DEFAULT '-1'::integer,
-    dsfscanstatus integer DEFAULT 1,
-    dsfprocessid character varying(100) COLLATE pg_catalog."default",
-    dsf_object_type character varying(100) COLLATE pg_catalog."default",
-    dsf_object_confirm integer DEFAULT 0,
-    dsf_object_id character varying(200) COLLATE pg_catalog."default",
-    dsffileattr integer DEFAULT 0,
-    dsffilesize bigint DEFAULT 0,
+    dsffilename         character varying(1000) COLLATE pg_catalog."default",
+    dsffilemainname     character varying(1000) COLLATE pg_catalog."default",
+    dsfext              character varying(100) COLLATE pg_catalog."default",
+    dsffilecreatetime   timestamp(6) without time zone,
+    dsffilemodifytime   timestamp(6) without time zone,
+    dsfaddtime          timestamp(6) without time zone DEFAULT now(),
+    dsflastmodifytime   timestamp(6) without time zone,
+    dsffilevalid        integer                        DEFAULT '-1'::integer,
+    dsfscanstatus       integer                        DEFAULT 1,
+    dsfprocessid        character varying(100) COLLATE pg_catalog."default",
+    dsf_object_type     character varying(100) COLLATE pg_catalog."default",
+    dsf_object_confirm  integer                        DEFAULT 0,
+    dsf_object_id       character varying(200) COLLATE pg_catalog."default",
+    dsffileattr         integer                        DEFAULT 0,
+    dsffilesize         bigint                         DEFAULT 0,
     CONSTRAINT dm2_storage_file_pkey PRIMARY KEY (dsfid)
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+    )
+    TABLESPACE pg_default;
 
 ALTER TABLE public.dm2_storage_file
     OWNER to postgres;
@@ -521,7 +521,7 @@ COMMENT ON COLUMN public.dm2_storage_file.dsffilesize
 
 CREATE INDEX idx_dm2_storage_file_dsf_object_type
     ON public.dm2_storage_file USING btree
-    (dsf_object_type COLLATE pg_catalog."default")
+        (dsf_object_type COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_file_dsfdirectoryid
@@ -530,7 +530,7 @@ CREATE INDEX idx_dm2_storage_file_dsf_object_type
 
 CREATE INDEX idx_dm2_storage_file_dsfdirectoryid
     ON public.dm2_storage_file USING btree
-    (dsfdirectoryid COLLATE pg_catalog."default")
+        (dsfdirectoryid COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_file_dsfstorageid
@@ -539,7 +539,7 @@ CREATE INDEX idx_dm2_storage_file_dsfdirectoryid
 
 CREATE INDEX idx_dm2_storage_file_dsfstorageid
     ON public.dm2_storage_file USING btree
-    (dsfstorageid COLLATE pg_catalog."default")
+        (dsfstorageid COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_file_processid
@@ -548,7 +548,7 @@ CREATE INDEX idx_dm2_storage_file_dsfstorageid
 
 CREATE INDEX idx_dm2_storage_file_processid
     ON public.dm2_storage_file USING btree
-    (dsfprocessid COLLATE pg_catalog."default")
+        (dsfprocessid COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_file_scanstatus
@@ -557,30 +557,30 @@ CREATE INDEX idx_dm2_storage_file_processid
 
 CREATE INDEX idx_dm2_storage_file_scanstatus
     ON public.dm2_storage_file USING btree
-    (dsfscanstatus)
+        (dsfscanstatus)
     TABLESPACE pg_default;
-    
+
 -- Table: public.dm2_storage_obj_detail
 
 -- DROP TABLE public.dm2_storage_obj_detail;
 
 CREATE TABLE public.dm2_storage_obj_detail
 (
-    dodid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dodobjectid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dodfilename character varying(1000) COLLATE pg_catalog."default" NOT NULL,
-    dodfileext character varying(100) COLLATE pg_catalog."default",
-    dodfilesize bigint DEFAULT 0,
-    dodfileattr integer DEFAULT 0,
+    dodid             character varying(100) COLLATE pg_catalog."default"  NOT NULL,
+    dodobjectid       character varying(100) COLLATE pg_catalog."default"  NOT NULL,
+    dodfilename       character varying(1000) COLLATE pg_catalog."default" NOT NULL,
+    dodfileext        character varying(100) COLLATE pg_catalog."default",
+    dodfilesize       bigint                         DEFAULT 0,
+    dodfileattr       integer                        DEFAULT 0,
     dodfilecreatetime timestamp(6) without time zone,
     dodfilemodifytime timestamp(6) without time zone,
     dodlastmodifytime timestamp(6) without time zone DEFAULT now(),
     CONSTRAINT dm2_storage_obj_detail_pkey PRIMARY KEY (dodid)
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+    )
+    TABLESPACE pg_default;
 
 ALTER TABLE public.dm2_storage_obj_detail
     OWNER to postgres;
@@ -613,41 +613,41 @@ COMMENT ON COLUMN public.dm2_storage_obj_detail.dodfilemodifytime
 
 COMMENT ON COLUMN public.dm2_storage_obj_detail.dodlastmodifytime
     IS '记录的最后修改时间';
-    
+
 -- Table: public.dm2_storage_object
 
 -- DROP TABLE public.dm2_storage_object;
 
 CREATE TABLE public.dm2_storage_object
 (
-    dsoid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dsoobjectname character varying(1000) COLLATE pg_catalog."default" NOT NULL,
-    dsoobjecttype character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dsodatatype character varying(100) COLLATE pg_catalog."default",
-    dsometadatatext text COLLATE pg_catalog."default",
-    dsometadatajson jsonb,
-    dsometadatajson_bus jsonb,
-    dsometadataxml xml,
-    dsometadatatype integer DEFAULT 0,
+    dsoid                  character varying(100) COLLATE pg_catalog."default"  NOT NULL,
+    dsoobjectname          character varying(1000) COLLATE pg_catalog."default" NOT NULL,
+    dsoobjecttype          character varying(100) COLLATE pg_catalog."default"  NOT NULL,
+    dsodatatype            character varying(100) COLLATE pg_catalog."default",
+    dsometadatatext        text COLLATE pg_catalog."default",
+    dsometadatajson        jsonb,
+    dsometadatajson_bus    jsonb,
+    dsometadataxml         xml,
+    dsometadatatype        integer DEFAULT 0,
     dsometadataparsestatus integer DEFAULT 1,
     dsometadataparseprocid character varying(100) COLLATE pg_catalog."default",
-    dsotags character varying[] COLLATE pg_catalog."default",
-    dsolastmodifytime timestamp(6) without time zone,
-    dsometadataparsememo text COLLATE pg_catalog."default",
-    dsodetailparsememo text COLLATE pg_catalog."default",
-    dsodetailparsestatus integer DEFAULT 1,
-    dsodetailparseprocid character varying(100) COLLATE pg_catalog."default",
-    dsotagsparsememo text COLLATE pg_catalog."default",
-    dsotagsparsestatus integer DEFAULT 1,
-    dsotagsparseprocid character varying(100) COLLATE pg_catalog."default",
-    dsoalphacode character varying(100) COLLATE pg_catalog."default",
-    dsoaliasname character varying(1000) COLLATE pg_catalog."default",
+    dsotags                character varying[] COLLATE pg_catalog."default",
+    dsolastmodifytime      timestamp(6) without time zone,
+    dsometadataparsememo   text COLLATE pg_catalog."default",
+    dsodetailparsememo     text COLLATE pg_catalog."default",
+    dsodetailparsestatus   integer DEFAULT 1,
+    dsodetailparseprocid   character varying(100) COLLATE pg_catalog."default",
+    dsotagsparsememo       text COLLATE pg_catalog."default",
+    dsotagsparsestatus     integer DEFAULT 1,
+    dsotagsparseprocid     character varying(100) COLLATE pg_catalog."default",
+    dsoalphacode           character varying(100) COLLATE pg_catalog."default",
+    dsoaliasname           character varying(1000) COLLATE pg_catalog."default",
     CONSTRAINT dm2_storage_object_pkey PRIMARY KEY (dsoid)
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+    )
+    TABLESPACE pg_default;
 
 ALTER TABLE public.dm2_storage_object
     OWNER to postgres;
@@ -726,7 +726,7 @@ COMMENT ON COLUMN public.dm2_storage_object.dsoaliasname
 
 CREATE INDEX idx_dm2_storage_object_id
     ON public.dm2_storage_object USING btree
-    (dsoid COLLATE pg_catalog."default")
+        (dsoid COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_object_json
@@ -735,7 +735,7 @@ CREATE INDEX idx_dm2_storage_object_id
 
 CREATE INDEX idx_dm2_storage_object_json
     ON public.dm2_storage_object USING gin
-    (dsometadatajson)
+        (dsometadatajson)
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_object_json_bus
@@ -744,7 +744,7 @@ CREATE INDEX idx_dm2_storage_object_json
 
 CREATE INDEX idx_dm2_storage_object_json_bus
     ON public.dm2_storage_object USING gin
-    (dsometadatajson_bus)
+        (dsometadatajson_bus)
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_object_objecttype
@@ -753,7 +753,7 @@ CREATE INDEX idx_dm2_storage_object_json_bus
 
 CREATE INDEX idx_dm2_storage_object_objecttype
     ON public.dm2_storage_object USING btree
-    (dsoobjecttype COLLATE pg_catalog."default")
+        (dsoobjecttype COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_object_tag
@@ -762,31 +762,31 @@ CREATE INDEX idx_dm2_storage_object_objecttype
 
 CREATE INDEX idx_dm2_storage_object_tag
     ON public.dm2_storage_object USING gin
-    (dsotags COLLATE pg_catalog."default")
+        (dsotags COLLATE pg_catalog."default")
     TABLESPACE pg_default;
-    
+
 -- Table: public.dm2_storage_object_def
 
 -- DROP TABLE public.dm2_storage_object_def;
 
 CREATE TABLE public.dm2_storage_object_def
 (
-    dsodid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dsodname character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dsodtitle character varying(1000) COLLATE pg_catalog."default" NOT NULL,
-    dsodtype character varying(100) COLLATE pg_catalog."default",
-    dsodtype_map character varying(100) COLLATE pg_catalog."default",
-    dsodname_map character varying(100) COLLATE pg_catalog."default",
-    dsodtitle_map character varying(1000) COLLATE pg_catalog."default",
+    dsodid               character varying(100) COLLATE pg_catalog."default"  NOT NULL,
+    dsodname             character varying(100) COLLATE pg_catalog."default"  NOT NULL,
+    dsodtitle            character varying(1000) COLLATE pg_catalog."default" NOT NULL,
+    dsodtype             character varying(100) COLLATE pg_catalog."default",
+    dsodtype_map         character varying(100) COLLATE pg_catalog."default",
+    dsodname_map         character varying(100) COLLATE pg_catalog."default",
+    dsodtitle_map        character varying(1000) COLLATE pg_catalog."default",
     dsod_metadata_engine character varying(100) COLLATE pg_catalog."default",
-    dsod_detail_engine character varying(100) COLLATE pg_catalog."default",
-    dsod_tags_engine character varying(100) COLLATE pg_catalog."default",
+    dsod_detail_engine   character varying(100) COLLATE pg_catalog."default",
+    dsod_tags_engine     character varying(100) COLLATE pg_catalog."default",
     CONSTRAINT dm2_storage_object_def_pkey PRIMARY KEY (dsodid)
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+    )
+    TABLESPACE pg_default;
 
 ALTER TABLE public.dm2_storage_object_def
     OWNER to postgres;
@@ -829,7 +829,7 @@ COMMENT ON COLUMN public.dm2_storage_object_def.dsod_tags_engine
 
 CREATE INDEX idx_dm2_storage_object_def_id
     ON public.dm2_storage_object_def USING btree
-    (dsodid COLLATE pg_catalog."default")
+        (dsodid COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_object_def_name
@@ -838,7 +838,7 @@ CREATE INDEX idx_dm2_storage_object_def_id
 
 CREATE INDEX idx_dm2_storage_object_def_name
     ON public.dm2_storage_object_def USING btree
-    (dsodname COLLATE pg_catalog."default")
+        (dsodname COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_object_def_name_map
@@ -847,7 +847,7 @@ CREATE INDEX idx_dm2_storage_object_def_name
 
 CREATE INDEX idx_dm2_storage_object_def_name_map
     ON public.dm2_storage_object_def USING btree
-    (dsodname_map COLLATE pg_catalog."default")
+        (dsodname_map COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_object_def_type
@@ -856,7 +856,7 @@ CREATE INDEX idx_dm2_storage_object_def_name_map
 
 CREATE INDEX idx_dm2_storage_object_def_type
     ON public.dm2_storage_object_def USING btree
-    (dsodtype COLLATE pg_catalog."default")
+        (dsodtype COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: idx_dm2_storage_object_def_type_map
@@ -865,11 +865,11 @@ CREATE INDEX idx_dm2_storage_object_def_type
 
 CREATE INDEX idx_dm2_storage_object_def_type_map
     ON public.dm2_storage_object_def USING btree
-    (dsodtype_map COLLATE pg_catalog."default")
+        (dsodtype_map COLLATE pg_catalog."default")
     TABLESPACE pg_default;
-  
-  
-    
+
+
+
 /*
 	全局关键字表
 
@@ -881,23 +881,23 @@ CREATE INDEX idx_dm2_storage_object_def_type_map
 
 CREATE TABLE public.ro_global_dim_custom
 (
-    gdcid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    gdctitle character varying(1000) COLLATE pg_catalog."default" NOT NULL,
-    gdcparentid character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT '-1'::character varying,
-    gdctreecode character varying(2000) COLLATE pg_catalog."default" NOT NULL,
-    gdcisgroup bigint NOT NULL DEFAULT 0,
-    gdctreeindex bigint NOT NULL DEFAULT 0,
-    gdctreelevel bigint NOT NULL DEFAULT 0,
-    gdcsysdimid character varying(100) COLLATE pg_catalog."default",
-    gdcsysdimtype bigint DEFAULT 3,
-    gdcsysdimcount bigint DEFAULT 1,
+    gdcid              character varying(100) COLLATE pg_catalog."default"  NOT NULL,
+    gdctitle           character varying(1000) COLLATE pg_catalog."default" NOT NULL,
+    gdcparentid        character varying(100) COLLATE pg_catalog."default"  NOT NULL DEFAULT '-1'::character varying,
+    gdctreecode        character varying(2000) COLLATE pg_catalog."default" NOT NULL,
+    gdcisgroup         bigint                                               NOT NULL DEFAULT 0,
+    gdctreeindex       bigint                                               NOT NULL DEFAULT 0,
+    gdctreelevel       bigint                                               NOT NULL DEFAULT 0,
+    gdcsysdimid        character varying(100) COLLATE pg_catalog."default",
+    gdcsysdimtype      bigint                                                        DEFAULT 3,
+    gdcsysdimcount     bigint                                                        DEFAULT 1,
     gdcsysdimrecursive character varying(1) COLLATE pg_catalog."default",
     CONSTRAINT "ro_global_dim_custom_PK" PRIMARY KEY (gdcid)
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+    )
+    TABLESPACE pg_default;
 
 ALTER TABLE public.ro_global_dim_custom
     OWNER to postgres;
@@ -922,53 +922,53 @@ COMMENT ON COLUMN public.ro_global_dim_custom.gdctreeindex
 
 COMMENT ON COLUMN public.ro_global_dim_custom.gdctreelevel
     IS '树级别';
-    
+
 -- Table: public.ro_global_dim_custom_bus
 
 -- DROP TABLE public.ro_global_dim_custom_bus;
 
 CREATE TABLE public.ro_global_dim_custom_bus
 (
-    gdcbid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    gdcbtype character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT '3'::character varying,
-    gdcbtitle character varying(1000) COLLATE pg_catalog."default" NOT NULL,
-    gdcbparentid character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT '-1'::character varying,
-    gdcbtreecode character varying(2000) COLLATE pg_catalog."default" NOT NULL,
-    gdcbisgroup bigint NOT NULL DEFAULT 0,
-    gdcbtreeindex bigint NOT NULL DEFAULT 0,
-    gdcbtreelevel bigint NOT NULL DEFAULT 0,
-    gdcbsysdimid character varying(100) COLLATE pg_catalog."default",
-    gdcbsysdimtype bigint DEFAULT 3,
-    gdcbsysdimcount bigint DEFAULT 1,
-    gdcbsysdimrecursive character varying(1) COLLATE pg_catalog."default",
-    gdcbimageindex bigint,
-    gdcbpublishjsontemplate text COLLATE pg_catalog."default",
-    gdcbpublishrestype character varying(50) COLLATE pg_catalog."default",
-    gdcbpublishrestitle character varying(200) COLLATE pg_catalog."default",
-    gdcbpublishresexttemplate text COLLATE pg_catalog."default",
-    gdcbpublishlabeltemplate character varying(200) COLLATE pg_catalog."default",
-    gdcbpublishclassictemplate character varying(200) COLLATE pg_catalog."default",
+    gdcbid                      character varying(100) COLLATE pg_catalog."default"  NOT NULL,
+    gdcbtype                    character varying(100) COLLATE pg_catalog."default"  NOT NULL DEFAULT '3'::character varying,
+    gdcbtitle                   character varying(1000) COLLATE pg_catalog."default" NOT NULL,
+    gdcbparentid                character varying(100) COLLATE pg_catalog."default"  NOT NULL DEFAULT '-1'::character varying,
+    gdcbtreecode                character varying(2000) COLLATE pg_catalog."default" NOT NULL,
+    gdcbisgroup                 bigint                                               NOT NULL DEFAULT 0,
+    gdcbtreeindex               bigint                                               NOT NULL DEFAULT 0,
+    gdcbtreelevel               bigint                                               NOT NULL DEFAULT 0,
+    gdcbsysdimid                character varying(100) COLLATE pg_catalog."default",
+    gdcbsysdimtype              bigint                                                        DEFAULT 3,
+    gdcbsysdimcount             bigint                                                        DEFAULT 1,
+    gdcbsysdimrecursive         character varying(1) COLLATE pg_catalog."default",
+    gdcbimageindex              bigint,
+    gdcbpublishjsontemplate     text COLLATE pg_catalog."default",
+    gdcbpublishrestype          character varying(50) COLLATE pg_catalog."default",
+    gdcbpublishrestitle         character varying(200) COLLATE pg_catalog."default",
+    gdcbpublishresexttemplate   text COLLATE pg_catalog."default",
+    gdcbpublishlabeltemplate    character varying(200) COLLATE pg_catalog."default",
+    gdcbpublishclassictemplate  character varying(200) COLLATE pg_catalog."default",
     gdcbpublishgeometrytemplate character varying(200) COLLATE pg_catalog."default",
-    gdcbpublishprojecttemplate character varying(200) COLLATE pg_catalog."default",
-    gdcbpublishsridtemplate character varying(200) COLLATE pg_catalog."default",
-    gdcbresfilepathtemplate character varying(2000) COLLATE pg_catalog."default",
-    dm_deploy_enable integer DEFAULT '-1'::integer,
-    dm_enable integer DEFAULT '-1'::integer,
-    dm_deploy_dbserverid character varying(200) COLLATE pg_catalog."default" DEFAULT '-1'::character varying,
-    gdcbpublishcodetemplate character varying(200) COLLATE pg_catalog."default",
-    gdcb_filter_xz integer DEFAULT 0,
-    gdcb_filter_gh integer DEFAULT 0,
-    gdcb_filter_dw integer DEFAULT 0,
-    gdcbname character varying(20) COLLATE pg_catalog."default",
-    gdcbquickcode character varying(100) COLLATE pg_catalog."default",
-    gdcb_rulexml text COLLATE pg_catalog."default",
-    gdcb_isreserved integer DEFAULT '-1'::integer,
+    gdcbpublishprojecttemplate  character varying(200) COLLATE pg_catalog."default",
+    gdcbpublishsridtemplate     character varying(200) COLLATE pg_catalog."default",
+    gdcbresfilepathtemplate     character varying(2000) COLLATE pg_catalog."default",
+    dm_deploy_enable            integer                                                       DEFAULT '-1'::integer,
+    dm_enable                   integer                                                       DEFAULT '-1'::integer,
+    dm_deploy_dbserverid        character varying(200) COLLATE pg_catalog."default"           DEFAULT '-1'::character varying,
+    gdcbpublishcodetemplate     character varying(200) COLLATE pg_catalog."default",
+    gdcb_filter_xz              integer                                                       DEFAULT 0,
+    gdcb_filter_gh              integer                                                       DEFAULT 0,
+    gdcb_filter_dw              integer                                                       DEFAULT 0,
+    gdcbname                    character varying(20) COLLATE pg_catalog."default",
+    gdcbquickcode               character varying(100) COLLATE pg_catalog."default",
+    gdcb_rulexml                text COLLATE pg_catalog."default",
+    gdcb_isreserved             integer                                                       DEFAULT '-1'::integer,
     CONSTRAINT "ro_global_dim_custom_bus_PK" PRIMARY KEY (gdcbid, gdcbtype)
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+    )
+    TABLESPACE pg_default;
 
 ALTER TABLE public.ro_global_dim_custom_bus
     OWNER to postgres;
@@ -1056,45 +1056,45 @@ COMMENT ON COLUMN public.ro_global_dim_custom_bus.gdcb_rulexml
 
 COMMENT ON COLUMN public.ro_global_dim_custom_bus.gdcb_isreserved
     IS '系统保留';
-    
+
 -- Table: public.ro_global_dim_space
 
 -- DROP TABLE public.ro_global_dim_space;
 
 CREATE TABLE public.ro_global_dim_space
 (
-    gdsid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    gdstitle character varying(1000) COLLATE pg_catalog."default",
-    gdsparentid character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT '-1  '::character varying,
-    gdsisgroup bigint NOT NULL DEFAULT 0,
-    gdstreecode character varying(1000) COLLATE pg_catalog."default",
-    gdstreeindex bigint NOT NULL DEFAULT 0,
-    gdstreelevel bigint NOT NULL DEFAULT 0,
-    leftx character varying(50) COLLATE pg_catalog."default" DEFAULT '0.000000000000000 '::character varying,
-    rightx character varying(50) COLLATE pg_catalog."default" DEFAULT '0.000000000000000 '::character varying,
-    topy character varying(50) COLLATE pg_catalog."default" DEFAULT '0.000000000000000 '::character varying,
-    bottomy character varying(50) COLLATE pg_catalog."default" DEFAULT '0.000000000000000 '::character varying,
-    centerx character varying(50) COLLATE pg_catalog."default" DEFAULT '0.000000000000000 '::character varying,
-    centery character varying(50) COLLATE pg_catalog."default" DEFAULT '0.000000000000000 '::character varying,
-    gdsgeometry geometry,
-    gdscode character varying(100) COLLATE pg_catalog."default",
-    is_dm_dimension integer DEFAULT 1,
-    instancetypes character varying(50)[] COLLATE pg_catalog."default",
-    gdsdeployftpserver character varying(100) COLLATE pg_catalog."default",
-    gdsdeployusername character varying(100) COLLATE pg_catalog."default",
-    gdsdeploypassword character varying(100) COLLATE pg_catalog."default",
-    gdsdeployservertype character varying(100) COLLATE pg_catalog."default" DEFAULT 'none'::character varying,
-    gdsquickcode character varying(100) COLLATE pg_catalog."default",
-    gdsdatasourcesrid character varying(100) COLLATE pg_catalog."default",
+    gdsid                character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    gdstitle             character varying(1000) COLLATE pg_catalog."default",
+    gdsparentid          character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT '-1  '::character varying,
+    gdsisgroup           bigint                                              NOT NULL DEFAULT 0,
+    gdstreecode          character varying(1000) COLLATE pg_catalog."default",
+    gdstreeindex         bigint                                              NOT NULL DEFAULT 0,
+    gdstreelevel         bigint                                              NOT NULL DEFAULT 0,
+    leftx                character varying(50) COLLATE pg_catalog."default"           DEFAULT '0.000000000000000 '::character varying,
+    rightx               character varying(50) COLLATE pg_catalog."default"           DEFAULT '0.000000000000000 '::character varying,
+    topy                 character varying(50) COLLATE pg_catalog."default"           DEFAULT '0.000000000000000 '::character varying,
+    bottomy              character varying(50) COLLATE pg_catalog."default"           DEFAULT '0.000000000000000 '::character varying,
+    centerx              character varying(50) COLLATE pg_catalog."default"           DEFAULT '0.000000000000000 '::character varying,
+    centery              character varying(50) COLLATE pg_catalog."default"           DEFAULT '0.000000000000000 '::character varying,
+    gdsgeometry          geometry,
+    gdscode              character varying(100) COLLATE pg_catalog."default",
+    is_dm_dimension      integer                                                      DEFAULT 1,
+    instancetypes        character varying(50)[] COLLATE pg_catalog."default",
+    gdsdeployftpserver   character varying(100) COLLATE pg_catalog."default",
+    gdsdeployusername    character varying(100) COLLATE pg_catalog."default",
+    gdsdeploypassword    character varying(100) COLLATE pg_catalog."default",
+    gdsdeployservertype  character varying(100) COLLATE pg_catalog."default"          DEFAULT 'none'::character varying,
+    gdsquickcode         character varying(100) COLLATE pg_catalog."default",
+    gdsdatasourcesrid    character varying(100) COLLATE pg_catalog."default",
     dm_deploy_dbserverid character varying(100) COLLATE pg_catalog."default",
     CONSTRAINT ro_global_dim_space_pkey PRIMARY KEY (gdsid),
     CONSTRAINT index_gdsquickcode UNIQUE (gdsquickcode)
 
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+    )
+    TABLESPACE pg_default;
 
 ALTER TABLE public.ro_global_dim_space
     OWNER to postgres;
@@ -1179,7 +1179,7 @@ COMMENT ON COLUMN public.ro_global_dim_space.dm_deploy_dbserverid
 
 CREATE INDEX index_ro_global_dim_space_gdscode
     ON public.ro_global_dim_space USING btree
-    (gdscode COLLATE pg_catalog."default")
+        (gdscode COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: index_ro_global_dim_space_gdsid
@@ -1188,40 +1188,40 @@ CREATE INDEX index_ro_global_dim_space_gdscode
 
 CREATE INDEX index_ro_global_dim_space_gdsid
     ON public.ro_global_dim_space USING btree
-    (gdsid COLLATE pg_catalog."default")
+        (gdsid COLLATE pg_catalog."default")
     TABLESPACE pg_default;
-    
-    
+
+
 -- Table: public.ro_global_dim_time
 
 -- DROP TABLE public.ro_global_dim_time;
 
 CREATE TABLE public.ro_global_dim_time
 (
-    gdtid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    gdttitle character varying(1000) COLLATE pg_catalog."default",
-    gdtparentid character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT '-1'::character varying,
-    gdtisgroup bigint NOT NULL DEFAULT 0,
-    gdttreecode character varying(2000) COLLATE pg_catalog."default",
-    gdttreeindex bigint NOT NULL DEFAULT 0,
-    gdttreelevel bigint NOT NULL DEFAULT 0,
-    gdtdatetime timestamp with time zone,
-    gdtyear bigint,
-    gdtseason bigint,
-    gdtmonth bigint,
-    gdtday bigint,
-    gdttype character varying(50) COLLATE pg_catalog."default",
-    instancetypes character varying(50)[] COLLATE pg_catalog."default",
-    starttime timestamp without time zone,
-    endtime timestamp without time zone,
-    is_dm_dimension integer DEFAULT 0,
-    gdtquickcode character varying(100) COLLATE pg_catalog."default",
+    gdtid           character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    gdttitle        character varying(1000) COLLATE pg_catalog."default",
+    gdtparentid     character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT '-1'::character varying,
+    gdtisgroup      bigint                                              NOT NULL DEFAULT 0,
+    gdttreecode     character varying(2000) COLLATE pg_catalog."default",
+    gdttreeindex    bigint                                              NOT NULL DEFAULT 0,
+    gdttreelevel    bigint                                              NOT NULL DEFAULT 0,
+    gdtdatetime     timestamp with time zone,
+    gdtyear         bigint,
+    gdtseason       bigint,
+    gdtmonth        bigint,
+    gdtday          bigint,
+    gdttype         character varying(50) COLLATE pg_catalog."default",
+    instancetypes   character varying(50)[] COLLATE pg_catalog."default",
+    starttime       timestamp without time zone,
+    endtime         timestamp without time zone,
+    is_dm_dimension integer                                                      DEFAULT 0,
+    gdtquickcode    character varying(100) COLLATE pg_catalog."default",
     CONSTRAINT "ro_global_dim_time_PK" PRIMARY KEY (gdtid)
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+    )
+    TABLESPACE pg_default;
 
 ALTER TABLE public.ro_global_dim_time
     OWNER to postgres;
@@ -1279,7 +1279,6 @@ COMMENT ON COLUMN public.ro_global_dim_time.is_dm_dimension
 
 COMMENT ON COLUMN public.ro_global_dim_time.gdtquickcode
     IS '快捷码';
-    
 
 
 /*
@@ -1287,64 +1286,123 @@ COMMENT ON COLUMN public.ro_global_dim_time.gdtquickcode
 	
 */
 
-INSERT INTO public.dm2_storage_object_def VALUES ('gdb', 'gdb', 'gdb数据集', '矢量数据集', '矢量数据集', 'gdb', 'gdb数据集', 'vector', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('pix', 'pix', 'PIX影像', '遥感影像', '遥感影像', 'pix', 'PIX影像', 'raster', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('tiff', 'tiff', 'TIFF影像', '遥感影像', '遥感影像', 'tiff', 'TIFF影像', 'raster', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('tif', 'tif', 'TIF影像', '遥感影像', '遥感影像', 'tif', 'TIF影像', 'raster', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('docx', 'docx', 'Word2017', '文档', '文档', 'docx', 'Word2017', 'word', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('doc', 'doc', 'Word2013', '文档', '文档', 'doc', 'Word2013', 'word', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('xls', 'xls', 'Excel2013', '文档', '文档', 'xls', 'Excel2013', 'excel', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('xlsx', 'xlsx', 'Excel2017', '文档', '文档', 'xlsx', 'Excel2017', 'excel', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('bzff', 'bzff', '标准分幅', '生产成果数据', '生产成果数据', 'bzff', '标准分幅', 'bzff', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('21at_mbtiles', '21at_mbtiles', '二十一世纪公司切片', '服务数据', '服务数据', '21at_mbtiles', '二十一世纪公司切片', '21at_mbtiles', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('jpg', 'jpg', 'JPG图片', '图片', '图片', 'jpg', 'JPG图片', 'picture', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('png', 'png', 'PNG图片', '图片', '图片', 'png', 'PNG图片', 'picture', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('bmp', 'bmp', 'BMP图片', '图片', '图片', 'bmp', 'BMP图片', 'picture', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('gif', 'gif', 'GIF图片', '图片', '图片', 'gif', 'GIF图片', 'picture', NULL, 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('img', 'img', 'IMG影像', '遥感影像', '遥感影像', 'img', 'IMG影像', 'raster', 'same_file_mainname', 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('shp', 'shp', 'SHP矢量', '矢量', '矢量', 'shp', 'SHP矢量', 'vector', 'same_file_mainname', 'global_dim');
-INSERT INTO public.dm2_storage_object_def VALUES ('bj2', 'bj2', '北京二号', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('cb04', 'cb04', '中巴地球资源卫星04星', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('de2', 'de2', 'DEIMOS-2', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('zy3-zy302', 'zy3-zy302', '资源一号01/02星-ZY302', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('hj', 'hj', '环境一号A/B/C星', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('jl1', 'jl1', '吉林一号', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('k2', 'k2', 'Kompsat-2', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('k3', 'k3', 'Kompsat-3', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('pl', 'pl', 'Pleiades1A/1B', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('rapideye', 'rapideye', 'RapidEye', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('spot', 'spot', 'SPOT', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('sv1', 'sv1', '高景一号', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('wv', 'wv', 'WordView01/02/03', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('yg', 'yg', '遥感卫星', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf1-pms', 'gf1-pms', '高分一号-PMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf1-wfv', 'gf1-wfv', '高分一号-WFV', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf2-pms', 'gf2-pms', '高分二号-PMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf2-wfv', 'gf2-wfv', '高分二号-WFV', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf3-hh', 'gf3-hh', '高分三号-HH', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf3-vhvv', 'gf3-vhvv', '高分三号-VHVV', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf3-dh', 'gf3-dh', '高分三号-DH', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf4-pms', 'gf4-pms', '高分四号-PMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf4-b1', 'gf4-b1', '高分四号-B1', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf4-pmi', 'gf4-pmi', '高分四号-PMI', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf4-irs', 'gf4-irs', '高分四号-IRS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf5-ahsi', 'gf5-ahsi', '高分五号-AHSI', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf5-vims', 'gf5-vims', '高分五号-VIMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf5-gmi', 'gf5-gmi', '高分五号-GMI', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf5-emi', 'gf5-emi', '高分五号-EMI', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf6-pms', 'gf6-pms', '高分六号-PMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('gf6-wfv', 'gf6-wfv', '高分六号-WFV', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('landsat-ld8', 'landsat-ld8', 'LandSat-ld8', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('landsat-le7', 'landsat-le7', 'LandSat-le7', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('sj9a-pmn', 'sj9a-pmn', '实践九号-PMN', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('sj9a-pms', 'sj9a-pms', '实践九号-PMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('th-th', 'th-th', '天绘一号-th', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('th-th01', 'th-th01', '天绘一号-th01', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('zy02c-pms', 'zy02c-pms', '资源三号02星-PMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('zy02c-hrc', 'zy02c-hrc', '资源三号02星-HRC', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('zy3-zy3', 'zy3-zy3', '资源一号01/02星-ZY3', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('zy3-zy3_01a', 'zy3-zy3_01a', '资源一号01/02星-ZY3_01a', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.dm2_storage_object_def VALUES ('zy3-zy301a', 'zy3-zy301a', '资源一号01/02星-zy301a', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gdb', 'gdb', 'gdb数据集', '矢量数据集', '矢量数据集', 'gdb', 'gdb数据集', 'vector', NULL, 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('pix', 'pix', 'PIX影像', '遥感影像', '遥感影像', 'pix', 'PIX影像', 'raster', NULL, 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('tiff', 'tiff', 'TIFF影像', '遥感影像', '遥感影像', 'tiff', 'TIFF影像', 'raster', NULL, 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('tif', 'tif', 'TIF影像', '遥感影像', '遥感影像', 'tif', 'TIF影像', 'raster', NULL, 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('docx', 'docx', 'Word2017', '文档', '文档', 'docx', 'Word2017', 'word', NULL, 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('doc', 'doc', 'Word2013', '文档', '文档', 'doc', 'Word2013', 'word', NULL, 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('xls', 'xls', 'Excel2013', '文档', '文档', 'xls', 'Excel2013', 'excel', NULL, 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('xlsx', 'xlsx', 'Excel2017', '文档', '文档', 'xlsx', 'Excel2017', 'excel', NULL, 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('bzff', 'bzff', '标准分幅', '生产成果数据', '生产成果数据', 'bzff', '标准分幅', 'bzff', NULL, 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('21at_mbtiles', '21at_mbtiles', '二十一世纪公司切片', '服务数据', '服务数据', '21at_mbtiles', '二十一世纪公司切片', '21at_mbtiles', NULL,
+        'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('jpg', 'jpg', 'JPG图片', '图片', '图片', 'jpg', 'JPG图片', 'picture', NULL, 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('png', 'png', 'PNG图片', '图片', '图片', 'png', 'PNG图片', 'picture', NULL, 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('bmp', 'bmp', 'BMP图片', '图片', '图片', 'bmp', 'BMP图片', 'picture', NULL, 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gif', 'gif', 'GIF图片', '图片', '图片', 'gif', 'GIF图片', 'picture', NULL, 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('img', 'img', 'IMG影像', '遥感影像', '遥感影像', 'img', 'IMG影像', 'raster', 'same_file_mainname', 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('shp', 'shp', 'SHP矢量', '矢量', '矢量', 'shp', 'SHP矢量', 'vector', 'same_file_mainname', 'global_dim');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('bj2', 'bj2', '北京二号', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('cb04', 'cb04', '中巴地球资源卫星04星', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('de2', 'de2', 'DEIMOS-2', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('zy3-zy302', 'zy3-zy302', '资源一号01/02星-ZY302', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('hj', 'hj', '环境一号A/B/C星', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('jl1', 'jl1', '吉林一号', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('k2', 'k2', 'Kompsat-2', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('k3', 'k3', 'Kompsat-3', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('pl', 'pl', 'Pleiades1A/1B', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('rapideye', 'rapideye', 'RapidEye', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('spot', 'spot', 'SPOT', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('sv1', 'sv1', '高景一号', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('wv', 'wv', 'WordView01/02/03', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('yg', 'yg', '遥感卫星', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf1-pms', 'gf1-pms', '高分一号-PMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf1-wfv', 'gf1-wfv', '高分一号-WFV', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf2-pms', 'gf2-pms', '高分二号-PMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf2-wfv', 'gf2-wfv', '高分二号-WFV', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf3-hh', 'gf3-hh', '高分三号-HH', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf3-vhvv', 'gf3-vhvv', '高分三号-VHVV', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf3-dh', 'gf3-dh', '高分三号-DH', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf4-pms', 'gf4-pms', '高分四号-PMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf4-b1', 'gf4-b1', '高分四号-B1', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf4-pmi', 'gf4-pmi', '高分四号-PMI', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf4-irs', 'gf4-irs', '高分四号-IRS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf5-ahsi', 'gf5-ahsi', '高分五号-AHSI', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf5-vims', 'gf5-vims', '高分五号-VIMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf5-gmi', 'gf5-gmi', '高分五号-GMI', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf5-emi', 'gf5-emi', '高分五号-EMI', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf6-pms', 'gf6-pms', '高分六号-PMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf6-wfv', 'gf6-wfv', '高分六号-WFV', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('landsat-ld8', 'landsat-ld8', 'LandSat-ld8', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('landsat-le7', 'landsat-le7', 'LandSat-le7', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('sj9a-pmn', 'sj9a-pmn', '实践九号-PMN', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('sj9a-pms', 'sj9a-pms', '实践九号-PMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('th-th', 'th-th', '天绘一号-th', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('th-th01', 'th-th01', '天绘一号-th01', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('zy02c-pms', 'zy02c-pms', '资源三号02星-PMS', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('zy02c-hrc', 'zy02c-hrc', '资源三号02星-HRC', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('zy3-zy3', 'zy3-zy3', '资源一号01/02星-ZY3', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('zy3-zy3_01a', 'zy3-zy3_01a', '资源一号01/02星-ZY3_01a', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.dm2_storage_object_def
+VALUES ('zy3-zy301a', 'zy3-zy301a', '资源一号01/02星-zy301a', '卫星数据', NULL, NULL, NULL, NULL, NULL, NULL);
 
 
 /*
@@ -1352,8 +1410,9 @@ INSERT INTO public.dm2_storage_object_def VALUES ('zy3-zy301a', 'zy3-zy301a', '�
 	
 */
 
-INSERT INTO public.dm2_storage VALUES ('1', 'C:\Data\产品样例数据-昆明矢量', 'C:\Data\产品样例数据-昆明矢量', 0, '1', NULL, 0, 'v49d4ffc5d4ed4e13bc97151d365b8ca6', '2019-10-17 18:58:30.36528', NULL, NULL, '*行业业务数据*', '*专题分析数据*;*土地资源专项*', NULL);
-
+INSERT INTO public.dm2_storage
+VALUES ('1', 'C:\Data\产品样例数据-昆明矢量', 'C:\Data\产品样例数据-昆明矢量', 0, '1', NULL, 0, 'v49d4ffc5d4ed4e13bc97151d365b8ca6',
+        '2019-10-17 18:58:30.36528', NULL, NULL, '*行业业务数据*', '*专题分析数据*;*土地资源专项*', NULL);
 
 
 /*
@@ -1379,20 +1438,23 @@ INSERT INTO public.dm2_storage VALUES ('1', 'C:\Data\产品样例数据-昆明�
         2.1.3.=12，表示在递归扫描中
 */
 
-alter table dm2_storage_directory add column dsdDirCreateTime timestamp(6) without time zone;
+alter table dm2_storage_directory
+    add column dsdDirCreateTime timestamp(6) without time zone;
 COMMENT ON COLUMN public.dm2_storage_directory.dsdDirCreateTime
     IS '目录创建时间';
 
-alter table dm2_storage_directory add column dsdDirLastModifyTime timestamp(6) without time zone;
+alter table dm2_storage_directory
+    add column dsdDirLastModifyTime timestamp(6) without time zone;
 COMMENT ON COLUMN public.dm2_storage_directory.dsdDirLastModifyTime
     IS '目录最后修改时间';
 
-alter table dm2_storage_directory add column dsdDirScanPriority integer default 0;
+alter table dm2_storage_directory
+    add column dsdDirScanPriority integer default 0;
 COMMENT ON COLUMN public.dm2_storage_directory.dsdDirScanPriority
     IS '目录扫描优先级';
 
-update dm2_storage_directory set dsdDirScanPriority = 0;
-
+update dm2_storage_directory
+set dsdDirScanPriority = 0;
 
 
 /*
@@ -1400,7 +1462,8 @@ update dm2_storage_directory set dsdDirScanPriority = 0;
   1、为文件扫描增加扩展名白名单功能，以解决部分文件携带卫星数据中的关键字，而被误认为是卫星数据的问题
 */
 
-alter table dm2_storage_object_def add column dsod_ext_whitelist character varying(1000);
+alter table dm2_storage_object_def
+    add column dsod_ext_whitelist character varying(1000);
 COMMENT ON COLUMN public.dm2_storage_object_def.dsod_ext_whitelist IS '对象扩展名白名单';
 
 
@@ -1408,39 +1471,58 @@ COMMENT ON COLUMN public.dm2_storage_object_def.dsod_ext_whitelist IS '对象扩
 	2020-5-9合并dm2_storage_object_def和dm2_index_catalog
 */
 
-alter table dm2_storage_object_def add column dsod_BrowserImg character varying(300);
+alter table dm2_storage_object_def
+    add column dsod_BrowserImg character varying(300);
 COMMENT ON COLUMN public.dm2_storage_object_def.dsod_BrowserImg IS '对象图标';
 
-alter table dm2_storage_object_def add column dsod_ThumbImg character varying(300);
+alter table dm2_storage_object_def
+    add column dsod_ThumbImg character varying(300);
 COMMENT ON COLUMN public.dm2_storage_object_def.dsod_ThumbImg IS '对象缩略图';
 
-alter table dm2_storage_object_def add column dsod_Check_Engine_Type character varying(100);
-alter table dm2_storage_object_def add column dsod_Check_Engine character varying(2000);
-alter table dm2_storage_object_def add column dsod_Check_Engine_WorkDir character varying(2000);
+alter table dm2_storage_object_def
+    add column dsod_Check_Engine_Type character varying(100);
+alter table dm2_storage_object_def
+    add column dsod_Check_Engine character varying(2000);
+alter table dm2_storage_object_def
+    add column dsod_Check_Engine_WorkDir character varying(2000);
 COMMENT ON COLUMN public.dm2_storage_object_def.dsod_Check_Engine_Type IS '对象验证引擎类型';
 COMMENT ON COLUMN public.dm2_storage_object_def.dsod_Check_Engine IS '对象验证引擎';
 COMMENT ON COLUMN public.dm2_storage_object_def.dsod_Check_Engine_WorkDir IS '对象验证引擎工作路径';
 
-alter table dm2_storage_object_def add column dsod_Deploy_Engine_Type character varying(100);
-alter table dm2_storage_object_def add column dsod_Deploy_Engine character varying(2000);
-alter table dm2_storage_object_def add column dsod_Deploy_Engine_WorkDir character varying(2000);
+alter table dm2_storage_object_def
+    add column dsod_Deploy_Engine_Type character varying(100);
+alter table dm2_storage_object_def
+    add column dsod_Deploy_Engine character varying(2000);
+alter table dm2_storage_object_def
+    add column dsod_Deploy_Engine_WorkDir character varying(2000);
 COMMENT ON COLUMN public.dm2_storage_object_def.dsod_Deploy_Engine_Type IS '对象发布引擎类型';
 COMMENT ON COLUMN public.dm2_storage_object_def.dsod_Deploy_Engine IS '对象发布引擎';
 COMMENT ON COLUMN public.dm2_storage_object_def.dsod_Deploy_Engine_WorkDir IS '对象发布引擎工作路径';
 
-update dm2_storage_object_def 
-set dsod_Check_Engine_Type = 'inner', dsod_Check_Engine = 'shp', dsod_Check_Engine_WorkDir = null 
-  , dsod_Deploy_Engine_Type = 'inner', dsod_Deploy_Engine = 'shp', dsod_Deploy_Engine_WorkDir = null 
-  , dsod_BrowserImg = 'vector_96x96.png', dsod_ThumbImg = 'vector_32x32.png'
+update dm2_storage_object_def
+set dsod_Check_Engine_Type     = 'inner'
+  , dsod_Check_Engine          = 'shp'
+  , dsod_Check_Engine_WorkDir  = null
+  , dsod_Deploy_Engine_Type    = 'inner'
+  , dsod_Deploy_Engine         = 'shp'
+  , dsod_Deploy_Engine_WorkDir = null
+  , dsod_BrowserImg            = 'vector_96x96.png'
+  , dsod_ThumbImg              = 'vector_32x32.png'
 where dsodid = 'shp';
 
-update dm2_storage_object_def 
-set dsod_Check_Engine_Type = 'inner', dsod_Check_Engine = 'excel', dsod_Check_Engine_WorkDir = null 
-  , dsod_Deploy_Engine_Type = 'inner', dsod_Deploy_Engine = 'excel', dsod_Deploy_Engine_WorkDir = null 
-  , dsod_BrowserImg = 'excel_96x96.png', dsod_ThumbImg = 'excel_32x32.png'
+update dm2_storage_object_def
+set dsod_Check_Engine_Type     = 'inner'
+  , dsod_Check_Engine          = 'excel'
+  , dsod_Check_Engine_WorkDir  = null
+  , dsod_Deploy_Engine_Type    = 'inner'
+  , dsod_Deploy_Engine         = 'excel'
+  , dsod_Deploy_Engine_WorkDir = null
+  , dsod_BrowserImg            = 'excel_96x96.png'
+  , dsod_ThumbImg              = 'excel_32x32.png'
 where dsodid in ('xls', 'xlsx');
 
-alter table dm2_storage_object_def add column dsodtype_title character varying(300);
+alter table dm2_storage_object_def
+    add column dsodtype_title character varying(300);
 COMMENT ON COLUMN public.dm2_storage_object_def.dsodtype_title IS '大类标题';
 
 COMMENT ON COLUMN public.dm2_storage_object_def.dsodtype IS '大类';
@@ -1451,9 +1533,12 @@ set dsodtype_title = dsodtype;
 update dm2_storage_object_def
 set dsodtype = dsod_metadata_engine;
 
-alter table dm2_storage_object_def drop column dsodtype_map;
-alter table dm2_storage_object_def drop column dsodname_map;
-alter table dm2_storage_object_def drop column dsodtitle_map;
+alter table dm2_storage_object_def
+    drop column dsodtype_map;
+alter table dm2_storage_object_def
+    drop column dsodname_map;
+alter table dm2_storage_object_def
+    drop column dsodtitle_map;
 
 
 
@@ -1472,108 +1557,232 @@ set dsod_metadata_engine = 'default'
 where dsod_metadata_engine not in ('vector', 'raster', 'picture');
 
 
-
 /*
 	2020-5-21 王西亚
 	调整图片文件的元数据引擎提取方式，改为使用GDAL读取元数据，并对其中的部分节点进行调整优化
 */
 
 update dm2_storage_object_def
-set dsod_metadata_engine = 'sat', dsodtype = 'sat', dsod_ext_whitelist = 'gz;tar.gz;zip;rar'
+set dsod_metadata_engine = 'sat',
+    dsodtype             = 'sat',
+    dsod_ext_whitelist   = 'gz;tar.gz;zip;rar'
 where dsodtype_title = '卫星数据';
 
 update dm2_storage_object_def
 set dsod_tags_engine = 'global_dim';
 
 update dm2_storage_object_def
-set dsod_metadata_engine = 'raster', dsodtype = 'picture'
+set dsod_metadata_engine = 'raster',
+    dsodtype             = 'picture'
 where dsodtype = '图片';
 
 update dm2_storage_object_def
-set dsod_metadata_engine = 'default', dsodtype = 'document'
+set dsod_metadata_engine = 'default',
+    dsodtype             = 'document'
 where dsodtype = '文档';
 
 
 update dm2_storage_object_def
-set dsod_metadata_engine = '21at_mbtiles', dsodtype = 'tiles'
+set dsod_metadata_engine = '21at_mbtiles',
+    dsodtype             = 'tiles'
 where dsodtype = '服务数据';
 
 update dm2_storage_object_def
-set dsod_metadata_engine = 'bzff', dsodtype = 'bzff'
+set dsod_metadata_engine = 'bzff',
+    dsodtype             = 'bzff'
 where dsodtype = '生产成果数据';
 
 update dm2_storage_object_def
-set dsod_metadata_engine = 'vector', dsodtype = 'vector'
+set dsod_metadata_engine = 'vector',
+    dsodtype             = 'vector'
 where dsodtype = '矢量';
 
 update dm2_storage_object_def
-set dsod_metadata_engine = 'vector', dsodtype = 'vector'
+set dsod_metadata_engine = 'vector',
+    dsodtype             = 'vector'
 where dsodtype = '矢量数据集';
 
 update dm2_storage_object_def
-set dsod_metadata_engine = 'raster', dsodtype = 'img'
+set dsod_metadata_engine = 'raster',
+    dsodtype             = 'img'
 where dsodtype = '遥感影像';
 
-delete from public.dm2_storage_object_def;
-INSERT INTO public.dm2_storage_object_def VALUES ('bj2', 'bj2', '北京二号', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('cb04', 'cb04', '中巴地球资源卫星04星', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('de2', 'de2', 'DEIMOS-2', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('zy3-zy302', 'zy3-zy302', '资源一号01/02星-ZY302', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('hj', 'hj', '环境一号A/B/C星', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('jl1', 'jl1', '吉林一号', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('zy02c-pms', 'zy02c-pms', '资源三号02星-PMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('zy02c-hrc', 'zy02c-hrc', '资源三号02星-HRC', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('docx', 'docx', 'Word2017', 'document', 'default', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '文档');
-INSERT INTO public.dm2_storage_object_def VALUES ('doc', 'doc', 'Word2013', 'document', 'default', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '文档');
-INSERT INTO public.dm2_storage_object_def VALUES ('21at_mbtiles', '21at_mbtiles', '二十一世纪公司切片', 'tiles', '21at_mbtiles', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '服务数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('bzff', 'bzff', '标准分幅', 'bzff', 'bzff', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '生产成果数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gdb', 'gdb', 'gdb数据集', 'vector', 'vector', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '矢量数据集');
-INSERT INTO public.dm2_storage_object_def VALUES ('pix', 'pix', 'PIX影像', 'img', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '遥感影像');
-INSERT INTO public.dm2_storage_object_def VALUES ('tiff', 'tiff', 'TIFF影像', 'img', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '遥感影像');
-INSERT INTO public.dm2_storage_object_def VALUES ('tif', 'tif', 'TIF影像', 'img', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '遥感影像');
-INSERT INTO public.dm2_storage_object_def VALUES ('xls', 'xls', 'Excel2013', 'document', 'default', 'same_file_mainname', 'global_dim', '', 'excel_96x96.png', 'excel_32x32.png', 'inner', 'excel', NULL, 'inner', 'excel', NULL, '文档');
-INSERT INTO public.dm2_storage_object_def VALUES ('xlsx', 'xlsx', 'Excel2017', 'document', 'default', 'same_file_mainname', 'global_dim', '', 'excel_96x96.png', 'excel_32x32.png', 'inner', 'excel', NULL, 'inner', 'excel', NULL, '文档');
-INSERT INTO public.dm2_storage_object_def VALUES ('zy3-zy3', 'zy3-zy3', '资源一号01/02星-ZY3', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('zy3-zy3_01a', 'zy3-zy3_01a', '资源一号01/02星-ZY3_01a', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('zy3-zy301a', 'zy3-zy301a', '资源一号01/02星-zy301a', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('th-th01', 'th-th01', '天绘一号-th01', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('shp', 'shp', 'SHP矢量', 'vector', 'vector', 'same_file_mainname', 'global_dim', '', 'vector_96x96.png', 'vector_32x32.png', 'inner', 'shp', NULL, 'inner', 'shp', NULL, '矢量');
-INSERT INTO public.dm2_storage_object_def VALUES ('k2', 'k2', 'Kompsat-2', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('k3', 'k3', 'Kompsat-3', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('pl', 'pl', 'Pleiades1A/1B', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('rapideye', 'rapideye', 'RapidEye', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('spot', 'spot', 'SPOT', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('sv1', 'sv1', '高景一号', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('wv', 'wv', 'WordView01/02/03', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('yg', 'yg', '遥感卫星', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf1-pms', 'gf1-pms', '高分一号-PMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf1-wfv', 'gf1-wfv', '高分一号-WFV', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf2-pms', 'gf2-pms', '高分二号-PMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf2-wfv', 'gf2-wfv', '高分二号-WFV', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf3-hh', 'gf3-hh', '高分三号-HH', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf3-vhvv', 'gf3-vhvv', '高分三号-VHVV', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf3-dh', 'gf3-dh', '高分三号-DH', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf4-pms', 'gf4-pms', '高分四号-PMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf4-b1', 'gf4-b1', '高分四号-B1', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf4-pmi', 'gf4-pmi', '高分四号-PMI', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf4-irs', 'gf4-irs', '高分四号-IRS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf5-ahsi', 'gf5-ahsi', '高分五号-AHSI', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf5-vims', 'gf5-vims', '高分五号-VIMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf5-gmi', 'gf5-gmi', '高分五号-GMI', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf5-emi', 'gf5-emi', '高分五号-EMI', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf6-pms', 'gf6-pms', '高分六号-PMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('gf6-wfv', 'gf6-wfv', '高分六号-WFV', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('landsat-ld8', 'landsat-ld8', 'LandSat-ld8', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('landsat-le7', 'landsat-le7', 'LandSat-le7', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('sj9a-pmn', 'sj9a-pmn', '实践九号-PMN', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('sj9a-pms', 'sj9a-pms', '实践九号-PMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('th-th', 'th-th', '天绘一号-th', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
-INSERT INTO public.dm2_storage_object_def VALUES ('jpg', 'jpg', 'JPG图片', 'picture', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '图片');
-INSERT INTO public.dm2_storage_object_def VALUES ('png', 'png', 'PNG图片', 'picture', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '图片');
-INSERT INTO public.dm2_storage_object_def VALUES ('bmp', 'bmp', 'BMP图片', 'picture', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '图片');
-INSERT INTO public.dm2_storage_object_def VALUES ('gif', 'gif', 'GIF图片', 'picture', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '图片');
-INSERT INTO public.dm2_storage_object_def VALUES ('img', 'img', 'IMG影像', 'img', 'raster', 'same_file_mainname', 'global_dim', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, '遥感影像');
-
+delete
+from public.dm2_storage_object_def;
+INSERT INTO public.dm2_storage_object_def
+VALUES ('bj2', 'bj2', '北京二号', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('cb04', 'cb04', '中巴地球资源卫星04星', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('de2', 'de2', 'DEIMOS-2', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('zy3-zy302', 'zy3-zy302', '资源一号01/02星-ZY302', 'sat', 'sat', 'same_file_mainname', 'global_dim',
+        'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('hj', 'hj', '环境一号A/B/C星', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('jl1', 'jl1', '吉林一号', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('zy02c-pms', 'zy02c-pms', '资源三号02星-PMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar',
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('zy02c-hrc', 'zy02c-hrc', '资源三号02星-HRC', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar',
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('docx', 'docx', 'Word2017', 'document', 'default', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL,
+        NULL, NULL, NULL, NULL, '文档');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('doc', 'doc', 'Word2013', 'document', 'default', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL,
+        NULL, NULL, NULL, NULL, '文档');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('21at_mbtiles', '21at_mbtiles', '二十一世纪公司切片', 'tiles', '21at_mbtiles', 'same_file_mainname', 'global_dim', '',
+        NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '服务数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('bzff', 'bzff', '标准分幅', 'bzff', 'bzff', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL,
+        NULL, NULL, NULL, '生产成果数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gdb', 'gdb', 'gdb数据集', 'vector', 'vector', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL,
+        NULL, NULL, NULL, '矢量数据集');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('pix', 'pix', 'PIX影像', 'img', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL,
+        NULL, NULL, NULL, '遥感影像');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('tiff', 'tiff', 'TIFF影像', 'img', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL,
+        NULL, NULL, NULL, '遥感影像');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('tif', 'tif', 'TIF影像', 'img', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL,
+        NULL, NULL, NULL, '遥感影像');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('xls', 'xls', 'Excel2013', 'document', 'default', 'same_file_mainname', 'global_dim', '', 'excel_96x96.png',
+        'excel_32x32.png', 'inner', 'excel', NULL, 'inner', 'excel', NULL, '文档');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('xlsx', 'xlsx', 'Excel2017', 'document', 'default', 'same_file_mainname', 'global_dim', '', 'excel_96x96.png',
+        'excel_32x32.png', 'inner', 'excel', NULL, 'inner', 'excel', NULL, '文档');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('zy3-zy3', 'zy3-zy3', '资源一号01/02星-ZY3', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar',
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('zy3-zy3_01a', 'zy3-zy3_01a', '资源一号01/02星-ZY3_01a', 'sat', 'sat', 'same_file_mainname', 'global_dim',
+        'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('zy3-zy301a', 'zy3-zy301a', '资源一号01/02星-zy301a', 'sat', 'sat', 'same_file_mainname', 'global_dim',
+        'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('th-th01', 'th-th01', '天绘一号-th01', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('shp', 'shp', 'SHP矢量', 'vector', 'vector', 'same_file_mainname', 'global_dim', '', 'vector_96x96.png',
+        'vector_32x32.png', 'inner', 'shp', NULL, 'inner', 'shp', NULL, '矢量');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('k2', 'k2', 'Kompsat-2', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('k3', 'k3', 'Kompsat-3', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('pl', 'pl', 'Pleiades1A/1B', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('rapideye', 'rapideye', 'RapidEye', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('spot', 'spot', 'SPOT', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('sv1', 'sv1', '高景一号', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('wv', 'wv', 'WordView01/02/03', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('yg', 'yg', '遥感卫星', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf1-pms', 'gf1-pms', '高分一号-PMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf1-wfv', 'gf1-wfv', '高分一号-WFV', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf2-pms', 'gf2-pms', '高分二号-PMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf2-wfv', 'gf2-wfv', '高分二号-WFV', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf3-hh', 'gf3-hh', '高分三号-HH', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf3-vhvv', 'gf3-vhvv', '高分三号-VHVV', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar',
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf3-dh', 'gf3-dh', '高分三号-DH', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf4-pms', 'gf4-pms', '高分四号-PMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf4-b1', 'gf4-b1', '高分四号-B1', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf4-pmi', 'gf4-pmi', '高分四号-PMI', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf4-irs', 'gf4-irs', '高分四号-IRS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf5-ahsi', 'gf5-ahsi', '高分五号-AHSI', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar',
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf5-vims', 'gf5-vims', '高分五号-VIMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar',
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf5-gmi', 'gf5-gmi', '高分五号-GMI', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf5-emi', 'gf5-emi', '高分五号-EMI', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf6-pms', 'gf6-pms', '高分六号-PMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gf6-wfv', 'gf6-wfv', '高分六号-WFV', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('landsat-ld8', 'landsat-ld8', 'LandSat-ld8', 'sat', 'sat', 'same_file_mainname', 'global_dim',
+        'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('landsat-le7', 'landsat-le7', 'LandSat-le7', 'sat', 'sat', 'same_file_mainname', 'global_dim',
+        'gz;tar.gz;zip;rar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('sj9a-pmn', 'sj9a-pmn', '实践九号-PMN', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('sj9a-pms', 'sj9a-pms', '实践九号-PMS', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('th-th', 'th-th', '天绘一号-th', 'sat', 'sat', 'same_file_mainname', 'global_dim', 'gz;tar.gz;zip;rar', NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, '卫星数据');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('jpg', 'jpg', 'JPG图片', 'picture', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL,
+        NULL, NULL, NULL, '图片');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('png', 'png', 'PNG图片', 'picture', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL,
+        NULL, NULL, NULL, '图片');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('bmp', 'bmp', 'BMP图片', 'picture', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL,
+        NULL, NULL, NULL, '图片');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('gif', 'gif', 'GIF图片', 'picture', 'raster', 'same_file_mainname', 'global_dim', '', NULL, '', NULL, NULL, NULL,
+        NULL, NULL, NULL, '图片');
+INSERT INTO public.dm2_storage_object_def
+VALUES ('img', 'img', 'IMG影像', 'img', 'raster', 'same_file_mainname', 'global_dim', '', '', '', NULL, NULL, NULL, NULL,
+        NULL, NULL, '遥感影像');
 
 
 
@@ -1588,18 +1797,18 @@ INSERT INTO public.dm2_storage_object_def VALUES ('img', 'img', 'IMG影像', 'im
 
 CREATE TABLE public.dm2_storage_object_check
 (
-    dsoc_object_id character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    dsoc_object_id      character varying(100) COLLATE pg_catalog."default" NOT NULL,
     dsoc_process_status integer DEFAULT 0,
     dsoc_process_procid character varying(100) COLLATE pg_catalog."default",
-    dsoc_check_memo text COLLATE pg_catalog."default",
-    dsoc_memo text COLLATE pg_catalog."default",
+    dsoc_check_memo     text COLLATE pg_catalog."default",
+    dsoc_memo           text COLLATE pg_catalog."default",
     dsoc_lastmodifytime timestamp(6) without time zone,
     CONSTRAINT dm2_storage_object_check_pkey PRIMARY KEY (dsoc_object_id)
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+    )
+    TABLESPACE pg_default;
 
 ALTER TABLE public.dm2_storage_object_check
     OWNER to postgres;
@@ -1625,12 +1834,6 @@ COMMENT ON COLUMN public.dm2_storage_object_check.dsoc_lastmodifytime
     IS '记录最后刷新时间';
 
 
-
-
-
-
-
-
 /*
     2020-6-22 扩展文件识别模式
     。对GDB、mdb等数据集，需要在元数据解析完毕后，进行进一步处理，解析并存储数据集中的图层信息
@@ -1641,21 +1844,27 @@ COMMENT ON COLUMN public.dm2_storage_object_check.dsoc_lastmodifytime
     。对数据检查验证表进行完善
 */
 
-alter table dm2_storage_object_def add column dsod_last_process_engine character varying[];
+alter table dm2_storage_object_def
+    add column dsod_last_process_engine character varying[];
 COMMENT ON COLUMN public.dm2_storage_object_def.dsod_last_process_engine IS '对象入库后处理引擎';
 
-alter table dm2_storage_obj_detail add column dod_parentid character varying(100) default '-1';
+alter table dm2_storage_obj_detail
+    add column dod_parentid character varying(100) default '-1';
 COMMENT ON COLUMN public.dm2_storage_obj_detail.dod_parentid IS '父节点';
 
-update dm2_storage_obj_detail set dod_parentid = '-1';
+update dm2_storage_obj_detail
+set dod_parentid = '-1';
 
 
 
-alter table dm2_storage_object add column dsoLastProcessStatus integer DEFAULT 1;
+alter table dm2_storage_object
+    add column dsoLastProcessStatus integer DEFAULT 1;
 COMMENT ON COLUMN public.dm2_storage_object.dsoLastProcessStatus IS '后处理状态';
-alter table dm2_storage_object add column dsoLastProcessProcId character varying(100);
+alter table dm2_storage_object
+    add column dsoLastProcessProcId character varying(100);
 COMMENT ON COLUMN public.dm2_storage_object.dsoLastProcessProcId IS '后处理状态';
-alter table dm2_storage_object add column dsoLastProcessMemo text;
+alter table dm2_storage_object
+    add column dsoLastProcessMemo text;
 COMMENT ON COLUMN public.dm2_storage_object.dsoLastProcessMemo IS '后处理结果';
 
 -- Index: idx_dm2_storage_object_LastProcessStatus
@@ -1663,27 +1872,30 @@ COMMENT ON COLUMN public.dm2_storage_object.dsoLastProcessMemo IS '后处理结�
 -- DROP INDEX public.idx_dm2_storage_object_LastProcessStatus;
 
 CREATE INDEX idx_dm2_storage_object_LastProcessStatus
-    ON public.dm2_storage_object(dsoLastProcessStatus);
+    ON public.dm2_storage_object (dsoLastProcessStatus);
 
 -- Index: idx_dm2_storage_object_LastProcessProcID
 
 -- DROP INDEX public.idx_dm2_storage_object_LastProcessProcID;
 
 CREATE INDEX idx_dm2_storage_object_LastProcessProcID
-    ON public.dm2_storage_object(dsoLastProcessProcId);
-    
+    ON public.dm2_storage_object (dsoLastProcessProcId);
 
-alter table dm2_storage_file add column dsfType character varying(100) default 'file';
+
+alter table dm2_storage_file
+    add column dsfType character varying(100) default 'file';
 COMMENT ON COLUMN public.dm2_storage_file.dsfType IS '类型';
 
 
 
+INSERT INTO public.dm2_storage_object_def
+VALUES ( 'vector_dataset_layer', 'vector_dataset_layer', '矢量数据集图层', 'vector_dataset_layer'
+       , null, null, 'global_dim', null, 'vector_96x96.png', 'vector_32x32.png', NULL, NULL, NULL, NULL, NULL, NULL
+       , '矢量数据集图层');
 
-INSERT INTO public.dm2_storage_object_def VALUES (
-    'vector_dataset_layer', 'vector_dataset_layer', '矢量数据集图层', 'vector_dataset_layer'
-  , null, null, 'global_dim', null, 'vector_96x96.png', 'vector_32x32.png', NULL, NULL, NULL, NULL, NULL, NULL, '矢量数据集图层');
-
-update dm2_storage_object_def set dsod_last_process_engine = '{metadata_vectordataset_parser}' where dsodid = 'gdb';
+update dm2_storage_object_def
+set dsod_last_process_engine = '{metadata_vectordataset_parser}'
+where dsodid = 'gdb';
 
 ALTER TABLE public.dm2_storage_object_check
     ADD COLUMN dsoc_process_status_field integer NOT NULL DEFAULT 4;
@@ -1699,31 +1911,34 @@ COMMENT ON COLUMN public.dm2_storage_object_check.dsoc_process_status_feature
     IS '检查状态(图斑)  2-通过检查 3-未通过检查 4-无需检查';
 
 
-
-
 /*
     2020-07-15 王西亚
     。为解决业务数据集，在数据对象表中扩展对象所属父对象标识
 */
 
-alter table dm2_storage_object add column dsoParentObjId character varying(100);
+alter table dm2_storage_object
+    add column dsoParentObjId character varying(100);
 COMMENT ON COLUMN public.dm2_storage_object.dsoParentObjId IS '父对象标识';
 
-alter table dm2_storage_directory add column dsdParentObjId character varying(100);
+alter table dm2_storage_directory
+    add column dsdParentObjId character varying(100);
 COMMENT ON COLUMN public.dm2_storage_directory.dsdParentObjId IS '父对象标识';
 
-alter table dm2_storage_file add column dsfParentObjId character varying(100);
+alter table dm2_storage_file
+    add column dsfParentObjId character varying(100);
 COMMENT ON COLUMN public.dm2_storage_file.dsfParentObjId IS '父对象标识';
 
-delete from ro_global_config where gcfgid between 4000 and 4999;
-insert into ro_global_config(gcfgid, gcfgcode, gcfgtitle, gcfgvalue, gcfgmemo) 
-  values(4001, 'dm2_storage.directory_object_fuzzy', '数管-目录识别-模糊识别', '0', null);
-insert into ro_global_config(gcfgid, gcfgcode, gcfgtitle, gcfgvalue, gcfgmemo) 
-  values(4002, 'dm2_storage.file_object_sat', '数管-文件识别-卫星数据识别', '0', null);
-insert into ro_global_config(gcfgid, gcfgcode, gcfgtitle, gcfgvalue, gcfgmemo) 
-  values(4003, 'dm2_storage.file_object_bus', '数管-文件识别-业务数据识别', '0', null);
-insert into ro_global_config(gcfgid, gcfgcode, gcfgtitle, gcfgvalue, gcfgmemo) 
-  values(4004, 'dm2_storage.tags.parser.seperator', '数管-标签-解析-分隔符', '_; ;/;\;-', '多个分隔符,使用分号分隔;允许使用空格做分隔');
+delete
+from ro_global_config
+where gcfgid between 4000 and 4999;
+insert into ro_global_config(gcfgid, gcfgcode, gcfgtitle, gcfgvalue, gcfgmemo)
+values (4001, 'dm2_storage.directory_object_fuzzy', '数管-目录识别-模糊识别', '0', null);
+insert into ro_global_config(gcfgid, gcfgcode, gcfgtitle, gcfgvalue, gcfgmemo)
+values (4002, 'dm2_storage.file_object_sat', '数管-文件识别-卫星数据识别', '0', null);
+insert into ro_global_config(gcfgid, gcfgcode, gcfgtitle, gcfgvalue, gcfgmemo)
+values (4003, 'dm2_storage.file_object_bus', '数管-文件识别-业务数据识别', '0', null);
+insert into ro_global_config(gcfgid, gcfgcode, gcfgtitle, gcfgvalue, gcfgmemo)
+values (4004, 'dm2_storage.tags.parser.seperator', '数管-标签-解析-分隔符', '_; ;/;\;-', '多个分隔符,使用分号分隔;允许使用空格做分隔');
 
 
 /*
@@ -1731,19 +1946,24 @@ insert into ro_global_config(gcfgid, gcfgcode, gcfgtitle, gcfgvalue, gcfgmemo)
     。为解决业务数据集，在数据对象表中扩展业务元数据的xml类型,文本类型等
 */
 
-alter table dm2_storage_object add column dsometadataxml_bus xml;
+alter table dm2_storage_object
+    add column dsometadataxml_bus xml;
 COMMENT ON COLUMN public.dm2_storage_object.dsometadataxml_bus IS '业务元数据XML';
 
-alter table dm2_storage_object add column dsometadatatext_bus text;
+alter table dm2_storage_object
+    add column dsometadatatext_bus text;
 COMMENT ON COLUMN public.dm2_storage_object.dsometadatatext_bus IS '业务元数据文本';
 
-alter table dm2_storage_object add column dsometadatatype_bus integer DEFAULT 1;
+alter table dm2_storage_object
+    add column dsometadatatype_bus integer DEFAULT 1;
 COMMENT ON COLUMN public.dm2_storage_object.dsometadatatype_bus IS '元数据类型;0-txt;1-json;2-xml';
 
-alter table dm2_storage_object add column dsometadata_bus_parsememo text;
+alter table dm2_storage_object
+    add column dsometadata_bus_parsememo text;
 COMMENT ON COLUMN public.dm2_storage_object.dsometadata_bus_parsememo IS '业务元数据收割备注';
 
-alter table dm2_storage_object add column dsometadata_bus_parsestatus integer DEFAULT 1;
+alter table dm2_storage_object
+    add column dsometadata_bus_parsestatus integer DEFAULT 1;
 COMMENT ON COLUMN public.dm2_storage_object.dsometadata_bus_parsestatus IS '元数据提取状态;0-完成;1-待提取;2-提取中;3-提取有误';
 
 /*
@@ -1756,7 +1976,8 @@ ALTER TABLE public.dm2_storage_object_def
 
 COMMENT ON COLUMN public.dm2_storage_object_def.dsodcode IS '类型编码';
 
-ALTER TABLE public.dm2_storage_object_def ADD COLUMN dsocatalog integer;
+ALTER TABLE public.dm2_storage_object_def
+    ADD COLUMN dsocatalog integer;
 
 COMMENT ON COLUMN public.dm2_storage_object_def.dsocatalog IS '数据类别：0-普通 1-业务单体 2-业务数据集';
 
@@ -1767,12 +1988,14 @@ COMMENT ON COLUMN public.dm2_storage_object.dsolastprocess_starttime
     IS '任务领取时间';
 
 
-ALTER TABLE public.dm2_storage_object ADD COLUMN dsolastprocess_endtime timestamp without time zone;
+ALTER TABLE public.dm2_storage_object
+    ADD COLUMN dsolastprocess_endtime timestamp without time zone;
 
 COMMENT ON COLUMN public.dm2_storage_object.dsolastprocess_endtime IS '任务处理完成时间';
 
 
-ALTER TABLE public.dm2_storage_object ADD COLUMN dsolastprocess_status character varying(5) COLLATE pg_catalog."default" DEFAULT 3;
+ALTER TABLE public.dm2_storage_object
+    ADD COLUMN dsolastprocess_status character varying(5) COLLATE pg_catalog."default" DEFAULT 3;
 
 COMMENT ON COLUMN public.dm2_storage_object.dsolastprocess_status
     IS '元数据信息同步状态,0-完成;01-完成，业务元数据异常;02-完成,空间信息异常;03-完成,业务元数据和空间信息异常;04-完成,其他信息异常;1-处理中;2-处理异常;3-处理默认值未处理';
@@ -1796,19 +2019,24 @@ COMMENT ON COLUMN public.dm2_storage_directory.dsdscanrule
 */
 
 
-alter table dm2_storage add column dst_volumn_max bigint default 0;
+alter table dm2_storage
+    add column dst_volumn_max bigint default 0;
 COMMENT ON COLUMN dm2_storage.dst_volumn_max IS '存储-容积-最大值';
-alter table dm2_storage add column dst_volumn_warn bigint default 0;
+alter table dm2_storage
+    add column dst_volumn_warn bigint default 0;
 COMMENT ON COLUMN dm2_storage.dst_volumn_warn IS '存储-容积-警告值';
-alter table dm2_storage add column dst_volumn_now bigint default 0;
+alter table dm2_storage
+    add column dst_volumn_now bigint default 0;
 COMMENT ON COLUMN dm2_storage.dst_volumn_now IS '存储-容积-当前值';
 
 
-alter table dm2_storage_directory add column dsd_volumn_now bigint default 0;
+alter table dm2_storage_directory
+    add column dsd_volumn_now bigint default 0;
 COMMENT ON COLUMN dm2_storage_directory.dsd_volumn_now IS '存储-容积-当前值';
 
 
-alter table dm2_storage_object add column dso_volumn_now bigint default 0;
+alter table dm2_storage_object
+    add column dso_volumn_now bigint default 0;
 COMMENT ON COLUMN dm2_storage_object.dso_volumn_now IS '存储-容积-当前值';
 
 -- Table: public.dm2_storage_object_spatial
@@ -1817,24 +2045,24 @@ COMMENT ON COLUMN dm2_storage_object.dso_volumn_now IS '存储-容积-当前值'
 
 CREATE TABLE public.dm2_storage_object_spatial
 (
-    dsos_id character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    dsos_id            character varying(100) COLLATE pg_catalog."default" NOT NULL,
     dsos_geo_bb_native geometry,
-    dsos_geo_native geometry,
+    dsos_geo_native    geometry,
     dsos_center_native geometry,
 
-    dsos_geo_bb_wgs84 geometry,
-    dsos_geo_wgs84 geometry,
-    dsos_center_wgs84 geometry,
+    dsos_geo_bb_wgs84  geometry,
+    dsos_geo_wgs84     geometry,
+    dsos_center_wgs84  geometry,
 
-    area double precision default 0.0,
-    length bigint default 0,
+    area               double precision default 0.0,
+    length             bigint           default 0,
 
     CONSTRAINT dm2_storage_object_spatial_pkey PRIMARY KEY (dsos_id)
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+    )
+    TABLESPACE pg_default;
 
 ALTER TABLE public.dm2_storage_object_spatial
     OWNER to postgres;

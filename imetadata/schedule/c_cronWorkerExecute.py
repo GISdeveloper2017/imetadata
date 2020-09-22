@@ -4,8 +4,9 @@
 # @File : c_cronWorkerExecute.py
 
 
-from imetadata.schedule.execute.c_cronScheduleExecute import CCronScheduleExecute
 from multiprocessing import Event
+
+from imetadata.schedule.execute.c_cronScheduleExecute import CCronScheduleExecute
 
 
 class CCronWorkerExecute(CCronScheduleExecute):

@@ -3,8 +3,9 @@
 # @Author : 王西亚 
 # @File : c_dbQueueWorkerExecute.py
 
-from imetadata.schedule.execute.c_dbQueueScheduleExecute import CDBQueueScheduleExecute
 from multiprocessing import Event
+
+from imetadata.schedule.execute.c_dbQueueScheduleExecute import CDBQueueScheduleExecute
 
 
 class CDBQueueWorkerExecute(CDBQueueScheduleExecute):

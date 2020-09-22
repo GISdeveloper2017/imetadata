@@ -5,8 +5,7 @@
 
 import os
 import time
-import random
-from multiprocessing import Pool,Semaphore,Process, Event
+from multiprocessing import Process, Event
 
 
 def work(event):

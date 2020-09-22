@@ -3,6 +3,7 @@
 
 import os
 import sys
+
 from imetadata.base.c_resource import CResource
 
 
@@ -17,7 +18,8 @@ class CSys(CResource):
     @classmethod
     def get_application_dir(cls):
         cur_path = os.path.abspath(os.path.dirname(__file__))
-        return os.path.join(cur_path[:cur_path.find(cls.get_application_name()) + len(cls.get_application_name())], cls.get_application_name())
+        return os.path.join(cur_path[:cur_path.find(cls.get_application_name()) + len(cls.get_application_name())],
+                            cls.get_application_name())
 
     @classmethod
     def get_application_package_name(cls):

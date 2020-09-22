@@ -4,12 +4,14 @@
 # @File : job_test_interval.py.py 
 
 from __future__ import absolute_import
-from imetadata.base.c_utils import CMetaDataUtils
-from imetadata.schedule.job.c_timeJob import CTimeJob
+
 import time
+
+from imetadata.base.c_utils import CUtils
+from imetadata.schedule.job.c_timeJob import CTimeJob
 
 
 class job_test_interval(CTimeJob):
     def execute(self) -> str:
         time.sleep(10)
-        return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '任务执行成功结束！')
+        return CUtils.merge_result(CUtils.Success, '任务执行成功结束！')

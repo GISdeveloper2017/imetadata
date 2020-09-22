@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/9/17 16:51 
 # @Author : 王西亚 
-# @File : plugins_1000_mbtiles.py
+# @File : plugins_2000_mbtiles.py
 
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
-from imetadata.base.c_utils import CMetaDataUtils
+from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.plugins.c_dirPlugins import CDirPlugins
 
@@ -18,7 +18,8 @@ class C21ATBusDataSetPlugins(CDirPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
         if self.__metadata_xml_obj__ is not None:
-            information[self.Plugins_Info_Title] = CXml.get_element_text(self.__metadata_xml_obj__.xpath_one(self.Path_MD_Rule_Content_ProductName))
+            information[self.Plugins_Info_Title] = CXml.get_element_text(
+                self.__metadata_xml_obj__.xpath_one(self.Path_MD_Rule_Content_ProductName))
             information[self.Plugins_Info_Name] = None
         information[self.Plugins_Info_Code] = '110001'
         information[self.Plugins_Info_Catalog] = '业务数据集'
@@ -34,7 +35,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
 
     def get_id(self) -> str:
         if self.__classified_object_type__ is not None:
-            return CMetaDataUtils.any_2_str(self.__classified_object_type__)
+            return CUtils.any_2_str(self.__classified_object_type__)
         else:
             return super().get_id()
 
@@ -48,7 +49,8 @@ class C21ATBusDataSetPlugins(CDirPlugins):
             self.__metadata_xml_obj__ = CXml()
             try:
                 self.__metadata_xml_obj__.load_file(metadata_file_name)
-                self.__classified_object_type__ = CXml.get_element_text(self.__metadata_xml_obj__.xpath_one(self.Path_MD_Rule_Content_ProductType))
+                self.__classified_object_type__ = CXml.get_element_text(
+                    self.__metadata_xml_obj__.xpath_one(self.Path_MD_Rule_Content_ProductType))
                 self.__object_confirm__ = self.Object_Confirm_IKnown
                 self.__object_name__ = CXml.get_element_text(self.__metadata_xml_obj__.xpath_one('/root/DSName'))
             except:

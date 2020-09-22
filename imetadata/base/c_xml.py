@@ -17,9 +17,11 @@
 """
 
 from __future__ import absolute_import
-from lxml import etree
-from copy import deepcopy
+
 import re
+from copy import deepcopy
+
+from lxml import etree
 
 from imetadata.base.c_file import CFile
 
@@ -46,7 +48,7 @@ class CXml:
         self.__xml_tree__ = etree.ElementTree(file=filename)
         self.__xml_root_node__ = self.__xml_tree__.getroot()
 
-    def load_xml(self, xml_content:str):
+    def load_xml(self, xml_content: str):
         """
         通过给定的xml内容, 对xml对象进行初始化
 

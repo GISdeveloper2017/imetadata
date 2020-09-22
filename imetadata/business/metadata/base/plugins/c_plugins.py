@@ -5,13 +5,13 @@
 
 from abc import abstractmethod
 
+from imetadata.base.Exceptions import FileContentWapperNotExistException
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_resource import CResource
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
 
 
 class CPlugins(CResource):
-
     """
     数据识别插件
         处理数据识别和元数据处理的标准模式:
@@ -117,7 +117,7 @@ class CPlugins(CResource):
     TagEngine_Global_Dim_In_RelationName = 'global_dim_in_relation_name'
     TagEngine_Global_Dim_In_MainName = 'global_dim_in_main_name'
 
-    __file_content__: CVirtualContent
+    __file_content__: CVirtualContent = None
     __file_info__: CFileInfoEx
 
     __object_confirm__: int
@@ -153,15 +153,6 @@ class CPlugins(CResource):
         """
         pass
 
-    @abstractmethod
-    def quality_evaluate(self) -> list:
-        """
-        对目标目录或文件的质量评估
-        :return:
-        """
-        pass
-
-    @abstractmethod
     def parser_tags(self) -> list:
         """
         对目标目录或文件的标签进行解析
@@ -169,7 +160,6 @@ class CPlugins(CResource):
         """
         pass
 
-    @abstractmethod
     def parser_detail(self) -> str:
         """
         对目标目录或文件的详情进行解析
@@ -177,18 +167,35 @@ class CPlugins(CResource):
         """
         pass
 
-    @abstractmethod
     def parser_metadata(self):
         """
         对目标目录或文件的元数据进行提取
         :return: 返回
         """
-        pass
+        if self.__file_content__ is None:
+            raise FileContentWapperNotExistException()
 
-    @abstractmethod
+        if not self.__file_content__.virtual_content_valid():
+            self.__file_content__.create_virtual_content()
+
+    def quality_evaluate(self) -> list:
+        """
+        对目标目录或文件的质量评估
+        :return:
+        """
+        if self.__file_content__ is None:
+            raise FileContentWapperNotExistException()
+
+        if not self.__file_content__.virtual_content_valid():
+            self.__file_content__.create_virtual_content()
+
     def parser_last_process(self):
         """
         后处理
         :return: 返回
         """
-        pass
+        if self.__file_content__ is None:
+            raise FileContentWapperNotExistException()
+
+        if not self.__file_content__.virtual_content_valid():
+            self.__file_content__.create_virtual_content()

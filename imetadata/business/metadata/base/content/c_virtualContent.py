@@ -3,10 +3,12 @@
 # @Author : 王西亚 
 # @File : c_virtualContent.py
 from abc import abstractmethod
+from imetadata.base.c_file import CFile
 
 
 class CVirtualContent:
     __target_name__ = None
+    __virtual_content_root_dir__ = None
 
     """
     虚拟内容目录
@@ -21,6 +23,9 @@ class CVirtualContent:
     @abstractmethod
     def create_virtual_content(self) -> str:
         pass
+
+    def virtual_content_valid(self) -> bool:
+        return CFile.file_or_path_exist(self.__virtual_content_root_dir__)
 
     def destroy_virtual_content(self):
         pass

@@ -7,11 +7,11 @@
 from __future__ import absolute_import
 
 from imetadata.base.c_file import CFile
-from imetadata.base.core.Exceptions import DBException
-from imetadata.base.c_utils import CMetaDataUtils
+from imetadata.base.c_logger import CLogger
+from imetadata.base.c_utils import CUtils
+from imetadata.base.Exceptions import DBException
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
 from imetadata.database.c_factory import CFactory
-from imetadata.base.c_logger import CLogger
 
 
 class job_dm_root_parser(CDMBaseJob):
@@ -89,9 +89,9 @@ where dstid = :dstid
             else:
                 db.execute(sql_insert_root_storage_dir, params)
             db.execute(sql_on_mission_finished, {'dstid': storage_id})
-            return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '存储扫描处理成功')
+            return CUtils.merge_result(CUtils.Success, '存储扫描处理成功')
         except DBException as err:
-            return CMetaDataUtils.merge_result(CMetaDataUtils.Exception, '存储扫描失败, 原因为{0}'.format(err.__str__))
+            return CUtils.merge_result(CUtils.Exception, '存储扫描失败, 原因为{0}'.format(err.__str__))
 
 
 if __name__ == '__main__':

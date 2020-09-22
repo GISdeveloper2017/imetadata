@@ -3,10 +3,11 @@
 # @Author : 王西亚 
 # @File : c_intervalScheduleExecute.py
 
+from apscheduler.triggers.base import BaseTrigger
+from apscheduler.triggers.interval import IntervalTrigger
+
 from imetadata.base.c_logger import CLogger
 from imetadata.schedule.execute.c_timeScheduleExecute import CTimeScheduleExecute
-from apscheduler.triggers.interval import IntervalTrigger
-from apscheduler.triggers.base import BaseTrigger
 
 
 class CTrigger(IntervalTrigger):

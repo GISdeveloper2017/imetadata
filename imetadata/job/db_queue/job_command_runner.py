@@ -4,13 +4,15 @@
 # @File : job_command_runner.py
 
 from __future__ import absolute_import
-from imetadata.base.c_utils import CMetaDataUtils
+
+import time
+from multiprocessing import Queue, Lock, Manager
+
+from imetadata.base.c_logger import CLogger
+from imetadata.base.c_utils import CUtils
 from imetadata.database.c_factory import CFactory
 from imetadata.schedule.job.c_dbQueueJob import CDBQueueJob
-from imetadata.base.c_logger import CLogger
-from multiprocessing import Queue, Lock, Manager
 from imetadata.service.c_controlCenter import CControlCenter
-import time
 
 
 class job_command_runner(CDBQueueJob):
@@ -23,7 +25,8 @@ class job_command_runner(CDBQueueJob):
         self.__cmd_queue__ = Queue()
         self.__locker__ = Lock()
         self.__shared_control_center_info__ = Manager().dict()
-        self.__control_center_obj__ = CControlCenter(self.__cmd_queue__, self.__locker__, self.__shared_control_center_info__)
+        self.__control_center_obj__ = CControlCenter(self.__cmd_queue__, self.__locker__,
+                                                     self.__shared_control_center_info__)
         self.__control_center_obj__.start()
         CLogger().debug('控制中心进程{0}已经启动！'.format(self.__control_center_obj__.pid))
         time.sleep(5)
@@ -65,7 +68,7 @@ where scmstatus = 2
         CLogger().info('任务命令：{0}'.format(command_content))
 
         if mission_id == '':
-            return CMetaDataUtils.merge_result(CMetaDataUtils.Failure, '任务标示为空，无法处理!')
+            return CUtils.merge_result(CUtils.Failure, '任务标示为空，无法处理!')
 
         if command_content != '':
             command_queue_item: dict = {self.NAME_CMD_ID: mission_id}
@@ -85,7 +88,7 @@ where scmstatus = 2
             where scmid = '{0}'
             '''.format(mission_id)
         )
-        return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '新的并行处理器已经创建完毕!')
+        return CUtils.merge_result(CUtils.Success, '新的并行处理器已经创建完毕!')
 
     def before_stop(self):
         # 给控制中心发送退出信息，等待控制中心退出

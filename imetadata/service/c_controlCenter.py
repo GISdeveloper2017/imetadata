@@ -3,17 +3,18 @@
 # @Author : 王西亚 
 # @File : c_controlCenter.py
 
-from imetadata.base.c_processUtils import CProcessUtils
-from multiprocessing import Process, Semaphore, Queue, Lock, Event, Pool, Manager
+import errno
+import os
+import signal
 import time
+from multiprocessing import Process, Queue, Lock, Event, Manager
+
 from imetadata.base.c_logger import CLogger
-from imetadata.base.c_utils import CMetaDataUtils
+from imetadata.base.c_processUtils import CProcessUtils
+from imetadata.base.c_utils import CUtils
 from imetadata.service.c_process import CProcess
 from imetadata.service.c_sentinel import CSentinel
 from imetadata.service.c_worker import CWorker
-import signal
-import os
-import errno
 
 
 class CControlCenter(CProcess):
@@ -144,13 +145,13 @@ class CControlCenter(CProcess):
         cmd_type = command.get(self.NAME_CMD_COMMAND, self.CMD_START)
         cmd_title = command.get(self.NAME_CMD_TITLE, '')
 
-        if CMetaDataUtils.equal_ignore_case(cmd_type, self.CMD_START):
+        if CUtils.equal_ignore_case(cmd_type, self.CMD_START):
             CLogger().info('控制中心进程[{0}]收到了启动调度的指令...'.format(self.pid))
             self.command_start(command)
-        elif CMetaDataUtils.equal_ignore_case(cmd_type, self.CMD_STOP):
+        elif CUtils.equal_ignore_case(cmd_type, self.CMD_STOP):
             CLogger().info('控制中心进程[{0}]收到了停止调度的指令...'.format(self.pid))
             self.command_stop(command)
-        elif CMetaDataUtils.equal_ignore_case(cmd_type, self.CMD_FORCE_STOP):
+        elif CUtils.equal_ignore_case(cmd_type, self.CMD_FORCE_STOP):
             CLogger().info('控制中心进程[{0}]收到了强制停止调度的指令...'.format(self.pid))
             self.command_force_stop(command)
 

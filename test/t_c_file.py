@@ -3,9 +3,9 @@
 # @Author : 王西亚 
 # @File : t_c_file.py
 
-import pytest
-from imetadata.base.c_file import CFile
 import allure
+
+from imetadata.base.c_file import CFile
 
 
 class Test_C_File:

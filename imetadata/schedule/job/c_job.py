@@ -3,15 +3,14 @@
 # @Author : 王西亚 
 # @File : c_job.py
 
-from imetadata.base.c_json import CJson
-from imetadata.base.c_logger import CLogger
-from imetadata.base.c_resource import CResource
-from imetadata.base.c_utils import CMetaDataUtils
 from abc import abstractmethod
+
+from imetadata.base.c_json import CJson
+from imetadata.base.c_resource import CResource
+from imetadata.base.c_utils import CUtils
 
 
 class CJob(CResource):
-
     __id__: str = None
     __params__: str = None
 
@@ -34,7 +33,7 @@ class CJob(CResource):
 
     @abstractmethod
     def execute(self) -> str:
-        return CMetaDataUtils.merge_result(CMetaDataUtils.Failure, '没有可执行的任务！')
+        return CUtils.merge_result(CUtils.Failure, '没有可执行的任务！')
 
     def before_execute(self):
         pass

@@ -2,9 +2,6 @@
 # -*- coding:utf-8 -*-
 
 
-from sqlalchemy.engine.result import ResultProxy
-
-
 class CDataSet:
     __data__ = None
 

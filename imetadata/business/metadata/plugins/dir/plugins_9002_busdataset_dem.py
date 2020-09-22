@@ -21,4 +21,3 @@ class plugins_9002_busdataset_dem(C21ATBusDataSetPlugins):
         information[self.Plugins_Info_QCEngine] = None
 
         return information
-

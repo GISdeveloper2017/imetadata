@@ -14,17 +14,17 @@ sch_mission
 
 CREATE TABLE public.sch_event
 (
-  seid character varying(50) NOT NULL, -- 标识
-  setitle character varying(200), -- 标题
-  segroup character varying(200), -- 组名
-  secreatedate timestamp with time zone, -- 创建日期
-  CONSTRAINT sch_event_pk PRIMARY KEY (seid)
+    seid         character varying(50) NOT NULL, -- 标识
+    setitle      character varying(200),         -- 标题
+    segroup      character varying(200),         -- 组名
+    secreatedate timestamp with time zone,       -- 创建日期
+    CONSTRAINT sch_event_pk PRIMARY KEY (seid)
 )
-WITH (
-  OIDS=FALSE
-);
+    WITH (
+        OIDS= FALSE
+    );
 ALTER TABLE public.sch_event
-  OWNER TO postgres;
+    OWNER TO postgres;
 COMMENT ON COLUMN public.sch_event.seid IS '标识';
 COMMENT ON COLUMN public.sch_event.setitle IS '标题';
 COMMENT ON COLUMN public.sch_event.segroup IS '组名';
@@ -36,18 +36,18 @@ COMMENT ON COLUMN public.sch_event.secreatedate IS '创建日期';
 -- DROP INDEX public.idx_sch_event_secreatedate;
 
 CREATE INDEX idx_sch_event_secreatedate
-  ON public.sch_event
-  USING btree
-  (secreatedate);
+    ON public.sch_event
+        USING btree
+        (secreatedate);
 
 -- Index: public.idx_sch_event_segroup
 
 -- DROP INDEX public.idx_sch_event_segroup;
 
 CREATE INDEX idx_sch_event_segroup
-  ON public.sch_event
-  USING btree
-  (segroup COLLATE pg_catalog."default");
+    ON public.sch_event
+        USING btree
+        (segroup COLLATE pg_catalog."default");
 
 
 -- Table: public.sch_mission
@@ -56,36 +56,36 @@ CREATE INDEX idx_sch_event_segroup
 
 CREATE TABLE public.sch_mission
 (
-  smid bigserial NOT NULL, -- 标识
-  smtitle character varying(4000), -- 标题
-  smeventid character varying(200), -- 事件标识
-  smtype bigint, -- 类型
-  smworkid character varying(200), -- 模型标识
-  smworktitle character varying(200), -- 模型名称
-  smparams text, -- 参数
-  smstatus bigint, -- 状态
-  smworkerid character varying(200), -- 执行者标识
-  smmemo text, -- 备注
-  smreserved1 character varying(4000), -- 保留字段1
-  smreserved2 character varying(4000), -- 保留字段2
-  smreserved3 character varying(4000), -- 保留字段3
-  smreserved4 character varying(4000), -- 保留字段4
-  smreserved5 character varying(4000), -- 保留字段5
-  smreserved6 character varying(4000), -- 保留字段6
-  smreserved7 character varying(4000), -- 保留字段7
-  smreserved8 character varying(4000), -- 保留字段8
-  smreserved9 character varying(4000), -- 保留字段9
-  smreserved10 character varying(4000), -- 保留字段10
-  smcreatetime timestamp with time zone DEFAULT now(),
-  smowner character varying(100), -- 任务所有者
-  smexecuter character varying(100), -- 任务执行者
-  CONSTRAINT sch_mission_pk PRIMARY KEY (smid)
+    smid         bigserial NOT NULL,      -- 标识
+    smtitle      character varying(4000), -- 标题
+    smeventid    character varying(200),  -- 事件标识
+    smtype       bigint,                  -- 类型
+    smworkid     character varying(200),  -- 模型标识
+    smworktitle  character varying(200),  -- 模型名称
+    smparams     text,                    -- 参数
+    smstatus     bigint,                  -- 状态
+    smworkerid   character varying(200),  -- 执行者标识
+    smmemo       text,                    -- 备注
+    smreserved1  character varying(4000), -- 保留字段1
+    smreserved2  character varying(4000), -- 保留字段2
+    smreserved3  character varying(4000), -- 保留字段3
+    smreserved4  character varying(4000), -- 保留字段4
+    smreserved5  character varying(4000), -- 保留字段5
+    smreserved6  character varying(4000), -- 保留字段6
+    smreserved7  character varying(4000), -- 保留字段7
+    smreserved8  character varying(4000), -- 保留字段8
+    smreserved9  character varying(4000), -- 保留字段9
+    smreserved10 character varying(4000), -- 保留字段10
+    smcreatetime timestamp with time zone DEFAULT now(),
+    smowner      character varying(100),  -- 任务所有者
+    smexecuter   character varying(100),  -- 任务执行者
+    CONSTRAINT sch_mission_pk PRIMARY KEY (smid)
 )
-WITH (
-  OIDS=FALSE
-);
+    WITH (
+        OIDS= FALSE
+    );
 ALTER TABLE public.sch_mission
-  OWNER TO postgres;
+    OWNER TO postgres;
 COMMENT ON COLUMN public.sch_mission.smid IS '标识';
 COMMENT ON COLUMN public.sch_mission.smtitle IS '标题';
 COMMENT ON COLUMN public.sch_mission.smeventid IS '事件标识';
@@ -115,87 +115,87 @@ COMMENT ON COLUMN public.sch_mission.smexecuter IS '任务执行者';
 -- DROP INDEX public.eventid_title_idx_sch_mission;
 
 CREATE INDEX eventid_title_idx_sch_mission
-  ON public.sch_mission
-  USING btree
-  (smeventid COLLATE pg_catalog."default", smtitle COLLATE pg_catalog."default");
+    ON public.sch_mission
+        USING btree
+        (smeventid COLLATE pg_catalog."default", smtitle COLLATE pg_catalog."default");
 
 -- Index: public.idx_sch_mission_smcreatetime_status
 
 -- DROP INDEX public.idx_sch_mission_smcreatetime_status;
 
 CREATE INDEX idx_sch_mission_smcreatetime_status
-  ON public.sch_mission
-  USING btree
-  (smcreatetime, smstatus);
+    ON public.sch_mission
+        USING btree
+        (smcreatetime, smstatus);
 
 -- Index: public.smcreatetime_idx_sch_mission
 
 -- DROP INDEX public.smcreatetime_idx_sch_mission;
 
 CREATE INDEX smcreatetime_idx_sch_mission
-  ON public.sch_mission
-  USING btree
-  (smcreatetime);
+    ON public.sch_mission
+        USING btree
+        (smcreatetime);
 
 -- Index: public.smeventid_idx_sch_mission
 
 -- DROP INDEX public.smeventid_idx_sch_mission;
 
 CREATE INDEX smeventid_idx_sch_mission
-  ON public.sch_mission
-  USING btree
-  (smeventid COLLATE pg_catalog."default");
+    ON public.sch_mission
+        USING btree
+        (smeventid COLLATE pg_catalog."default");
 
 -- Index: public.smid_idx_sch_mission
 
 -- DROP INDEX public.smid_idx_sch_mission;
 
 CREATE INDEX smid_idx_sch_mission
-  ON public.sch_mission
-  USING btree
-  (smid);
+    ON public.sch_mission
+        USING btree
+        (smid);
 
 -- Index: public.smreserved1_idx_sch_mission
 
 -- DROP INDEX public.smreserved1_idx_sch_mission;
 
 CREATE INDEX smreserved1_idx_sch_mission
-  ON public.sch_mission
-  USING btree
-  (smreserved1 COLLATE pg_catalog."default");
+    ON public.sch_mission
+        USING btree
+        (smreserved1 COLLATE pg_catalog."default");
 
 -- Index: public.smstatus_idx_sch_mission
 
 -- DROP INDEX public.smstatus_idx_sch_mission;
 
 CREATE INDEX smstatus_idx_sch_mission
-  ON public.sch_mission
-  USING btree
-  (smstatus);
+    ON public.sch_mission
+        USING btree
+        (smstatus);
 
 -- Index: public.smstatus_workid_idx_sch_mission
 
 -- DROP INDEX public.smstatus_workid_idx_sch_mission;
 
 CREATE INDEX smstatus_workid_idx_sch_mission
-  ON public.sch_mission
-  USING btree
-  (smworkid COLLATE pg_catalog."default", smstatus);
+    ON public.sch_mission
+        USING btree
+        (smworkid COLLATE pg_catalog."default", smstatus);
 
 -- Index: public.smworkerid_idx_sch_mission
 
 -- DROP INDEX public.smworkerid_idx_sch_mission;
 
 CREATE INDEX smworkerid_idx_sch_mission
-  ON public.sch_mission
-  USING btree
-  (smworkerid COLLATE pg_catalog."default");
+    ON public.sch_mission
+        USING btree
+        (smworkerid COLLATE pg_catalog."default");
 
 -- Index: public.stat_min_smid_idx_sch_mission
 
 -- DROP INDEX public.stat_min_smid_idx_sch_mission;
 
 CREATE INDEX stat_min_smid_idx_sch_mission
-  ON public.sch_mission
-  USING btree
-  (smworkid COLLATE pg_catalog."default", smworkerid COLLATE pg_catalog."default" DESC, smid);
+    ON public.sch_mission
+        USING btree
+        (smworkid COLLATE pg_catalog."default", smworkerid COLLATE pg_catalog."default" DESC, smid);

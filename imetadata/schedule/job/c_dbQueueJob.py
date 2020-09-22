@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
 
-from imetadata.base.c_utils import CMetaDataUtils
+from abc import abstractmethod
+
+from imetadata.base.c_utils import CUtils
+from imetadata.base.Exceptions import *
 from imetadata.database.base.c_dataset import CDataSet
 from imetadata.database.c_factory import CFactory
-from imetadata.base.core.Exceptions import *
-from abc import abstractmethod
 from imetadata.schedule.job.c_job import CJob
 
 
@@ -45,17 +46,17 @@ class CDBQueueJob(CJob):
 
     @abstractmethod
     def process_mission(self, dataset) -> str:
-        return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '测试成功')
+        return CUtils.merge_result(CUtils.Success, '测试成功')
 
     def execute(self) -> str:
         mission_data = self.get_mission_info()
         if not mission_data.is_empty():
             return self.process_mission(mission_data)
         else:
-            return CMetaDataUtils.merge_result(CMetaDataUtils.Failure, '没有可执行的任务！')
+            return CUtils.merge_result(CUtils.Failure, '没有可执行的任务！')
 
     def get_mission_info(self) -> CDataSet:
-        mission_flag = CMetaDataUtils.one_id()
+        mission_flag = CUtils.one_id()
         mission_seize_sql = self.get_mission_seize_sql()
         mission_info_sql = self.get_mission_info_sql()
 

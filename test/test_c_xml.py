@@ -5,8 +5,8 @@
 c_xml.py的测试文
 """
 
-import pytest
 from lxml import etree
+
 from imetadata.base.c_xml import CXml
 
 

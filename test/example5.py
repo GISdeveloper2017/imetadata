@@ -4,7 +4,6 @@
 # @File : example1.py
 
 import time
-import os
 from multiprocessing import Process
 
 
@@ -15,7 +14,7 @@ def func():
 
 
 if __name__ == '__main__':
-    p = Process(target=func,)
+    p = Process(target=func, )
     p.start()
     time.sleep(3)
     p.terminate()  # 给操作系统发送一个关闭进程p1的信号,让操作系统去关闭它

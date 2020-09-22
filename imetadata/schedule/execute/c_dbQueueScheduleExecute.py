@@ -4,9 +4,10 @@
 # @Author : 王西亚 
 # @File : c_dbQueueScheduleExecute.py
 
-from imetadata.base.c_logger import CLogger
-from imetadata.base.c_utils import CMetaDataUtils
 import time
+
+from imetadata.base.c_logger import CLogger
+from imetadata.base.c_utils import CUtils
 from imetadata.schedule.execute.c_scheduleExecute import CScheduleExecute
 from imetadata.schedule.job.c_dbQueueJob import CDBQueueJob
 
@@ -26,14 +27,15 @@ class CDBQueueScheduleExecute(CScheduleExecute):
     def start(self):
         schedule = self.get_or_create_sch_job()
         if schedule is None:
-            CLogger().warning('无法创建Job对象: {0}.{1}.{2}'.format(self.__schedule_id__, self.__schedule_trigger__, self.__schedule_algorithm__))
+            CLogger().warning('无法创建Job对象: {0}.{1}.{2}'.format(self.__schedule_id__, self.__schedule_trigger__,
+                                                              self.__schedule_algorithm__))
             return
 
         schedule.before_execute()
         schedule.abnormal_mission_restart()
         while True:
             mission_process_result = schedule.execute()
-            if not CMetaDataUtils.result_success(mission_process_result):
+            if not CUtils.result_success(mission_process_result):
                 time.sleep(5)
 
             if self.should_stop():

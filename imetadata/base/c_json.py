@@ -17,9 +17,10 @@
 """
 
 from __future__ import absolute_import
+
 import demjson
 import jsonpath
-from imetadata.base.c_logger import CLogger
+
 
 class CJson:
     Encoding_UTF8 = 'UTF-8'
@@ -134,4 +135,3 @@ if __name__ == '__main__':
     json_obj.set_value_of_name('test1', 2)
     print(json_obj.to_json())
     print(json_obj.xpath_one('test1', 'nothing'))
-

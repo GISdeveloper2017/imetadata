@@ -39,3 +39,6 @@ class DBSQLExecuteException(DBException):
 
     def __str__(self):
         print("标示为[%s]的数据库运行[%s]连接失败, 请检查数据库连接参数是否正确! " % self.__db_id__, self.__sql__)
+
+class FileContentWapperNotExistException(Exception):
+    pass

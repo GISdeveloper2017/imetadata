@@ -8,7 +8,7 @@ from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_object import CObject
 from imetadata.base.c_sys import CSys
-from imetadata.base.c_utils import CMetaDataUtils
+from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
 from imetadata.database.c_factory import CFactory
 
@@ -153,15 +153,19 @@ class CDMFilePathInfoEx(CFileInfoEx):
                                                                  '{0}_*.{1}'.format(self.Name_Plugins, self.FileExt_Py))
         for file_name_with_path in plugins_file_list:
             file_main_name = CFile.file_main_name(file_name_with_path)
-            class_classified_obj = CObject.create_plugins_instance(plugins_root_package_name, file_main_name, self)
-            object_confirm, object_name = class_classified_obj.classified()
-            if object_confirm != self.Object_Confirm_IUnKnown:
-                CLogger().debug(
-                    '{0} is plugins_classified as {1}.{2}'.format(target, class_classified_obj.get_information(),
-                                                                  class_classified_obj.get_id()))
-                return class_classified_obj, object_confirm, object_name
+            try:
+                class_classified_obj = CObject.create_plugins_instance(plugins_root_package_name, file_main_name, self)
+                object_confirm, object_name = class_classified_obj.classified()
+                if object_confirm != self.Object_Confirm_IUnKnown:
+                    CLogger().debug(
+                        '{0} is plugins_classified as {1}.{2}'.format(target, class_classified_obj.get_information(),
+                                                                      class_classified_obj.get_id()))
+                    return class_classified_obj
+            except:
+                CLogger().debug('插件[{0}]解析出现异常, 请检查!'.format(file_main_name))
+                continue
         else:
-            return None, self.Object_Confirm_IUnKnown, None
+            return None
 
     def plugins(self, plugins_id: str) -> CPlugins:
         target = self.__file_main_name__
@@ -173,7 +177,7 @@ class CDMFilePathInfoEx(CFileInfoEx):
                                                                  '{0}_*.{1}'.format(self.Name_Plugins, self.FileExt_Py))
         for file_name_with_path in plugins_file_list:
             file_main_name = CFile.file_main_name(file_name_with_path)
-            if CMetaDataUtils.plugins_id_by_file_main_name(file_main_name) == plugins_id:
+            if CUtils.plugins_id_by_file_main_name(file_main_name) == plugins_id:
                 class_classified_obj = CObject.create_plugins_instance(plugins_root_package_name, file_main_name,
                                                                        target, target_type, target_id)
                 return class_classified_obj

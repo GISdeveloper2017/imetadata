@@ -15,6 +15,7 @@ def subsubproc(ev):
         ev.wait(2)
     print("subsub process id: {0}-{1} stoped".format(os.getpid(), os.getppid()))
 
+
 def subproc(ev):
     print("sub process id: {0}-{1} started".format(os.getpid(), os.getppid()))
     subsub = Process(target=subsubproc, args=(ev,))

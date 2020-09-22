@@ -3,11 +3,8 @@
 # @Author : 王西亚 
 # @File : test_database.py
 
-import pytest
-
-from imetadata.base.core.Exceptions import DBException
+from imetadata.base.Exceptions import DBException
 from imetadata.database.c_factory import CFactory
-from imetadata.database.base.c_dataset import CDataSet
 
 
 class Test_DataBase:

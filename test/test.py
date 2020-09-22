@@ -3,14 +3,11 @@
 # Author: Li'guang
 
 
-from imetadata.base.c_file import CFile
-from imetadata.base.core.Exceptions import DBException
-from imetadata.base.c_utils import CMetaDataUtils
-from imetadata.database.c_factory import CFactory
-from imetadata.schedule.job.c_dbQueueJob import CDBQueueJob
-from imetadata.base.c_logger import CLogger
 from sqlalchemy import text
 
+from imetadata.base.c_file import CFile
+from imetadata.base.c_utils import CUtils
+from imetadata.database.c_factory import CFactory
 
 if __name__ == "__main__":
     storage_root_path = '/Users/wangxiya/Documents/交换/1.给我的/生态审计/产品样例数据-昆明矢量/基础地理信息/市界'
@@ -37,7 +34,7 @@ if __name__ == "__main__":
     exe_params_names = exe_params.keys()
     new_params = dict()
     for exe_param_name in exe_params_names:
-        exe_param_value = CMetaDataUtils.dict_value_by_name(params, exe_param_name)
+        exe_param_value = CUtils.dict_value_by_name(params, exe_param_name)
         if exe_param_value is not None:
             new_params[exe_param_name] = str(exe_param_value)
         else:

@@ -3,12 +3,10 @@
 # @Author : 王西亚 
 # @File : example1.py
 
-import time
-import os
 from multiprocessing import Process
 
 
-class MyProcess(Process):   # 自定义的类要继承Process类
+class MyProcess(Process):  # 自定义的类要继承Process类
     def __init__(self, n, name):
         super().__init__()  # 如果自己想要传参name, 那么要首先用super()执行父类的init方法
         self.n = n

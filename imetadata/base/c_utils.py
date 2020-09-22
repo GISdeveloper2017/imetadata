@@ -2,11 +2,12 @@
 # -*- coding:utf-8 -*-
 
 import uuid
+import re
 from imetadata.base.c_json import CJson
 from imetadata.base.c_resource import CResource
 
 
-class CMetaDataUtils(CResource):
+class CUtils(CResource):
 
     @classmethod
     def merge_result(cls, result, message=None, base=None) -> str:
@@ -63,7 +64,17 @@ class CMetaDataUtils(CResource):
         else:
             return str(obj)
 
+    @classmethod
+    def text_match_re(cls, text, regex) -> bool:
+        return re.search(regex, text) is not None
+
 
 if __name__ == '__main__':
-    pass
-
+    str = "The rain in Spain"
+    x = re.search(r"\bH\w+", str)
+    if x is None:
+        print('can not match')
+    else:
+        print(x.span())
+        print(x.string)
+        print(x.group())

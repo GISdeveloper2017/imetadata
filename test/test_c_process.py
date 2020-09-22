@@ -3,10 +3,10 @@
 # @Author : 王西亚 
 # @File : test_c_process.py
 
-import pytest
 import os
-import random
+
 import allure
+
 from imetadata.base.c_processUtils import CProcessUtils
 
 

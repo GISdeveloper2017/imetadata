@@ -12,5 +12,7 @@ class CVirtualContentDir(CVirtualContent):
     . 在读取普通子目录数据时, 虚拟内容目录是子目录本身
     . 在读取压缩数据时, 虚拟目录时压缩包解压的临时子目录
     """
+
     def create_virtual_content(self) -> str:
-        return self.__target_name__
+        self.__virtual_content_root_dir__ = self.__target_name__
+        return self.__virtual_content_root_dir__

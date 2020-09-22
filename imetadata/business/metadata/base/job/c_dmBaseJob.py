@@ -4,6 +4,7 @@
 # @File : c_dmBaseJob.py
 
 from __future__ import absolute_import
+
 from imetadata.schedule.job.c_dbQueueJob import CDBQueueJob
 
 

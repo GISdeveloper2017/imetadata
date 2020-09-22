@@ -2,12 +2,12 @@
 # @Time : 2020/9/4 08:14 
 # @Author : 王西亚 
 # @File : c_scheduleExecute.py
+from abc import abstractmethod
+
 from imetadata.base.c_json import CJson
-from imetadata.base.c_logger import CLogger
 from imetadata.base.c_object import CObject
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_sys import CSys
-from abc import abstractmethod
 
 
 class CScheduleExecute(CResource):
@@ -52,4 +52,5 @@ class CScheduleExecute(CResource):
         :param default_value:
         :return:
         """
-        return CJson().json_attr_value(self.__schedule_params__, '{0}.{1}'.format(self.TRIGGER_Params, attr_name), default_value)
+        return CJson().json_attr_value(self.__schedule_params__, '{0}.{1}'.format(self.TRIGGER_Params, attr_name),
+                                       default_value)

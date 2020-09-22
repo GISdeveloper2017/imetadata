@@ -3,11 +3,12 @@
 
 
 from __future__ import absolute_import
-from imetadata.base.core.singleton import singleton
-from imetadata.database.types.c_postgresql import CPostgreSQL
-from imetadata.database.base.c_database import CDataBase
+
 from imetadata import settings
-from imetadata.base.core.Exceptions import *
+from imetadata.base.Exceptions import *
+from imetadata.base.singleton import singleton
+from imetadata.database.base.c_database import CDataBase
+from imetadata.database.types.c_postgresql import CPostgreSQL
 
 
 @singleton

@@ -6,9 +6,10 @@
 
 import importlib
 import os
+
 from imetadata.base.c_file import CFile
-from imetadata.base.c_utils import CMetaDataUtils
-from imetadata.base.core.Exceptions import BusinessNotExistException
+from imetadata.base.c_utils import CUtils
+from imetadata.base.Exceptions import BusinessNotExistException
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
 
 
@@ -21,7 +22,7 @@ class CObject:
         package_root = os.path.join(package_directory, package_subdir)
         dir_list = os.listdir(package_root)
         for cur_file in dir_list:
-            if not CMetaDataUtils.equal_ignore_case(CFile.file_main_name(cur_file), package_name):
+            if not CUtils.equal_ignore_case(CFile.file_main_name(cur_file), package_name):
                 continue
 
             path = os.path.join(package_root, cur_file)

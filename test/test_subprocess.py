@@ -15,5 +15,3 @@ if __name__ == "__main__":
         print(line)
     print(process.returncode)
     # process.terminate()
-
-

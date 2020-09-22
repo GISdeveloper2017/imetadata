@@ -4,8 +4,8 @@
 # @Author : 王西亚
 # @File : controlCenterExecute.py
 
-from imetadata.schedule.execute.c_dbQueueScheduleExecute import CDBQueueScheduleExecute
 from imetadata.database.c_factory import CFactory
+from imetadata.schedule.execute.c_dbQueueScheduleExecute import CDBQueueScheduleExecute
 
 
 class CControlCenterExecute(CDBQueueScheduleExecute):

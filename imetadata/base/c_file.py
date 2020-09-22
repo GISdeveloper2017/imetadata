@@ -3,10 +3,12 @@
 
 
 from __future__ import absolute_import
+
+import glob
 import os
 import time
-import glob
-from fnmatch import fnmatch, fnmatchcase
+from fnmatch import fnmatch
+
 from sortedcontainers import SortedList
 
 
@@ -18,9 +20,9 @@ class CFile:
 
     @classmethod
     def file_ext(cls, file_name_with_path: str) -> str:
-        file_name = CFile.file_name(file_name_with_path)
+        file_name_tmp = CFile.file_name(file_name_with_path)
         file_main_name = CFile.file_main_name(file_name_with_path)
-        file_ext = file_name.replace('{0}.'.format(file_main_name), '', 1)
+        file_ext = file_name_tmp.replace('{0}.'.format(file_main_name), '', 1)
         return file_ext
 
     @classmethod
@@ -94,6 +96,10 @@ class CFile:
     @classmethod
     def rename_file_or_dir(cls, old_file_name_with_path: str, new_file_name_with_path: str):
         os.renames(old_file_name_with_path, new_file_name_with_path)
+
+    @classmethod
+    def file_time_format(cls, time_value: float, time_format_str: str = '%Y-%m-%d %H:%M:%S'):
+        return time.strftime(time_format_str, time.localtime(time_value))
 
     @classmethod
     def file_modify_time(cls, file_name_with_path: str, time_format_str: str = '%Y-%m-%d %H:%M:%S'):

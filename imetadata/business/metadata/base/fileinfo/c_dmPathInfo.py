@@ -4,7 +4,7 @@
 # @File : c_dmPathInfo.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
-from imetadata.base.c_utils import CMetaDataUtils
+from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.database.c_factory import CFactory
@@ -27,7 +27,7 @@ class CDMPathInfo(CDMFilePathInfoEx):
             if not self.__ds_file_or_path__.is_empty():
                 self.__my_id__ = self.__ds_file_or_path__.value_by_name(0, 'dsdid', None)
             if self.__my_id__ is None:
-                self.__my_id__ = CMetaDataUtils.one_id()
+                self.__my_id__ = CUtils.one_id()
         else:
             self.__ds_file_or_path__ = engine.one_row(
                 'select dsdid, dsdparentid, dsddirectory, dsddirtype, dsddirectoryname, dsd_object_type, \
@@ -87,8 +87,8 @@ class CDMPathInfo(CDMFilePathInfoEx):
 
         if (db_object_confirm == self.Object_Confirm_IKnown) or (db_object_confirm == self.Object_Confirm_Maybe):
             db_path_modify_time = self.__ds_file_or_path__.value_by_name(0, 'dsddirlastmodifytime', '')
-            if CMetaDataUtils.equal_ignore_case(CMetaDataUtils.any_2_str(db_path_modify_time),
-                                                CMetaDataUtils.any_2_str(self.__file_modify_time__)):
+            if CUtils.equal_ignore_case(CUtils.any_2_str(db_path_modify_time),
+                                        CUtils.any_2_str(self.__file_modify_time__)):
                 CLogger().info('目录[{0}]的最后修改时间, 和库中登记的没有变化, 对象识别将被忽略! '.format(self.__file_name_with_full_path__))
                 return
             else:
@@ -100,26 +100,33 @@ class CDMPathInfo(CDMFilePathInfoEx):
                                                                          db_object_id))
                 self.db_delete_object_by_id(db_object_id)
 
-        classified_obj, object_confirm, object_name = self.plugins_classified()
-        if (classified_obj is None) or (object_confirm == self.Object_Confirm_IKnown_Not):
+        object_confirm = self.Object_Confirm_IUnKnown
+        object_name = None
+        object_type = None
+        classified_obj = self.plugins_classified()
+        if classified_obj is not None:
+            object_confirm = classified_obj.get_classified_object_confirm()
+            object_name = classified_obj.get_classified_object_name()
+            object_type = classified_obj.get_id()
+
+        if (object_confirm == self.Object_Confirm_IUnKnown) or (object_confirm == self.Object_Confirm_IKnown_Not):
             sql_update_path_object = '''
                 update dm2_storage_directory
-                set dsd_object_confirm = 0, dsd_object_id = null, dsd_object_type = null
+                set dsd_object_confirm = :dsd_object_confirm, dsd_object_id = null, dsd_object_type = null
                     , dsdscanfilestatus = 1, dsdscandirstatus = 1, dsd_directory_valid = -1, dsddirlastmodifytime = :fileModifyTime
                 where dsdid = :dsdid
                 '''
             CFactory().give_me_db(self.__db_server_id__).execute(sql_update_path_object, {'dsdid': self.__my_id__,
-                                                                                          'fileModifyTime': CMetaDataUtils.any_2_str(
+                                                                                          'dsd_object_confirm': object_confirm,
+                                                                                          'fileModifyTime': CUtils.any_2_str(
                                                                                               self.__file_modify_time__)})
         else:
-            object_type = classified_obj.get_id()
-
             sql_insert_object = '''
                 insert into dm2_storage_object(dsoid, dsoobjectname, dsoobjecttype, dsodatatype, dsoalphacode, dsoaliasname, dsoparentobjid) 
                 values(:dsoid, :dsoobjectname, :dsoobjecttype, :dsodatatype, :dsoalphacode, :dsoaliasname, :dsoparentobjid)
                 '''
 
-            new_dso_id = CMetaDataUtils.one_id()
+            new_dso_id = CUtils.one_id()
 
             sql_update_path_object = '''
                 update dm2_storage_directory
@@ -146,7 +153,7 @@ class CDMPathInfo(CDMFilePathInfoEx):
                 params['dsd_object_confirm'] = object_confirm
                 params['dsd_object_id'] = new_dso_id
                 params['dsd_object_type'] = object_type
-                params['fileModifyTime'] = CMetaDataUtils.any_2_str(self.__file_modify_time__)
+                params['fileModifyTime'] = CUtils.any_2_str(self.__file_modify_time__)
                 engine.session_execute(session, sql_update_path_object, params)
 
                 engine.session_commit(session)
@@ -172,7 +179,8 @@ class CDMPathInfo(CDMFilePathInfoEx):
         if CFile.file_or_path_exist(metadata_rule_file_name):
             try:
                 metadata_rule_content = CXml.file_2_str(metadata_rule_file_name)
-                CLogger().debug('在目录[{0}]下发现元数据规则文件, 它的内容为[{1}]'.format(self.__file_name_with_full_path__, metadata_rule_content))
+                CLogger().debug(
+                    '在目录[{0}]下发现元数据规则文件, 它的内容为[{1}]'.format(self.__file_name_with_full_path__, metadata_rule_content))
             except:
                 pass
 
@@ -180,7 +188,7 @@ class CDMPathInfo(CDMFilePathInfoEx):
         CLogger().debug(
             '目录[{0}]在库中登记的规则内容为[{1}]'.format(self.__file_name_with_full_path__, db_metadata_rule_content))
 
-        if CMetaDataUtils.equal_ignore_case(metadata_rule_content, db_metadata_rule_content):
+        if CUtils.equal_ignore_case(metadata_rule_content, db_metadata_rule_content):
             CLogger().debug(
                 '目录[{0}]的规则内容与库中的相同'.format(self.__file_name_with_full_path__))
             return
@@ -242,8 +250,8 @@ class CDMPathInfo(CDMFilePathInfoEx):
         if not self.__ds_file_or_path__.is_empty():
             # 如果记录已经存在
             db_path_modify_time = self.__ds_file_or_path__.value_by_name(0, 'dsddirlastmodifytime', '')
-            if CMetaDataUtils.equal_ignore_case(CMetaDataUtils.any_2_str(db_path_modify_time),
-                                                CMetaDataUtils.any_2_str(self.__file_modify_time__)):
+            if CUtils.equal_ignore_case(CUtils.any_2_str(db_path_modify_time),
+                                        CUtils.any_2_str(self.__file_modify_time__)):
                 CLogger().info('目录[{0}]的最后修改时间, 和库中登记的没有变化, 子目录将被设置为忽略刷新! '.format(self.__file_name_with_full_path__))
                 CFactory().give_me_db(self.__db_server_id__).execute('''
                     update dm2_storage_directory set dsdScanStatus = 0, dsdScanFileStatus = 0, dsd_directory_valid = -1

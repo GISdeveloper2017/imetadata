@@ -3,7 +3,6 @@
 # @Author : 王西亚 
 # @File : example1.py
 
-import time
 import os
 from multiprocessing import Process
 

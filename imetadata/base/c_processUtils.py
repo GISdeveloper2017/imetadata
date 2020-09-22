@@ -4,9 +4,9 @@
 # @File : c_processUtils.py
 
 
-import psutil
 import os
-from imetadata.base.c_logger import CLogger
+
+import psutil
 
 
 class CProcessUtils:
@@ -57,6 +57,6 @@ if __name__ == "__main__":
     subprocess_list = ['physics', 'chemistry', '1997', '2000']
     print(subprocess_list)
     for subprocess_index in range(len(subprocess_list), 0, -1):
-        print(subprocess_list[subprocess_index-1])
-        subprocess_list.pop(subprocess_index-1)
+        print(subprocess_list[subprocess_index - 1])
+        subprocess_list.pop(subprocess_index - 1)
     print(subprocess_list)

@@ -6,11 +6,11 @@
 from __future__ import absolute_import
 
 from imetadata.base.c_file import CFile
-from imetadata.base.c_utils import CMetaDataUtils
-from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
-from imetadata.business.metadata.base.fileinfo.c_dmPathInfo import CDMPathInfo
-from imetadata.database.c_factory import CFactory
 from imetadata.base.c_logger import CLogger
+from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.base.fileinfo.c_dmPathInfo import CDMPathInfo
+from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
+from imetadata.database.c_factory import CFactory
 
 
 class job_dm_path2object(CDMBaseJob):
@@ -73,10 +73,11 @@ where dsdscanstatus = 2
             ds_path_full_name = CFile.join_file(ds_root_path, ds_subpath)
         CLogger().debug('处理的子目录为: {0}'.format(ds_path_full_name))
 
-        path_obj = CDMPathInfo(self.FileType_Dir, ds_path_full_name, ds_storage_id, ds_id, parent_id, owner_obj_id, self.get_mission_db_id())
+        path_obj = CDMPathInfo(self.FileType_Dir, ds_path_full_name, ds_storage_id, ds_id, parent_id, owner_obj_id,
+                               self.get_mission_db_id())
         if not path_obj.__file_existed__:
             path_obj.db_update_status_on_path_invalid()
-            return CMetaDataUtils.merge_result(CMetaDataUtils.Success,
+            return CUtils.merge_result(CUtils.Success,
                                                '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path_full_name))
         else:
             path_obj.db_check_and_update_metadata_rule(CFile.join_file(ds_path_full_name, self.FileName_MetaData_Rule))
@@ -91,6 +92,8 @@ where dsdscanstatus = 2
         params = dict()
         params['dsdid'] = dataset.value_by_name(0, 'query_dir_id', '')
         CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_directory_status, params)
+
+        return CUtils.merge_result(CUtils.Success, '目录[{0}]处理顺利完成!'.format(ds_path_full_name))
 
 
 if __name__ == '__main__':

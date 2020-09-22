@@ -3,8 +3,9 @@
 # @Author : 王西亚 
 # @File : c_sentinel.py
 
-from multiprocessing import Process, Semaphore, Queue, Lock, Event
 import time
+from multiprocessing import Queue, Lock, Event
+
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_processUtils import CProcessUtils
 from imetadata.service.c_process import CProcess
@@ -53,7 +54,9 @@ class CSentinel(CProcess):
                 stop_event = control_center_object.get(self.NAME_STOP_EVENT, None)
                 # 如果该调度的停止信号已经发出, 则不必检查该调度的进程状态了.
                 if stop_event.is_set():
-                    CLogger().info('哨兵进程{0}发现调度[{1}.{2}]已经设置为退出, 将在本轮检查所有进程退出, 当所有进程退出后, 将把进程池删除...'.format(self.pid, cmd_id, cmd_title))
+                    CLogger().info(
+                        '哨兵进程{0}发现调度[{1}.{2}]已经设置为退出, 将在本轮检查所有进程退出, 当所有进程退出后, 将把进程池删除...'.format(self.pid, cmd_id,
+                                                                                                 cmd_title))
 
                     # 检查进程池中的进程是否全部退出, 本次未全部退出也没关系, 下次再检查
                     CLogger().info('检查调度{0}.{1}的进程池中所有进程是否都已经退出...'.format(cmd_id, cmd_title))
@@ -88,10 +91,12 @@ class CSentinel(CProcess):
 
                     # 如果有子进程不幸身亡, 则发送哨兵消息
                     if subproc_dead_unfortunately:
-                        CLogger().info('哨兵进程{0}发现调度[{1}.{2}]中的子进程有中途崩溃情况, 首先更新进程共享对象...'.format(self.pid, cmd_id, cmd_title))
+                        CLogger().info(
+                            '哨兵进程{0}发现调度[{1}.{2}]中的子进程有中途崩溃情况, 首先更新进程共享对象...'.format(self.pid, cmd_id, cmd_title))
                         self.__control_center_objects__[cmd_id] = control_center_object
 
-                        CLogger().info('哨兵进程{0}发现调度[{1}.{2}]中的子进程有中途崩溃情况, 将发信息给控制进程...'.format(self.pid, cmd_id, cmd_title))
+                        CLogger().info(
+                            '哨兵进程{0}发现调度[{1}.{2}]中的子进程有中途崩溃情况, 将发信息给控制进程...'.format(self.pid, cmd_id, cmd_title))
                         queue_item = {self.NAME_CMD_ID: cmd_id, self.NAME_CMD_TITLE: cmd_title}
                         self.__sentinel_callback_queue__.put(queue_item)
         finally:

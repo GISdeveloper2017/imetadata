@@ -17,18 +17,17 @@
 
 CREATE TABLE public.sch_center
 (
-    scid character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    sctitle character varying(200) COLLATE pg_catalog."default" NOT NULL,
-    
-    scstatus integer DEFAULT 1,
-    scprocessid character varying(100) COLLATE pg_catalog."default",
+    scid             character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    sctitle          character varying(200) COLLATE pg_catalog."default" NOT NULL,
+
+    scstatus         integer DEFAULT 1,
+    scprocessid      character varying(100) COLLATE pg_catalog."default",
 
     sclastmodifytime timestamp(6) without time zone,
-    scmemo text,
+    scmemo           text,
     CONSTRAINT sch_center_pkey PRIMARY KEY (scid)
 )
-
-TABLESPACE pg_default;
+    TABLESPACE pg_default;
 
 ALTER TABLE public.sch_center
     OWNER to postgres;
@@ -60,7 +59,7 @@ COMMENT ON COLUMN public.sch_center.scmemo
 
 CREATE INDEX idx_sch_center_processid
     ON public.sch_center USING btree
-    (scprocessid COLLATE pg_catalog."default" ASC NULLS LAST)
+        (scprocessid COLLATE pg_catalog."default" ASC NULLS LAST)
     TABLESPACE pg_default;
 -- Index: idx_sch_center_scanstatus
 
@@ -68,11 +67,8 @@ CREATE INDEX idx_sch_center_processid
 
 CREATE INDEX idx_sch_center_status
     ON public.sch_center USING btree
-    (scstatus ASC NULLS LAST)
+        (scstatus ASC NULLS LAST)
     TABLESPACE pg_default;
-
-
-
 
 
 
@@ -82,19 +78,19 @@ CREATE INDEX idx_sch_center_status
 
 create table if not exists sch_center_mission
 (
-	scmid varchar(100) not null
-		constraint sch_center_mission_pkey
-			primary key,
-	scmtitle varchar(200) not null,
-	scmcommand varchar(100),
-	scmstatus integer default 1,
-	scmprocessid varchar(100),
-	scmlastmodifytime timestamp(6) default now(),
-	scmcenterid varchar(100),
-	scmtrigger text,
-	scmalgorithm varchar(200) not null,
-	scmparams jsonb,
-	scmmemo text
+    scmid             varchar(100) not null
+        constraint sch_center_mission_pkey
+            primary key,
+    scmtitle          varchar(200) not null,
+    scmcommand        varchar(100),
+    scmstatus         integer      default 1,
+    scmprocessid      varchar(100),
+    scmlastmodifytime timestamp(6) default now(),
+    scmcenterid       varchar(100),
+    scmtrigger        text,
+    scmalgorithm      varchar(200) not null,
+    scmparams         jsonb,
+    scmmemo           text
 );
 
 comment on table sch_center_mission is '调度-中心';
@@ -113,27 +109,32 @@ comment on column sch_center_mission.scmmemo is '备注';
 comment on column sch_center_mission.scmcenterid is '所属组标示';
 comment on column sch_center_mission.scmlastmodifytime is '最后修改时间';
 
-alter table sch_center_mission owner to postgres;
+alter table sch_center_mission
+    owner to postgres;
 
 create index if not exists idx_sch_center_mission_processid
-	on sch_center_mission (scmprocessid);
+    on sch_center_mission (scmprocessid);
 
 create index if not exists idx_sch_center_mission_status
-	on sch_center_mission (scmstatus);
+    on sch_center_mission (scmstatus);
 
 /*
     测试任务
 */
 
-delete from sch_center_mission where scmid = 'test';
-insert into sch_center_mission(
-    scmid, scmtitle, scmcommand, scmstatus, scmprocessid
-    , scmtrigger, scmalgorithm, scmParams
-    , scmlastmodifytime, scmmemo, scmcenterid) values(
-    'test', '测试', null, 0, null
-    , 'db_queue', 'job_dm2_storage_parser', '{"process": {"parallel_count": 1}}'::json
-    , now(), null, '1'
-    );
+delete
+from sch_center_mission
+where scmid = 'test';
+insert into sch_center_mission( scmid, scmtitle, scmcommand, scmstatus, scmprocessid
+                              , scmtrigger, scmalgorithm, scmParams
+                              , scmlastmodifytime, scmmemo, scmcenterid)
+values ( 'test', '测试', null, 0, null
+       , 'db_queue', 'job_dm2_storage_parser', '{
+    "process": {
+      "parallel_count": 1
+    }
+  }'::json
+       , now(), null, '1');
 
 
 /*
@@ -144,14 +145,19 @@ insert into sch_center_mission(
 
 --启动指定调度
 update sch_center_mission
-set scmcommand = 'start',  scmstatus = 1, scmprocessid = null
+set scmcommand   = 'start',
+    scmstatus    = 1,
+    scmprocessid = null
 where scmid = 'test';
 
 --停止指定调度
 update sch_center_mission
-set scmcommand = 'stop',  scmstatus = 1, scmprocessid = null
+set scmcommand   = 'stop',
+    scmstatus    = 1,
+    scmprocessid = null
 where scmid = 'test';
 
 --退出服务
 update sch_center_mission
-set scmstatus = 0, scmcommand = 'shutdown';
+set scmstatus  = 0,
+    scmcommand = 'shutdown';

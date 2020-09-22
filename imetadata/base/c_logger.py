@@ -3,8 +3,10 @@
 
 
 from __future__ import absolute_import
-from imetadata.base.core.singleton import singleton
+
 import logging
+
+from imetadata.base.singleton import singleton
 
 
 @singleton

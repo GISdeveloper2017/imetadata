@@ -5,7 +5,7 @@
 
 import os
 import time
-from multiprocessing import Manager, Process, Semaphore
+from multiprocessing import Process, Semaphore
 
 
 def work(semaphore: Semaphore):
@@ -27,4 +27,3 @@ if __name__ == '__main__':
     print("semaphore.released")
     p.join()
     print("main process id: {0}-{1} stoped".format(os.getpid(), os.getppid()))
-

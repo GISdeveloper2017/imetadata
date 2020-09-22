@@ -4,13 +4,14 @@
 # @File : job_dm_path_parser.py
 
 from __future__ import absolute_import
+
 from imetadata.base.c_file import CFile
-from imetadata.base.c_utils import CMetaDataUtils
-from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
+from imetadata.base.c_logger import CLogger
+from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFileInfo import CDMFileInfo
 from imetadata.business.metadata.base.fileinfo.c_dmPathInfo import CDMPathInfo
+from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
 from imetadata.database.c_factory import CFactory
-from imetadata.base.c_logger import CLogger
 
 
 class job_dm_path_parser(CDMBaseJob):
@@ -74,7 +75,8 @@ where dsdscanfilestatus = 2
         order by dsddirectory desc
         limit 1
         '''
-        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {'dsdStorageID': ds_storage_id, 'dsdDirectory': ds_subpath})
+        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {'dsdStorageID': ds_storage_id,
+                                                                                         'dsdDirectory': ds_subpath})
         ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
 
         if ds_subpath == '':
@@ -84,9 +86,9 @@ where dsdscanfilestatus = 2
         CLogger().debug('处理的目录为: {0}'.format(ds_subpath))
         try:
             self.parser_path(dataset, ds_id, ds_subpath, ds_rule_content)
-            return CMetaDataUtils.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_subpath))
+            return CUtils.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_subpath))
         except:
-            return CMetaDataUtils.merge_result(self.Failure, '目录为[{0}]下的文件和子目录扫描处理出现错误!'.format(ds_subpath))
+            return CUtils.merge_result(self.Failure, '目录为[{0}]下的文件和子目录扫描处理出现错误!'.format(ds_subpath))
         finally:
             self.exchange_file_or_subpath_valid_unknown2invalid(ds_id)
 
@@ -137,7 +139,7 @@ where dsdscanfilestatus = 2
             where dsdid = :dsdid
             ''', {'dsdid': ds_id}
         )
-        return CMetaDataUtils.merge_result(CMetaDataUtils.Success, '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path))
+        return CUtils.merge_result(CUtils.Success, '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path))
 
     def init_file_or_subpath_valid_unknown(self, ds_id):
         """

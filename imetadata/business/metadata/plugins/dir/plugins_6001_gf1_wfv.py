@@ -3,7 +3,7 @@
 # @Author : 王西亚 
 # @File : plugins_6001_gf1_wfv.py
 
-from imetadata.business.metadata.base.plugins.sat.c_satFilePlugins_gf1_wfv import CSatFilePlugins_gf1_wfv
+from imetadata.business.metadata.base.plugins.industry.sat.c_satFilePlugins_gf1_wfv import CSatFilePlugins_gf1_wfv
 
 
 class plugins_6001_gf1_wfv(CSatFilePlugins_gf1_wfv):

@@ -21,7 +21,8 @@ class CFileInfoEx(CFileInfo):
         super().__init__(file_type, file_name_with_full_path)
         self.__root_path__ = root_path
 
-        self.__file_name_with_rel_path__ = CFile.file_relation_path(self.__file_name_with_full_path__, self.__root_path__)
+        self.__file_name_with_rel_path__ = CFile.file_relation_path(self.__file_name_with_full_path__,
+                                                                    self.__root_path__)
         self.__file_path_with_rel_path__ = CFile.file_relation_path(self.__file_path__, self.__root_path__)
 
         self.__rule_content__ = rule_content

@@ -11,6 +11,8 @@ class CDirPlugins(CPlugins):
     """
     常规目录识别插件
     """
+
     def __init__(self, file_info: CFileInfoEx):
         super().__init__(file_info)
-        self.__file_content__ = CVirtualContentDir(self.__file_info__.__file_name_with_full_path__)
+        if self.__file_info__ is not None:
+            self.__file_content__ = CVirtualContentDir(self.__file_info__.__file_name_with_full_path__)

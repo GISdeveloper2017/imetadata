@@ -3,9 +3,9 @@
 # @Author : 王西亚 
 # @File : test_process_alive.py
 
-from multiprocessing import Process
-import time
 import random
+import time
+from multiprocessing import Process
 
 
 class Myprocess(Process):

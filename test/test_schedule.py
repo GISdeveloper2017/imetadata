@@ -3,18 +3,14 @@
 # @Author : 王西亚 
 # @File : test_schedule.py
 
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.schedulers.background import BlockingScheduler
-from apscheduler.jobstores.memory import MemoryJobStore
-from apscheduler.executors.pool import ThreadPoolExecutor
-from apscheduler.triggers.cron import CronTrigger
-from apscheduler.triggers.interval import IntervalTrigger
-from apscheduler.triggers.date import DateTrigger
-from apscheduler.triggers.base import BaseTrigger
-from apscheduler.job import Job
-import time
 import os
-import datetime
+import time
+
+from apscheduler.executors.pool import ThreadPoolExecutor
+from apscheduler.job import Job
+from apscheduler.jobstores.memory import MemoryJobStore
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
 
 
 class CTrigger(IntervalTrigger):
@@ -62,7 +58,7 @@ class CAbc:
         }
 
         self.scheduler = BackgroundScheduler(jobstores=job_stores, executors=executors, job_defaults=job_defaults,
-                                        daemonic=False)
+                                             daemonic=False)
         self.job = self.scheduler.add_job(self.tick, trigger=CTrigger(seconds=7), replace_existing=True)
         self.scheduler.start()  # 这里的调度任务是独立的一个线程
         print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
