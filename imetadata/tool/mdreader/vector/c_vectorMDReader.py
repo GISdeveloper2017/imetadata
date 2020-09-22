@@ -85,12 +85,12 @@ class CVectorMDReader(CMDReader):
             json_vector.set_value_of_name('datasource', json_datasource.__json_obj__)
             #print(driver.name)
 
-            json_vector.set_value_of_name('layer_count', 1)  # shp图层只有1个
-            json_vector.set_value_of_name('result', result_success)
-
             layer_count_real, layer_list = self.get_vector_layercount_and_layers(vector_ds)
             # print('共{0}个有效图层'.format(layer_count_real))
             # print(layer_list)
+
+            json_vector.set_value_of_name('layer_count', layer_count_real)  # shp图层只有1个，gdb有多个
+            json_vector.set_value_of_name('result', result_success)
 
             # 定义layers子节点,并添加到矢量json对象中
             json_layers = CJson()
@@ -303,7 +303,7 @@ if __name__ == '__main__':
     # 循环测试内存占用情况
     process_id = CSys.get_execute_process_id()
     print("process_id:{0}".format(process_id))
-    time.sleep(5)
+    time.sleep(2)
     pVectorMDReader = CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb.gdb')
     # pVectorMDReader = CVectorMDReader(r'D:\data\0生态审计\少量数据测试_修改后\重大工程项目_曲靖市_2019.shp')
     for i in range(15000):
