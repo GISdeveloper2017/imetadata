@@ -37,7 +37,7 @@ class CZip:
         self.__zip_obj__.extract_file(file_name, target_path)
 
     def extract_all(self, target_path):
-        CFile.check_and_create_directory(target_path)
+        CFile.check_and_create_directory_itself(target_path)
         self.__zip_obj__.extract_all(target_path)
 
     def close(self):

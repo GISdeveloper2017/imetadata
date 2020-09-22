@@ -24,6 +24,7 @@ from copy import deepcopy
 from lxml import etree
 
 from imetadata.base.c_file import CFile
+from imetadata.base.c_utils import CUtils
 
 
 class CXml:
@@ -55,10 +56,10 @@ class CXml:
         :param xml_content:
         :return:
         """
-        parser = etree.XMLParser(remove_blank_text=True)
-        self.__xml_root_node__ = etree.XML(xml_content.strip(), parser)
-        self.__xml_tree__ = etree.ElementTree(self.__xml_root_node__)
-        print(self.__xml_tree__.docinfo.xml_version)
+        if not CUtils.equal_ignore_case(CUtils.any_2_str(xml_content), ''):
+            parser = etree.XMLParser(remove_blank_text=True)
+            self.__xml_root_node__ = etree.XML(xml_content.strip(), parser)
+            self.__xml_tree__ = etree.ElementTree(self.__xml_root_node__)
 
     def new_xml(self, root_element_name):
         """

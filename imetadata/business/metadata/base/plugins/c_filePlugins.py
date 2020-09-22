@@ -27,18 +27,8 @@ class CFilePlugins(CPlugins):
         .[0]: 概率, 0-不知道;1-可能是;-1确认是
         .[1]: 识别的对象的名称, 如GF1-xxxxxx-000-000
         """
-        self.__object_confirm__ = self.Object_Confirm_IUnKnown
-        sat_classified_character, sat_classified_character_type = self.get_classified_character()
-        if sat_classified_character_type == self.TextMatchType_Common:
-            if CFile.file_match(self.get_classified_text(), sat_classified_character):
-                self.__object_confirm__ = self.Object_Confirm_IKnown
-        elif sat_classified_character_type == self.TextMatchType_Regex:
-            if CUtils.text_match_re(self.get_classified_text(), sat_classified_character):
-                self.__object_confirm__ = self.Object_Confirm_IKnown
+        return self.classified_by_character_common()
 
-        return self.__object_confirm__, self.get_classified_object_name()
-
-    @abstractmethod
     def get_classified_character(self):
         """
         设置识别的特征
@@ -58,5 +48,29 @@ class CFilePlugins(CPlugins):
         return self.__file_info__.__file_name_without_path__
 
     def get_classified_object_name(self):
+        """
+        设置默认的识别出的对象名称
+        :return:
+        """
         self.__object_name__ = self.get_classified_text()
         return self.__object_name__
+
+    def classified_by_character_common(self):
+        """
+        默认的识别模式
+        根据文件名的特征, 进行对象类型识别
+
+        :return: 返回两个结果
+        .[0]: 概率, 0-不知道;1-可能是;-1确认是
+        .[1]: 识别的对象的名称, 如GF1-xxxxxx-000-000
+        """
+        self.__object_confirm__ = self.Object_Confirm_IUnKnown
+        sat_classified_character, sat_classified_character_type = self.get_classified_character()
+        if sat_classified_character_type == self.TextMatchType_Common:
+            if CFile.file_match(self.get_classified_text(), sat_classified_character):
+                self.__object_confirm__ = self.Object_Confirm_IKnown
+        elif sat_classified_character_type == self.TextMatchType_Regex:
+            if CUtils.text_match_re(self.get_classified_text(), sat_classified_character):
+                self.__object_confirm__ = self.Object_Confirm_IKnown
+
+        return self.__object_confirm__, self.get_classified_object_name()

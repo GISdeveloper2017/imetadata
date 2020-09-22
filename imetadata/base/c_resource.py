@@ -87,8 +87,7 @@ class CResource:
     Name_Title = 'title'
     Name_Type = 'type'
 
-    Path_MD_Rule_Content_ProductType = '/root/ProductType'
-    Path_MD_Rule_Content_ProductName = '/root/DNName'
+    Path_MD_Rule_Type = '/root/type'
 
     TextMatchType_Common = 'common'
     TextMatchType_Regex = 'regex'

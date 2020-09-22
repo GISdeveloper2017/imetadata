@@ -133,21 +133,54 @@ class CFile:
     def file_match(cls, file_name_with_path: str, pattern: str):
         return fnmatch(file_name_with_path, pattern)
 
+    @classmethod
+    def subpath_in_path(cls, sub_path:str, filepath: str):
+        subpath_list = []
+        file_path_str = filepath.replace("\\", "/")
+        file_path_str, file_name_str = os.path.split(file_path_str)
+        subpath_list.append(file_name_str.lower())
+        while file_name_str != '':
+            file_path_str, file_name_str = os.path.split(file_path_str)
+            if file_name_str != '':
+                subpath_list.append(file_name_str.lower())
+
+        return subpath_list.count(sub_path.lower()) > 0
+
 
 if __name__ == '__main__':
+    pass
     # print(CFile.file_main_name(r'/Users/Clare/gf1.tar.gz'))
     # print(CFile.file_ext(r'/Users/Clare/gf1.tar.gz'))
     # print(CFile.file_main_name(r'/Users/Clare/gf1.xls'))
     # print(CFile.file_ext(r'/Users/Clare/gf1.xls'))
     # print(CFile.file_relation_path(r'/Users/Users/Clare/gf1.tar.gz', '/Users'))
-    file_name = '/Users/wangxiya/Documents/交换'
+    # file_name = '/Users/wangxiya/Documents/交换'
     # print('文件:{0}'.format(file_name))
     # print('是否存在:{0}'.format(CFile.file_or_path_exist(file_name)))
     # print('是否是目录:{0}'.format(CFile.is_dir(file_name)))
     # print('是否是文件:{0}'.format(CFile.is_file(file_name)))
-    if CFile.file_or_path_exist(file_name):
-        print('修改时间:{0}'.format(CFile.file_modify_time(file_name)))
-        print('大小:{0}'.format(CFile.file_size(file_name)))
+    # if CFile.file_or_path_exist(file_name):
+    #     print('修改时间:{0}'.format(CFile.file_modify_time(file_name)))
+    #     print('大小:{0}'.format(CFile.file_size(file_name)))
 
     # for file_or_path in CFile.file_of_path('/Users/wangxiya/Documents/交换/1.给我的/get_luotu'):
     #     print(file_or_path)
+    # subpath_list = []
+    # file_path = '/Users/wangxiya/Documents/交换/1.给我的/get_luotu'
+    # file_path1 = r'C:\Users\wangxiya\Documents\交换\1.给我的\get_luotu'
+    # file_path = file_path.replace("\\", "/")
+    # file_path, file_name = os.path.split(file_path)
+    # subpath_list.append(file_name.lower())
+    # while file_name != '':
+    #     file_path, file_name = os.path.split(file_path)
+    #     if file_name != '':
+    #         subpath_list.append(file_name.lower())
+    # print('*'*20)
+    # for subpath in subpath_list:
+    #     print('1.{0}'.format(subpath))
+    #
+    # print('*'*20)
+    # if CFile.subpath_in_path('documents', file_path):
+    #     print('in')
+    # else:
+    #     print('not in')

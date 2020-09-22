@@ -8,6 +8,8 @@ from abc import abstractmethod
 from imetadata.base.Exceptions import FileContentWapperNotExistException
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_resource import CResource
+from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
 
 
@@ -117,8 +119,11 @@ class CPlugins(CResource):
     TagEngine_Global_Dim_In_RelationName = 'global_dim_in_relation_name'
     TagEngine_Global_Dim_In_MainName = 'global_dim_in_main_name'
 
+    MetaData_Rule_Type_None = 'none'
+
     __file_content__: CVirtualContent = None
-    __file_info__: CFileInfoEx
+    __file_info__: CFileInfoEx = None
+    __metadata_rule_obj__: CXml = None
 
     __object_confirm__: int
     __object_name__: str
@@ -127,13 +132,22 @@ class CPlugins(CResource):
         """
         :param file_info:  目标文件或路径的名称
         """
+        self.__metadata_rule_obj__ = CXml()
         self.__file_info__ = file_info
+        if self.__file_info__ is not None:
+            self.__metadata_rule_obj__.load_xml(self.__file_info__.__rule_content__)
 
     def get_classified_object_confirm(self):
         return self.__object_confirm__
 
     def get_classified_object_name(self):
         return self.__object_name__
+
+    def get_metadata_rule_type(self):
+        default_rule_type = CXml.get_element_text(self.__metadata_rule_obj__.xpath_one(self.Path_MD_Rule_Type))
+        if CUtils.equal_ignore_case(default_rule_type, ''):
+            default_rule_type = self.MetaData_Rule_Type_None
+        return default_rule_type
 
     def get_information(self) -> dict:
         information = dict()

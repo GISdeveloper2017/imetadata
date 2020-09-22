@@ -15,11 +15,14 @@ class C21ATBusDataSetPlugins(CDirPlugins):
     __classified_object_type__ = None
     __metadata_xml_obj__ = None
 
+    Path_21AT_MD_Content_ProductType = '/root/ProductType'
+    Path_21AT_MD_Content_ProductName = '/root/DNName'
+
     def get_information(self) -> dict:
         information = super().get_information()
         if self.__metadata_xml_obj__ is not None:
             information[self.Plugins_Info_Title] = CXml.get_element_text(
-                self.__metadata_xml_obj__.xpath_one(self.Path_MD_Rule_Content_ProductName))
+                self.__metadata_xml_obj__.xpath_one(self.Path_21AT_MD_Content_ProductName))
             information[self.Plugins_Info_Name] = None
         information[self.Plugins_Info_Code] = '110001'
         information[self.Plugins_Info_Catalog] = '业务数据集'
@@ -50,9 +53,9 @@ class C21ATBusDataSetPlugins(CDirPlugins):
             try:
                 self.__metadata_xml_obj__.load_file(metadata_file_name)
                 self.__classified_object_type__ = CXml.get_element_text(
-                    self.__metadata_xml_obj__.xpath_one(self.Path_MD_Rule_Content_ProductType))
+                    self.__metadata_xml_obj__.xpath_one(self.Path_21AT_MD_Content_ProductType))
                 self.__object_confirm__ = self.Object_Confirm_IKnown
-                self.__object_name__ = CXml.get_element_text(self.__metadata_xml_obj__.xpath_one('/root/DSName'))
+                self.__object_name__ = CXml.get_element_text(self.__metadata_xml_obj__.xpath_one(self.Path_21AT_MD_Content_ProductName))
             except:
                 self.__metadata_xml_obj__ = None
                 CLogger().warning('发现文件{0}符合二十一世纪业务数据集标准, 但该文件格式有误, 无法打开! ')

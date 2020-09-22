@@ -44,10 +44,10 @@ class CSatPlugins(CPlugins):
 
         sat_classified_character, sat_classified_character_type = self.get_classified_character()
         if sat_classified_character_type == self.TextMatchType_Common:
-            if CFile.file_match(self.get_classified_text(), sat_classified_character):
+            if CFile.file_match(self.get_classified_text().lower(), sat_classified_character):
                 self.__object_confirm__ = self.Object_Confirm_IKnown
         elif sat_classified_character_type == self.TextMatchType_Regex:
-            if CUtils.text_match_re(self.get_classified_text(), sat_classified_character):
+            if CUtils.text_match_re(self.get_classified_text().lower(), sat_classified_character):
                 self.__object_confirm__ = self.Object_Confirm_IKnown
 
         return self.__object_confirm__, self.get_classified_object_name()
