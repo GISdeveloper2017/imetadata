@@ -67,6 +67,18 @@ where dsdscanstatus = 2
         owner_obj_id = dataset.value_by_name(0, 'query_dir_parent_objid', '')
         parent_id = dataset.value_by_name(0, 'query_dir_parent_id', '')
 
+        sql_get_rule = '''
+            select dsdScanRule
+            from dm2_storage_directory
+            where dsdStorageid = :dsdStorageID and Position(dsddirectory || '/' in :dsdDirectory) = 1
+                and dsdScanRule is not null
+            order by dsddirectory desc
+            limit 1
+            '''
+        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {'dsdStorageID': ds_storage_id,
+                                                                                         'dsdDirectory': ds_subpath})
+        ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
+
         if ds_subpath == '':
             ds_path_full_name = ds_root_path
         else:
@@ -74,7 +86,7 @@ where dsdscanstatus = 2
         CLogger().debug('处理的子目录为: {0}'.format(ds_path_full_name))
 
         path_obj = CDMPathInfo(self.FileType_Dir, ds_path_full_name, ds_storage_id, ds_id, parent_id, owner_obj_id,
-                               self.get_mission_db_id())
+                               self.get_mission_db_id(), ds_rule_content)
         if not path_obj.__file_existed__:
             path_obj.db_update_status_on_path_invalid()
             return CUtils.merge_result(CUtils.Success,

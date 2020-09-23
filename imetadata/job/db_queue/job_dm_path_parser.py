@@ -110,7 +110,7 @@ where dsdscanfilestatus = 2
                                        dataset.value_by_name(0, 'query_storage_id', ''),
                                        None,
                                        ds_id,
-                                       dataset.value_by_name(0, 'query_dir_parent_objid', ''),
+                                       dataset.value_by_name(0, 'query_dir_parent_objid', None),
                                        self.get_mission_db_id(),
                                        ds_rule_content)
 
@@ -124,7 +124,7 @@ where dsdscanfilestatus = 2
                                        dataset.value_by_name(0, 'query_storage_id', ''),
                                        None,
                                        ds_id,
-                                       dataset.value_by_name(0, 'query_dir_parent_objid', ''),
+                                       dataset.value_by_name(0, 'query_dir_parent_objid', None),
                                        self.get_mission_db_id(),
                                        ds_rule_content)
                 if file_obj.white_black_valid():

@@ -75,8 +75,9 @@ class CPlugins(CResource):
             . 对象的基础元数据: 需要打开数据实体
             . 对象的质检: 需要打开数据实体
             . 对象的可视元数据: 需要打开数据实体
-        . 后处理:
             . 对象的元数据优化: 需要打开数据实体
+        . 后处理:
+            . 与业务系统的接口
     """
     # 插件标识-内置
     Plugins_Info_ID = 'dsodid'
@@ -162,7 +163,7 @@ class CPlugins(CResource):
         """
         对目标目录或文件进行分类
         :return: 返回两个结果
-        .[0]: 概率, 0-不知道;1-可能是;-1确认是
+        .[0]: 概率, 0-不知道;1-可能是;-1确认是;2-确定不是
         .[1]: 识别的对象的名称, 如GF1-xxxxxx-000-000
         """
         pass
@@ -181,35 +182,40 @@ class CPlugins(CResource):
         """
         pass
 
+    def create_virtual_content(self):
+        if self.__file_content__ is None:
+            raise FileContentWapperNotExistException()
+
+        if not self.__file_content__.virtual_content_valid():
+            self.__file_content__.create_virtual_content()
+
+    def destroy_virtual_content(self):
+        if self.__file_content__ is None:
+            raise FileContentWapperNotExistException()
+
+        if not self.__file_content__.virtual_content_valid():
+            self.__file_content__.destroy_virtual_content()
+
+    def parser_bus_metadata(self):
+        """
+        对目标目录或文件的元数据进行提取
+        :return: 返回
+        """
+
     def parser_metadata(self):
         """
         对目标目录或文件的元数据进行提取
         :return: 返回
         """
-        if self.__file_content__ is None:
-            raise FileContentWapperNotExistException()
 
-        if not self.__file_content__.virtual_content_valid():
-            self.__file_content__.create_virtual_content()
-
-    def quality_evaluate(self) -> list:
+    def quality_evaluate(self):
         """
         对目标目录或文件的质量评估
         :return:
         """
-        if self.__file_content__ is None:
-            raise FileContentWapperNotExistException()
-
-        if not self.__file_content__.virtual_content_valid():
-            self.__file_content__.create_virtual_content()
 
     def parser_last_process(self):
         """
         后处理
         :return: 返回
         """
-        if self.__file_content__ is None:
-            raise FileContentWapperNotExistException()
-
-        if not self.__file_content__.virtual_content_valid():
-            self.__file_content__.create_virtual_content()

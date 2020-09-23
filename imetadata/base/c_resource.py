@@ -92,3 +92,6 @@ class CResource:
     TextMatchType_Common = 'common'
     TextMatchType_Regex = 'regex'
 
+    DB_True = -1
+    DB_False = 0
+

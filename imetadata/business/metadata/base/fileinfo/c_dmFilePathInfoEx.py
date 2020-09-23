@@ -80,16 +80,10 @@ class CDMFilePathInfoEx(CFileInfoEx):
         where dodid = :dsoID
         '''
 
-        sql_delete_object_spatial_by_id = '''
-        delete from dm2_storage_object_spatial
-        where dsos_id = :dsoID
-        '''
-
         engine = CFactory().give_me_db(self.__db_server_id__)
         session = engine.give_me_session()
         try:
             engine.session_execute(session, sql_delete_object_details_by_id, {'dsoid': object_id})
-            engine.session_execute(session, sql_delete_object_spatial_by_id, {'dsoid': object_id})
             engine.session_execute(session, sql_delete_object_by_id, {'dsoid': object_id})
             engine.session_commit(session)
         except Exception as error:
@@ -142,44 +136,3 @@ class CDMFilePathInfoEx(CFileInfoEx):
                 return not CFile.file_match(self.__file_name_without_path__, file_filter_black_list)
             else:
                 return True
-
-    def plugins_classified(self) -> CPlugins:
-        target = self.__file_main_name__
-        target_type = self.__file_type__
-        target_id = self.__my_id__
-        plugins_root_package_name = '{0}.{1}'.format(CSys.get_plugins_package_root_name(), target_type)
-        path = CFile.join_file(CSys.get_plugins_root_dir(), target_type)
-        plugins_file_list = CFile.search_file_or_subpath_of_path(path,
-                                                                 '{0}_*.{1}'.format(self.Name_Plugins, self.FileExt_Py))
-        for file_name_with_path in plugins_file_list:
-            file_main_name = CFile.file_main_name(file_name_with_path)
-            try:
-                class_classified_obj = CObject.create_plugins_instance(plugins_root_package_name, file_main_name, self)
-                object_confirm, object_name = class_classified_obj.classified()
-                if object_confirm != self.Object_Confirm_IUnKnown:
-                    CLogger().debug(
-                        '{0} is plugins_classified as {1}.{2}'.format(target, class_classified_obj.get_information(),
-                                                                      class_classified_obj.get_id()))
-                    return class_classified_obj
-            except:
-                CLogger().debug('插件[{0}]解析出现异常, 请检查!'.format(file_main_name))
-                continue
-        else:
-            return None
-
-    def plugins(self, plugins_id: str) -> CPlugins:
-        target = self.__file_main_name__
-        target_type = self.__file_type__
-        target_id = self.__my_id__
-        plugins_root_package_name = '{0}.{1}'.format(CSys.get_plugins_package_root_name(), target_type)
-        path = CFile.join_file(CSys.get_plugins_root_dir(), target_type)
-        plugins_file_list = CFile.search_file_or_subpath_of_path(path,
-                                                                 '{0}_*.{1}'.format(self.Name_Plugins, self.FileExt_Py))
-        for file_name_with_path in plugins_file_list:
-            file_main_name = CFile.file_main_name(file_name_with_path)
-            if CUtils.plugins_id_by_file_main_name(file_main_name) == plugins_id:
-                class_classified_obj = CObject.create_plugins_instance(plugins_root_package_name, file_main_name,
-                                                                       target, target_type, target_id)
-                return class_classified_obj
-        else:
-            return None

@@ -6,6 +6,7 @@
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
+from imetadata.business.metadata.base.plugins.manager.c_pluginsMng import CPluginsMng
 from imetadata.database.c_factory import CFactory
 
 
@@ -135,7 +136,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
         object_confirm = self.Object_Confirm_IUnKnown
         object_name = None
         object_type = None
-        classified_obj = self.plugins_classified()
+        classified_obj = CPluginsMng.plugins_classified(self)
         if classified_obj is not None:
             object_confirm = classified_obj.get_classified_object_confirm()
             object_name = classified_obj.get_classified_object_name()

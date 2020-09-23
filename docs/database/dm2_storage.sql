@@ -2080,3 +2080,39 @@ COMMENT ON COLUMN public.dm2_storage_object_spatial.dsos_center_wgs84 IS '对象
 COMMENT ON COLUMN public.dm2_storage_object_spatial.area IS '面积';
 COMMENT ON COLUMN public.dm2_storage_object_spatial.length IS '长度';
 
+/*
+    2020-09-23 王西亚
+    . 为dm2_storage_object增加创建时间
+*/
+
+alter table dm2_storage_object
+    add column dso_add_time timestamp(6) without time zone DEFAULT now();
+COMMENT ON COLUMN dm2_storage_object.dso_add_time IS '入库时间';
+
+alter table dm2_storage_object add column dso_time jsonb;
+COMMENT ON COLUMN dm2_storage_object.dso_time IS '时间';
+
+alter table dm2_storage_object add column dso_geo_bb_native geometry;
+alter table dm2_storage_object add column dso_geo_native    geometry;
+alter table dm2_storage_object add column dso_center_native geometry;
+
+alter table dm2_storage_object add column dso_geo_bb_wgs84  geometry;
+alter table dm2_storage_object add column dso_geo_wgs84     geometry;
+alter table dm2_storage_object add column dso_center_wgs84  geometry;
+
+alter table dm2_storage_object add column area  double precision default 0.0;
+alter table dm2_storage_object add column length  bigint default 0;
+
+
+COMMENT ON COLUMN public.dm2_storage_object.dso_geo_bb_native IS '对象-原始-外包框';
+COMMENT ON COLUMN public.dm2_storage_object.dso_geo_native IS '对象-原始-外边框';
+COMMENT ON COLUMN public.dm2_storage_object.dso_center_native IS '对象-原始-中心点';
+COMMENT ON COLUMN public.dm2_storage_object.dso_geo_bb_wgs84 IS '对象-WGS84-外包框';
+COMMENT ON COLUMN public.dm2_storage_object.dso_geo_wgs84 IS '对象-WGS84-外边框';
+COMMENT ON COLUMN public.dm2_storage_object.dso_center_wgs84 IS '对象-WGS84-中心点';
+
+COMMENT ON COLUMN public.dm2_storage_object.area IS '面积';
+COMMENT ON COLUMN public.dm2_storage_object.length IS '长度';
+
+drop table dm2_storage_object_spatial;
+
