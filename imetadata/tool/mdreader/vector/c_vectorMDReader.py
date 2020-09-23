@@ -2,14 +2,19 @@
 # @Time : 2020/9/18 09:56 
 # @Author : 王西亚 
 # @File : c_vectorMDReader.py
-import gdal
-from osgeo import ogr
+import time
+
+import psutil
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
+from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CUtils
 from imetadata.tool.mdreader.c_mdreader import CMDReader
+from osgeo import ogr
+import gdal
+
 
 
 class CVectorMDReader(CMDReader):
@@ -18,9 +23,10 @@ class CVectorMDReader(CMDReader):
     """
 
     def get_metadata_2_file(self, file_name_with_path: str):
-        print('你的任务: 将文件{0}的元数据信息, 提取出来, 存储到文件{1}中'.format(self.__file_name_with_path__, file_name_with_path))
+        # print('你的任务: 将文件{0}的元数据信息, 提取出来, 存储到文件{1}中'.format(self.__file_name_with_path__, file_name_with_path))
         vector_ds = None
         json_vector = None
+        #os.environ['PROJ_LIB'] = r'C:\APP\Python\Python38\Lib\site-packages\osgeo\data\proj' 环境变量中设置
         try:
             result_success = abs(self.Success)  # 成功的标记，元数据json中的为1，而系统常量为-1，暂采用绝对值
 
@@ -36,18 +42,29 @@ class CVectorMDReader(CMDReader):
                 json_vector.set_value_of_name('result', self.Failure)
                 json_vector.set_value_of_name('message', message)
                 # 判断路径是否存在，不存在则创建
-                CFile.check_and_create_directory(file_name_with_path)
-                json_vector.to_file(file_name_with_path)
+                if CFile.check_and_create_directory(file_name_with_path):
+                    json_vector.to_file(file_name_with_path)
                 return CUtils.merge_result(CUtils.Failure,
                                                    '文件[{0}]打开失败!'.format(self.__file_name_with_path__))
+            layer_count = vector_ds.GetLayerCount()
+            if layer_count == 0:
+                message = '文件[{0}]没有图层!'.format(self.__file_name_with_path__)
+                json_vector.set_value_of_name('result', self.Failure)
+                json_vector.set_value_of_name('message', message)
+                # 判断路径是否存在，不存在则创建
+                if CFile.check_and_create_directory(file_name_with_path):
+                    json_vector.to_file(file_name_with_path)
+                return CUtils.merge_result(CUtils.Failure,
+                                                   '文件[{0}]没有图层!'.format(self.__file_name_with_path__))
+
             shp_lyr = vector_ds.GetLayer(0)
             if shp_lyr is None:
                 message = '文件[{0}]读取图层失败!'.format(self.__file_name_with_path__)
                 json_vector.set_value_of_name('result', self.Failure)
                 json_vector.set_value_of_name('message', message)
                 # 判断路径是否存在，不存在则创建
-                CFile.check_and_create_directory(file_name_with_path)
-                json_vector.to_file(file_name_with_path)
+                if CFile.check_and_create_directory(file_name_with_path):
+                    json_vector.to_file(file_name_with_path)
                 return CUtils.merge_result(CUtils.Failure,
                                                    '文件[{0}]读取图层失败!'.format(self.__file_name_with_path__))
             driver = vector_ds.GetDriver()
@@ -56,8 +73,8 @@ class CVectorMDReader(CMDReader):
                 json_vector.set_value_of_name('result', self.Failure)
                 json_vector.set_value_of_name('message', message)
                 # 判断路径是否存在，不存在则创建
-                CFile.check_and_create_directory(file_name_with_path)
-                json_vector.to_file(file_name_with_path)
+                if CFile.check_and_create_directory(file_name_with_path):
+                    json_vector.to_file(file_name_with_path)
                 return CUtils.merge_result(CUtils.Failure,
                                                    '文件[{0}]读取驱动失败!'.format(self.__file_name_with_path__))
 
@@ -66,14 +83,14 @@ class CVectorMDReader(CMDReader):
             json_datasource.set_value_of_name('name', self.__file_name_with_path__)
             json_datasource.set_value_of_name('description', driver.name)
             json_vector.set_value_of_name('datasource', json_datasource.__json_obj__)
-            # print(driver.name)
-
-            json_vector.set_value_of_name('layer_count', 1)  # shp图层只有1个
-            json_vector.set_value_of_name('result', result_success)
+            #print(driver.name)
 
             layer_count_real, layer_list = self.get_vector_layercount_and_layers(vector_ds)
             # print('共{0}个有效图层'.format(layer_count_real))
             # print(layer_list)
+
+            json_vector.set_value_of_name('layer_count', layer_count_real)  # shp图层只有1个，gdb有多个
+            json_vector.set_value_of_name('result', result_success)
 
             # 定义layers子节点,并添加到矢量json对象中
             json_layers = CJson()
@@ -87,7 +104,7 @@ class CVectorMDReader(CMDReader):
                     list_json_layers.append(json_layer.__json_obj__)
                     # name节点
                     json_layer.set_value_of_name("name", layer_name)
-                    # print(layer_name)
+                    #print(layer_name)
                     # projwkt 节点
                     json_proj_wkt = self.get_projwkt_by_layer(layer_temp)
                     json_layer.set_value_of_name("wkt", json_proj_wkt.__json_obj__)
@@ -107,10 +124,10 @@ class CVectorMDReader(CMDReader):
                     json_layer.set_value_of_name("attributes", json_attributes.__json_obj__)
                 json_vector.set_value_of_name('layers', list_json_layers)
             json_shp_str = json_vector.to_json()
-            print(json_shp_str)
+            #print(json_shp_str)
             # 判断路径是否存在，不存在则创建
-            CFile.check_and_create_directory(file_name_with_path)
-            json_vector.to_file(file_name_with_path)
+            if CFile.check_and_create_directory(file_name_with_path):
+                json_vector.to_file(file_name_with_path)
             CLogger().info('文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
             return CUtils.merge_result(CUtils.Success,
                                                '文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
@@ -120,13 +137,14 @@ class CVectorMDReader(CMDReader):
             json_vector.set_value_of_name('result', self.Failure)
             json_vector.set_value_of_name('message', message)
             # 判断路径是否存在，不存在则创建
-            CFile.check_and_create_directory(file_name_with_path)
-            json_vector.to_file(file_name_with_path)
+            if CFile.check_and_create_directory(file_name_with_path):
+                json_vector.to_file(file_name_with_path)
             return CUtils.merge_result(CUtils.Failure,
-                                               '文件[{0}]读取异常!｛1｝'.format(self.__file_name_with_path__, error))
+                                               '文件[{0}]读取异常!｛1｝'.format(self.__file_name_with_path__,error))
         finally:
             if vector_ds is not None:
                 vector_ds.Destroy()
+                vector_ds = None
 
     def get_attributes_by_vectorlayer(self, layer) -> CJson:
         '''
@@ -138,7 +156,7 @@ class CVectorMDReader(CMDReader):
         layer_defn = layer.GetLayerDefn()
         columns_list = []
         field_count = layer_defn.GetFieldCount()
-        if field_count > 0:
+        if field_count >0 :
             for i in range(field_count):
                 field_defn = layer_defn.GetFieldDefn(i)
                 name = field_defn.GetName()
@@ -155,6 +173,7 @@ class CVectorMDReader(CMDReader):
                 json_column.set_value_of_name("type_name", type_name)
                 columns_list.append(json_column.__json_obj__)  # 添加到集合中
         json_attributes.set_value_of_name("columns", columns_list)
+        layer_defn = None
         return json_attributes
 
     def get_extent_by_vectorlayer(self, layer) -> CJson:
@@ -165,7 +184,7 @@ class CVectorMDReader(CMDReader):
         '''
         json_extent = CJson()
         extent = layer.GetExtent()
-        # print('extent:', extent)
+        #print('extent:', extent)
         if extent is not None:
             # print('ul:', extent[0], extent[3])
             # print('lr:', extent[1], extent[2])
@@ -173,6 +192,7 @@ class CVectorMDReader(CMDReader):
             json_extent.set_value_of_name("maxx", extent[1])
             json_extent.set_value_of_name("miny", extent[2])
             json_extent.set_value_of_name("maxy", extent[3])
+        extent = None
         return json_extent
 
     def get_geometry_by_vectorlayer(self, layer) -> CJson:
@@ -211,6 +231,7 @@ class CVectorMDReader(CMDReader):
             proj_wkt = spatialRef.ExportToWkt()
             json_proj_wkt.set_value_of_name('valid', True)
             json_proj_wkt.set_value_of_name('data', proj_wkt)
+            spatialRef = None
         return json_proj_wkt
 
     def get_vector_layercount_and_layers(self, datasource) -> (int, []):
@@ -227,7 +248,7 @@ class CVectorMDReader(CMDReader):
         # gdb数据层里有一些是内置的拓扑检查的图层, 不要列入这部分为好
         shp_ds = datasource
         iLayerCount = shp_ds.GetLayerCount()
-        # print("iLayerCount:" + str(iLayerCount))
+        #print("iLayerCount:" + str(iLayerCount))
         for i in range(iLayerCount):
             layer = shp_ds.GetLayer(i)
             layer_name = layer.GetName()
@@ -258,10 +279,37 @@ class CVectorMDReader(CMDReader):
         json_shp.to_file(r'c:\app\aa.txt')
         print(json_shp_str)
 
+    def getMemSize(self,pid):
+        '''
+            根据进程号来获取进程的内存大小 MB
+        @param pid:
+        @return:
+        '''
+        process = psutil.Process(pid)
+        memInfo = process.memory_full_info()
+        return memInfo.uss / 1024 / 1024
 
 if __name__ == '__main__':
+
     # CVectorMDReader('/aa/bb/cc1.shp').get_metadata_2_file('/aa/bb/cc1.json')
     # CVectorMDReader('/aa/bb/cc2.gdb').get_metadata_2_file('/aa/bb/cc2.json')
     # CVectorMDReader(r'D:\data\0生态审计\少量数据测试_修改后\重大工程项目_曲靖市_2019.shp').get_metadata_2_file(r'C:\app\cc1.json')
-    CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb.gdb').get_metadata_2_file(r'C:\app2\cc4.json')
-# CVectorMDReader(r'D:\data\0test\jbnt_2010.shp').test_json()
+    # CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb.gdb').get_metadata_2_file(r'C:\app2\cc4.json')
+    # CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb_noLayer.gdb').get_metadata_2_file(r'M:\app\cc4.json')
+    # CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb_error.gdb').get_metadata_2_file(r'C:\app\cc6.json')
+    # CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\基本农田保护_藤县_error\基本农田保护_藤县_2010_21.shp').get_metadata_2_file(r'C:\app\cc6.json')
+    # CVectorMDReader(r'D:\data\0test\jbnt_2010.shp').test_json()
+
+    # 循环测试内存占用情况
+    process_id = CSys.get_execute_process_id()
+    print("process_id:{0}".format(process_id))
+    time.sleep(2)
+    pVectorMDReader = CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb.gdb')
+    # pVectorMDReader = CVectorMDReader(r'D:\data\0生态审计\少量数据测试_修改后\重大工程项目_曲靖市_2019.shp')
+    for i in range(15000):
+        meta_file = r'C:\app4\cc{0}.json'.format(str(i))
+        pVectorMDReader.get_metadata_2_file(meta_file)
+        mem_size = pVectorMDReader.getMemSize(process_id)
+        print("完成第{0}个数据！,python.exe【process_id:{1}】的内存大小:{2}MB".format(i, process_id, mem_size))
+        #time.sleep(0.05)
+    #'''
