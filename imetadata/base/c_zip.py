@@ -2,7 +2,7 @@
 # @Time : 2020/9/22 10:40 
 # @Author : 王西亚 
 # @File : c_zip.py
-
+from imetadata.base.Exceptions import ZipFileCanNotOpenException
 from imetadata.base.c_file import CFile
 from imetadata.base.zip.c_zip_base import CZipBase
 from imetadata.base.zip.c_zip_tarfile import CZip_TarFile
@@ -27,7 +27,7 @@ class CZip:
             self.__zip_obj__ = CZip_TarFile(self.__file_name__)
             self.__zip_obj__.open()
         else:
-            raise Exception('系统不支持解析压缩文件{0}'.format(self.__file_name__))
+            raise ZipFileCanNotOpenException(self.__file_name__)
 
     def file_names(self):
         return self.__zip_obj__.file_names()
@@ -43,3 +43,12 @@ class CZip:
     def close(self):
         if self.__zip_obj__ is not None:
             self.__zip_obj__.close()
+
+
+if __name__ == '__main__':
+    zip_obj = CZip('/Users/wangxiya/Documents/交换/1.给我的/数据入库3/卫星数据/压缩包/内网通截图20200916172248.tar.gz')
+    try:
+        zip_obj.open()
+        zip_obj.extract_all('/Users/wangxiya/Documents/交换/test')
+    finally:
+        zip_obj.close()

@@ -11,6 +11,8 @@ from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
+from imetadata.business.metadata.base.parser.detail.c_detailParser import CDetailParser
+from imetadata.business.metadata.base.parser.detail.c_detailParser_custom import CDetailParser_Custom
 
 
 class CPlugins(CResource):
@@ -105,21 +107,6 @@ class CPlugins(CResource):
     # 插件处理引擎-内置-对象质检
     Plugins_Info_QCEngine = 'dsod_check_engine'
 
-    MetaDataEngine_Raster = 'raster'
-    MetaDataEngine_Vector = 'vector'
-    MetaDataEngine_Document = 'document'
-    MetaDataEngine_21AT_MBTiles = '21at_mbtiles'
-    MetaDataEngine_Custom = 'custom'
-
-    DetailEngine_Same_File_Main_Name = 'same_file_main_name'
-    DetailEngine_File_Of_Same_Dir = 'file_of_same_dir'
-    DetailEngine_All_File_Of_Same_Dir = 'all_file_of_same_dir'
-    DetailEngine_File_Of_Dir = 'file_of_dir'
-    DetailEngine_All_File_Of_Dir = 'all_file_of_dir'
-
-    TagEngine_Global_Dim_In_RelationName = 'global_dim_in_relation_name'
-    TagEngine_Global_Dim_In_MainName = 'global_dim_in_main_name'
-
     MetaData_Rule_Type_None = 'none'
 
     __file_content__: CVirtualContent = None
@@ -175,43 +162,37 @@ class CPlugins(CResource):
         """
         pass
 
-    def parser_detail(self) -> str:
+    def parser_detail(self, detail_parser: CDetailParser) -> str:
         """
         对目标目录或文件的详情进行解析
         :return:
         """
-        pass
+        if not isinstance(detail_parser, CDetailParser_Custom):
+            return detail_parser.process()
 
-    def create_virtual_content(self):
+        return CUtils.merge_result(self.Success, '处理完毕!')
+
+    def create_virtual_content(self) -> bool:
         if self.__file_content__ is None:
             raise FileContentWapperNotExistException()
 
         if not self.__file_content__.virtual_content_valid():
-            self.__file_content__.create_virtual_content()
+            return self.__file_content__.create_virtual_content()
+        else:
+            return True
 
     def destroy_virtual_content(self):
         if self.__file_content__ is None:
             raise FileContentWapperNotExistException()
 
-        if not self.__file_content__.virtual_content_valid():
+        if self.__file_content__.virtual_content_valid():
             self.__file_content__.destroy_virtual_content()
-
-    def parser_bus_metadata(self):
-        """
-        对目标目录或文件的元数据进行提取
-        :return: 返回
-        """
 
     def parser_metadata(self):
         """
         对目标目录或文件的元数据进行提取
+        本方法禁止出现异常! 所有的异常都应该控制在代码中!
         :return: 返回
-        """
-
-    def quality_evaluate(self):
-        """
-        对目标目录或文件的质量评估
-        :return:
         """
 
     def parser_last_process(self):

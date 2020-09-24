@@ -40,5 +40,19 @@ class DBSQLExecuteException(DBException):
     def __str__(self):
         print("标示为[%s]的数据库运行[%s]连接失败, 请检查数据库连接参数是否正确! " % self.__db_id__, self.__sql__)
 
+
 class FileContentWapperNotExistException(Exception):
     pass
+
+
+class FileException(Exception):
+    __file_name__: None
+
+    def __init__(self, file_name):
+        super().__init__()
+        self.__file_name__ = file_name
+
+
+class ZipFileCanNotOpenException(FileException):
+    def __str__(self):
+        print("压缩文件[%s]无法打开!" % self.__file_name__)

@@ -14,6 +14,9 @@ class CVirtualContentFile(CVirtualContent):
     . 在读取压缩数据时, 虚拟目录时压缩包解压的临时子目录
     """
 
-    def create_virtual_content(self) -> str:
+    def __init__(self, target_name):
+        super().__init__(target_name)
         self.__virtual_content_root_dir__ = CFile.file_path(self.__target_name__)
-        return self.__virtual_content_root_dir__
+
+    def create_virtual_content(self) -> bool:
+        return super().create_virtual_content() and CFile.file_or_path_exist(self.__virtual_content_root_dir__)

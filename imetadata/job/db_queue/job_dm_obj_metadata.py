@@ -96,7 +96,8 @@ where dsometadataparsestatus = 2
                   , dsometadataparsememo = '文件或目录不存在，元数据无法解析'
                 where dsoid = :dsoid
                 ''', {'dsoid': dso_id})
-            return CUtils.merge_result(self.Success, '文件或目录不存在，元数据无法解析, 元数据处理正常结束')
+            return CUtils.merge_result(self.Success, '文件或目录[{0}]不存在，元数据无法解析, 元数据处理正常结束!'.format(
+                file_info.value_by_name(0, 'query_object_fullname', '')))
 
         sql_get_rule = '''
             select dsdScanRule
@@ -106,8 +107,9 @@ where dsometadataparsestatus = 2
             order by dsddirectory desc
             limit 1
             '''
-        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {'dsdStorageID': file_info.value_by_name(0, 'query_object_storage_id', ''),
-                                                                                         'dsdDirectory': file_info.value_by_name(0, 'query_object_relation_path', '')})
+        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {
+            'dsdStorageID': file_info.value_by_name(0, 'query_object_storage_id', ''),
+            'dsdDirectory': file_info.value_by_name(0, 'query_object_relation_path', '')})
         ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
         file_obj = CFileInfoEx(dso_data_type,
                                file_info.value_by_name(0, 'query_object_fullname', ''),
@@ -115,12 +117,44 @@ where dsometadataparsestatus = 2
                                ds_rule_content
                                )
         plugins_obj = CPluginsMng.plugins(file_obj, dso_object_type)
-        plugins_obj.create_virtual_content()
+        if plugins_obj is None:
+            return CUtils.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，元数据无法解析, 处理结束!'.format(
+                file_info.value_by_name(0, 'query_object_fullname', ''),
+                dso_object_type)
+            )
+
+        if not plugins_obj.create_virtual_content():
+            self.db_update_object_status(dso_id, '文件或目录[{0}]的内容解析失败, 元数据无法提取!'.format(
+                file_info.value_by_name(0, 'query_object_fullname', '')))
         try:
             plugins_obj.parser_metadata()
-            plugins_obj.quality_evaluate()
+            CFactory().give_me_db(self.get_mission_db_id()).execute('''
+                update dm2_storage_object
+                set dsometadataparsestatus = 0
+                  , dsolastmodifytime = now()
+                  , dsometadataparsememo = :dsometadataparsememo
+                where dsoid = :dsoid
+                ''', {'dsoid': dso_id, 'dsometadataparsememo': '文件或目录[{0}]元数据解析成功结束!'.format(
+                file_info.value_by_name(0, 'query_object_fullname', ''))})
+            return CUtils.merge_result(self.Success, '文件或目录[{0}]元数据解析成功结束!'.format(
+                file_info.value_by_name(0, 'query_object_fullname', '')))
+        except:
+            self.db_update_object_status(dso_id, '文件或目录[{0}]元数据解析过程出现错误!'.format(
+                file_info.value_by_name(0, 'query_object_fullname', '')))
+
+            return CUtils.merge_result(self.Failure, '文件或目录[{0}]元数据解析过程出现错误!'.format(
+                file_info.value_by_name(0, 'query_object_fullname', '')))
         finally:
             plugins_obj.destroy_virtual_content()
+
+    def db_update_object_status(self, dso_id, memo):
+        CFactory().give_me_db(self.get_mission_db_id()).execute('''
+            update dm2_storage_object
+            set dsometadataparsestatus = 3
+              , dsolastmodifytime = now()
+              , dsometadataparsememo = :dsometadataparsememo
+            where dsoid = :dsoid
+            ''', {'dsoid': dso_id, 'dsometadataparsememo': memo})
 
 
 if __name__ == '__main__':

@@ -27,14 +27,13 @@ class CApplicationInit(CResource):
         plugins_type_list = CFile.file_or_subpath_of_path(plugins_root_dir)
         for plugins_type in plugins_type_list:
             if CFile.is_dir(CFile.join_file(plugins_root_dir, plugins_type)) and (
-            not (str(plugins_type)).startswith('_')):
+                    not (str(plugins_type)).startswith('_')):
                 plugins_root_package_name = '{0}.{1}'.format(CSys.get_plugins_package_root_name(), plugins_type)
                 path = CFile.join_file(CSys.get_plugins_root_dir(), plugins_type)
-                plugins_file_list = CFile.search_file_or_subpath_of_path(path,
-                                                                         '{0}_*.{1}'.format(self.Name_Plugins,
-                                                                                            self.FileExt_Py))
-                for file_name_with_path in plugins_file_list:
-                    file_main_name = CFile.file_main_name(file_name_with_path)
+                plugins_file_list = CFile.file_or_subpath_of_path(path, '{0}_*.{1}'.format(self.Name_Plugins,
+                                                                                           self.FileExt_Py))
+                for file_name_without_path in plugins_file_list:
+                    file_main_name = CFile.file_main_name(file_name_without_path)
                     class_classified_obj = CObject.create_plugins_instance(plugins_root_package_name, file_main_name,
                                                                            None)
                     print('{0}/{1}:{2}'.format(plugins_type, file_main_name, class_classified_obj.get_information()))

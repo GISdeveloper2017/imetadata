@@ -95,3 +95,18 @@ class CResource:
     DB_True = -1
     DB_False = 0
 
+    MetaDataEngine_Raster = 'raster'
+    MetaDataEngine_Vector = 'vector'
+    MetaDataEngine_Document = 'document'
+    MetaDataEngine_21AT_MBTiles = '21at_mbtiles'
+    MetaDataEngine_Custom = 'custom'
+
+    DetailEngine_Same_File_Main_Name = 'same_file_main_name'
+    DetailEngine_File_Of_Same_Dir = 'file_of_same_dir'
+    DetailEngine_All_File_Of_Same_Dir = 'all_file_of_same_dir'
+    DetailEngine_File_Of_Dir = 'file_of_dir'
+    DetailEngine_All_File_Of_Dir = 'all_file_of_dir'
+
+    TagEngine_Global_Dim_In_RelationName = 'global_dim_in_relation_name'
+    TagEngine_Global_Dim_In_MainName = 'global_dim_in_main_name'
+
