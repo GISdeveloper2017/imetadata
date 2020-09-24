@@ -5,11 +5,16 @@ import os
 import sys
 
 from imetadata.base.c_resource import CResource
+import platform
 
 
 class CSys(CResource):
     def __init__(self):
         pass
+
+    @classmethod
+    def get_os_name(cls):
+        return platform.system()
 
     @classmethod
     def get_project_dir(cls):
@@ -85,3 +90,12 @@ if __name__ == '__main__':
     print(CSys.get_job_package_root_name())
     print(CSys.get_job_root_dir())
     print(CSys.get_work_root_dir())
+    print(CSys.get_execute_os_name())
+    print(platform.system())
+
+    if (platform.system() == 'Windows'):
+        print('Windows系统')
+    elif (platform.system() == 'Linux'):
+        print('Linux系统')
+    else:
+        print('其他')

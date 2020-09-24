@@ -11,6 +11,7 @@ from multiprocessing import Process, Queue, Lock, Event, Manager
 
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_processUtils import CProcessUtils
+from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CUtils
 from imetadata.service.c_process import CProcess
 from imetadata.service.c_sentinel import CSentinel
@@ -60,7 +61,8 @@ class CControlCenter(CProcess):
         CLogger().info('处理SIGCHLD消息结束...')
 
     def run(self):
-        signal.signal(signal.SIGCHLD, self.wait_child)
+        if not CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Windows):
+            signal.signal(signal.SIGCHLD, self.wait_child)
 
         CLogger().info('控制中心进程[{0}]启动运行...'.format(self.pid))
 

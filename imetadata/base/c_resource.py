@@ -4,6 +4,9 @@
 # @File : c_resource.py
 
 class CResource:
+    OS_Windows = 'windows'
+    OS_Linux = 'linux'
+
     Name_Application = 'imetadata'
     SYSTEM_NAME_MISSION_ID = '{system.mission.id}'
 
