@@ -111,20 +111,21 @@ where dsodetailparsestatus = 2
             'dsdDirectory': ds_file_info.value_by_name(0, 'query_object_relation_path', '')})
         ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
         file_info_obj = CFileInfoEx(dso_data_type,
-                               ds_file_info.value_by_name(0, 'query_object_fullname', ''),
-                               ds_file_info.value_by_name(0, 'query_object_root_dir', ''),
-                               ds_rule_content
-                               )
+                                    ds_file_info.value_by_name(0, 'query_object_fullname', ''),
+                                    ds_file_info.value_by_name(0, 'query_object_root_dir', ''),
+                                    ds_rule_content
+                                    )
         plugins_obj = CPluginsMng.plugins(file_info_obj, dso_object_type)
         if plugins_obj is None:
             return CUtils.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，对象详情无法解析, 处理结束!'.format(
                 ds_file_info.value_by_name(0, 'query_object_fullname', ''),
                 dso_object_type)
-            )
+                                       )
 
         try:
             plugins_information = plugins_obj.get_information()
-            detail_parser = CDetailParserMng.give_me_parser(plugins_information[plugins_obj.Plugins_Info_DetailEngine], self.get_mission_db_id(), dso_id, file_info_obj)
+            detail_parser = CDetailParserMng.give_me_parser(plugins_information[plugins_obj.Plugins_Info_DetailEngine],
+                                                            self.get_mission_db_id(), dso_id, file_info_obj)
             plugins_obj.parser_detail(detail_parser)
 
             CFactory().give_me_db(self.get_mission_db_id()).execute('''
