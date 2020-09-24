@@ -143,14 +143,14 @@ values ( 'test', '测试', null, 0, null
 */
 
 
---启动指定调度
+--启动所有调度
 update sch_center_mission
-set scmcommand   = 'start',
-    scmstatus    = 1,
-    scmprocessid = null
-where scmid = 'test';
+set scmcommand = 'start', scmstatus = 1;
 
---停止指定调度
+--停止所有调度
+update sch_center_mission
+set scmcommand = 'shutdown', scmstatus = 0;
+
 update sch_center_mission
 set scmcommand   = 'stop',
     scmstatus    = 1,

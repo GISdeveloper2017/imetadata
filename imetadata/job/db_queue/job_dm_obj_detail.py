@@ -90,9 +90,9 @@ where dsodetailparsestatus = 2
         if ds_file_info.value_by_name(0, 'query_object_valid', self.DB_False) == self.DB_False:
             CFactory().give_me_db(self.get_mission_db_id()).execute('''
                 update dm2_storage_object
-                set dsometadataparsestatus = 0
+                set dsodetailparsestatus = 0
                   , dsolastmodifytime = now()
-                  , dsometadataparsememo = '文件或目录不存在，元数据无法解析'
+                  , dsodetailparsememo = '文件或目录不存在，元数据无法解析'
                 where dsoid = :dsoid
                 ''', {'dsoid': dso_id})
             return CUtils.merge_result(self.Success, '文件或目录[{0}]不存在，元数据无法解析, 元数据处理正常结束!'.format(
@@ -120,7 +120,7 @@ where dsodetailparsestatus = 2
             return CUtils.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，对象详情无法解析, 处理结束!'.format(
                 ds_file_info.value_by_name(0, 'query_object_fullname', ''),
                 dso_object_type)
-                                       )
+            )
 
         try:
             plugins_information = plugins_obj.get_information()

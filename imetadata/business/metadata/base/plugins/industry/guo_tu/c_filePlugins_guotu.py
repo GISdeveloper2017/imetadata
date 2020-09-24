@@ -10,11 +10,14 @@ from imetadata.business.metadata.base.plugins.c_filePlugins import CFilePlugins
 
 
 class CFilePlugins_GUOTU(CFilePlugins):
+    """
+    国土行业文件入库插件
+    todo 在这里补充国土行业数据的其他类型
+    """
 
     MetaData_Rule_Type_DOM = 'dom'
     MetaData_Rule_Type_DEM = 'dem'
     MetaData_Rule_Type_SD = 'sd'
-    # 在这里补充其他类型
 
     def get_information(self) -> dict:
         information = super().get_information()
