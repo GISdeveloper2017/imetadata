@@ -5,10 +5,12 @@
 
 from __future__ import absolute_import
 from imetadata.base.c_file import CFile
+from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CUtils
 from imetadata.base.Exceptions import DBException
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
+from imetadata.business.metadata.base.plugins.manager.c_pluginsMng import CPluginsMng
 from imetadata.database.c_factory import CFactory
 
 
@@ -44,6 +46,106 @@ where dsotagsparsestatus = 2
         dso_object_type = dataset.value_by_name(0, 'dsoobjecttype', '')
 
         CLogger().debug('开始处理对象: {0}.{1}.{2}的元数据'.format(dso_id, dso_data_type, dso_object_type))
+
+        sql_get_info = ''
+        if CUtils.equal_ignore_case(dso_data_type, self.FileType_Dir):
+            sql_get_info = '''
+                select 
+                    dm2_storage.dstunipath || dm2_storage_directory.dsddirectory as query_object_fullname   
+                    , dm2_storage_directory.dsd_directory_valid as query_object_valid  
+                    , dm2_storage.dstunipath as query_object_root_dir 
+                    , dm2_storage.dstid as query_object_storage_id
+                    , dm2_storage_directory.dsddirectory as query_object_relation_path
+                    , dm2_storage_directory.dsdid as query_object_file_id
+                    , dm2_storage_directory.dsdparentid as query_object_file_parent_id
+                    , dm2_storage_object.dsoparentobjid as query_object_owner_id
+                from dm2_storage_object, dm2_storage_directory, dm2_storage  
+                where 
+                    dm2_storage_object.dsoid = dm2_storage_directory.dsd_object_id    
+                    and dm2_storage_directory.dsdstorageid = dm2_storage.dstid    
+                    and dm2_storage_object.dsoid = :dsoid
+                '''
+        else:
+            sql_get_info = '''
+                select 
+                    dm2_storage.dstunipath || dm2_storage_file.dsffilerelationname as query_object_fullname 
+                    , dm2_storage_file.dsffilevalid as query_object_valid     
+                    , dm2_storage.dstunipath as query_object_root_dir 
+                    , dm2_storage.dstid as query_object_storage_id
+                    , dm2_storage_file.dsffilerelationname as query_object_relation_path
+                    , dm2_storage_file.dsfid as query_object_file_id
+                    , dm2_storage_file.dsfdirectoryid as query_object_file_parent_id
+                    , dm2_storage_object.dsoparentobjid as query_object_owner_id
+                from dm2_storage_object, dm2_storage_file, dm2_storage, dm2_storage_directory   
+                where dm2_storage_object.dsoid = dm2_storage_file.dsf_object_id 
+                    and dm2_storage_file.dsfstorageid = dm2_storage.dstid 
+                    and dm2_storage_directory.dsdid = dm2_storage_file.dsfdirectoryid 
+                    and dm2_storage_object.dsoid = :dsoid
+                '''
+        file_info = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_info, {'dsoid': dso_id})
+
+        if file_info.value_by_name(0, 'query_object_valid', self.DB_False) == self.DB_False:
+            CFactory().give_me_db(self.get_mission_db_id()).execute('''
+                update dm2_storage_object
+                set dsometadataparsestatus = 0
+                  , dsolastmodifytime = now()
+                  , dsometadataparsememo = '文件或目录不存在，元数据无法解析'
+                where dsoid = :dsoid
+                ''', {'dsoid': dso_id})
+            return CUtils.merge_result(self.Success, '文件或目录[{0}]不存在，元数据无法解析, 元数据处理正常结束!'.format(
+                file_info.value_by_name(0, 'query_object_fullname', '')))
+
+        sql_get_rule = '''
+            select dsdScanRule
+            from dm2_storage_directory
+            where dsdStorageid = :dsdStorageID and Position(dsddirectory || '/' in :dsdDirectory) = 1
+                and dsdScanRule is not null
+            order by dsddirectory desc
+            limit 1
+            '''
+        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {
+            'dsdStorageID': file_info.value_by_name(0, 'query_object_storage_id', ''),
+            'dsdDirectory': file_info.value_by_name(0, 'query_object_relation_path', '')})
+        ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
+        file_obj = CFileInfoEx(dso_data_type,
+                               file_info.value_by_name(0, 'query_object_fullname', ''),
+                               file_info.value_by_name(0, 'query_object_root_dir', ''),
+                               ds_rule_content
+                               )
+        plugins_obj = CPluginsMng.plugins(file_obj, dso_object_type)
+        if plugins_obj is None:
+            return CUtils.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，标签元数据无法解析, 处理结束!'.format(
+                file_info.value_by_name(0, 'query_object_fullname', ''),
+                dso_object_type)
+            )
+
+        try:
+            plugins_obj.parser_tags()
+            CFactory().give_me_db(self.get_mission_db_id()).execute('''
+                update dm2_storage_object
+                set dsotagsparsestatus = 0
+                  , dsolastmodifytime = now()
+                  , dsotagsparsememo = :dsotagsparsememo
+                where dsoid = :dsoid
+                ''', {'dsoid': dso_id, 'dsotagsparsememo': '文件或目录[{0}]标签解析成功结束!'.format(
+                file_info.value_by_name(0, 'query_object_fullname', ''))})
+            return CUtils.merge_result(self.Success, '文件或目录[{0}]标签解析成功结束!'.format(
+                file_info.value_by_name(0, 'query_object_fullname', '')))
+        except:
+            self.db_update_object_status(dso_id, '文件或目录[{0}]标签解析过程出现错误!'.format(
+                file_info.value_by_name(0, 'query_object_fullname', '')))
+
+            return CUtils.merge_result(self.Failure, '文件或目录[{0}]标签解析过程出现错误!'.format(
+                file_info.value_by_name(0, 'query_object_fullname', '')))
+
+    def db_update_object_status(self, dso_id, memo):
+        CFactory().give_me_db(self.get_mission_db_id()).execute('''
+            update dm2_storage_object
+            set dsotagsparsestatus = 3
+              , dsolastmodifytime = now()
+              , dsotagsparsememo = :dsotagsparsememo
+            where dsoid = :dsoid
+            ''', {'dsoid': dso_id, 'dsotagsparsememo': memo})
 
 
 if __name__ == '__main__':

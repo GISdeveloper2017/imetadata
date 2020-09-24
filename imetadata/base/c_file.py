@@ -1,18 +1,18 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
 
-
 from __future__ import absolute_import
-
-import glob
 import os
 import time
 from fnmatch import fnmatch
-
 from sortedcontainers import SortedList
+from imetadata.base.c_utils import CUtils
 
 
 class CFile:
+    MatchType_Common = 1
+    MatchType_Regex = 2
+
     __special_file_ext_list__ = ['tar.gz']
 
     def __init__(self):
@@ -66,16 +66,25 @@ class CFile:
             return file_name_with_path
 
     @classmethod
-    def file_or_subpath_of_path(cls, path: str) -> SortedList:
-        return SortedList(os.listdir(path))
+    def file_or_subpath_of_path(cls, path: str, match_str: str = '*', match_type: int = MatchType_Common) -> SortedList:
+        list_all_file = os.listdir(path)
+        if match_str == '*':
+            return SortedList(list_all_file)
 
-    @classmethod
-    def search_file_or_subpath_of_path(cls, path: str, match_str: str) -> SortedList:
-        return SortedList(glob.glob(cls.join_file(path, match_str)))
+        list_match_file = []
+        for item_file_name in list_all_file:
+            if cls.MatchType_Common == match_type:
+                if cls.file_match(item_file_name, match_str):
+                    list_match_file.append(item_file_name)
+            else:
+                if CUtils.text_match_re(item_file_name, match_str):
+                    list_match_file.append(item_file_name)
+
+        return SortedList(list_match_file)
 
     @classmethod
     def find_file_or_subpath_of_path(cls, path: str, match_str: str) -> bool:
-        list_files = cls.search_file_or_subpath_of_path(path, match_str)
+        list_files = cls.file_or_subpath_of_path(path, match_str)
         return len(list_files) > 0
 
     @classmethod
@@ -91,7 +100,8 @@ class CFile:
 
     @classmethod
     def remove_dir(cls, file_path: str):
-        os.removedirs(file_path)
+        if cls.file_or_path_exist(file_path):
+            os.removedirs(file_path)
 
     @classmethod
     def rename_file_or_dir(cls, old_file_name_with_path: str, new_file_name_with_path: str):
@@ -149,6 +159,11 @@ class CFile:
 
 if __name__ == '__main__':
     pass
+    # for file_or_path in CFile.file_or_subpath_of_path('/Users/wangxiya/Documents/交换'):
+    #     print(file_or_path)
+    # print('*'*10)
+    # for file_or_path in CFile.search_file_or_subpath_of_path('/Users/wangxiya/Documents/交换', '*'):
+    #     print(file_or_path)
     # print(CFile.file_main_name(r'/Users/Clare/gf1.tar.gz'))
     # print(CFile.file_ext(r'/Users/Clare/gf1.tar.gz'))
     # print(CFile.file_main_name(r'/Users/Clare/gf1.xls'))
