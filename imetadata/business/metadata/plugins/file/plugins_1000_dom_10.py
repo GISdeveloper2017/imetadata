@@ -19,8 +19,7 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
     def get_classified_metadata_rule_type(self):
         """
         设置需要提前验证的元数据规则类型
-        :return:
-        """
+        :return:        """
         return self.MetaData_Rule_Type_DOM
 
     def classified_by_character_guotu(self):
@@ -58,13 +57,12 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
         char_2_3 = file_main_name[1:3]
         char_5_to_7 = file_main_name[4:7]
         char_8_to_10 = file_main_name[7:10]
-        if self.check_is_alapha(char_1) == False \
-            or self.check_is_alapha(char_4) == False \
-            or self.check_is_numeric(char_2_3) == False \
-            or self.check_is_numeric(char_5_to_7) == False \
-            or self.check_is_numeric(char_8_to_10) == False:
+        if CUtils.text_is_alpha(char_1) == False \
+            or CUtils.text_is_alpha(char_4) == False \
+            or CUtils.text_is_numeric(char_2_3) == False \
+            or CUtils.text_is_numeric(char_5_to_7) == False \
+            or CUtils.text_is_numeric(char_8_to_10) == False:
             return self.Object_Confirm_IUnKnown, self.__object_name__
-
 
         if CUtils.equal_ignore_case(file_ext, 'tif'):
             self.__object_confirm__ = self.Object_Confirm_IKnown
@@ -75,29 +73,6 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
 
         return self.__object_confirm__, self.__object_name__
 
-    def check_is_numeric(self, check_str: str) -> bool:
-        '''
-            判断是否为数字
-        '''
-        return check_str.isdigit()
-
-    def check_is_alapha(self, check_str: str) -> bool:
-        '''
-            判断是否字母
-        '''
-        return check_str.isalpha()
-
-    '''
-        python3判断字符串是字母/数字/大小写的系统函数：
-        函数	                含义
-        字符串.isalnum()	所有字符都是数字或者字母，为真返回 Ture，否则返回 False。
-        字符串.isalpha() 所有字符都是字母，为真返回 Ture，否则返回 False。
-        字符串.isdigit() 所有字符都是数字，为真返回 Ture，否则返回 False。
-        字符串.islower()	所有字符都是小写，为真返回 Ture，否则返回 False。
-        字符串.isupper()	所有字符都是大写，为真返回 Ture，否则返回 False。
-        字符串.istitle()	所有单词都是首字母大写，为真返回 Ture，否则返回 False。
-        字符串.isspace()	所有字符都是空白字符，为真返回 Ture，否则返回 False。
-    '''
 
 if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,

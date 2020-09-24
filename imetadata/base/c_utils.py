@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
 
+from __future__ import absolute_import
 import uuid
 import re
 from imetadata.base.c_json import CJson
@@ -68,10 +69,28 @@ class CUtils(CResource):
     def text_match_re(cls, text, regex) -> bool:
         return re.search(regex, text) is not None
 
+    @classmethod
+    def text_is_numeric(cls, check_text: str) -> bool:
+        """
+        判断是否为数字
+        :param check_text:
+        :return:
+        """
+        return check_text.isdigit()
+
+    @classmethod
+    def text_is_alpha(cls, check_text: str) -> bool:
+        """
+        判断是否字母
+        :param check_text:
+        :return:
+        """
+        return check_text.isalpha()
+
 
 if __name__ == '__main__':
-    str = "The rain in Spain"
-    x = re.search(r"\bH\w+", str)
+    text = "The rain in Spain"
+    x = re.search(r"\bH\w+", text)
     if x is None:
         print('can not match')
     else:
