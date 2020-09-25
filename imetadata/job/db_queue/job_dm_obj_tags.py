@@ -10,6 +10,7 @@ from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CUtils
 from imetadata.base.Exceptions import DBException
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
+from imetadata.business.metadata.base.parser.tags.c_tagsParserMng import CTagsParserMng
 from imetadata.business.metadata.base.plugins.manager.c_pluginsMng import CPluginsMng
 from imetadata.database.c_factory import CFactory
 
@@ -82,18 +83,18 @@ where dsotagsparsestatus = 2
                     and dm2_storage_directory.dsdid = dm2_storage_file.dsfdirectoryid 
                     and dm2_storage_object.dsoid = :dsoid
                 '''
-        file_info = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_info, {'dsoid': dso_id})
+        ds_file_info = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_info, {'dsoid': dso_id})
 
-        if file_info.value_by_name(0, 'query_object_valid', self.DB_False) == self.DB_False:
+        if ds_file_info.value_by_name(0, 'query_object_valid', self.DB_False) == self.DB_False:
             CFactory().give_me_db(self.get_mission_db_id()).execute('''
                 update dm2_storage_object
-                set dsometadataparsestatus = 0
+                set dsotagsparsestatus = 0
                   , dsolastmodifytime = now()
-                  , dsometadataparsememo = '文件或目录不存在，元数据无法解析'
+                  , dsotagsparsememo = '文件或目录不存在，标签无法解析'
                 where dsoid = :dsoid
                 ''', {'dsoid': dso_id})
-            return CUtils.merge_result(self.Success, '文件或目录[{0}]不存在，元数据无法解析, 元数据处理正常结束!'.format(
-                file_info.value_by_name(0, 'query_object_fullname', '')))
+            return CUtils.merge_result(self.Success, '文件或目录[{0}]不存在，标签处理正常结束!'.format(
+                ds_file_info.value_by_name(0, 'query_object_fullname', '')))
 
         sql_get_rule = '''
             select dsdScanRule
@@ -104,39 +105,43 @@ where dsotagsparsestatus = 2
             limit 1
             '''
         rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {
-            'dsdStorageID': file_info.value_by_name(0, 'query_object_storage_id', ''),
-            'dsdDirectory': file_info.value_by_name(0, 'query_object_relation_path', '')})
+            'dsdStorageID': ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
+            'dsdDirectory': ds_file_info.value_by_name(0, 'query_object_relation_path', '')})
         ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
-        file_obj = CFileInfoEx(dso_data_type,
-                               file_info.value_by_name(0, 'query_object_fullname', ''),
-                               file_info.value_by_name(0, 'query_object_root_dir', ''),
-                               ds_rule_content
-                               )
-        plugins_obj = CPluginsMng.plugins(file_obj, dso_object_type)
+        file_info_obj = CFileInfoEx(dso_data_type,
+                                    ds_file_info.value_by_name(0, 'query_object_fullname', ''),
+                                    ds_file_info.value_by_name(0, 'query_object_root_dir', ''),
+                                    ds_rule_content
+                                    )
+        plugins_obj = CPluginsMng.plugins(file_info_obj, dso_object_type)
         if plugins_obj is None:
-            return CUtils.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，标签元数据无法解析, 处理结束!'.format(
-                file_info.value_by_name(0, 'query_object_fullname', ''),
+            return CUtils.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，对象详情无法解析, 处理结束!'.format(
+                ds_file_info.value_by_name(0, 'query_object_fullname', ''),
                 dso_object_type)
-            )
+                                       )
 
         try:
-            plugins_obj.parser_tags()
+            plugins_information = plugins_obj.get_information()
+            tags_parser = CTagsParserMng.give_me_parser(plugins_information[plugins_obj.Plugins_Info_TagsEngine],
+                                                        self.get_mission_db_id(), dso_id, file_info_obj)
+            plugins_obj.parser_tags(tags_parser)
+
             CFactory().give_me_db(self.get_mission_db_id()).execute('''
                 update dm2_storage_object
-                set dsotagsparsestatus = 0
+                set dsodetailparsestatus = 0
                   , dsolastmodifytime = now()
-                  , dsotagsparsememo = :dsotagsparsememo
+                  , dsodetailparsememo = :dsodetailparsememo
                 where dsoid = :dsoid
-                ''', {'dsoid': dso_id, 'dsotagsparsememo': '文件或目录[{0}]标签解析成功结束!'.format(
-                file_info.value_by_name(0, 'query_object_fullname', ''))})
-            return CUtils.merge_result(self.Success, '文件或目录[{0}]标签解析成功结束!'.format(
-                file_info.value_by_name(0, 'query_object_fullname', '')))
+                ''', {'dsoid': dso_id, 'dsodetailparsememo': '文件或目录[{0}]对象详情解析成功结束!'.format(
+                ds_file_info.value_by_name(0, 'query_object_fullname', ''))})
+            return CUtils.merge_result(self.Success, '文件或目录[{0}]对象详情解析成功结束!'.format(
+                ds_file_info.value_by_name(0, 'query_object_fullname', '')))
         except:
-            self.db_update_object_status(dso_id, '文件或目录[{0}]标签解析过程出现错误!'.format(
-                file_info.value_by_name(0, 'query_object_fullname', '')))
+            self.db_update_object_status(dso_id, '文件或目录[{0}]对象详情解析过程出现错误!'.format(
+                ds_file_info.value_by_name(0, 'query_object_fullname', '')))
 
-            return CUtils.merge_result(self.Failure, '文件或目录[{0}]标签解析过程出现错误!'.format(
-                file_info.value_by_name(0, 'query_object_fullname', '')))
+            return CUtils.merge_result(self.Failure, '文件或目录[{0}]对象详情解析过程出现错误!'.format(
+                ds_file_info.value_by_name(0, 'query_object_fullname', '')))
 
     def db_update_object_status(self, dso_id, memo):
         CFactory().give_me_db(self.get_mission_db_id()).execute('''

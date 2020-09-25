@@ -8,7 +8,7 @@ from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.detail.c_detailParser_all_file_of_dir import CDetailParser_All_File_Of_Dir
 from imetadata.business.metadata.base.parser.detail.c_detailParser_all_file_of_same_dir import \
     CDetailParser_All_File_Of_Same_Dir
-from imetadata.business.metadata.base.parser.detail.c_detailParser_custom import CDetailParser_Custom
+from imetadata.business.metadata.base.parser.c_parserCustom import CParserCustom
 from imetadata.business.metadata.base.parser.detail.c_detailParser_file_of_dir import CDetailParser_File_Of_Dir
 from imetadata.business.metadata.base.parser.detail.c_detailParser_file_of_same_dir import \
     CDetailParser_File_Of_Same_Dir
@@ -32,4 +32,4 @@ class CDetailParserMng(CResource):
         elif CUtils.equal_ignore_case(input_parser_type, cls.DetailEngine_All_File_Of_Dir):
             return CDetailParser_All_File_Of_Dir(db_server_id, object_id, file_info)
         else:
-            return CDetailParser_Custom(db_server_id, object_id, file_info)
+            return CParserCustom(db_server_id, object_id, file_info)

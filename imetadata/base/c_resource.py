@@ -110,6 +110,6 @@ class CResource:
     DetailEngine_File_Of_Dir = 'file_of_dir'
     DetailEngine_All_File_Of_Dir = 'all_file_of_dir'
 
-    TagEngine_Global_Dim_In_RelationName = 'global_dim_in_relation_name'
+    TagEngine_Global_Dim_In_RelationPath = 'global_dim_in_relation_path'
     TagEngine_Global_Dim_In_MainName = 'global_dim_in_main_name'
 

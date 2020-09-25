@@ -5,26 +5,15 @@
 from abc import abstractmethod
 
 from imetadata.base.c_file import CFile
-from imetadata.base.c_fileInfoEx import CFileInfoEx
-from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.base.parser.c_parser import CParser
 
 
-class CDetailParser(CResource):
-    __db_server_id__ = None
-    __object_id__ = None
-    __file_info__: CFileInfoEx = None
-
+class CDetailParser(CParser):
     __detail_file_path__: str
     __detail_file_match_text__: str
     __detail_file_match_type__: int = CFile.MatchType_Common
     __detail_file_recurse__: bool = False
-
-    def __init__(self, db_server_id: str, object_id: str, file_info: CFileInfoEx):
-        self.__db_server_id__ = db_server_id
-        self.__object_id__ = object_id
-        self.__file_info__ = file_info
-        self.custom_init()
 
     def process(self) -> str:
         """
@@ -43,11 +32,11 @@ class CDetailParser(CResource):
 
         return CUtils.merge_result(self.Success, '处理完毕!')
 
-    @abstractmethod
     def custom_init(self):
         """
         自定义初始化
         对详情文件的路径, 匹配串, 匹配类型和是否递归处理进行设置
         :return:
         """
-        __detail_file_path__ = ''
+        super().custom_init()
+        self.__detail_file_path__ = ''

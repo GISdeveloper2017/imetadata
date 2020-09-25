@@ -11,8 +11,8 @@ from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
-from imetadata.business.metadata.base.parser.detail.c_detailParser import CDetailParser
-from imetadata.business.metadata.base.parser.detail.c_detailParser_custom import CDetailParser_Custom
+from imetadata.business.metadata.base.parser.c_parser import CParser
+from imetadata.business.metadata.base.parser.c_parserCustom import CParserCustom
 
 
 class CPlugins(CResource):
@@ -155,20 +155,23 @@ class CPlugins(CResource):
         """
         pass
 
-    def parser_tags(self) -> list:
+    def parser_tags(self, parser: CParser) -> str:
         """
         对目标目录或文件的标签进行解析
         :return:
         """
-        pass
+        if not isinstance(parser, CParserCustom):
+            return parser.process()
 
-    def parser_detail(self, detail_parser: CDetailParser) -> str:
+        return CUtils.merge_result(self.Success, '处理完毕!')
+
+    def parser_detail(self, parser: CParser) -> str:
         """
         对目标目录或文件的详情进行解析
         :return:
         """
-        if not isinstance(detail_parser, CDetailParser_Custom):
-            return detail_parser.process()
+        if not isinstance(parser, CParserCustom):
+            return parser.process()
 
         return CUtils.merge_result(self.Success, '处理完毕!')
 
@@ -188,15 +191,23 @@ class CPlugins(CResource):
         if self.__file_content__.virtual_content_valid():
             self.__file_content__.destroy_virtual_content()
 
-    def parser_metadata(self):
+    def parser_metadata(self, parser: CParser) -> str:
         """
         对目标目录或文件的元数据进行提取
         本方法禁止出现异常! 所有的异常都应该控制在代码中!
         :return: 返回
         """
+        if not isinstance(parser, CParserCustom):
+            return parser.process()
 
-    def parser_last_process(self):
+        return CUtils.merge_result(self.Success, '处理完毕!')
+
+    def parser_last_process(self, parser: CParser) -> str:
         """
         后处理
         :return: 返回
         """
+        if not isinstance(parser, CParserCustom):
+            return parser.process()
+
+        return CUtils.merge_result(self.Success, '处理完毕!')
