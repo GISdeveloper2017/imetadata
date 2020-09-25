@@ -18,6 +18,8 @@ class CTagsParser(CParser):
         """
         在这里处理将__file_info__中记录的对象所对应的文件或目录信息, 根据__tags_*变量的定义, 进行标签识别
         todo 负责人: 赵宇飞  内容:完成文件或子目录标签识别, 保存dm2_storage_object.dsoTags中
+        对__tags_parser_text__进行分隔符拆解
+        对拆解的每一部分, 匹配ro_global_dim_xxx表中的记录
         :return:
         """
         return super().process()

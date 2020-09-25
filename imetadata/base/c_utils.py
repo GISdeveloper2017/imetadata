@@ -22,8 +22,12 @@ class CUtils(CResource):
         return new_result.to_json()
 
     @classmethod
-    def result_success(cls, text) -> bool:
-        return CJson.json_attr_value(text, cls.Name_Result, cls.Failure) == cls.Success
+    def result_success(cls, result_text) -> bool:
+        return CJson.json_attr_value(result_text, cls.Name_Result, cls.Failure) == cls.Success
+
+    @classmethod
+    def result_message(cls, result_text) -> str:
+        return CJson.json_attr_value(result_text, cls.Name_Message, '')
 
     @classmethod
     def one_id(cls) -> str:

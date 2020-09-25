@@ -126,18 +126,22 @@ where dsodetailparsestatus = 2
             plugins_information = plugins_obj.get_information()
             detail_parser = CDetailParserMng.give_me_parser(plugins_information[plugins_obj.Plugins_Info_DetailEngine],
                                                             self.get_mission_db_id(), dso_id, file_info_obj)
-            plugins_obj.parser_detail(detail_parser)
-
-            CFactory().give_me_db(self.get_mission_db_id()).execute('''
-                update dm2_storage_object
-                set dsodetailparsestatus = 0
-                  , dsolastmodifytime = now()
-                  , dsodetailparsememo = :dsodetailparsememo
-                where dsoid = :dsoid
-                ''', {'dsoid': dso_id, 'dsodetailparsememo': '文件或目录[{0}]对象详情解析成功结束!'.format(
-                ds_file_info.value_by_name(0, 'query_object_fullname', ''))})
-            return CUtils.merge_result(self.Success, '文件或目录[{0}]对象详情解析成功结束!'.format(
-                ds_file_info.value_by_name(0, 'query_object_fullname', '')))
+            process_result = plugins_obj.parser_detail(detail_parser)
+            if CUtils.result_success(process_result):
+                CFactory().give_me_db(self.get_mission_db_id()).execute('''
+                    update dm2_storage_object
+                    set dsodetailparsestatus = 0
+                      , dsolastmodifytime = now()
+                      , dsodetailparsememo = :dsodetailparsememo
+                    where dsoid = :dsoid
+                    ''', {'dsoid': dso_id, 'dsodetailparsememo': '文件或目录[{0}]对象详情解析成功结束!'.format(
+                    ds_file_info.value_by_name(0, 'query_object_fullname', ''))})
+                return CUtils.merge_result(self.Success, '文件或目录[{0}]对象详情解析成功结束!'.format(
+                    ds_file_info.value_by_name(0, 'query_object_fullname', '')))
+            else:
+                self.db_update_object_status(dso_id, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
+                    ds_file_info.value_by_name(0, 'query_object_fullname', ''), CUtils.result_message(process_result)))
+                return process_result
         except:
             self.db_update_object_status(dso_id, '文件或目录[{0}]对象详情解析过程出现错误!'.format(
                 ds_file_info.value_by_name(0, 'query_object_fullname', '')))

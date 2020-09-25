@@ -6,14 +6,11 @@
 
 from __future__ import absolute_import
 
-from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CUtils
-from imetadata.base.Exceptions import DBException
-from imetadata.business.metadata.base.fileinfo.c_dmFileInfo import CDMFileInfo
-from imetadata.business.metadata.base.fileinfo.c_dmPathInfo import CDMPathInfo
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
+from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.manager.c_pluginsMng import CPluginsMng
 from imetadata.database.c_factory import CFactory
 
@@ -111,33 +108,39 @@ where dsometadataparsestatus = 2
             'dsdStorageID': file_info.value_by_name(0, 'query_object_storage_id', ''),
             'dsdDirectory': file_info.value_by_name(0, 'query_object_relation_path', '')})
         ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
-        file_obj = CFileInfoEx(dso_data_type,
-                               file_info.value_by_name(0, 'query_object_fullname', ''),
-                               file_info.value_by_name(0, 'query_object_root_dir', ''),
-                               ds_rule_content
-                               )
-        plugins_obj = CPluginsMng.plugins(file_obj, dso_object_type)
+        file_info_obj = CFileInfoEx(dso_data_type,
+                                    file_info.value_by_name(0, 'query_object_fullname', ''),
+                                    file_info.value_by_name(0, 'query_object_root_dir', ''),
+                                    ds_rule_content
+                                    )
+        plugins_obj = CPluginsMng.plugins(file_info_obj, dso_object_type)
         if plugins_obj is None:
             return CUtils.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，元数据无法解析, 处理结束!'.format(
                 file_info.value_by_name(0, 'query_object_fullname', ''),
                 dso_object_type)
-            )
+                                       )
 
         if not plugins_obj.create_virtual_content():
             self.db_update_object_status(dso_id, '文件或目录[{0}]的内容解析失败, 元数据无法提取!'.format(
                 file_info.value_by_name(0, 'query_object_fullname', '')))
         try:
-            plugins_obj.parser_metadata()
-            CFactory().give_me_db(self.get_mission_db_id()).execute('''
-                update dm2_storage_object
-                set dsometadataparsestatus = 0
-                  , dsolastmodifytime = now()
-                  , dsometadataparsememo = :dsometadataparsememo
-                where dsoid = :dsoid
-                ''', {'dsoid': dso_id, 'dsometadataparsememo': '文件或目录[{0}]元数据解析成功结束!'.format(
-                file_info.value_by_name(0, 'query_object_fullname', ''))})
-            return CUtils.merge_result(self.Success, '文件或目录[{0}]元数据解析成功结束!'.format(
-                file_info.value_by_name(0, 'query_object_fullname', '')))
+            process_result = plugins_obj.parser_metadata(
+                CMetaDataParser(self.get_mission_db_id(), dso_id, file_info_obj, plugins_obj.__file_content__, plugins_obj.get_information()))
+            if CUtils.result_success(process_result):
+                CFactory().give_me_db(self.get_mission_db_id()).execute('''
+                    update dm2_storage_object
+                    set dsometadataparsestatus = 0
+                      , dsolastmodifytime = now()
+                      , dsometadataparsememo = :dsometadataparsememo
+                    where dsoid = :dsoid
+                    ''', {'dsoid': dso_id, 'dsometadataparsememo': '文件或目录[{0}]元数据解析成功结束!'.format(
+                    file_info.value_by_name(0, 'query_object_fullname', ''))})
+                return CUtils.merge_result(self.Success, '文件或目录[{0}]元数据解析成功结束!'.format(
+                    file_info.value_by_name(0, 'query_object_fullname', '')))
+            else:
+                self.db_update_object_status(dso_id, '文件或目录[{0}]元数据解析过程出现错误! 错误原因为: {1}'.format(
+                    file_info.value_by_name(0, 'query_object_fullname', ''), CUtils.result_message(process_result)))
+                return process_result
         except:
             self.db_update_object_status(dso_id, '文件或目录[{0}]元数据解析过程出现错误!'.format(
                 file_info.value_by_name(0, 'query_object_fullname', '')))
