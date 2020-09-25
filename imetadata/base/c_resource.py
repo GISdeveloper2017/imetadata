@@ -50,6 +50,12 @@ class CResource:
     Name_Directory = 'directory'
     Name_File = 'file'
 
+    Name_Total = 'total'
+    Name_Data = 'data'
+    Name_Item = 'item'
+    Name_Items = 'items'
+    Name_Records = 'records'
+
     Dir_Type_Directory = 1
     Dir_Type_VirtualDirectory = 2
     Dir_Type_Root = 3
@@ -90,6 +96,8 @@ class CResource:
     Name_Title = 'title'
     Name_Type = 'type'
 
+    Name_Root = 'root'
+
     Path_MD_Rule_Type = '/root/type'
 
     TextMatchType_Common = 'common'
@@ -113,3 +121,6 @@ class CResource:
     TagEngine_Global_Dim_In_RelationPath = 'global_dim_in_relation_path'
     TagEngine_Global_Dim_In_MainName = 'global_dim_in_main_name'
 
+    QualityAudit_Type_Pass = 'pass'
+    QualityAudit_Type_Warn = 'warn'
+    QualityAudit_Type_Error = 'error'

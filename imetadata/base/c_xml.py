@@ -17,12 +17,9 @@
 """
 
 from __future__ import absolute_import
-
 import re
 from copy import deepcopy
-
 from lxml import etree
-
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 
@@ -94,10 +91,11 @@ class CXml:
         :param query:
         :return:
         """
-        if self.__xml_tree__ is None:
+        list_result = self.xpath(query)
+        if len(list_result) == 0:
             return None
         else:
-            return self.__xml_tree__.xpath(query)[0]
+            return list_result[0]
 
     def xpath(self, query) -> list:
         """
@@ -105,7 +103,37 @@ class CXml:
         :param query:
         :return:
         """
-        return self.__xml_tree__.xpath(query)
+        if self.__xml_tree__ is None:
+            return []
+        else:
+            return self.__xml_tree__.xpath(query)
+
+    @classmethod
+    def node_xpath_one(cls, xml_node, query) -> etree:
+        """
+        根据给定的xpath查询语句, 查询出合适的节点
+        :param xml_node:
+        :param query:
+        :return:
+        """
+        list_result = cls.node_xpath(xml_node, query)
+        if len(list_result) == 0:
+            return None
+        else:
+            return list_result[0]
+
+    @classmethod
+    def node_xpath(cls, xml_node, query) -> etree:
+        """
+        根据给定的xpath查询语句, 查询出合适的节点
+        :param xml_node:
+        :param query:
+        :return:
+        """
+        if xml_node is None:
+            return []
+        else:
+            return xml_node.xpath(query)
 
     @classmethod
     def clone(cls, element) -> etree:
@@ -281,3 +309,14 @@ class CXml:
         xml_obj = CXml()
         xml_obj.load_file(filename)
         return xml_obj.to_xml()
+
+    @classmethod
+    def remove(cls, xml_node: etree):
+        if xml_node is None:
+            return
+
+        parent_node = xml_node.getparent()
+        if parent_node is None:
+            return
+
+        parent_node.remove(xml_node)
