@@ -18,18 +18,18 @@ from imetadata.business.metadata.base.parser.detail.c_detailParser_same_file_mai
 
 class CDetailParserMng(CResource):
     @classmethod
-    def give_me_parser(cls, parser_type, db_server_id: str, object_id: str, file_info: CFileInfoEx):
+    def give_me_parser(cls, parser_type, db_server_id: str, object_id: str, object_name: str, file_info: CFileInfoEx):
         input_parser_type = CUtils.any_2_str(parser_type)
 
         if CUtils.equal_ignore_case(input_parser_type, cls.DetailEngine_Same_File_Main_Name):
-            return CDetailParser_Same_File_Main_Name(db_server_id, object_id, file_info)
+            return CDetailParser_Same_File_Main_Name(db_server_id, object_id, object_name, file_info)
         elif CUtils.equal_ignore_case(input_parser_type, cls.DetailEngine_File_Of_Same_Dir):
-            return CDetailParser_File_Of_Same_Dir(db_server_id, object_id, file_info)
+            return CDetailParser_File_Of_Same_Dir(db_server_id, object_id, object_name, file_info)
         elif CUtils.equal_ignore_case(input_parser_type, cls.DetailEngine_All_File_Of_Same_Dir):
-            return CDetailParser_All_File_Of_Same_Dir(db_server_id, object_id, file_info)
+            return CDetailParser_All_File_Of_Same_Dir(db_server_id, object_id, object_name, file_info)
         elif CUtils.equal_ignore_case(input_parser_type, cls.DetailEngine_File_Of_Dir):
-            return CDetailParser_File_Of_Dir(db_server_id, object_id, file_info)
+            return CDetailParser_File_Of_Dir(db_server_id, object_id, object_name, file_info)
         elif CUtils.equal_ignore_case(input_parser_type, cls.DetailEngine_All_File_Of_Dir):
-            return CDetailParser_All_File_Of_Dir(db_server_id, object_id, file_info)
+            return CDetailParser_All_File_Of_Dir(db_server_id, object_id, object_name, file_info)
         else:
-            return CParserCustom(db_server_id, object_id, file_info)
+            return CParserCustom(db_server_id, object_id, object_name, file_info)

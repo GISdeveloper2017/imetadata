@@ -59,6 +59,14 @@ class CDataBase:
         return ''
 
     def __prepare_params_of_execute_sql__(self, engine, sql, params):
+        """
+        处理和优化传入的参数
+        todo 还不支持blob字段的入库, 在需要时去实现
+        :param engine:
+        :param sql:
+        :param params:
+        :return:
+        """
         if params is None:
             return None
         else:
@@ -76,6 +84,12 @@ class CDataBase:
             return new_params
 
     def one_row(self, sql, params=None) -> CDataSet:
+        """
+        执行sql, 返回第一行符合要求的记录
+        :param sql:
+        :param params:
+        :return:
+        """
         eng = self.engine()
         try:
             session_maker = sessionmaker(bind=eng)
@@ -94,6 +108,12 @@ class CDataBase:
             eng.dispose()
 
     def all_row(self, sql, params=None) -> CDataSet:
+        """
+        执行sql, 返回所有符合要求的记录
+        :param sql:
+        :param params:
+        :return:
+        """
         eng = self.engine()
         try:
             session_maker = sessionmaker(bind=eng)
@@ -110,24 +130,12 @@ class CDataBase:
             eng.dispose()
 
     def execute(self, sql, params=None) -> bool:
-        eng = self.engine()
-        try:
-            session_maker = sessionmaker(bind=eng)
-            session = session_maker()
-            try:
-                cursor = session.execute(sql, self.__prepare_params_of_execute_sql__(eng, sql, params))
-                session.commit()
-                return True
-            except Exception as ee:
-                session.rollback()
-                raise DBSQLExecuteException(self.__db_conn_id__, sql)
-                # print(cursor.lastrowid)
-            finally:
-                session.close()
-        finally:
-            eng.dispose()
-
-    def execute(self, sql, params=None) -> bool:
+        """
+        执行sql, 无返回记录
+        :param sql:
+        :param params:
+        :return:
+        """
         eng = self.engine()
         try:
             session_maker = sessionmaker(bind=eng)
@@ -146,10 +154,20 @@ class CDataBase:
             eng.dispose()
 
     def if_exists(self, sql, params=None) -> bool:
+        """
+        检测一个sql查询是否有结果
+        :param sql:
+        :param params:
+        :return:
+        """
         data = self.one_row(sql, params)
         return not data.is_empty()
 
     def engine(self) -> Engine:
+        """
+        返回一个引擎
+        :return:
+        """
         try:
             return create_engine(self.db_connection(), echo=True, max_overflow=5)
         except:

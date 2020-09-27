@@ -13,6 +13,7 @@ from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
 from imetadata.business.metadata.base.parser.c_parser import CParser
 from imetadata.business.metadata.base.parser.c_parserCustom import CParserCustom
+from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 
 
 class CPlugins(CResource):
@@ -122,13 +123,23 @@ class CPlugins(CResource):
         """
         self.__metadata_rule_obj__ = CXml()
         self.__file_info__ = file_info
-        if self.__file_info__ is not None:
-            self.__metadata_rule_obj__.load_xml(self.__file_info__.__rule_content__)
+        if self.file_info is not None:
+            self.__metadata_rule_obj__.load_xml(self.file_info.__rule_content__)
 
-    def get_classified_object_confirm(self):
+    @property
+    def file_content(self):
+        return self.__file_content__
+
+    @property
+    def file_info(self):
+        return self.__file_info__
+
+    @property
+    def classified_object_confirm(self):
         return self.__object_confirm__
 
-    def get_classified_object_name(self):
+    @property
+    def classified_object_name(self):
         return self.__object_name__
 
     def get_metadata_rule_type(self):
@@ -175,7 +186,13 @@ class CPlugins(CResource):
 
         return CUtils.merge_result(self.Success, '处理完毕!')
 
+    def create_file_content(self):
+        pass
+
     def create_virtual_content(self) -> bool:
+        if self.__file_content__ is None:
+            self.create_file_content()
+
         if self.__file_content__ is None:
             raise FileContentWapperNotExistException()
 
@@ -186,17 +203,29 @@ class CPlugins(CResource):
 
     def destroy_virtual_content(self):
         if self.__file_content__ is None:
+            self.create_file_content()
+
+        if self.__file_content__ is None:
             raise FileContentWapperNotExistException()
 
         if self.__file_content__.virtual_content_valid():
             self.__file_content__.destroy_virtual_content()
 
-    def parser_metadata(self, parser: CParser) -> str:
+    def parser_metadata(self, parser: CMetaDataParser) -> str:
         """
         对目标目录或文件的元数据进行提取
         本方法禁止出现异常! 所有的异常都应该控制在代码中!
+        1. 首先进行预定义的质检
+            1. 预定义的质检包括两类:
+                1. 附属文件缺项检测
+                1. XML元数据数据项检测
         :return: 返回
         """
+        parser.batch_qa_file_exist(self.init_aq_file_exist_list(parser))
+        parser.batch_qa_metadata_xml_item(self.init_aq_metadata_xml_item_list(parser))
+        parser.batch_qa_metadata_bus_xml_item(self.init_aq_metadata_bus_xml_item_list(parser))
+        self.parser_metadata_custom(parser)
+
         if not isinstance(parser, CParserCustom):
             return parser.process()
 
@@ -211,3 +240,42 @@ class CPlugins(CResource):
             return parser.process()
 
         return CUtils.merge_result(self.Success, '处理完毕!')
+
+    def init_aq_file_exist_list(self, parser) -> list:
+        """
+        初始化默认的, 附属文件存在性质检列表
+        示例:
+        return [
+            {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name), self.Name_ID: 'pan_tif',
+             self.Name_Title: '全色文件', self.Name_Type: self.QualityAudit_Type_Error}
+            , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name), self.Name_ID: 'mss_tif',
+               self.Name_Title: '多光谱文件', self.Name_Type: self.QualityAudit_Type_Error}
+        ]
+        :param parser:
+        :return:
+        """
+        pass
+
+    def init_aq_metadata_xml_item_list(self, parser):
+        """
+        初始化默认的, 元数据xml文件的检验列表
+        :param parser:
+        :return:
+        """
+        pass
+
+    def init_aq_metadata_bus_xml_item_list(self, parser):
+        """
+        初始化默认的, 业务元数据xml文件的检验列表
+        :param parser:
+        :return:
+        """
+        pass
+
+    def parser_metadata_custom(self, parser):
+        """
+        自定义的元数据处理逻辑
+        :param parser:
+        :return:
+        """
+        pass

@@ -31,7 +31,7 @@ where dsoid = (
 
     def get_mission_info_sql(self):
         return '''
-select dsoid, dsodatatype, dsoobjecttype from dm2_storage_object where dsometadataparseprocid = '{0}'        
+select dsoid, dsodatatype, dsoobjecttype, dsoobjectname from dm2_storage_object where dsometadataparseprocid = '{0}'        
         '''.format(self.SYSTEM_NAME_MISSION_ID)
 
     def get_abnormal_mission_restart_sql(self) -> str:
@@ -45,8 +45,9 @@ where dsometadataparsestatus = 2
         dso_id = dataset.value_by_name(0, 'dsoid', '')
         dso_data_type = dataset.value_by_name(0, 'dsodatatype', '')
         dso_object_type = dataset.value_by_name(0, 'dsoobjecttype', '')
+        dso_object_name = dataset.value_by_name(0, 'dsoobjectname', '')
 
-        CLogger().debug('开始处理对象: {0}.{1}.{2}的元数据'.format(dso_id, dso_data_type, dso_object_type))
+        CLogger().debug('开始处理对象: {0}.{1}.{2}.{3}的元数据'.format(dso_id, dso_data_type, dso_object_type, dso_object_name))
 
         sql_get_info = ''
         if CUtils.equal_ignore_case(dso_data_type, self.FileType_Dir):
@@ -118,14 +119,16 @@ where dsometadataparsestatus = 2
             return CUtils.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，元数据无法解析, 处理结束!'.format(
                 file_info.value_by_name(0, 'query_object_fullname', ''),
                 dso_object_type)
-                                       )
+            )
 
+        plugins_obj.classified()
         if not plugins_obj.create_virtual_content():
             self.db_update_object_status(dso_id, '文件或目录[{0}]的内容解析失败, 元数据无法提取!'.format(
                 file_info.value_by_name(0, 'query_object_fullname', '')))
         try:
             process_result = plugins_obj.parser_metadata(
-                CMetaDataParser(self.get_mission_db_id(), dso_id, file_info_obj, plugins_obj.__file_content__, plugins_obj.get_information()))
+                CMetaDataParser(self.get_mission_db_id(), dso_id, dso_object_name, file_info_obj, plugins_obj.file_content, plugins_obj.get_information()))
+
             if CUtils.result_success(process_result):
                 CFactory().give_me_db(self.get_mission_db_id()).execute('''
                     update dm2_storage_object
@@ -141,12 +144,12 @@ where dsometadataparsestatus = 2
                 self.db_update_object_status(dso_id, '文件或目录[{0}]元数据解析过程出现错误! 错误原因为: {1}'.format(
                     file_info.value_by_name(0, 'query_object_fullname', ''), CUtils.result_message(process_result)))
                 return process_result
-        except:
-            self.db_update_object_status(dso_id, '文件或目录[{0}]元数据解析过程出现错误!'.format(
-                file_info.value_by_name(0, 'query_object_fullname', '')))
+        except Exception as error:
+            self.db_update_object_status(dso_id, '文件或目录[{0}]元数据解析过程出现错误! 错误原因为: {1}'.format(
+                file_info.value_by_name(0, 'query_object_fullname', ''), error.__str__()))
 
-            return CUtils.merge_result(self.Failure, '文件或目录[{0}]元数据解析过程出现错误!'.format(
-                file_info.value_by_name(0, 'query_object_fullname', '')))
+            return CUtils.merge_result(self.Failure, '文件或目录[{0}]元数据解析过程出现错误! 错误原因为: {1}'.format(
+                file_info.value_by_name(0, 'query_object_fullname', ''), error.__str__()))
         finally:
             plugins_obj.destroy_virtual_content()
 

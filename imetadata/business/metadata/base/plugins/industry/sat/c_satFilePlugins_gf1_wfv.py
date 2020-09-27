@@ -42,4 +42,4 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         当卫星数据是解压后的散落文件时, 如何从解压后的文件名中, 解析出卫星数据的原名
         :return:
         """
-        return self.__file_info__.__file_main_name__.replace('-PAN1', '')
+        return self.file_info.__file_main_name__.replace('-PAN1', '')

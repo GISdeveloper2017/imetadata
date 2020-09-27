@@ -38,3 +38,11 @@ class CVirtualContent:
 
     def destroy_virtual_content(self):
         CFile.remove_dir(self.__work_root_dir__)
+
+    @property
+    def content_root_dir(self):
+        return self.__virtual_content_root_dir__
+
+    @property
+    def work_root_dir(self):
+        return self.__work_root_dir__

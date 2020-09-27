@@ -40,6 +40,14 @@ class CSatPlugins(CPlugins):
 
         return information
 
+    def create_file_content(self):
+        if self.__object_status__ == self.Sat_Object_Status_Dir:
+            self.__file_content__ = CVirtualContentDir(self.file_info.__file_name_with_full_path__)
+        elif self.__object_status__ == self.Sat_Object_Status_Zip:
+            self.__file_content__ = CVirtualContentPackage(self.file_info.__file_name_with_full_path__)
+        else:
+            self.__file_content__ = CVirtualContentDir(self.file_info.__file_path__)
+
     def special_zip_file_ext_list(self) -> list:
         """
         设定卫星数据压缩包的扩展名
@@ -59,39 +67,30 @@ class CSatPlugins(CPlugins):
         self.__object_name__ = None
         self.__object_confirm__ = self.Object_Confirm_IUnKnown
 
-        if self.__file_info__.__file_type__ == self.FileType_File:
-            if self.special_zip_file_ext_list().count(self.__file_info__.__file_ext__.lower()) > 0:
+        if self.file_info.__file_type__ == self.FileType_File:
+            if self.special_zip_file_ext_list().count(self.file_info.__file_ext__.lower()) > 0:
                 sat_classified_character, sat_classified_character_type = self.get_classified_character_of_zip_and_path()
-                if (self.classified_with_character(self.__file_info__.__file_main_name__, sat_classified_character,
+                if (self.classified_with_character(self.file_info.__file_main_name__, sat_classified_character,
                                                    sat_classified_character_type)):
                     self.__object_status__ = self.Sat_Object_Status_Zip
                     self.__object_confirm__ = self.Object_Confirm_IKnown
-                    self.__object_name__ = self.__file_info__.__file_main_name__
+                    self.__object_name__ = self.file_info.__file_main_name__
             else:
                 sat_classified_character, sat_classified_character_type = self.get_classified_character_of_file()
-                if (self.classified_with_character(self.__file_info__.__file_name_without_path__, sat_classified_character,
+                if (self.classified_with_character(self.file_info.__file_name_without_path__, sat_classified_character,
                                                    sat_classified_character_type)):
                     self.__object_status__ = self.Sat_Object_Status_File
                     self.__object_confirm__ = self.Object_Confirm_IKnown
                     self.__object_name__ = self.get_classified_object_name_by_file()
-        elif self.__file_info__.__file_type__ == self.FileType_Dir:
+        elif self.file_info.__file_type__ == self.FileType_Dir:
             sat_classified_character, sat_classified_character_type = self.get_classified_character_of_zip_and_path()
-            if (self.classified_with_character(self.__file_info__.__file_name_without_path__, sat_classified_character,
+            if (self.classified_with_character(self.file_info.__file_name_without_path__, sat_classified_character,
                                                sat_classified_character_type)):
                 self.__object_status__ = self.Sat_Object_Status_Dir
                 self.__object_confirm__ = self.Object_Confirm_IKnown
-                self.__object_name__ = self.__file_info__.__file_name_without_path__
+                self.__object_name__ = self.file_info.__file_name_without_path__
 
         return self.__object_confirm__, self.__object_name__
-
-    def __init__(self, file_info: CFileInfoEx):
-        super().__init__(file_info)
-
-        if self.__file_info__ is not None:
-            if self.__file_info__.__file_type__ == self.FileType_Dir:
-                self.__file_content__ = CVirtualContentDir(self.__file_info__.__file_name_with_full_path__)
-            else:
-                self.__file_content__ = CVirtualContentPackage(self.__file_info__.__file_name_with_full_path__)
 
     def classified_with_character(self, text, sat_classified_character, sat_classified_character_type) -> bool:
         """
@@ -138,4 +137,4 @@ class CSatPlugins(CPlugins):
         当卫星数据是解压后的散落文件时, 如何从解压后的文件名中, 解析出卫星数据的原名
         :return:
         """
-        return self.__file_info__.__file_main_name__
+        return self.file_info.__file_main_name__

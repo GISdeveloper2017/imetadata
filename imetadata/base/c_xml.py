@@ -75,6 +75,7 @@ class CXml:
         :param encoding:
         :return:
         """
+        CFile.check_and_create_directory(filename)
         self.__xml_tree__ = etree.ElementTree(self.__xml_root_node__)
         self.__xml_tree__.write(filename, encoding=encoding, xml_declaration=True)
 
@@ -83,7 +84,7 @@ class CXml:
         通过给定的xml内容, 对xml对象进行初始化
         :return:
         """
-        return etree.tostring(self.__xml_tree__, xml_declaration=False).decode('utf-8')
+        return etree.tostring(self.__xml_tree__, xml_declaration=False, pretty_print=False, encoding="utf-8").decode('utf-8')
 
     def xpath_one(self, query) -> etree:
         """
@@ -197,14 +198,30 @@ class CXml:
         if ignore_case is True:
             ac = element.keys()[0]
             attr_name = re.findall(attr_name, ac, re.IGNORECASE)
-            name = attr_name[0]
+            if len(attr_name) == 0:
+                return attr_value_default
+            else:
+                name = attr_name[0]
         else:
             name = attr_name
+
         value = element.get(name)
         if value is None:
             return attr_value_default
         else:
             return value
+
+    @classmethod
+    def attr_exist(cls, element, attr_name, ignore_case=True) -> bool:
+        if element is None:
+            return False
+
+        ac = element.keys()[0]
+        if ignore_case is True:
+            attr_name = re.findall(attr_name, ac, re.IGNORECASE)
+        else:
+            attr_name = re.findall(attr_name, ac)
+        return len(attr_name) > 0
 
     @classmethod
     def set_element_text(cls, element, text):

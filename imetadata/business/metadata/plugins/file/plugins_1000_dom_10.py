@@ -23,14 +23,14 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
         return self.MetaData_Rule_Type_DOM
 
     def classified_by_character_guotu(self):
-        file_main_name = self.__file_info__.__file_main_name__
-        file_ext = self.__file_info__.__file_ext__
+        file_main_name = self.file_info.__file_main_name__
+        file_ext = self.file_info.__file_ext__
 
         check_file_main_name_length = len(file_main_name) == 10
         if not check_file_main_name_length:
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
-        file_metadata_name_with_path = CFile.join_file(self.__file_info__.__file_path__, file_main_name)
+        file_metadata_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
         check_file_metadata_name_exist = \
             CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'xls')) \
             or CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'xlsx')) \

@@ -33,7 +33,7 @@ where dsoid = (
 
     def get_mission_info_sql(self):
         return '''
-select dsoid, dsodatatype, dsoobjecttype from dm2_storage_object where dsodetailparseprocid = '{0}'        
+select dsoid, dsodatatype, dsoobjecttype, dsoobjectname from dm2_storage_object where dsodetailparseprocid = '{0}'        
         '''.format(self.SYSTEM_NAME_MISSION_ID)
 
     def get_abnormal_mission_restart_sql(self) -> str:
@@ -47,8 +47,9 @@ where dsodetailparsestatus = 2
         dso_id = dataset.value_by_name(0, 'dsoid', '')
         dso_data_type = dataset.value_by_name(0, 'dsodatatype', '')
         dso_object_type = dataset.value_by_name(0, 'dsoobjecttype', '')
+        dso_object_name = dataset.value_by_name(0, 'dsoobjectname', '')
 
-        CLogger().debug('开始处理对象: {0}.{1}.{2}的元数据'.format(dso_id, dso_data_type, dso_object_type))
+        CLogger().debug('开始处理对象: {0}.{1}.{2}.{3}的元数据'.format(dso_id, dso_data_type, dso_object_type, dso_object_name))
 
         sql_get_info = ''
         if CUtils.equal_ignore_case(dso_data_type, self.FileType_Dir):
@@ -125,7 +126,7 @@ where dsodetailparsestatus = 2
         try:
             plugins_information = plugins_obj.get_information()
             detail_parser = CDetailParserMng.give_me_parser(plugins_information[plugins_obj.Plugins_Info_DetailEngine],
-                                                            self.get_mission_db_id(), dso_id, file_info_obj)
+                                                            self.get_mission_db_id(), dso_id, dso_object_name, file_info_obj)
             process_result = plugins_obj.parser_detail(detail_parser)
             if CUtils.result_success(process_result):
                 CFactory().give_me_db(self.get_mission_db_id()).execute('''

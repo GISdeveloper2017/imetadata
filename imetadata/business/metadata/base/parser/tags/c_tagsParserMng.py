@@ -12,12 +12,12 @@ from imetadata.business.metadata.base.parser.tags.c_tagsParser_GD_InRelationPath
 
 class CTagsParserMng(CResource):
     @classmethod
-    def give_me_parser(cls, parser_type, db_server_id: str, object_id: str, file_info: CFileInfoEx):
+    def give_me_parser(cls, parser_type, db_server_id: str, object_id: str, object_name: str, file_info: CFileInfoEx):
         input_parser_type = CUtils.any_2_str(parser_type)
 
         if CUtils.equal_ignore_case(input_parser_type, cls.TagEngine_Global_Dim_In_MainName):
-            return CTagsParser_GF_InMainName(db_server_id, object_id, file_info)
+            return CTagsParser_GF_InMainName(db_server_id, object_id, object_name, file_info)
         elif CUtils.equal_ignore_case(input_parser_type, cls.TagEngine_Global_Dim_In_RelationPath):
-            return CTagsParser_GF_InRelationPath(db_server_id, object_id, file_info)
+            return CTagsParser_GF_InRelationPath(db_server_id, object_id, object_name, file_info)
         else:
-            return CParserCustom(db_server_id, object_id, file_info)
+            return CParserCustom(db_server_id, object_id, object_name, file_info)

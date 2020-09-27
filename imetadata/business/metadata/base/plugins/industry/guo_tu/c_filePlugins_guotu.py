@@ -60,7 +60,7 @@ class CFilePlugins_GUOTU(CFilePlugins):
         """
         metadata_rule_type = self.get_metadata_rule_type()
         if CUtils.equal_ignore_case(metadata_rule_type, self.MetaData_Rule_Type_None):
-            file_path = self.__file_info__.__file_path_with_rel_path__
+            file_path = self.file_info.__file_path_with_rel_path__
             return CFile.subpath_in_path(self.get_classified_metadata_rule_type(), file_path)
         else:
             return CUtils.equal_ignore_case(self.get_metadata_rule_type(), self.get_classified_metadata_rule_type())

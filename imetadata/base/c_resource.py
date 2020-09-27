@@ -49,12 +49,14 @@ class CResource:
     Name_Filter = 'filter'
     Name_Directory = 'directory'
     Name_File = 'file'
+    Name_FileName = 'filename'
 
     Name_Total = 'total'
     Name_Data = 'data'
     Name_Item = 'item'
     Name_Items = 'items'
     Name_Records = 'records'
+    Name_Record = 'record'
 
     Dir_Type_Directory = 1
     Dir_Type_VirtualDirectory = 2
@@ -96,6 +98,10 @@ class CResource:
     Name_Title = 'title'
     Name_Type = 'type'
 
+    Name_XPath = 'xpath'
+    Name_Attr_Name = 'attr_name'
+    Name_List = 'list'
+
     Name_Root = 'root'
 
     Path_MD_Rule_Type = '/root/type'
@@ -105,6 +111,10 @@ class CResource:
 
     DB_True = -1
     DB_False = 0
+
+    MetaDataFormat_Text = 0
+    MetaDataFormat_Json = 1
+    MetaDataFormat_XML = 2
 
     MetaDataEngine_Raster = 'raster'
     MetaDataEngine_Vector = 'vector'
@@ -124,3 +134,6 @@ class CResource:
     QualityAudit_Type_Pass = 'pass'
     QualityAudit_Type_Warn = 'warn'
     QualityAudit_Type_Error = 'error'
+
+    QualityAudit_FileExist = 'file_exist'
+    QualityAudit_XML_Value = 'xml_value'
