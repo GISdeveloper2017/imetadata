@@ -28,9 +28,9 @@ class plugins_2000_mbtiles(CFilePlugins):
         self.__object_confirm__ = self.Object_Confirm_IUnKnown
         self.__object_name__ = None
 
-        current_path = self.__file_info__.__file_name_with_full_path__
+        current_path = self.file_info.__file_name_with_full_path__
         if CFile.find_file_or_subpath_of_path(current_path, '*_0.mbtiles') \
                 and CFile.find_file_or_subpath_of_path(current_path, '*.xml'):
             self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = self.__file_info__.__file_main_name__
+            self.__object_name__ = self.file_info.__file_main_name__
         return self.__object_confirm__, self.__object_name__

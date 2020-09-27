@@ -55,6 +55,7 @@ class CResource:
     Name_Item = 'item'
     Name_Items = 'items'
     Name_Records = 'records'
+    Name_Record = 'record'
 
     Dir_Type_Directory = 1
     Dir_Type_VirtualDirectory = 2

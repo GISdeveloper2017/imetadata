@@ -3,6 +3,7 @@
 
 from __future__ import absolute_import
 import os
+import shutil
 import time
 from fnmatch import fnmatch
 from sortedcontainers import SortedList
@@ -101,7 +102,8 @@ class CFile:
     @classmethod
     def remove_dir(cls, file_path: str):
         if cls.file_or_path_exist(file_path):
-            os.removedirs(file_path)
+            # os.removedirs(file_path)
+            shutil.rmtree(file_path)
 
     @classmethod
     def rename_file_or_dir(cls, old_file_name_with_path: str, new_file_name_with_path: str):

@@ -63,6 +63,17 @@ class CUtils(CResource):
             return None
 
     @classmethod
+    def list_count(cls, list_obj: list, name: str, ignore_case=True) -> int:
+        if not ignore_case:
+            return list_obj.count(name)
+        else:
+            result_int = 0
+            for list_item in list_obj:
+                if cls.equal_ignore_case(cls.any_2_str(list_item), name):
+                    result_int = result_int + 1
+            return result_int
+
+    @classmethod
     def any_2_str(cls, obj) -> str:
         if obj is None:
             return ''

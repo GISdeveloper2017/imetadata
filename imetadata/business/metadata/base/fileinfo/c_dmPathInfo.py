@@ -106,8 +106,8 @@ class CDMPathInfo(CDMFilePathInfoEx):
         object_type = None
         classified_obj = CPluginsMng.plugins_classified(self)
         if classified_obj is not None:
-            object_confirm = classified_obj.get_classified_object_confirm()
-            object_name = classified_obj.get_classified_object_name()
+            object_confirm = classified_obj.classified_object_confirm
+            object_name = classified_obj.classified_object_name
             object_type = classified_obj.get_id()
 
         if (object_confirm == self.Object_Confirm_IUnKnown) or (object_confirm == self.Object_Confirm_IKnown_Not):

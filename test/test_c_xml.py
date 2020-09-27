@@ -137,8 +137,19 @@ class Test_Base_C_XML:
         xml = CXml()
         xml.load_xml(xml_content)
         element = xml.xpath('/root/element')[1]
-        value = CXml.get_attr(element, 'Hello', "null")
+        value = CXml.get_attr(element, 'Hello1', "null")
         assert value == '美国'
+
+    def test_element_attr_exist(self):
+        """
+        设置一个节点的文本
+        :return:
+        """
+        xml_content = '''<root name="hello world"><element hello="中国"></element><element hello="美国"></element></root>'''
+        xml = CXml()
+        xml.load_xml(xml_content)
+        element = xml.xpath('/root/element')[1]
+        assert CXml.attr_exist(element, 'hello', False)
 
     def test_set_element_text(self):
         """
