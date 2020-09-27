@@ -8,6 +8,7 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
+from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.c_dirPlugins import CDirPlugins
 
 
@@ -61,18 +62,3 @@ class C21ATBusDataSetPlugins(CDirPlugins):
                 CLogger().warning('发现文件{0}符合二十一世纪业务数据集标准, 但该文件格式有误, 无法打开! ')
 
         return self.__object_confirm__, self.__object_name__
-
-    def parser_metadata(self):
-        pass
-
-    def parser_bus_metadata(self):
-        pass
-
-    def parser_spatial_metadata(self) -> str:
-        pass
-
-    def parser_tags_metadata(self) -> list:
-        pass
-
-    def parser_time_metadata(self) -> str:
-        pass

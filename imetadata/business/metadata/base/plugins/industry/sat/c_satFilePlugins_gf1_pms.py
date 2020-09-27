@@ -2,11 +2,7 @@
 # @Time : 2020/9/21 17:35 
 # @Author : 王西亚 
 # @File : c_satFilePlugins_gf1_wfv.py
-from imetadata.base.c_file import CFile
-from imetadata.base.c_logger import CLogger
-from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
-from imetadata.business.metadata.base.parser.metadata.quality.c_audit import CAudit
 from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
 
 
@@ -48,19 +44,34 @@ class CSatFilePlugins_gf1_pms(CSatPlugins):
         """
         return self.file_info.__file_main_name__.replace('-PAN1', '')
 
-    def parser_metadata(self, parser: CMetaDataParser) -> str:
-        """
-        对目标目录或文件的元数据进行提取
-        本方法禁止出现异常! 所有的异常都应该控制在代码中!
-        :return: 返回
-        """
+    def init_aq_file_exist_list(self, parser) -> list:
+        return [
+            {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name), self.Name_ID: 'pan_tif',
+             self.Name_Title: '全色文件', self.Name_Type: self.QualityAudit_Type_Error}
+            , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name), self.Name_ID: 'mss_tif',
+               self.Name_Title: '多光谱文件', self.Name_Type: self.QualityAudit_Type_Error}
+        ]
 
-        parser.file_quality.append_total_quality(
-            CAudit.a_file_exist('pan_tif', '全色文件', self.QualityAudit_Type_Error,
-                                CFile.join_file(parser.file_content.content_root_dir,
-                                                '{0}-PAN1.tiff'.format(parser.__object_name__))))
-        parser.file_quality.append_total_quality(
-            CAudit.a_file_exist('mss_tif', '多光谱文件', self.QualityAudit_Type_Error,
-                                CFile.join_file(parser.file_content.content_root_dir,
-                                                '{0}-MSS1.tiff'.format(parser.__object_name__))))
-        return parser.process()
+    def init_aq_metadata_xml_item_list(self, parser):
+        """
+        初始化默认的, 元数据xml文件的检验列表
+        :param parser:
+        :return:
+        """
+        pass
+
+    def init_aq_metadata_bus_xml_item_list(self, parser):
+        """
+        初始化默认的, 业务元数据xml文件的检验列表
+        :param parser:
+        :return:
+        """
+        pass
+
+    def parser_metadata_custom(self, parser):
+        """
+        自定义的元数据处理逻辑
+        :param parser:
+        :return:
+        """
+        pass

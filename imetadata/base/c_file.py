@@ -158,6 +158,18 @@ class CFile:
 
         return subpath_list.count(sub_path.lower()) > 0
 
+    @classmethod
+    def file_2_str(cls, file_name_with_path: str):
+        if not cls.file_or_path_exist(file_name_with_path):
+            return ''
+
+        f = open(file_name_with_path, "r")
+        try:
+            txt = f.read()
+            return txt
+        finally:
+            f.close()
+
 
 if __name__ == '__main__':
     pass

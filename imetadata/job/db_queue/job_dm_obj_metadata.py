@@ -127,7 +127,7 @@ where dsometadataparsestatus = 2
                 file_info.value_by_name(0, 'query_object_fullname', '')))
         try:
             process_result = plugins_obj.parser_metadata(
-                CMetaDataParser(self.get_mission_db_id(), dso_id, dso_object_name, file_info_obj, plugins_obj.__file_content__, plugins_obj.get_information()))
+                CMetaDataParser(self.get_mission_db_id(), dso_id, dso_object_name, file_info_obj, plugins_obj.file_content, plugins_obj.get_information()))
 
             if CUtils.result_success(process_result):
                 CFactory().give_me_db(self.get_mission_db_id()).execute('''
