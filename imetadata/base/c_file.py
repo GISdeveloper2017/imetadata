@@ -146,7 +146,7 @@ class CFile:
         return fnmatch(file_name_with_path, pattern)
 
     @classmethod
-    def subpath_in_path(cls, sub_path:str, filepath: str):
+    def subpath_in_path(cls, sub_path: str, filepath: str):
         subpath_list = []
         file_path_str = filepath.replace("\\", "/")
         file_path_str, file_name_str = os.path.split(file_path_str)
@@ -169,6 +169,45 @@ class CFile:
             return txt
         finally:
             f.close()
+
+    @classmethod
+    def __file_or_dir_fullname_of_path_recurse(cls, result_file_fullname_list: [], path: str,
+                                               is_recurse_subpath: bool = False, match_str: str = '*',
+                                               match_type: int = MatchType_Common):
+        """
+            私有方法，递归路径获取路径下的所有文件和文件夹的全文件名，仅供内部函数file_or_dir_fullname_of_path调用
+        @param result_file_fullname_list:
+        @param path:
+        @param is_recurse_subpath:
+        @param match_str:
+        @param match_type:
+        @return:
+        """
+        list_file_name = cls.file_or_subpath_of_path(path, match_str, match_type)
+        for file_name_temp in list_file_name:
+            file_fullname_temp = cls.join_file(path, file_name_temp)
+            result_file_fullname_list.append(file_fullname_temp)
+            if is_recurse_subpath:
+                if cls.is_dir(file_fullname_temp):
+                    cls.__file_or_dir_fullname_of_path_recurse(result_file_fullname_list, file_fullname_temp,
+                                                               is_recurse_subpath, match_str, match_type)
+
+    @classmethod
+    def file_or_dir_fullname_of_path(cls, path: str, is_recurse_subpath: bool = False, match_str: str = '*',
+                                     match_type: int = MatchType_Common):
+        """
+            公共方法：根据路径获取文件和文件夹的全文件名，根据参数is_recurse_subpath支持是否递归子目录
+        @param path: 扫描的目录
+        @param is_recurse_subpath: 是否递归子目录
+        @param match_str:
+        @param match_type:
+        @return:
+        """
+        list_file_fullname = []
+        if cls.is_dir(path):
+            cls.__file_or_dir_fullname_of_path_recurse(list_file_fullname, path, is_recurse_subpath, match_str,
+                                                       match_type)
+        return list_file_fullname
 
 
 if __name__ == '__main__':
