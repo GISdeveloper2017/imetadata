@@ -2,6 +2,7 @@
 # @Time : 2020/9/21 17:35 
 # @Author : 王西亚 
 # @File : c_satFilePlugins_gf1_wfv.py
+from imetadata.base.c_file import CFile
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
 
@@ -44,34 +45,50 @@ class CSatFilePlugins_gf1_pms(CSatPlugins):
         """
         return self.file_info.__file_main_name__.replace('-PAN1', '')
 
-    def init_aq_file_exist_list(self, parser) -> list:
+    def init_aq_file_exist_list(self, parser: CMetaDataParser) -> list:
         return [
             {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
-             self.Name_Title: '全色文件', self.Name_Type: self.QualityAudit_Type_Error}
+             self.Name_Title: '全色文件', self.Name_Result: self.QualityAudit_Result_Error}
             , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()), self.Name_ID: 'mss_tif',
-               self.Name_Title: '多光谱文件', self.Name_Type: self.QualityAudit_Type_Error}
+               self.Name_Title: '多光谱文件', self.Name_Result: self.QualityAudit_Result_Error}
         ]
 
-    def init_aq_metadata_xml_item_list(self, parser):
-        """
-        初始化默认的, 元数据xml文件的检验列表
-        :param parser:
-        :return:
-        """
-        pass
-
-    def init_aq_metadata_bus_xml_item_list(self, parser):
+    def init_aq_metadata_bus_xml_item_list(self, parser: CMetaDataParser):
         """
         初始化默认的, 业务元数据xml文件的检验列表
         :param parser:
         :return:
         """
-        pass
+        return [
+            {
+                self.Name_Type: self.QualityAudit_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/SceneID',
+                self.Name_ID: 'SceneID',
+                self.Name_Title: '景编号',
+                self.Name_Result: self.QualityAudit_Result_Error
+             },
+            {
+                self.Name_Type: self.QualityAudit_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/OrbitID',
+                self.Name_ID: 'OrbitID',
+                self.Name_Title: '轨道编号',
+                self.Name_Result: self.QualityAudit_Result_Error
+            }
+        ]
 
-    def parser_metadata_custom(self, parser):
+    def init_metadata_bus_xml(self, parser: CMetaDataParser):
         """
-        自定义的元数据处理逻辑
+        提取xml格式的业务元数据, 加载到parser的metadata对象中
         :param parser:
         :return:
         """
-        pass
+        metadata_xml_file_name = CFile.join_file(self.file_content.content_root_dir, '{0}-PAN1.xml'.format(self.classified_object_name()))
+        if not CFile.file_or_path_exist(metadata_xml_file_name):
+            return False
+
+        try:
+            parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, metadata_xml_file_name)
+            return True
+        except:
+            parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
+            return False

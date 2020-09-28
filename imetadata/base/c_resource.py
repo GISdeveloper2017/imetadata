@@ -131,9 +131,9 @@ class CResource:
     TagEngine_Global_Dim_In_RelationPath = 'global_dim_in_relation_path'
     TagEngine_Global_Dim_In_MainName = 'global_dim_in_main_name'
 
-    QualityAudit_Type_Pass = 'pass'
-    QualityAudit_Type_Warn = 'warn'
-    QualityAudit_Type_Error = 'error'
+    QualityAudit_Result_Pass = 'pass'
+    QualityAudit_Result_Warn = 'warn'
+    QualityAudit_Result_Error = 'error'
 
-    QualityAudit_FileExist = 'file_exist'
-    QualityAudit_XML_Value = 'xml_value'
+    QualityAudit_Type_FileExist = 'file_exist'
+    QualityAudit_Type_XML_Node_Exist = 'xml_node_exist'

@@ -128,6 +128,7 @@ where dsodetailparsestatus = 2
                                        )
 
         try:
+            plugins_obj.classified()
             plugins_information = plugins_obj.get_information()
             detail_parser = CDetailParserMng.give_me_parser(plugins_information[plugins_obj.Plugins_Info_DetailEngine],
                                                             dso_id, dso_object_name, file_info_obj)

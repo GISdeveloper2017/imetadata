@@ -125,7 +125,7 @@ class CMetaData(CResource):
             self.__metadata_bus_xml__ = CXml()
             self.__metadata_bus_json__ = CJson()
 
-    def set_metadata_file(self, metadata_type, file_name):
+    def set_metadata_bus_file(self, metadata_type, file_name):
         self.__metadata_bus_type__ = metadata_type
         if self.__metadata_bus_type__ == self.MetaDataFormat_Json:
             self.__metadata_bus_text__ = ''

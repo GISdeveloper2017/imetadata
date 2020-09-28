@@ -179,7 +179,7 @@ class CXml:
         :return:
         """
         if element is not None:
-            element.set(attr_name, attr_value)
+            element.set(attr_name, CUtils.any_2_str(attr_value))
 
     @classmethod
     def get_attr(cls, element, attr_name, attr_value_default, ignore_case=True) -> str:
@@ -232,7 +232,7 @@ class CXml:
         :return:
         """
         if element is not None:
-            element.text = etree.CDATA(text)
+            element.text = etree.CDATA(CUtils.any_2_str(text))
 
     @classmethod
     def get_element_text(cls, element):

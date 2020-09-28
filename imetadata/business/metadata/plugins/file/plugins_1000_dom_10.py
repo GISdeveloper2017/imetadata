@@ -5,6 +5,7 @@
 from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
 
 
@@ -23,6 +24,11 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
         return self.MetaData_Rule_Type_DOM
 
     def classified_by_character_guotu(self):
+        """
+        设计国土行业数据的dom-10验证规则
+        todo 负责人 赵宇飞 在这里检验dom-10的元数据文件格式时, 应该一个一个类型的对比, 找到文件时, 将该文件的格式和文件名存储到类的私有属性中, 以便在元数据处理时直接使用
+        :return:
+        """
         file_main_name = self.file_info.__file_main_name__
         file_ext = self.file_info.__file_ext__
 
@@ -57,11 +63,11 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
         char_2_3 = file_main_name[1:3]
         char_5_to_7 = file_main_name[4:7]
         char_8_to_10 = file_main_name[7:10]
-        if CUtils.text_is_alpha(char_1) == False \
-            or CUtils.text_is_alpha(char_4) == False \
-            or CUtils.text_is_numeric(char_2_3) == False \
-            or CUtils.text_is_numeric(char_5_to_7) == False \
-            or CUtils.text_is_numeric(char_8_to_10) == False:
+        if CUtils.text_is_alpha(char_1) is False \
+                or CUtils.text_is_alpha(char_4) is False \
+                or CUtils.text_is_numeric(char_2_3) is False \
+                or CUtils.text_is_numeric(char_5_to_7) is False \
+                or CUtils.text_is_numeric(char_8_to_10) is False:
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
         if CUtils.equal_ignore_case(file_ext, 'tif'):
@@ -72,6 +78,24 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
             self.__object_name__ = None
 
         return self.__object_confirm__, self.__object_name__
+
+    def init_metadata_bus_xml(self, parser: CMetaDataParser):
+        """
+        提取xml格式的业务元数据, 加载到parser的metadata对象中
+        todo 负责人 赵宇飞 在这里将dom-10的元数据, 转换为xml, 存储到parser.metadata.set_metadata_bus_file中
+        :param parser:
+        :return:
+        """
+        metadata_xml_file_name = CFile.join_file(self.file_content.content_root_dir, '{0}.xml'.format(self.classified_object_name()))
+        # if not CFile.file_or_path_exist(metadata_xml_file_name):
+        return False
+
+        # try:
+        #     parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, metadata_xml_file_name)
+        #     return True
+        # except:
+        #     parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
+        #     return False
 
 
 if __name__ == '__main__':

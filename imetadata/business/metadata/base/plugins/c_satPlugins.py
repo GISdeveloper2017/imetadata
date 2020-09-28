@@ -34,8 +34,8 @@ class CSatPlugins(CPlugins):
         information[self.Plugins_Info_Type] = 'sat'
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = None
-        information[self.Plugins_Info_TagsEngine] = 'global_dim'
-        information[self.Plugins_Info_DetailEngine] = 'same_file_mainname'
+        information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
+        information[self.Plugins_Info_DetailEngine] = self.get_runtime_detail_engine()
         information[self.Plugins_Info_QCEngine] = None
 
         return information
@@ -138,3 +138,17 @@ class CSatPlugins(CPlugins):
         :return:
         """
         return self.file_info.__file_main_name__
+
+    def get_runtime_detail_engine(self):
+        """
+        返回运行时的详情引擎
+        :return:
+        """
+        if self.__object_status__ == self.Sat_Object_Status_Zip:
+            return None
+        elif self.__object_status__ == self.Sat_Object_Status_Dir:
+            return self.DetailEngine_All_File_Of_Dir
+        elif self.__object_status__ == self.Sat_Object_Status_File:
+            return self.DetailEngine_Same_File_Main_Name
+        else:
+            return None

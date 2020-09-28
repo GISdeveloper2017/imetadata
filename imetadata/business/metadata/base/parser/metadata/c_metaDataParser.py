@@ -3,9 +3,9 @@
 # @Author : 王西亚 
 # @File : c_metaDataParser.py
 from imetadata.base.c_file import CFile
-from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
+from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.c_parser import CParser
 from imetadata.business.metadata.base.parser.metadata.c_metadata import CMetaData
 from imetadata.business.metadata.base.parser.metadata.quality.c_audit import CAudit
@@ -26,12 +26,12 @@ class CMetaDataParser(CParser):
     __file_content__: CVirtualContent = None
     __metadata__: CMetaData = None
 
-    def __init__(self, db_server_id: str, object_id: str, object_name: str, file_info: CFileInfoEx,
+    def __init__(self, object_id: str, object_name: str, file_info: CDMFilePathInfoEx,
                  file_content: CVirtualContent, information: dict):
         self.__metadata__ = CMetaData()
         self.__information__ = information
         self.__file_content__ = file_content
-        super().__init__(db_server_id, object_id, object_name, file_info)
+        super().__init__(object_id, object_name, file_info)
 
     @property
     def metadata(self):
@@ -54,13 +54,48 @@ class CMetaDataParser(CParser):
         file_quality_text = self.metadata.quality.to_xml()
         quality_result = self.metadata.quality.quality_result()
 
+        metadata_type, metadata_text = self.metadata.metadata()
+        metadata_json = None
+        metadata_xml = None
+        if metadata_type == self.MetaDataFormat_XML:
+            metadata_xml = metadata_text
+        elif metadata_type == self.MetaDataFormat_Json:
+            metadata_json = metadata_text
+
+        metadata_bus_type, metadata_bus_text = self.metadata.metadata_bus()
+        metadata_bus_json = None
+        metadata_bus_xml = None
+        if metadata_bus_type == self.MetaDataFormat_XML:
+            metadata_bus_xml = metadata_bus_text
+        elif metadata_bus_type == self.MetaDataFormat_Json:
+            metadata_bus_json = metadata_bus_text
+
         CFactory().give_me_db(self.file_info.__db_server_id__).execute('''
-                    update dm2_storage_object
-                    set dso_quality = :dso_quality, dso_quality_result = :dso_quality_result
-                    where dsoid = :dsoid
-                    ''', {'dso_quality': file_quality_text, 'dsoid': self.object_id,
-                          'dso_quality_result': quality_result}
-                                                             )
+            update dm2_storage_object
+            set dso_quality = :dso_quality
+                , dso_quality_result = :dso_quality_result
+                , dsometadatatype = :dsometadatatype
+                , dsometadatatext = :dsometadatatext
+                , dsometadatajson = :dsometadatajson
+                , dsometadataxml = :dsometadataxml
+                , dsometadatatype_bus = :dsometadatatype_bus
+                , dsometadatatext_bus = :dsometadatatext_bus
+                , dsometadatajson_bus = :dsometadatajson_bus
+                , dsometadataxml_bus = :dsometadataxml_bus
+            where dsoid = :dsoid
+            ''', {'dso_quality': file_quality_text,
+                  'dsoid': self.object_id,
+                  'dso_quality_result': quality_result,
+                  'dsometadatatype': metadata_type,
+                  'dsometadatatext': metadata_text,
+                  'dsometadatajson': metadata_json,
+                  'dsometadataxml': metadata_xml,
+                  'dsometadatatype_bus': metadata_bus_type,
+                  'dsometadatatext_bus': metadata_bus_text,
+                  'dsometadatajson_bus': metadata_bus_json,
+                  'dsometadataxml_bus': metadata_bus_xml
+                  }
+                                                                       )
         return CUtils.merge_result(self.Success, '处理完毕!')
 
     def custom_init(self):
@@ -72,7 +107,7 @@ class CMetaDataParser(CParser):
 
         for qa_item in list_qa:
             self.metadata.quality.append_total_quality(
-                CAudit.a_file_exist(qa_item[self.Name_ID], qa_item[self.Name_Title], qa_item[self.Name_Type],
+                CAudit.a_file_exist(qa_item[self.Name_ID], qa_item[self.Name_Title], qa_item[self.Name_Result],
                                     CFile.join_file(self.file_content.content_root_dir, qa_item[self.Name_FileName])))
 
     def batch_qa_metadata_xml(self, list_qa: list):
@@ -97,14 +132,21 @@ class CMetaDataParser(CParser):
             return
 
         for qa_item in list_qa:
-            self.metadata.quality.append_metadata_bus_quality(
-                CAudit.a_xml_attr_value_in_list(
-                    qa_item[self.Name_ID],
-                    qa_item[self.Name_Title],
-                    qa_item[self.Name_Type],
-                    self.metadata.metadata_bus_xml(),
-                    qa_item[self.Name_XPath],
-                    qa_item[self.Name_Attr_Name],
-                    qa_item[self.Name_List]
+            if CUtils.equal_ignore_case(qa_item[self.Name_Type], self.QualityAudit_Type_XML_Node_Exist):
+                self.metadata.quality.append_metadata_bus_quality(
+                    CAudit.a_xml_element_exist(
+                        qa_item[self.Name_ID],
+                        qa_item[self.Name_Title],
+                        qa_item[self.Name_Result],
+                        self.metadata.metadata_bus_xml(),
+                        qa_item[self.Name_XPath]
+                    )
                 )
-            )
+
+    def batch_qa_metadata_json_item(self, list_qa: list):
+        if len(list_qa) == 0:
+            return
+
+    def batch_qa_metadata_bus_json_item(self, list_qa: list):
+        if len(list_qa) == 0:
+            return

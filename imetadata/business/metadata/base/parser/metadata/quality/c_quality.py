@@ -43,7 +43,7 @@ class CQuality(CResource):
         self.__node_metadata_bus__ = CXml.create_element(self.__node_metadata__, self.Name_Business)
         self.__node_metadata_data__ = CXml.create_element(self.__node_metadata__, self.Name_Data)
 
-    def __append_quality_info__(self, xml_node, quality_id, quality_title, quality_type, quality_memo):
+    def __append_quality_info__(self, xml_node, quality_id, quality_title, quality_result, quality_memo):
         temp_node = CXml.node_xpath_one(xml_node, './{0}[@id="{1}"]'.format(self.Name_Item, quality_id))
         if temp_node is not None:
             CXml.remove(temp_node)
@@ -51,7 +51,7 @@ class CQuality(CResource):
         temp_node = CXml.create_element(xml_node, self.Name_Item)
         CXml.set_attr(temp_node, self.Name_ID, quality_id)
         CXml.set_attr(temp_node, self.Name_Title, quality_title)
-        CXml.set_attr(temp_node, self.Name_Type, quality_type)
+        CXml.set_attr(temp_node, self.Name_Result, quality_result)
         CXml.set_element_text(temp_node, quality_memo)
 
     def append_total_quality(self, audit_result: dict):
@@ -66,9 +66,9 @@ class CQuality(CResource):
         """
         quality_id = CUtils.dict_value_by_name(audit_result, self.Name_ID, '')
         quality_title = CUtils.dict_value_by_name(audit_result, self.Name_Title, '')
-        quality_type = CUtils.dict_value_by_name(audit_result, self.Name_Type, self.QualityAudit_Type_Pass)
+        quality_result = CUtils.dict_value_by_name(audit_result, self.Name_Result, self.QualityAudit_Result_Pass)
         quality_memo = CUtils.dict_value_by_name(audit_result, self.Name_Message, '')
-        self.__append_quality_info__(self.__node_total__, quality_id, quality_title, quality_type, quality_memo)
+        self.__append_quality_info__(self.__node_total__, quality_id, quality_title, quality_result, quality_memo)
 
     def append_data_quality(self, audit_result: dict):
         """
@@ -78,7 +78,7 @@ class CQuality(CResource):
         """
         quality_id = CUtils.dict_value_by_name(audit_result, self.Name_ID, '')
         quality_title = CUtils.dict_value_by_name(audit_result, self.Name_Title, '')
-        quality_type = CUtils.dict_value_by_name(audit_result, self.Name_Type, self.QualityAudit_Type_Pass)
+        quality_type = CUtils.dict_value_by_name(audit_result, self.Name_Type, self.QualityAudit_Result_Pass)
         quality_memo = CUtils.dict_value_by_name(audit_result, self.Name_Message, '')
         self.__append_quality_info__(self.__node_data_items__, quality_id, quality_title, quality_type, quality_memo)
 
@@ -93,7 +93,7 @@ class CQuality(CResource):
             temp_node = CXml.create_element(self.__node_data_records__, self.Name_Record)
         quality_id = CUtils.dict_value_by_name(audit_result, self.Name_ID, '')
         quality_title = CUtils.dict_value_by_name(audit_result, self.Name_Title, '')
-        quality_type = CUtils.dict_value_by_name(audit_result, self.Name_Type, self.QualityAudit_Type_Pass)
+        quality_type = CUtils.dict_value_by_name(audit_result, self.Name_Type, self.QualityAudit_Result_Pass)
         quality_memo = CUtils.dict_value_by_name(audit_result, self.Name_Message, '')
         self.__append_quality_info__(temp_node, quality_id, quality_title, quality_type, quality_memo)
 
@@ -105,7 +105,7 @@ class CQuality(CResource):
         """
         quality_id = CUtils.dict_value_by_name(audit_result, self.Name_ID, '')
         quality_title = CUtils.dict_value_by_name(audit_result, self.Name_Title, '')
-        quality_type = CUtils.dict_value_by_name(audit_result, self.Name_Type, self.QualityAudit_Type_Pass)
+        quality_type = CUtils.dict_value_by_name(audit_result, self.Name_Type, self.QualityAudit_Result_Pass)
         quality_memo = CUtils.dict_value_by_name(audit_result, self.Name_Message, '')
         self.__append_quality_info__(self.__node_metadata_data__, quality_id, quality_title, quality_type, quality_memo)
 
@@ -117,9 +117,9 @@ class CQuality(CResource):
         """
         quality_id = CUtils.dict_value_by_name(audit_result, self.Name_ID, '')
         quality_title = CUtils.dict_value_by_name(audit_result, self.Name_Title, '')
-        quality_type = CUtils.dict_value_by_name(audit_result, self.Name_Type, self.QualityAudit_Type_Pass)
+        quality_result = CUtils.dict_value_by_name(audit_result, self.Name_Result, self.QualityAudit_Result_Pass)
         quality_memo = CUtils.dict_value_by_name(audit_result, self.Name_Message, '')
-        self.__append_quality_info__(self.__node_metadata_bus__, quality_id, quality_title, quality_type, quality_memo)
+        self.__append_quality_info__(self.__node_metadata_bus__, quality_id, quality_title, quality_result, quality_memo)
 
     def save_as(self, file_name_with_path):
         """
@@ -137,10 +137,10 @@ class CQuality(CResource):
         return self.__xml_obj__.to_xml()
 
     def quality_result(self) -> str:
-        if self.__xml_obj__.xpath_one('//*[@{0}="{1}"]'.format(self.Name_Type, self.QualityAudit_Type_Error)) is not None:
-            return self.QualityAudit_Type_Error
-        elif self.__xml_obj__.xpath_one('//*[@{0}="{1}"]'.format(self.Name_Type, self.QualityAudit_Type_Warn)) is not None:
-            return self.QualityAudit_Type_Warn
+        if self.__xml_obj__.xpath_one('//*[@{0}="{1}"]'.format(self.Name_Result, self.QualityAudit_Result_Error)) is not None:
+            return self.QualityAudit_Result_Error
+        elif self.__xml_obj__.xpath_one('//*[@{0}="{1}"]'.format(self.Name_Result, self.QualityAudit_Result_Warn)) is not None:
+            return self.QualityAudit_Result_Warn
         else:
-            return self.QualityAudit_Type_Pass
+            return self.QualityAudit_Result_Pass
 
