@@ -75,7 +75,7 @@ class CMetaDataParser(CParser):
                 CAudit.a_file_exist(qa_item[self.Name_ID], qa_item[self.Name_Title], qa_item[self.Name_Type],
                                     CFile.join_file(self.file_content.content_root_dir, qa_item[self.Name_FileName])))
 
-    def batch_qa_metadata_xml_item(self, list_qa: list):
+    def batch_qa_metadata_xml(self, list_qa: list):
         if len(list_qa) == 0:
             return
 

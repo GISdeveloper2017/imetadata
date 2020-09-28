@@ -223,8 +223,15 @@ class CPlugins(CResource):
         :return: 返回
         """
         parser.batch_qa_file_exist(self.init_aq_file_exist_list(parser))
-        parser.batch_qa_metadata_xml_item(self.init_aq_metadata_xml_item_list(parser))
-        parser.batch_qa_metadata_bus_xml_item(self.init_aq_metadata_bus_xml_item_list(parser))
+
+        if self.init_metadata_xml(parser):
+            parser.batch_qa_metadata_xml(self.init_aq_metadata_xml_item_list(parser))
+        if self.init_metadata_bus_xml(parser):
+            parser.batch_qa_metadata_bus_xml_item(self.init_aq_metadata_bus_xml_item_list(parser))
+        if self.init_metadata_json(parser):
+            parser.batch_qa_metadata_json_item(self.init_aq_metadata_xml_item_list(parser))
+        if self.init_metadata_bus_json(parser):
+            parser.batch_qa_metadata_bus_json_item(self.init_aq_metadata_bus_xml_item_list(parser))
         self.parser_metadata_custom(parser)
 
         if not isinstance(parser, CParserCustom):
@@ -280,3 +287,11 @@ class CPlugins(CResource):
         :return:
         """
         pass
+
+    def init_metadata_xml(self, parser):
+        """
+        提取xml格式的元数据, 加载到parser的metadata对象中
+        :param parser:
+        :return:
+        """
+        return False
