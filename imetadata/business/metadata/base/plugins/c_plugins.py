@@ -135,11 +135,9 @@ class CPlugins(CResource):
     def file_info(self):
         return self.__file_info__
 
-    @property
     def classified_object_confirm(self):
         return self.__object_confirm__
 
-    @property
     def classified_object_name(self):
         return self.__object_name__
 

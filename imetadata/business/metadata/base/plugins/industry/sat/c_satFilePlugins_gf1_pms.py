@@ -46,9 +46,9 @@ class CSatFilePlugins_gf1_pms(CSatPlugins):
 
     def init_aq_file_exist_list(self, parser) -> list:
         return [
-            {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name), self.Name_ID: 'pan_tif',
+            {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
              self.Name_Title: '全色文件', self.Name_Type: self.QualityAudit_Type_Error}
-            , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name), self.Name_ID: 'mss_tif',
+            , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()), self.Name_ID: 'mss_tif',
                self.Name_Title: '多光谱文件', self.Name_Type: self.QualityAudit_Type_Error}
         ]
 
