@@ -6,11 +6,10 @@
 
 from __future__ import absolute_import
 
-from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CUtils
-from imetadata.base.Exceptions import DBException
+from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
 from imetadata.business.metadata.base.parser.detail.c_detailParserMng import CDetailParserMng
 from imetadata.business.metadata.base.plugins.manager.c_pluginsMng import CPluginsMng
@@ -111,22 +110,27 @@ where dsodetailparsestatus = 2
             'dsdStorageID': ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
             'dsdDirectory': ds_file_info.value_by_name(0, 'query_object_relation_path', '')})
         ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
-        file_info_obj = CFileInfoEx(dso_data_type,
-                                    ds_file_info.value_by_name(0, 'query_object_fullname', ''),
-                                    ds_file_info.value_by_name(0, 'query_object_root_dir', ''),
-                                    ds_rule_content
-                                    )
+        file_info_obj = CDMFilePathInfoEx(dso_data_type,
+                                          ds_file_info.value_by_name(0, 'query_object_fullname', ''),
+                                          ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
+                                          ds_file_info.value_by_name(0, 'query_object_file_id', ''),
+                                          ds_file_info.value_by_name(0, 'query_object_file_parent_id', ''),
+                                          ds_file_info.value_by_name(0, 'query_object_owner_id', ''),
+                                          self.get_mission_db_id(),
+                                          ds_rule_content
+                                          )
+
         plugins_obj = CPluginsMng.plugins(file_info_obj, dso_object_type)
         if plugins_obj is None:
             return CUtils.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，对象详情无法解析, 处理结束!'.format(
                 ds_file_info.value_by_name(0, 'query_object_fullname', ''),
                 dso_object_type)
-            )
+                                       )
 
         try:
             plugins_information = plugins_obj.get_information()
             detail_parser = CDetailParserMng.give_me_parser(plugins_information[plugins_obj.Plugins_Info_DetailEngine],
-                                                            self.get_mission_db_id(), dso_id, dso_object_name, file_info_obj)
+                                                            dso_id, dso_object_name, file_info_obj)
             process_result = plugins_obj.parser_detail(detail_parser)
             if CUtils.result_success(process_result):
                 CFactory().give_me_db(self.get_mission_db_id()).execute('''
@@ -143,12 +147,12 @@ where dsodetailparsestatus = 2
                 self.db_update_object_status(dso_id, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
                     ds_file_info.value_by_name(0, 'query_object_fullname', ''), CUtils.result_message(process_result)))
                 return process_result
-        except:
-            self.db_update_object_status(dso_id, '文件或目录[{0}]对象详情解析过程出现错误!'.format(
-                ds_file_info.value_by_name(0, 'query_object_fullname', '')))
+        except Exception as error:
+            self.db_update_object_status(dso_id, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
+                ds_file_info.value_by_name(0, 'query_object_fullname', ''), error.__str__()))
 
-            return CUtils.merge_result(self.Failure, '文件或目录[{0}]对象详情解析过程出现错误!'.format(
-                ds_file_info.value_by_name(0, 'query_object_fullname', '')))
+            return CUtils.merge_result(self.Failure, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
+                ds_file_info.value_by_name(0, 'query_object_fullname', ''), error.__str__()))
 
     def db_update_object_status(self, dso_id, memo):
         CFactory().give_me_db(self.get_mission_db_id()).execute('''

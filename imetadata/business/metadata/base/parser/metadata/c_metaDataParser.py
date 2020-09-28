@@ -54,11 +54,11 @@ class CMetaDataParser(CParser):
         file_quality_text = self.metadata.quality.to_xml()
         quality_result = self.metadata.quality.quality_result()
 
-        CFactory().give_me_db(self.__db_server_id__).execute('''
+        CFactory().give_me_db(self.file_info.__db_server_id__).execute('''
                     update dm2_storage_object
                     set dso_quality = :dso_quality, dso_quality_result = :dso_quality_result
                     where dsoid = :dsoid
-                    ''', {'dso_quality': file_quality_text, 'dsoid': self.__object_id__,
+                    ''', {'dso_quality': file_quality_text, 'dsoid': self.object_id,
                           'dso_quality_result': quality_result}
                                                              )
         return CUtils.merge_result(self.Success, '处理完毕!')

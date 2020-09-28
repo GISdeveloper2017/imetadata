@@ -11,6 +11,7 @@ from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
+from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.c_parser import CParser
 from imetadata.business.metadata.base.parser.c_parserCustom import CParserCustom
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
@@ -111,13 +112,13 @@ class CPlugins(CResource):
     MetaData_Rule_Type_None = 'none'
 
     __file_content__: CVirtualContent = None
-    __file_info__: CFileInfoEx = None
+    __file_info__: CDMFilePathInfoEx = None
     __metadata_rule_obj__: CXml = None
 
     __object_confirm__: int
     __object_name__: str
 
-    def __init__(self, file_info: CFileInfoEx):
+    def __init__(self, file_info: CDMFilePathInfoEx):
         """
         :param file_info:  目标文件或路径的名称
         """
@@ -254,23 +255,23 @@ class CPlugins(CResource):
         :param parser:
         :return:
         """
-        pass
+        return []
 
-    def init_aq_metadata_xml_item_list(self, parser):
+    def init_aq_metadata_xml_item_list(self, parser) -> list:
         """
         初始化默认的, 元数据xml文件的检验列表
         :param parser:
         :return:
         """
-        pass
+        return []
 
-    def init_aq_metadata_bus_xml_item_list(self, parser):
+    def init_aq_metadata_bus_xml_item_list(self, parser) -> list:
         """
         初始化默认的, 业务元数据xml文件的检验列表
         :param parser:
         :return:
         """
-        pass
+        return []
 
     def parser_metadata_custom(self, parser):
         """

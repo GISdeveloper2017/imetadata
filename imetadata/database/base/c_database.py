@@ -19,6 +19,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
+from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CUtils
 from imetadata.base.Exceptions import *
 from imetadata.database.base.c_dataset import CDataSet
@@ -223,3 +224,23 @@ class CDataBase:
         :return:
         """
         session.rollback()
+
+    def execute_batch(self, sql_params_tuple: []) -> bool:
+        """
+        批处理事务执行
+        @param db_server_id: 数据库服务器识别id
+        @param sql_params_tuple: sql与dict参数组合的元组集合 [(sql1,dict_params1),(sql2,dict_params2)]
+        @return:
+        """
+        session = self.give_me_session()
+        try:
+            for sql, params in sql_params_tuple:
+                self.session_execute(session, sql, params)
+            self.session_commit(session)
+            return True
+        except Exception as error:
+            CLogger().warning('数据库处理出现异常, 错误信息为: {0}'.format(error.__str__()))
+            self.session_rollback(session)
+            return False
+        finally:
+            self.session_close(session)

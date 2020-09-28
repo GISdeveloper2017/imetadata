@@ -4,18 +4,17 @@
 # @File : c_pluginsMng.py
 
 from imetadata.base.c_file import CFile
-from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_object import CObject
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_sys import CSys
-from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
 
 
 class CPluginsMng(CResource):
     @classmethod
-    def plugins_classified(cls, file_info: CFileInfoEx) -> CPlugins:
+    def plugins_classified(cls, file_info: CDMFilePathInfoEx) -> CPlugins:
         target = file_info.__file_main_name__
         target_type = file_info.__file_type__
         plugins_root_package_name = '{0}.{1}'.format(CSys.get_plugins_package_root_name(), target_type)
@@ -39,7 +38,7 @@ class CPluginsMng(CResource):
             return None
 
     @classmethod
-    def plugins(cls, file_info: CFileInfoEx, plugins_id: str) -> CPlugins:
+    def plugins(cls, file_info: CDMFilePathInfoEx, plugins_id: str) -> CPlugins:
         target_type = file_info.__file_type__
         target_path = CFile.join_file(CSys.get_plugins_root_dir(), target_type)
         plugins_file_name = CFile.join_file(target_path, '{0}.{1}'.format(plugins_id, cls.FileExt_Py))

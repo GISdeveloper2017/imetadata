@@ -35,10 +35,25 @@ class CDataSet:
             return default_value
 
     def size(self) -> int:
+        """
+        记录总数
+        :return:
+        """
         if self.__data__ is None:
             return 0
 
         return len(self.__data__)
+
+    def field_count(self) -> int:
+        """
+        字段个数
+        :return:
+        """
+        if self.__data__ is None:
+            return 0
+
+        row_data = self.__data__[0]
+        return len(row_data)
 
     def is_empty(self) -> bool:
         return self.size() == 0

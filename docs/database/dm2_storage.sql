@@ -2117,6 +2117,17 @@ COMMENT ON COLUMN public.dm2_storage_object.length IS '长度';
 drop table dm2_storage_object_spatial;
 
 /*
+    2020-09-24 针对文件详情表, 进行扩展
+*/
+
+alter table dm2_storage_obj_detail add column dodStorageId character varying(100);
+alter table dm2_storage_obj_detail add column dodFileRelationName character varying(2000);
+COMMENT ON COLUMN public.dm2_storage_obj_detail.dodStorageId IS '存储标识';
+COMMENT ON COLUMN public.dm2_storage_obj_detail.dodFileRelationName IS '相对路径';
+alter table dm2_storage_obj_detail add column dodfiletype character varying(100);
+COMMENT ON COLUMN public.dm2_storage_obj_detail.dodfiletype IS '文件类型';
+
+/*
     2020-09-27 针对对象表, 扩展对象的质检结果字段
 */
 

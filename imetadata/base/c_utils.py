@@ -102,6 +102,19 @@ class CUtils(CResource):
         """
         return check_text.isalpha()
 
+    @classmethod
+    def split(cls, split_text: str, split_sep_list: list) -> list:
+        """
+        根据指定的分隔符数组, 对指定文本进行分割
+        :param split_text:
+        :param split_sep_list:
+        :return:
+        """
+        split_text = 'ab/c_dab-cad'
+        split_text.split(['-', '_'], 2)
+        pass
+
+
 
 if __name__ == '__main__':
     text = "The rain in Spain"

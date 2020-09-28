@@ -4,19 +4,17 @@
 # @File : c_parser.py
 from abc import abstractmethod
 
-from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 
 
 class CParser(CResource):
-    __db_server_id__ = None
     __object_id__ = None
     __object_name__ = None
-    __file_info__: CFileInfoEx = None
+    __file_info__: CDMFilePathInfoEx = None
 
-    def __init__(self, db_server_id: str, object_id: str, object_name: str, file_info: CFileInfoEx):
-        self.__db_server_id__ = db_server_id
+    def __init__(self, object_id: str, object_name: str, file_info: CDMFilePathInfoEx):
         self.__object_id__ = object_id
         self.__file_info__ = file_info
         self.__object_name__ = object_name
@@ -33,10 +31,6 @@ class CParser(CResource):
     @property
     def file_info(self):
         return self.__file_info__
-
-    @property
-    def db_server_id(self):
-        return self.__db_server_id__
 
     @abstractmethod
     def process(self) -> str:

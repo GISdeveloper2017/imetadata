@@ -6,10 +6,6 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
-from imetadata.base.c_object import CObject
-from imetadata.base.c_sys import CSys
-from imetadata.base.c_utils import CUtils
-from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
 from imetadata.database.c_factory import CFactory
 
 
@@ -48,6 +44,10 @@ class CDMFilePathInfoEx(CFileInfoEx):
         root_path = self.__ds_storage__.value_by_name(0, 'dstunipath', '')
         super().__init__(file_type, file_name_with_full_path, root_path, rule_content)
         self.custom_init()
+
+    @property
+    def db_server_id(self):
+        return self.__db_server_id__
 
     def custom_init(self):
         """
