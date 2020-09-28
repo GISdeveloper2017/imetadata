@@ -52,7 +52,7 @@ class CFilePlugins(CPlugins):
         设置默认的识别出的对象名称
         :return:
         """
-        self.__object_name__ = self.get_classified_text()
+        self.__object_name__ = self.file_info.__file_main_name__
         return self.__object_name__
 
     def classified_by_character_common(self):
