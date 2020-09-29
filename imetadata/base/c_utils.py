@@ -110,10 +110,33 @@ class CUtils(CResource):
         :param split_sep_list:
         :return:
         """
-        split_text = 'ab/c_dab-cad'
-        split_text.split(['-', '_'], 2)
-        pass
+        # split_text = 'ab/c_dab-cad'
+        # split_text.split(['-', '_'], 99)
+        text_part_list = split_text.split(split_sep_list[0], 99)
+        for index in range(len(split_sep_list)):
+            if index == 0:
+                continue
+            result_list = cls.__split_list(text_part_list, split_sep_list[index])
+            text_part_list = result_list
+        # for item in text_part_list:
+        #     print(item)
+        return text_part_list
 
+    @classmethod
+    def __split_list(cls, text_part_list: list, split_sep: str) -> list:
+        """
+           私有方法：根据分割的文本段数组、分隔符获取分割后的结果集合（去重）
+        @param text_part_list:
+        @param split_sep:
+        @return:
+        """
+        result_list = []
+        for text_item in text_part_list:
+            text_part_list2 = text_item.split(split_sep, 99)
+            for item in text_part_list2:
+                if not result_list.__contains__(item):
+                    result_list.append(item)
+        return result_list
 
 
 if __name__ == '__main__':

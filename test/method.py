@@ -2,6 +2,8 @@
 # @Time : 2020/9/15 17:00
 # @Author : 赵宇飞
 # @File : method.py
+import gdal
+
 from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_resource import CResource
@@ -54,13 +56,49 @@ class test_fei(CResource):
             self.__file_or_dir_fullname_of_path_recurse(list_file_fullname,path,is_recurse_subpath,match_str,match_type)
         return list_file_fullname
 
+    def split_part(self, tags_parser_text, tags_parser_split_list):
+        text_part_list = tags_parser_text.split(tags_parser_split_list[0], 99)
+        for index in range(len(tags_parser_split_list)):
+            if index == 0:
+                continue
+            result_list = self.split_list(text_part_list, tags_parser_split_list[index])
+            text_part_list = result_list
+        # for item in text_part_list:
+        #     print(item)
+        return text_part_list
+
+    def split_list(self, text_part_list, sep):
+        result_list = []
+        for text_item in text_part_list:
+            text_part_list2 = text_item.split(sep, 99)
+            for item in text_part_list2:
+                if not result_list.__contains__(item):
+                    result_list.append(item)
+        return result_list
 
 if __name__ == "__main__":
+    #gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
+    #gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
+
+    tags_parser_text = r'县界_昆明市-2019-2018 2017 昆明市 县界'
+    # 标签分隔符
+    tags_parser_split_list: list = ['\\', '_', '/', '-', ' ']
+    test_fei().split_part(tags_parser_text,tags_parser_split_list)
+
+    raster = r'D:\data\0生态审计\少量数据测试_4个\新建文件夹23333333\WGS84.img'
+    ds = gdal.Open(raster,gdal.GA_ReadOnly)
+    prj = ds.GetProjection()
+    print(prj)
+
+
+
     # aa()
     arr_list = [1, 2]
     # arr_list = r''
     test_fei().aa1(arr_list)
     print(arr_list)
+
+
 
     query_object_fullname = r'D:\data\0生态审计\产品样例数据-昆明矢量\基础地理信息\县界'
     list_file_fullname = test_fei().file_or_dir_fullname_of_path(query_object_fullname, True)
