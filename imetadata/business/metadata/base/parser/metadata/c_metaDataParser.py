@@ -107,41 +107,51 @@ class CMetaDataParser(CParser):
 
         for qa_item in list_qa:
             self.metadata.quality.append_total_quality(
-                CAudit.a_file_exist(qa_item[self.Name_ID], qa_item[self.Name_Title], qa_item[self.Name_Result],
-                                    CFile.join_file(self.file_content.content_root_dir, qa_item[self.Name_FileName])))
+                CAudit.a_file_exist(CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                                    CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                                    CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                                    CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
+                                    CFile.join_file(
+                                        self.file_content.content_root_dir,
+                                        CUtils.dict_value_by_name(qa_item, self.Name_FileName, '')
+                                    )
+                                    )
+            )
 
     def batch_qa_metadata_xml(self, list_qa: list):
         if len(list_qa) == 0:
             return
 
         for qa_item in list_qa:
-            self.metadata.quality.append_metadata_data_quality(
-                CAudit.a_xml_attr_value_in_list(
-                    qa_item[self.Name_ID],
-                    qa_item[self.Name_Title],
-                    qa_item[self.Name_Type],
-                    self.metadata.metadata_xml(),
-                    qa_item[self.Name_XPath],
-                    qa_item[self.Name_Attr_Name],
-                    qa_item[self.Name_List]
-                )
+            list_result = CAudit.a_xml_attribute(
+                CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
+                self.metadata.metadata_xml(),
+                CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
+                CUtils.dict_value_by_name(qa_item, self.Name_Attr_Name, ''),
+                qa_item
             )
+            for item_result in list_result:
+                self.metadata.quality.append_metadata_data_quality(item_result)
 
     def batch_qa_metadata_bus_xml_item(self, list_qa: list):
         if len(list_qa) == 0:
             return
 
         for qa_item in list_qa:
-            if CUtils.equal_ignore_case(qa_item[self.Name_Type], self.QualityAudit_Type_XML_Node_Exist):
-                self.metadata.quality.append_metadata_bus_quality(
-                    CAudit.a_xml_element_exist(
-                        qa_item[self.Name_ID],
-                        qa_item[self.Name_Title],
-                        qa_item[self.Name_Result],
-                        self.metadata.metadata_bus_xml(),
-                        qa_item[self.Name_XPath]
-                    )
+            if CUtils.equal_ignore_case(qa_item[self.Name_Type], self.QA_Type_XML_Node_Exist):
+                list_result = CAudit.a_xml_element(
+                    CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
+                    self.metadata.metadata_bus_xml(),
+                    CUtils.dict_value_by_name(qa_item, self.Name_XPath, '')
                 )
+                for item_result in list_result:
+                    self.metadata.quality.append_metadata_bus_quality(item_result)
 
     def batch_qa_metadata_json_item(self, list_qa: list):
         if len(list_qa) == 0:

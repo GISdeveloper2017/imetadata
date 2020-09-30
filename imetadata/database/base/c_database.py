@@ -77,7 +77,7 @@ class CDataBase:
             exe_params_names = exe_params.keys()
             new_params = dict()
             for exe_param_name in exe_params_names:
-                exe_param_value = CUtils.dict_value_by_name(params, exe_param_name)
+                exe_param_value = CUtils.dict_value_by_name(params, exe_param_name, None)
                 if exe_param_value is not None:
                     new_params[exe_param_name] = str(exe_param_value)
                 else:

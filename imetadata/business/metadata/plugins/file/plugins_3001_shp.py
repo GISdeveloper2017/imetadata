@@ -29,13 +29,13 @@ class plugins_3001_shp(CVectorFilePlugins):
     def init_aq_file_exist_list(self, parser: CMetaDataParser) -> list:
         return [
             {self.Name_FileName: '{0}.dbf'.format(self.classified_object_name()), self.Name_ID: 'dbf',
-             self.Name_Title: '属性数据文件', self.Name_Result: self.QualityAudit_Result_Error}
+             self.Name_Title: '属性数据文件', self.Name_Result: self.QA_Result_Error}
             , {self.Name_FileName: '{0}.prj'.format(self.classified_object_name()), self.Name_ID: 'prj',
-               self.Name_Title: '投影文件', self.Name_Result: self.QualityAudit_Result_Warn}
+               self.Name_Title: '投影文件', self.Name_Result: self.QA_Result_Warn}
             , {self.Name_FileName: '{0}.shx'.format(self.classified_object_name()), self.Name_ID: 'shx',
-               self.Name_Title: 'shx文件', self.Name_Result: self.QualityAudit_Result_Error}
+               self.Name_Title: 'shx文件', self.Name_Result: self.QA_Result_Error}
             , {self.Name_FileName: '{0}.sbn'.format(self.classified_object_name()), self.Name_ID: 'sbn',
-               self.Name_Title: 'sbn文件', self.Name_Result: self.QualityAudit_Result_Error}
+               self.Name_Title: 'sbn文件', self.Name_Result: self.QA_Result_Error}
             , {self.Name_FileName: '{0}.sbx'.format(self.classified_object_name()), self.Name_ID: 'sbx',
-               self.Name_Title: 'sbx文件', self.Name_Result: self.QualityAudit_Result_Error}
+               self.Name_Title: 'sbx文件', self.Name_Result: self.QA_Result_Error}
         ]

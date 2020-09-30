@@ -2135,3 +2135,12 @@ alter table dm2_storage_object add column dso_quality xml;
 COMMENT ON COLUMN public.dm2_storage_object.dso_quality IS '质检详情';
 alter table dm2_storage_object add column dso_quality_result character varying(100) ;
 COMMENT ON COLUMN public.dm2_storage_object.dso_quality_result IS '质检结果';
+
+/*
+    2020-09-30 王西亚
+    . 处于考虑质检结果对各个专题的支持能力, 特对质检项目进行分级管理, 在质检结束后, 将质检结果分级汇总
+*/
+
+alter table dm2_storage_object drop dso_quality_result;
+alter table dm2_storage_object add column dso_quality_result jsonb ;
+COMMENT ON COLUMN public.dm2_storage_object.dso_quality_result IS '质检结果';

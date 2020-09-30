@@ -53,7 +53,7 @@ class CUtils(CResource):
         return str1.strip().lower() == str2.strip().lower()
 
     @classmethod
-    def dict_value_by_name(cls, dict_obj: dict, name: str, ignore_case=True) -> any:
+    def dict_value_by_name(cls, dict_obj: dict, name: str, default_value, ignore_case=True) -> any:
         keys = dict_obj.keys()
         for key in keys:
             if ignore_case:
@@ -63,7 +63,7 @@ class CUtils(CResource):
                 if key.strip() == name.strip():
                     return dict_obj[key]
         else:
-            return None
+            return default_value
 
     @classmethod
     def list_count(cls, list_obj: list, name: str, ignore_case=True) -> int:

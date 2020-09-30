@@ -48,9 +48,11 @@ class CSatFilePlugins_gf1_pms(CSatPlugins):
     def init_aq_file_exist_list(self, parser: CMetaDataParser) -> list:
         return [
             {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
-             self.Name_Title: '全色文件', self.Name_Result: self.QualityAudit_Result_Error}
+             self.Name_Level: self.QA_Level_Min,
+             self.Name_Title: '全色文件', self.Name_Result: self.QA_Result_Error}
             , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()), self.Name_ID: 'mss_tif',
-               self.Name_Title: '多光谱文件', self.Name_Result: self.QualityAudit_Result_Error}
+               self.Name_Level: self.QA_Level_Min,
+               self.Name_Title: '多光谱文件', self.Name_Result: self.QA_Result_Error}
         ]
 
     def init_aq_metadata_bus_xml_item_list(self, parser: CMetaDataParser):
@@ -61,18 +63,20 @@ class CSatFilePlugins_gf1_pms(CSatPlugins):
         """
         return [
             {
-                self.Name_Type: self.QualityAudit_Type_XML_Node_Exist,
-                self.Name_XPath: '/ProductMetaData/SceneID',
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/SceneID1',
                 self.Name_ID: 'SceneID',
                 self.Name_Title: '景编号',
-                self.Name_Result: self.QualityAudit_Result_Error
-             },
+                self.Name_Level: self.QA_Level_Max,
+                self.Name_Result: self.QA_Result_Error
+            },
             {
-                self.Name_Type: self.QualityAudit_Type_XML_Node_Exist,
-                self.Name_XPath: '/ProductMetaData/OrbitID',
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/OrbitID2',
                 self.Name_ID: 'OrbitID',
                 self.Name_Title: '轨道编号',
-                self.Name_Result: self.QualityAudit_Result_Error
+                self.Name_Level: self.QA_Level_2,
+                self.Name_Result: self.QA_Result_Error
             }
         ]
 
@@ -82,7 +86,8 @@ class CSatFilePlugins_gf1_pms(CSatPlugins):
         :param parser:
         :return:
         """
-        metadata_xml_file_name = CFile.join_file(self.file_content.content_root_dir, '{0}-PAN1.xml'.format(self.classified_object_name()))
+        metadata_xml_file_name = CFile.join_file(self.file_content.content_root_dir,
+                                                 '{0}-PAN1.xml'.format(self.classified_object_name()))
         if not CFile.file_or_path_exist(metadata_xml_file_name):
             return False
 

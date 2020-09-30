@@ -96,6 +96,7 @@ class CResource:
     Name_Code = 'code'
     Name_Catalog = 'catalog'
     Name_Title = 'title'
+    Name_Level = 'level'
     Name_Type = 'type'
 
     Name_XPath = 'xpath'
@@ -131,9 +132,13 @@ class CResource:
     TagEngine_Global_Dim_In_RelationPath = 'global_dim_in_relation_path'
     TagEngine_Global_Dim_In_MainName = 'global_dim_in_main_name'
 
-    QualityAudit_Result_Pass = 'pass'
-    QualityAudit_Result_Warn = 'warn'
-    QualityAudit_Result_Error = 'error'
+    QA_Result_Pass = 'pass'
+    QA_Result_Warn = 'warn'
+    QA_Result_Error = 'error'
 
-    QualityAudit_Type_FileExist = 'file_exist'
-    QualityAudit_Type_XML_Node_Exist = 'xml_node_exist'
+    QA_Type_FileExist = 'file_exist'
+    QA_Type_XML_Node_Exist = 'xml_node_exist'
+
+    QA_Level_Min = 1
+    QA_Level_2 = 2
+    QA_Level_Max = 3
