@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/9/7 11:00 
 # @Author : 王西亚 
-# @File : t_c_file.py
+# @File : test_c_file.py
 
 import allure
 

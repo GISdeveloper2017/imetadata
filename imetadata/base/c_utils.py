@@ -4,6 +4,9 @@
 from __future__ import absolute_import
 import uuid
 import re
+
+import pinyin
+
 from imetadata.base.c_json import CJson
 from imetadata.base.c_resource import CResource
 
@@ -110,8 +113,6 @@ class CUtils(CResource):
         :param split_sep_list:
         :return:
         """
-        # split_text = 'ab/c_dab-cad'
-        # split_text.split(['-', '_'], 99)
         text_part_list = split_text.split(split_sep_list[0], 99)
         for index in range(len(split_sep_list)):
             if index == 0:
@@ -125,7 +126,7 @@ class CUtils(CResource):
     @classmethod
     def __split_list(cls, text_part_list: list, split_sep: str) -> list:
         """
-           私有方法：根据分割的文本段数组、分隔符获取分割后的结果集合（去重）
+        私有方法：根据分割的文本段数组、分隔符获取分割后的结果集合（去重）
         @param text_part_list:
         @param split_sep:
         @return:
@@ -138,13 +139,20 @@ class CUtils(CResource):
                     result_list.append(item)
         return result_list
 
+    @classmethod
+    def alpha_text(cls, src_text) -> str:
+        """
+        获取中文字符串的拼音首字母
+        :param src_text:
+        :return:
+        """
+        rt_src_text = cls.any_2_str(src_text)
+        if cls.equal_ignore_case(rt_src_text, ''):
+            return ''
+        else:
+            return pinyin.get_initial((src_text), delimiter="").lower().strip().replace(' ', '')
+
 
 if __name__ == '__main__':
-    text = "The rain in Spain"
-    x = re.search(r"\bH\w+", text)
-    if x is None:
-        print('can not match')
-    else:
-        print(x.span())
-        print(x.string)
-        print(x.group())
+    text_alpha = r'你好 ABC中国'
+    print(CUtils.alpha_text(text_alpha))

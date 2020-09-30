@@ -177,7 +177,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
                 params['dsoobjectname'] = object_name
                 params['dsoobjecttype'] = object_type
                 params['dsodatatype'] = self.FileType_File
-                params['dsoalphacode'] = object_name
+                params['dsoalphacode'] = CUtils.alpha_text(object_name)
                 params['dsoaliasname'] = object_name
                 params['dsoparentobjid'] = self.__owner_obj_id__
                 engine.session_execute(session, sql_insert_object, params)
