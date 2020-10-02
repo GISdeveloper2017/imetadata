@@ -16,46 +16,54 @@ class CSatFilePlugins_gf1_pms(CSatPlugins):
 
         return information
 
-    def get_classified_character_of_zip_and_path(self):
+    def get_classified_character_of_sat(self, sat_file_status):
         """
         设置识别的特征
+        . 如果是压缩包, 则是针对压缩包的文件主名
+        . 如果是子目录, 则是针对目录的名称
+        :param sat_file_status 卫星数据类型
+            . Sat_Object_Status_Zip = 'zip'
+            . Sat_Object_Status_Dir = 'dir'
+            . Sat_Object_Status_File = 'file'
         :return:
         [0]: 特征串
         [1]: 特征串的类型
             TextMatchType_Common: 常规通配符, 如 *.txt
             TextMatchType_Regex: 正则表达式
         """
-        return 'gf1_pms1_*_l1a*', self.TextMatchType_Common
+        if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
+            return 'gf1_pms1_*_l1a*', self.TextMatchType_Common
+        else:
+            return 'gf1_pms1_*_l1a*-pan1.tiff', self.TextMatchType_Common
 
-    def get_classified_character_of_file(self):
-        """
-        设置识别的特征
-        :return:
-        [0]: 特征串
-        [1]: 特征串的类型
-            TextMatchType_Common: 常规通配符, 如 *.txt
-            TextMatchType_Regex: 正则表达式
-        """
-        return 'gf1_pms1_*_l1a*-pan1.tiff', self.TextMatchType_Common
-
-    def get_classified_object_name_by_file(self) -> str:
+    def get_classified_object_name_of_sat(self, sat_file_status) -> str:
         """
         当卫星数据是解压后的散落文件时, 如何从解压后的文件名中, 解析出卫星数据的原名
+        . 如果是压缩包, 则是针对压缩包的文件主名
+        . 如果是子目录, 则是针对目录的名称
+        . 如果是散落文件, 则是针对文件的全名
+        :param sat_file_status 卫星数据类型
+            . Sat_Object_Status_Zip = 'zip'
+            . Sat_Object_Status_Dir = 'dir'
+            . Sat_Object_Status_File = 'file'
         :return:
         """
-        return self.file_info.__file_main_name__.replace('-PAN1', '')
+        if sat_file_status == self.Sat_Object_Status_Zip:
+            return self.file_info.__file_main_name__
+        elif sat_file_status == self.Sat_Object_Status_Dir:
+            return self.file_info.__file_name_without_path__
+        else:
+            return self.file_info.__file_main_name__.replace('-PAN1', '')
 
-    def init_aq_file_exist_list(self, parser: CMetaDataParser) -> list:
+    def init_qa_file_exist_list(self, parser: CMetaDataParser) -> list:
         return [
             {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
-             self.Name_Level: self.QA_Level_Min,
-             self.Name_Title: '全色文件', self.Name_Result: self.QA_Result_Error}
+             self.Name_Title: '全色文件', self.Name_Level: self.QA_Level_Min, self.Name_Result: self.QA_Result_Error}
             , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()), self.Name_ID: 'mss_tif',
-               self.Name_Level: self.QA_Level_Min,
-               self.Name_Title: '多光谱文件', self.Name_Result: self.QA_Result_Error}
+               self.Name_Title: '多光谱文件', self.Name_Level: self.QA_Level_Min, self.Name_Result: self.QA_Result_Error}
         ]
 
-    def init_aq_metadata_bus_xml_item_list(self, parser: CMetaDataParser):
+    def init_qa_metadata_bus_xml_item_list(self, parser: CMetaDataParser):
         """
         初始化默认的, 业务元数据xml文件的检验列表
         :param parser:
@@ -80,20 +88,10 @@ class CSatFilePlugins_gf1_pms(CSatPlugins):
             }
         ]
 
-    def init_metadata_bus_xml(self, parser: CMetaDataParser):
+    def get_bus_metadata_filename_by_file(self) -> str:
         """
-        提取xml格式的业务元数据, 加载到parser的metadata对象中
-        :param parser:
+        卫星数据解压后, 哪个文件是业务元数据?
         :return:
         """
-        metadata_xml_file_name = CFile.join_file(self.file_content.content_root_dir,
-                                                 '{0}-PAN1.xml'.format(self.classified_object_name()))
-        if not CFile.file_or_path_exist(metadata_xml_file_name):
-            return False
-
-        try:
-            parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, metadata_xml_file_name)
-            return True
-        except:
-            parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
-            return False
+        return CFile.join_file(self.file_content.content_root_dir,
+                               '{0}-PAN1.xml'.format(self.classified_object_name()))

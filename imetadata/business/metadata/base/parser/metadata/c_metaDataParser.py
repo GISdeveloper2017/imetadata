@@ -7,7 +7,9 @@ from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.c_parser import CParser
+from imetadata.business.metadata.base.parser.c_parserCustom import CParserCustom
 from imetadata.business.metadata.base.parser.metadata.c_metadata import CMetaData
+from imetadata.business.metadata.base.parser.metadata.metadata.c_mdExtractorMng import CMDExtractorMng
 from imetadata.business.metadata.base.parser.metadata.quality.c_audit import CAudit
 from imetadata.database.c_factory import CFactory
 
@@ -102,6 +104,11 @@ class CMetaDataParser(CParser):
         pass
 
     def batch_qa_file_exist(self, list_qa: list):
+        """
+        批量处理数据完整性方面的质检项目
+        :param list_qa:
+        :return:
+        """
         if len(list_qa) == 0:
             return
 
@@ -114,11 +121,17 @@ class CMetaDataParser(CParser):
                                     CFile.join_file(
                                         self.file_content.content_root_dir,
                                         CUtils.dict_value_by_name(qa_item, self.Name_FileName, '')
-                                    )
+                                    ),
+                                    qa_item
                                     )
             )
 
     def batch_qa_metadata_xml(self, list_qa: list):
+        """
+        批量处理xml格式的元数据中的质检项目
+        :param list_qa:
+        :return:
+        """
         if len(list_qa) == 0:
             return
 
@@ -137,6 +150,11 @@ class CMetaDataParser(CParser):
                 self.metadata.quality.append_metadata_data_quality(item_result)
 
     def batch_qa_metadata_bus_xml_item(self, list_qa: list):
+        """
+        批量处理xml格式的业务元数据中的质检项目
+        :param list_qa:
+        :return:
+        """
         if len(list_qa) == 0:
             return
 
@@ -148,15 +166,38 @@ class CMetaDataParser(CParser):
                     CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
                     CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
                     self.metadata.metadata_bus_xml(),
-                    CUtils.dict_value_by_name(qa_item, self.Name_XPath, '')
+                    CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
+                    qa_item
                 )
                 for item_result in list_result:
                     self.metadata.quality.append_metadata_bus_quality(item_result)
 
     def batch_qa_metadata_json_item(self, list_qa: list):
+        """
+        批量处理json格式的元数据中的质检项目
+        todo 负责人 赵宇飞 在这里增加批量检查json格式的元数据的功能, 参考xml格式的元数据处理功能
+        :param list_qa:
+        :return:
+        """
         if len(list_qa) == 0:
             return
 
     def batch_qa_metadata_bus_json_item(self, list_qa: list):
+        """
+        批量处理json格式的业务元数据中的质检项目
+        todo 负责人 赵宇飞 在这里增加批量检查json格式的业务元数据的功能, 参考xml格式的业务元数据处理功能
+        :param list_qa:
+        :return:
+        """
         if len(list_qa) == 0:
             return
+
+    def process_default_metadata(self, metadata_engine_type):
+        """
+        内置的元数据提取
+        :param metadata_engine_type:
+        :return:
+        """
+        md_extractor = CMDExtractorMng.give_me_extractor(metadata_engine_type, self.object_id, self.object_name, self.file_info, self.file_content)
+        if not isinstance(md_extractor, CParserCustom):
+            return md_extractor.process()

@@ -58,11 +58,14 @@ class CResource:
     Name_Records = 'records'
     Name_Record = 'record'
 
+    Name_Format = 'format'
+
     Dir_Type_Directory = 1
     Dir_Type_VirtualDirectory = 2
     Dir_Type_Root = 3
 
     FileName_MetaData_Rule = 'metadata.rule'
+    FileName_MetaData = 'metadata.json'
 
     Object_Confirm_IUnKnown = 0
     Object_Confirm_Maybe = 1
@@ -120,8 +123,6 @@ class CResource:
     MetaDataEngine_Raster = 'raster'
     MetaDataEngine_Vector = 'vector'
     MetaDataEngine_Document = 'document'
-    MetaDataEngine_21AT_MBTiles = '21at_mbtiles'
-    MetaDataEngine_Custom = 'custom'
 
     DetailEngine_Same_File_Main_Name = 'same_file_main_name'
     DetailEngine_File_Of_Same_Dir = 'file_of_same_dir'

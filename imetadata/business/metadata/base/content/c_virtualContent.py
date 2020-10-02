@@ -6,11 +6,12 @@
 from abc import abstractmethod
 
 from imetadata.base.c_file import CFile
+from imetadata.base.c_resource import CResource
 from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CUtils
 
 
-class CVirtualContent:
+class CVirtualContent(CResource):
     __temp_subpath_name__: str
     __target_name__ = None
     __virtual_content_root_dir__ = None

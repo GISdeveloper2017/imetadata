@@ -15,6 +15,7 @@ from imetadata.business.metadata.base.plugins.c_dirPlugins import CDirPlugins
 class C21ATBusDataSetPlugins(CDirPlugins):
     __classified_object_type__ = None
     __metadata_xml_obj__ = None
+    __bus_metadata_xml_file_name__ = None
 
     Path_21AT_MD_Content_ProductType = '/root/ProductType'
     Path_21AT_MD_Content_ProductName = '/root/DNName'
@@ -32,7 +33,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_TagsEngine] = 'global_dim'
-        information[self.Plugins_Info_DetailEngine] = 'same_file_mainname'
+        information[self.Plugins_Info_DetailEngine] = None
         information[self.Plugins_Info_QCEngine] = None
 
         return information
@@ -50,6 +51,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
         current_path = self.file_info.__file_name_with_full_path__
         metadata_file_name = CFile.join_file(current_path, 'metadata.21at')
         if CFile.file_or_path_exist(metadata_file_name):
+            self.__bus_metadata_xml_file_name__ = metadata_file_name
             self.__metadata_xml_obj__ = CXml()
             try:
                 self.__metadata_xml_obj__.load_file(metadata_file_name)
@@ -62,3 +64,19 @@ class C21ATBusDataSetPlugins(CDirPlugins):
                 CLogger().warning('发现文件{0}符合二十一世纪业务数据集标准, 但该文件格式有误, 无法打开! ')
 
         return self.__object_confirm__, self.__object_name__
+
+    def init_metadata_bus_xml(self, parser: CMetaDataParser):
+        """
+        提取xml格式的业务元数据, 加载到parser的metadata对象中
+        :param parser:
+        :return:
+        """
+        if not CFile.file_or_path_exist(self.__bus_metadata_xml_file_name__):
+            return False
+
+        try:
+            parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, self.__bus_metadata_xml_file_name__)
+            return True
+        except:
+            parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
+            return False

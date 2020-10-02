@@ -21,6 +21,8 @@ from __future__ import absolute_import
 import demjson
 import jsonpath
 
+from imetadata.base.c_utils import CUtils
+
 
 class CJson:
     Encoding_UTF8 = 'UTF-8'
@@ -114,6 +116,16 @@ class CJson:
                 return json.xpath_one(json_path_str, attr_value_default)
             except Exception as err:
                 return attr_value_default
+
+    @classmethod
+    def json_set_attr(cls, json_text, attr_name: str, attr_value) -> str:
+        new_result = CJson()
+        rt_json_text = CUtils.any_2_str(json_text)
+        if not CUtils.equal_ignore_case(rt_json_text, ''):
+            new_result.load_json_text(rt_json_text)
+
+        new_result.set_value_of_name(attr_name, attr_value)
+        return new_result.to_json()
 
     @classmethod
     def json_join(cls, json_path: str, *json_suffix) -> str:

@@ -8,6 +8,7 @@ from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.content.c_virtualContent_Dir import CVirtualContentDir
 from imetadata.business.metadata.base.content.c_virtualContent_Package import CVirtualContentPackage
+from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
 
 
@@ -69,21 +70,21 @@ class CSatPlugins(CPlugins):
 
         if self.file_info.__file_type__ == self.FileType_File:
             if self.special_zip_file_ext_list().count(self.file_info.__file_ext__.lower()) > 0:
-                sat_classified_character, sat_classified_character_type = self.get_classified_character_of_zip_and_path()
+                sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(self.Sat_Object_Status_Zip)
                 if (self.classified_with_character(self.file_info.__file_main_name__, sat_classified_character,
                                                    sat_classified_character_type)):
                     self.__object_status__ = self.Sat_Object_Status_Zip
                     self.__object_confirm__ = self.Object_Confirm_IKnown
                     self.__object_name__ = self.file_info.__file_main_name__
             else:
-                sat_classified_character, sat_classified_character_type = self.get_classified_character_of_file()
+                sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(self.Sat_Object_Status_File)
                 if (self.classified_with_character(self.file_info.__file_name_without_path__, sat_classified_character,
                                                    sat_classified_character_type)):
                     self.__object_status__ = self.Sat_Object_Status_File
                     self.__object_confirm__ = self.Object_Confirm_IKnown
-                    self.__object_name__ = self.get_classified_object_name_by_file()
+                    self.__object_name__ = self.get_classified_object_name_of_sat(self.Sat_Object_Status_File)
         elif self.file_info.__file_type__ == self.FileType_Dir:
-            sat_classified_character, sat_classified_character_type = self.get_classified_character_of_zip_and_path()
+            sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(self.Sat_Object_Status_Dir)
             if (self.classified_with_character(self.file_info.__file_name_without_path__, sat_classified_character,
                                                sat_classified_character_type)):
                 self.__object_status__ = self.Sat_Object_Status_Dir
@@ -108,9 +109,16 @@ class CSatPlugins(CPlugins):
             return False
 
     @abstractmethod
-    def get_classified_character_of_zip_and_path(self):
+    def get_classified_character_of_sat(self, sat_file_status):
         """
         设置识别的特征
+        . 如果是压缩包, 则是针对压缩包的文件主名
+        . 如果是子目录, 则是针对目录的名称
+        . 如果是散落文件, 则是针对文件的全名
+        :param sat_file_status 卫星数据类型
+            . Sat_Object_Status_Zip = 'zip'
+            . Sat_Object_Status_Dir = 'dir'
+            . Sat_Object_Status_File = 'file'
         :return:
         [0]: 特征串
         [1]: 特征串的类型
@@ -120,21 +128,24 @@ class CSatPlugins(CPlugins):
         return '', self.TextMatchType_Common
 
     @abstractmethod
-    def get_classified_character_of_file(self):
-        """
-        设置识别的特征
-        :return:
-        [0]: 特征串
-        [1]: 特征串的类型
-            TextMatchType_Common: 常规通配符, 如 *.txt
-            TextMatchType_Regex: 正则表达式
-        """
-        return '', self.TextMatchType_Common
-
-    @abstractmethod
-    def get_classified_object_name_by_file(self) -> str:
+    def get_classified_object_name_of_sat(self, sat_file_status) -> str:
         """
         当卫星数据是解压后的散落文件时, 如何从解压后的文件名中, 解析出卫星数据的原名
+        . 如果是压缩包, 则是针对压缩包的文件主名
+        . 如果是子目录, 则是针对目录的名称
+        . 如果是散落文件, 则是针对文件的全名
+        :param sat_file_status 卫星数据类型
+            . Sat_Object_Status_Zip = 'zip'
+            . Sat_Object_Status_Dir = 'dir'
+            . Sat_Object_Status_File = 'file'
+        :return:
+        """
+        return self.file_info.__file_main_name__
+
+    @abstractmethod
+    def get_bus_metadata_filename_by_file(self) -> str:
+        """
+        卫星数据解压后, 哪个文件是业务元数据?
         :return:
         """
         return self.file_info.__file_main_name__
@@ -152,3 +163,20 @@ class CSatPlugins(CPlugins):
             return self.DetailEngine_Same_File_Main_Name
         else:
             return None
+
+    def init_metadata_bus_xml(self, parser: CMetaDataParser):
+        """
+        提取xml格式的业务元数据, 加载到parser的metadata对象中
+        :param parser:
+        :return:
+        """
+        metadata_xml_file_name = self.get_bus_metadata_filename_by_file()
+        if not CFile.file_or_path_exist(metadata_xml_file_name):
+            return False
+
+        try:
+            parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, metadata_xml_file_name)
+            return True
+        except:
+            parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
+            return False

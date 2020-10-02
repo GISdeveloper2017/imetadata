@@ -26,7 +26,7 @@ class plugins_3001_shp(CVectorFilePlugins):
         """
         return '*.shp', self.TextMatchType_Common
 
-    def init_aq_file_exist_list(self, parser: CMetaDataParser) -> list:
+    def init_qa_file_exist_list(self, parser: CMetaDataParser) -> list:
         return [
             {self.Name_FileName: '{0}.dbf'.format(self.classified_object_name()), self.Name_ID: 'dbf',
              self.Name_Title: '属性数据文件', self.Name_Result: self.QA_Result_Error}

@@ -25,8 +25,16 @@ class CUtils(CResource):
         return new_result.to_json()
 
     @classmethod
+    def merge_result_info(cls, result_text, info_name: str, value):
+        return CJson.json_set_attr(result_text, info_name, value)
+
+    @classmethod
     def result_success(cls, result_text) -> bool:
         return CJson.json_attr_value(result_text, cls.Name_Result, cls.Failure) == cls.Success
+
+    @classmethod
+    def result_info(cls, result_text, info_name: str, default_value):
+        return CJson.json_attr_value(result_text, info_name, default_value)
 
     @classmethod
     def result_message(cls, result_text) -> str:

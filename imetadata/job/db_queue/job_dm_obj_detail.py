@@ -6,7 +6,6 @@
 
 from __future__ import absolute_import
 
-from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
@@ -130,8 +129,9 @@ where dsodetailparsestatus = 2
         try:
             plugins_obj.classified()
             plugins_information = plugins_obj.get_information()
-            detail_parser = CDetailParserMng.give_me_parser(plugins_information[plugins_obj.Plugins_Info_DetailEngine],
-                                                            dso_id, dso_object_name, file_info_obj)
+            detail_parser = CDetailParserMng.give_me_parser(
+                CUtils.dict_value_by_name(plugins_information, plugins_obj.Plugins_Info_DetailEngine, None),
+                dso_id, dso_object_name, file_info_obj)
             process_result = plugins_obj.parser_detail(detail_parser)
             if CUtils.result_success(process_result):
                 CFactory().give_me_db(self.get_mission_db_id()).execute('''
