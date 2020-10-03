@@ -31,7 +31,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
         information[self.Plugins_Info_Type_Title] = '业务数据集'
         information[self.Plugins_Info_Type] = 'business_data_set'
         information[self.Plugins_Info_MetaDataEngine] = None
-        information[self.Plugins_Info_BusMetaDataEngine] = None
+        information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_TagsEngine] = 'global_dim'
         information[self.Plugins_Info_DetailEngine] = None
         information[self.Plugins_Info_QCEngine] = None
@@ -58,25 +58,28 @@ class C21ATBusDataSetPlugins(CDirPlugins):
                 self.__classified_object_type__ = CXml.get_element_text(
                     self.__metadata_xml_obj__.xpath_one(self.Path_21AT_MD_Content_ProductType))
                 self.__object_confirm__ = self.Object_Confirm_IKnown
-                self.__object_name__ = CXml.get_element_text(self.__metadata_xml_obj__.xpath_one(self.Path_21AT_MD_Content_ProductName))
+                self.__object_name__ = CXml.get_element_text(
+                    self.__metadata_xml_obj__.xpath_one(self.Path_21AT_MD_Content_ProductName))
             except:
                 self.__metadata_xml_obj__ = None
                 CLogger().warning('发现文件{0}符合二十一世纪业务数据集标准, 但该文件格式有误, 无法打开! ')
 
         return self.__object_confirm__, self.__object_name__
 
-    def init_metadata_bus_xml(self, parser: CMetaDataParser):
+    def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
         提取xml格式的业务元数据, 加载到parser的metadata对象中
         :param parser:
         :return:
         """
         if not CFile.file_or_path_exist(self.__bus_metadata_xml_file_name__):
-            return False
+            return CUtils.merge_result(self.Failure,
+                                       '元数据文件[{0}]不存在, 无法解析! '.format(self.__bus_metadata_xml_file_name__))
 
         try:
             parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, self.__bus_metadata_xml_file_name__)
-            return True
+            return CUtils.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(self.__bus_metadata_xml_file_name__))
         except:
             parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
-            return False
+            return CUtils.merge_result(self.Exception,
+                                       '元数据文件[{0}]格式不合法, 无法处理! '.format(self.__bus_metadata_xml_file_name__))

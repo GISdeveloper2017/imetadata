@@ -59,6 +59,8 @@ class CResource:
     Name_Record = 'record'
 
     Name_Format = 'format'
+    Name_Size = 'size'
+    Name_Length = 'length'
 
     Dir_Type_Directory = 1
     Dir_Type_VirtualDirectory = 2
@@ -102,10 +104,12 @@ class CResource:
     Name_Level = 'level'
     Name_Type = 'type'
 
+    Name_DataType = 'datatype'
+
     Name_XPath = 'xpath'
     Name_Attr_Name = 'attr_name'
     Name_List = 'list'
-
+    Name_Custom = 'custom'
     Name_Root = 'root'
 
     Path_MD_Rule_Type = '/root/type'
@@ -119,6 +123,8 @@ class CResource:
     MetaDataFormat_Text = 0
     MetaDataFormat_Json = 1
     MetaDataFormat_XML = 2
+
+    Engine_Custom = Name_Custom
 
     MetaDataEngine_Raster = 'raster'
     MetaDataEngine_Vector = 'vector'
@@ -143,3 +149,6 @@ class CResource:
     QA_Level_Min = 1
     QA_Level_2 = 2
     QA_Level_Max = 3
+
+    Name_Min = 'min'
+    Name_Max = 'max'

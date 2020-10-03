@@ -3,8 +3,8 @@
 # @Author : 王西亚 
 # @File : c_satPlugins.py
 from abc import abstractmethod
+
 from imetadata.base.c_file import CFile
-from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.content.c_virtualContent_Dir import CVirtualContentDir
 from imetadata.business.metadata.base.content.c_virtualContent_Package import CVirtualContentPackage
@@ -34,7 +34,7 @@ class CSatPlugins(CPlugins):
         information[self.Plugins_Info_Type_Title] = '原始数据'
         information[self.Plugins_Info_Type] = 'sat'
         information[self.Plugins_Info_MetaDataEngine] = None
-        information[self.Plugins_Info_BusMetaDataEngine] = None
+        information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
         information[self.Plugins_Info_DetailEngine] = self.get_runtime_detail_engine()
         information[self.Plugins_Info_QCEngine] = None
@@ -70,21 +70,24 @@ class CSatPlugins(CPlugins):
 
         if self.file_info.__file_type__ == self.FileType_File:
             if self.special_zip_file_ext_list().count(self.file_info.__file_ext__.lower()) > 0:
-                sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(self.Sat_Object_Status_Zip)
+                sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
+                    self.Sat_Object_Status_Zip)
                 if (self.classified_with_character(self.file_info.__file_main_name__, sat_classified_character,
                                                    sat_classified_character_type)):
                     self.__object_status__ = self.Sat_Object_Status_Zip
                     self.__object_confirm__ = self.Object_Confirm_IKnown
                     self.__object_name__ = self.file_info.__file_main_name__
             else:
-                sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(self.Sat_Object_Status_File)
+                sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
+                    self.Sat_Object_Status_File)
                 if (self.classified_with_character(self.file_info.__file_name_without_path__, sat_classified_character,
                                                    sat_classified_character_type)):
                     self.__object_status__ = self.Sat_Object_Status_File
                     self.__object_confirm__ = self.Object_Confirm_IKnown
                     self.__object_name__ = self.get_classified_object_name_of_sat(self.Sat_Object_Status_File)
         elif self.file_info.__file_type__ == self.FileType_Dir:
-            sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(self.Sat_Object_Status_Dir)
+            sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
+                self.Sat_Object_Status_Dir)
             if (self.classified_with_character(self.file_info.__file_name_without_path__, sat_classified_character,
                                                sat_classified_character_type)):
                 self.__object_status__ = self.Sat_Object_Status_Dir
@@ -164,7 +167,7 @@ class CSatPlugins(CPlugins):
         else:
             return None
 
-    def init_metadata_bus_xml(self, parser: CMetaDataParser):
+    def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
         提取xml格式的业务元数据, 加载到parser的metadata对象中
         :param parser:
@@ -172,11 +175,12 @@ class CSatPlugins(CPlugins):
         """
         metadata_xml_file_name = self.get_bus_metadata_filename_by_file()
         if not CFile.file_or_path_exist(metadata_xml_file_name):
-            return False
+            return CUtils.merge_result(self.Failure, '元数据文件[{0}]不存在, 无法解析! '.format(metadata_xml_file_name))
 
         try:
             parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, metadata_xml_file_name)
-            return True
+            return CUtils.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(metadata_xml_file_name))
         except:
             parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
-            return False
+            return CUtils.merge_result(self.Exception,
+                                       '元数据文件[{0}]格式不合法, 无法处理! '.format(metadata_xml_file_name))

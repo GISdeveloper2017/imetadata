@@ -103,7 +103,7 @@ class CMetaDataParser(CParser):
     def custom_init(self):
         pass
 
-    def batch_qa_file_exist(self, list_qa: list):
+    def batch_qa_file(self, list_qa: list):
         """
         批量处理数据完整性方面的质检项目
         :param list_qa:
@@ -114,16 +114,16 @@ class CMetaDataParser(CParser):
 
         for qa_item in list_qa:
             self.metadata.quality.append_total_quality(
-                CAudit.a_file_exist(CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
-                                    CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
-                                    CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
-                                    CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
-                                    CFile.join_file(
+                CAudit.a_file(CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                              CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                              CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                              CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
+                              CFile.join_file(
                                         self.file_content.content_root_dir,
                                         CUtils.dict_value_by_name(qa_item, self.Name_FileName, '')
                                     ),
-                                    qa_item
-                                    )
+                              qa_item
+                              )
             )
 
     def batch_qa_metadata_xml(self, list_qa: list):
@@ -159,38 +159,61 @@ class CMetaDataParser(CParser):
             return
 
         for qa_item in list_qa:
-            if CUtils.equal_ignore_case(qa_item[self.Name_Type], self.QA_Type_XML_Node_Exist):
-                list_result = CAudit.a_xml_element(
-                    CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
-                    CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
-                    CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
-                    CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
-                    self.metadata.metadata_bus_xml(),
-                    CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
-                    qa_item
-                )
-                for item_result in list_result:
-                    self.metadata.quality.append_metadata_bus_quality(item_result)
+            list_result = CAudit.a_xml_element(
+                CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
+                self.metadata.metadata_bus_xml(),
+                CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
+                qa_item
+            )
+            for item_result in list_result:
+                self.metadata.quality.append_metadata_bus_quality(item_result)
 
     def batch_qa_metadata_json_item(self, list_qa: list):
         """
         批量处理json格式的元数据中的质检项目
-        todo 负责人 赵宇飞 在这里增加批量检查json格式的元数据的功能, 参考xml格式的元数据处理功能
         :param list_qa:
         :return:
         """
         if len(list_qa) == 0:
             return
 
+        for qa_item in list_qa:
+            list_result = CAudit.a_json_element(
+                CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
+                self.metadata.metadata_json(),
+                CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
+                qa_item
+            )
+            for item_result in list_result:
+                self.metadata.quality.append_metadata_data_quality(item_result)
+
     def batch_qa_metadata_bus_json_item(self, list_qa: list):
         """
         批量处理json格式的业务元数据中的质检项目
-        todo 负责人 赵宇飞 在这里增加批量检查json格式的业务元数据的功能, 参考xml格式的业务元数据处理功能
         :param list_qa:
         :return:
         """
         if len(list_qa) == 0:
             return
+
+        for qa_item in list_qa:
+            list_result = CAudit.a_json_element(
+                CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
+                self.metadata.metadata_bus_json(),
+                CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
+                qa_item
+            )
+            for item_result in list_result:
+                self.metadata.quality.append_metadata_bus_quality(item_result)
 
     def process_default_metadata(self, metadata_engine_type):
         """

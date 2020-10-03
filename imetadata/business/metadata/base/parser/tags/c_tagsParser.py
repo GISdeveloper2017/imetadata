@@ -19,13 +19,13 @@ class CTagsParser(CParser):
     def process(self) -> str:
         """
         在这里处理将__file_info__中记录的对象所对应的文件或目录信息, 根据__tags_*变量的定义, 进行标签识别
-        todo 负责人: 赵宇飞  内容:完成文件或子目录标签识别, 保存dm2_storage_object.dsoTags中
+        todo(赵宇飞)  内容:完成文件或子目录标签识别, 保存dm2_storage_object.dsoTags中
         对__tags_parser_text__进行分隔符拆解
         对拆解的每一部分, 匹配ro_global_dim_xxx表中的记录
         :return:
         """
-
-        super().process() #调用父类方法
+        # 调用父类方法
+        super().process()
 
         sql_tag_custom = '''
             SELECT
@@ -96,7 +96,7 @@ class CTagsParser(CParser):
 
     def process_tag(self, sql_query_tag: str, text_part_list: list) -> str:
         """
-            绑定标签tag, 注意sql查询的第一个字段为id
+        绑定标签tag, 注意sql查询的第一个字段为id
         @param sql_query_tag:
         @param text_part_list:
         @return:
@@ -123,14 +123,14 @@ class CTagsParser(CParser):
 
     def update_object_tags(self, object_id: str, list_tag_id: list) -> str:
         """
-            通用方法：事务处理，更新对象的标签
+        通用方法：事务处理，更新对象的标签
         @param object_id:
         @param list_tag_id:
         @return:
         """
         if len(list_tag_id) == 0:
             return
-        sql_update_ojbect_tag = '''
+        sql_update_object_tag = '''
             UPDATE dm2_storage_object 
             SET dsotags = array_append(array_remove (dsotags,  '{0}'), '{0}'),
             dsolastmodifytime = now( ) 
@@ -141,7 +141,7 @@ class CTagsParser(CParser):
         for tag_id in list_tag_id:
             params = dict()
             params['dsoid'] = object_id
-            sql_temp = sql_update_ojbect_tag.format(tag_id)
+            sql_temp = sql_update_object_tag.format(tag_id)
             sql_tag_update_tuple = (sql_temp, params)
             sql_tag_update_list.append(sql_tag_update_tuple)
         if len(sql_tag_update_list) > 0:

@@ -55,7 +55,7 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         else:
             return self.file_info.__file_main_name__.replace('-PAN1', '')
 
-    def init_qa_file_exist_list(self, parser: CMetaDataParser) -> list:
+    def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
              self.Name_Title: '全色文件', self.Name_Level: self.QA_Level_Min, self.Name_Result: self.QA_Result_Error}
@@ -63,7 +63,7 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                self.Name_Title: '多光谱文件', self.Name_Level: self.QA_Level_Min, self.Name_Result: self.QA_Result_Error}
         ]
 
-    def init_qa_metadata_bus_xml_item_list(self, parser: CMetaDataParser):
+    def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser):
         """
         初始化默认的, 业务元数据xml文件的检验列表
         :param parser:

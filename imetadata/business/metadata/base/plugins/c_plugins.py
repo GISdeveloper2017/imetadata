@@ -7,7 +7,6 @@ from abc import abstractmethod
 
 from imetadata.base.Exceptions import FileContentWapperNotExistException
 from imetadata.base.c_file import CFile
-from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
@@ -221,17 +220,21 @@ class CPlugins(CResource):
                 1. XML元数据数据项检测
         :return: 返回
         """
-        parser.batch_qa_file_exist(self.init_qa_file_exist_list(parser))
+        parser.batch_qa_file(self.init_qa_file_list(parser))
 
-        result = self.init_metadata_xml(parser)
+        result = self.init_metadata(parser)
         if CUtils.result_success(result):
-            parser.batch_qa_metadata_xml(self.init_qa_metadata_xml_item_list(parser))
-        if self.init_metadata_bus_xml(parser):
-            parser.batch_qa_metadata_bus_xml_item(self.init_qa_metadata_bus_xml_item_list(parser))
-        if self.init_metadata_json(parser):
-            parser.batch_qa_metadata_json_item(self.init_qa_metadata_json_item_list(parser))
-        if self.init_metadata_bus_json(parser):
-            parser.batch_qa_metadata_bus_json_item(self.init_qa_metadata_bus_json_item_list(parser))
+            if parser.metadata.metadata_type == self.MetaDataFormat_XML:
+                parser.batch_qa_metadata_xml(self.init_qa_metadata_xml_list(parser))
+            elif parser.metadata.metadata_type == self.MetaDataFormat_Json:
+                parser.batch_qa_metadata_json_item(self.init_qa_metadata_json_list(parser))
+
+        result = self.init_metadata_bus(parser)
+        if CUtils.result_success(result):
+            if parser.metadata.metadata_type == self.MetaDataFormat_XML:
+                parser.batch_qa_metadata_bus_xml_item(self.init_qa_metadata_bus_xml_list(parser))
+            elif parser.metadata.metadata_type == self.MetaDataFormat_Json:
+                parser.batch_qa_metadata_bus_json_item(self.init_qa_metadata_bus_json_list(parser))
 
         self.parser_metadata_custom(parser)
 
@@ -250,58 +253,21 @@ class CPlugins(CResource):
 
         return CUtils.merge_result(self.Success, '处理完毕!')
 
-    def init_qa_file_exist_list(self, parser: CMetaDataParser) -> list:
+    def init_metadata(self, parser: CMetaDataParser) -> str:
         """
-        初始化默认的, 附属文件存在性质检列表
-        示例:
-        return [
-            {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
-             self.Name_Title: '全色文件', self.Name_Type: self.QualityAudit_Type_Error}
-            , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()), self.Name_ID: 'mss_tif',
-               self.Name_Title: '多光谱文件', self.Name_Type: self.QualityAudit_Type_Error}
-        ]
+        提取xml或json格式的元数据, 加载到parser的metadata对象中
         :param parser:
         :return:
         """
-        return []
-
-    def init_qa_metadata_xml_item_list(self, parser: CMetaDataParser) -> list:
-        """
-        初始化默认的, 元数据xml文件的检验列表
-        :param parser:
-        :return:
-        """
-        return []
-
-    def init_qa_metadata_bus_xml_item_list(self, parser: CMetaDataParser) -> list:
-        """
-        初始化默认的, 业务元数据xml文件的检验列表
-        :param parser:
-        :return:
-        """
-        return []
-
-    def parser_metadata_custom(self, parser: CMetaDataParser):
-        """
-        自定义的元数据处理逻辑
-        :param parser:
-        :return:
-        """
-        pass
-
-    def init_metadata_xml(self, parser: CMetaDataParser) -> str:
-        """
-        提取xml格式的元数据, 加载到parser的metadata对象中, 成果返回True, 否则返回False
-        :param parser:
-        :return:
-        """
-        default_metadata_engine = CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_MetaDataEngine, None)
+        default_metadata_engine = CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_MetaDataEngine,
+                                                            None)
         if default_metadata_engine is not None:
             result = parser.process_default_metadata(default_metadata_engine)
             if CUtils.result_success(result):
                 file_metadata_name_with_path = CFile.join_file(self.file_content.work_root_dir, self.FileName_MetaData)
                 if not CFile.file_or_path_exist(file_metadata_name_with_path):
-                    return CUtils.merge_result(self.Exception, '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path))
+                    return CUtils.merge_result(self.Exception,
+                                               '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path))
 
                 metadata_format = CUtils.result_info(result, self.Name_Format, self.MetaDataFormat_Text)
                 metadata_filename = CUtils.result_info(result, self.Name_FileName, None)
@@ -320,31 +286,54 @@ class CPlugins(CResource):
         else:
             return CUtils.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
 
-    def init_metadata_bus_xml(self, parser: CMetaDataParser):
+    def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
-        提取xml格式的业务元数据, 加载到parser的metadata对象中, 成果返回True, 否则返回False
+        提取xml或json格式的业务元数据, 加载到parser的metadata对象中
         :param parser:
         :return:
         """
-        return False
+        return CUtils.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
 
-    def init_metadata_json(self, parser: CMetaDataParser):
+    def parser_metadata_custom(self, parser: CMetaDataParser):
         """
-        提取json格式的元数据, 加载到parser的metadata对象中, 成果返回True, 否则返回False
+        自定义的元数据处理逻辑
         :param parser:
         :return:
         """
-        return False
+        pass
 
-    def init_metadata_bus_json(self, parser: CMetaDataParser):
+    def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
-        提取json格式的业务元数据, 加载到parser的metadata对象中, 成果返回True, 否则返回False
+        初始化默认的, 附属文件的质检列表
+        示例:
+        return [
+            {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
+             self.Name_Title: '全色文件', self.Name_Type: self.QualityAudit_Type_Error}
+            , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()), self.Name_ID: 'mss_tif',
+               self.Name_Title: '多光谱文件', self.Name_Type: self.QualityAudit_Type_Error}
+        ]
         :param parser:
         :return:
         """
-        return False
+        return []
 
-    def init_qa_metadata_json_item_list(self, parser: CMetaDataParser) -> list:
+    def init_qa_metadata_xml_list(self, parser: CMetaDataParser) -> list:
+        """
+        初始化默认的, 元数据xml文件的检验列表
+        :param parser:
+        :return:
+        """
+        return []
+
+    def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
+        """
+        初始化默认的, 业务元数据xml文件的检验列表
+        :param parser:
+        :return:
+        """
+        return []
+
+    def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
         设置解析json格式元数据的检验规则列表, 为空表示无检查规则
         :param parser:
@@ -352,7 +341,7 @@ class CPlugins(CResource):
         """
         return []
 
-    def init_qa_metadata_bus_json_item_list(self, parser: CMetaDataParser) -> list:
+    def init_qa_metadata_bus_json_list(self, parser: CMetaDataParser) -> list:
         """
         设置解析json格式业务元数据的检验规则列表, 为空表示无检查规则
         :param parser:

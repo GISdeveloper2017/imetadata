@@ -39,7 +39,7 @@ class plugins_2000_mbtiles(CFilePlugins):
             self.__metadata_xml_file_name__ = list_mb_tiles_metadata_file[0]
         return self.__object_confirm__, self.__object_name__
 
-    def init_metadata_xml(self, parser: CMetaDataParser):
+    def init_metadata(self, parser: CMetaDataParser):
         """
         提取xml格式的元数据, 加载到parser的metadata对象中
         :param parser:

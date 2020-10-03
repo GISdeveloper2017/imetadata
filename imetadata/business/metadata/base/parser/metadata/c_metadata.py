@@ -60,6 +60,14 @@ class CMetaData(CResource):
         else:
             return self.__metadata_type__, self.__metadata_text__
 
+    @property
+    def metadata_type(self):
+        return self.__metadata_type__
+
+    @property
+    def metadata_bus_type(self):
+        return self.__metadata_bus_type__
+
     def metadata_xml(self) -> CXml:
         return self.__metadata_xml__
 
