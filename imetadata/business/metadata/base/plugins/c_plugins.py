@@ -232,7 +232,8 @@ class CPlugins(CResource):
             elif parser.metadata.metadata_type == self.MetaDataFormat_Json:
                 parser.batch_qa_metadata_json_item(self.init_qa_metadata_json_list(parser))
         else:
-            parser.metadata.set_metadata(self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text, '')
+            parser.metadata.set_metadata(
+                self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text, '')
 
         # 这里将结果信息丢弃不用, 因为在提取业务元数据的方法中, 已经将异常信息记录到质检数据中
         result = self.init_metadata_bus(parser)
@@ -242,14 +243,13 @@ class CPlugins(CResource):
             elif parser.metadata.metadata_type == self.MetaDataFormat_Json:
                 parser.batch_qa_metadata_bus_json_item(self.init_qa_metadata_bus_json_list(parser))
         else:
-            parser.metadata.set_metadata_bus(self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text,
-                                             '')
+            parser.metadata.set_metadata_bus(
+                self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text, '')
+
+        parser.process()
 
         # 其次, 根据合法的数据\元数据\业务元数据内容, 提取其他元数据内容, 如果其中出现异常, 则写入质检结果中
         self.parser_metadata_after_qa(parser)
-
-        if not isinstance(parser, CParserCustom):
-            return parser.process()
 
         # 这里应该永远都是成功信息
         return CResult.merge_result(self.Success, '处理完毕!')
@@ -294,7 +294,8 @@ class CPlugins(CResource):
                                                 '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path))
 
                 try:
-                    parser.metadata.set_metadata_file(self.DB_True, '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path),
+                    parser.metadata.set_metadata_file(self.DB_True,
+                                                      '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path),
                                                       metadata_format, file_metadata_name_with_path)
                     return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path))
                 except Exception as error:
@@ -334,7 +335,11 @@ class CPlugins(CResource):
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
-        初始化默认的, 附属文件的质检列表
+        初始化默认的, 文件的质检列表
+        质检项目应包括并不限于如下内容:
+        1. 实体数据的附属文件是否完整, 实体数据是否可以正常打开和读取
+        1. 元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
+        1. 业务元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
         示例:
         return [
             {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',

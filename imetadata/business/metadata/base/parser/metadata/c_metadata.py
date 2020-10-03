@@ -29,8 +29,39 @@ class CMetaData(CResource):
 
         self.__thumb_img_file_name__ = ''
         self.__browse_img_file_name__ = ''
+        self.__metadata_view_extract_result__ = self.DB_False
+        self.__metadata_view_extract_memo__ = ''
 
         self.__time_information__ = CJson()
+        self.__metadata_time_extract_result__ = self.DB_False
+        self.__metadata_time_extract_memo__ = ''
+
+        self.__metadata_spatial_extract_result__ = self.DB_False
+        self.__metadata_spatial_extract_memo__ = ''
+        self.__metadata_spatial_native_bbox__ = None
+        self.__metadata_spatial_native_geom__ = None
+        self.__metadata_spatial_native_center__ = None
+        self.__metadata_spatial_wgs84_bbox__ = None
+        self.__metadata_spatial_wgs84_geom__ = None
+        self.__metadata_spatial_wgs84_center__ = None
+
+    def metadata_time(self):
+        if self.__metadata_time_extract_result__ == self.DB_True:
+            return self.__metadata_time_extract_result__, self.__metadata_time_extract_memo__, self.__time_information__.to_json()
+        else:
+            return self.__metadata_time_extract_result__, self.__metadata_time_extract_memo__, ''
+
+    def metadata_view(self):
+        if self.__metadata_view_extract_result__ == self.DB_True:
+            return self.__metadata_view_extract_result__, self.__metadata_view_extract_memo__, self.__thumb_img_file_name__, self.__browse_img_file_name__
+        else:
+            return self.__metadata_view_extract_result__, self.__metadata_view_extract_memo__, '', ''
+
+    def metadata_spatial(self):
+        if self.__metadata_spatial_extract_result__ == self.DB_True:
+            return self.__metadata_spatial_extract_result__, self.__metadata_spatial_extract_memo__
+        else:
+            return self.__metadata_spatial_extract_result__, self.__metadata_spatial_extract_memo__
 
     @property
     def quality(self):
@@ -84,7 +115,7 @@ class CMetaData(CResource):
     def metadata_bus_json(self) -> CJson:
         return self.__metadata_bus_json__
 
-    def set_metadata(self, metadata_extract_result, metadata_extract_memo, metadata_type, metadata_text):
+    def set_metadata(self, metadata_extract_result: int, metadata_extract_memo: str, metadata_type: int, metadata_text):
         self.__metadata_extract_result__ = metadata_extract_result
         self.__metadata_extract_memo__ = metadata_extract_memo
         self.__metadata_type__ = metadata_type
@@ -101,7 +132,7 @@ class CMetaData(CResource):
             self.__metadata_xml__ = CXml()
             self.__metadata_json__ = CJson()
 
-    def set_metadata_file(self, metadata_extract_result, metadata_extract_memo, metadata_type, file_name):
+    def set_metadata_file(self, metadata_extract_result: int, metadata_extract_memo: str, metadata_type: int, file_name):
         self.__metadata_extract_result__ = metadata_extract_result
         self.__metadata_extract_memo__ = metadata_extract_memo
         self.__metadata_type__ = metadata_type
@@ -126,7 +157,7 @@ class CMetaData(CResource):
         else:
             return self.__metadata_bus_extract_result__, self.__metadata_bus_extract_memo__, self.__metadata_bus_type__, self.__metadata_bus_text__
 
-    def set_metadata_bus(self, metadata_bus_extract_result, metadata_bus_extract_memo, metadata_bus_type,
+    def set_metadata_bus(self, metadata_bus_extract_result: int, metadata_bus_extract_memo: str, metadata_bus_type: int,
                          metadata_bus_text):
         self.__metadata_bus_extract_result__ = metadata_bus_extract_result
         self.__metadata_bus_extract_memo__ = metadata_bus_extract_memo
@@ -144,7 +175,7 @@ class CMetaData(CResource):
             self.__metadata_bus_xml__ = CXml()
             self.__metadata_bus_json__ = CJson()
 
-    def set_metadata_bus_file(self, metadata_bus_extract_result, metadata_bus_extract_memo, metadata_type, file_name):
+    def set_metadata_bus_file(self, metadata_bus_extract_result: int, metadata_bus_extract_memo: str, metadata_type: int, file_name):
         self.__metadata_bus_extract_result__ = metadata_bus_extract_result
         self.__metadata_bus_extract_memo__ = metadata_bus_extract_memo
         self.__metadata_bus_type__ = metadata_type

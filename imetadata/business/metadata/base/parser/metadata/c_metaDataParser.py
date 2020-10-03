@@ -52,7 +52,6 @@ class CMetaDataParser(CParser):
         1. 文件完整性检查
         1. 文件元数据提取并分析
         1. 业务元数据提取并分析
-        todo(王西亚) 这里似乎对元数据处理到入库处理的保护不够, 是否考虑阶段性入库
         :return:
         """
         file_quality_text = self.metadata.quality.to_xml()
@@ -242,3 +241,60 @@ class CMetaDataParser(CParser):
                                                          self.file_info, self.file_content)
         if not isinstance(md_extractor, CParserCustom):
             return md_extractor.process()
+
+    def save_metadata_time(self) -> str:
+        """
+        完成时间元数据的入库更新操作
+        :return:
+        """
+        mdt_ext_result, mdt_ext_memo, mdt_ext_content = self.metadata.metadata_time()
+        if mdt_ext_result == self.DB_False:
+            mdt_ext_content = None
+
+        # 所有元数据入库
+        CFactory().give_me_db(self.file_info.__db_server_id__).execute(
+            '''
+            update dm2_storage_object
+            set dso_time_result = :dso_time_result
+                , dso_time_parsermemo = :dso_time_parsermemo
+                , dso_time = :dso_time
+            where dsoid = :dsoid
+            ''',
+            {
+                'dsoid': self.object_id,
+                'dso_time_result': mdt_ext_result,
+                'dso_time_parsermemo': mdt_ext_memo,
+                'dso_time': mdt_ext_content
+            }
+        )
+        return CResult.merge_result(self.Success, '时间元数据处理完毕!')
+
+    def save_metadata_view(self) -> str:
+        """
+        完成可视元数据的入库更新操作
+        :return:
+        """
+        mdt_view_result, mdt_view_memo, mdt_view_thumb_file, mdt_view_browse_file = self.metadata.metadata_view()
+        if mdt_view_result == self.DB_False:
+            mdt_view_thumb_file = None
+            mdt_view_browse_file = None
+
+        # 所有元数据入库
+        CFactory().give_me_db(self.file_info.__db_server_id__).execute(
+            '''
+            update dm2_storage_object
+            set dso_view_result = :dso_view_result
+                , dso_view_parsermemo = :dso_view_parsermemo
+                , dso_browser = :dso_browser
+                , dso_thumb = :dso_thumb
+            where dsoid = :dsoid
+            ''',
+            {
+                'dsoid': self.object_id,
+                'dso_view_result': mdt_view_result,
+                'dso_view_parsermemo': mdt_view_memo,
+                'dso_browser': mdt_view_browse_file,
+                'dso_thumb': mdt_view_thumb_file
+            }
+        )
+        return CResult.merge_result(self.Success, '可视化元数据处理完毕!')

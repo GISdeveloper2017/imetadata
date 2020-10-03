@@ -121,10 +121,13 @@ where dsometadataparsestatus = 2
                                           )
         plugins_obj = CPluginsMng.plugins(file_info_obj, dso_object_type)
         if plugins_obj is None:
-            return CResult.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，元数据无法解析, 处理结束!'.format(
-                ds_file_info.value_by_name(0, 'query_object_fullname', ''),
-                dso_object_type)
-                                        )
+            return CResult.merge_result(
+                self.Failure,
+                '文件或目录[{0}]的类型插件[{1}]不存在，元数据无法解析, 处理结束!'.format(
+                    ds_file_info.value_by_name(0, 'query_object_fullname', ''),
+                    dso_object_type
+                )
+            )
 
         plugins_obj.classified()
         if not plugins_obj.create_virtual_content():
