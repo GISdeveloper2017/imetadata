@@ -125,7 +125,7 @@ where dsodetailparsestatus = 2
             return CResult.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，对象详情无法解析, 处理结束!'.format(
                 ds_file_info.value_by_name(0, 'query_object_fullname', ''),
                 dso_object_type)
-                                       )
+                                        )
 
         try:
             plugins_obj.classified()

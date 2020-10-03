@@ -90,7 +90,7 @@ where dsdscanstatus = 2
         if not path_obj.__file_existed__:
             path_obj.db_update_status_on_path_invalid()
             return CResult.merge_result(CResult.Success,
-                                               '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path_full_name))
+                                        '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path_full_name))
         else:
             path_obj.db_check_and_update_metadata_rule(CFile.join_file(ds_path_full_name, self.FileName_MetaData_Rule))
 

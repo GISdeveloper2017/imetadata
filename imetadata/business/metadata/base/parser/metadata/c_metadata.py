@@ -13,14 +13,14 @@ class CMetaData(CResource):
     def __init__(self):
         self.__quality__ = CQuality()
 
-        self.__metadata_extract_result__ = False
+        self.__metadata_extract_result__ = self.DB_False
         self.__metadata_extract_memo__ = ''
         self.__metadata_text__ = None
         self.__metadata_xml__ = CXml()
         self.__metadata_json__ = CJson()
         self.__metadata_type__ = self.MetaDataFormat_Text
 
-        self.__metadata_bus_extract_result__ = False
+        self.__metadata_bus_extract_result__ = self.DB_False
         self.__metadata_bus_extract_memo__ = ''
         self.__metadata_bus_text__ = None
         self.__metadata_bus_xml__ = CXml()
@@ -126,7 +126,8 @@ class CMetaData(CResource):
         else:
             return self.__metadata_bus_extract_result__, self.__metadata_bus_extract_memo__, self.__metadata_bus_type__, self.__metadata_bus_text__
 
-    def set_metadata_bus(self, metadata_bus_extract_result, metadata_bus_extract_memo, metadata_bus_type, metadata_bus_text):
+    def set_metadata_bus(self, metadata_bus_extract_result, metadata_bus_extract_memo, metadata_bus_type,
+                         metadata_bus_text):
         self.__metadata_bus_extract_result__ = metadata_bus_extract_result
         self.__metadata_bus_extract_memo__ = metadata_bus_extract_memo
         self.__metadata_bus_type__ = metadata_bus_type

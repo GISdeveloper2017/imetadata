@@ -47,19 +47,21 @@ class plugins_2000_mbtiles(CFilePlugins):
         """
         if not CFile.file_or_path_exist(self.__metadata_xml_file_name__):
             parser.metadata.set_metadata(
-                False,
+                self.DB_False,
                 '元数据文件[{0}]未找到, 无法处理! '.format(self.__metadata_xml_file_name__),
                 self.MetaDataFormat_Text,
                 '')
             return CResult.merge_result(self.Failure, '元数据文件[{0}]未找到, 无法处理! '.format(self.__metadata_xml_file_name__))
 
         try:
-            parser.metadata.set_metadata_file(True, '元数据文件[{0}]成功加载! '.format(self.__metadata_xml_file_name__), self.MetaDataFormat_XML, self.__metadata_xml_file_name__)
+            parser.metadata.set_metadata_file(self.DB_True, '元数据文件[{0}]成功加载! '.format(self.__metadata_xml_file_name__),
+                                              self.MetaDataFormat_XML, self.__metadata_xml_file_name__)
             return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(self.__metadata_xml_file_name__))
         except Exception as error:
             parser.metadata.set_metadata(
-                False,
+                self.DB_False,
                 '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(self.__metadata_xml_file_name__, error.__str__()),
                 self.MetaDataFormat_Text,
                 '')
-            return CResult.merge_result(self.Exception, '元数据文件[{0}]不是合法的XML格式, 无法处理! '.format(self.__metadata_xml_file_name__))
+            return CResult.merge_result(self.Exception,
+                                        '元数据文件[{0}]不是合法的XML格式, 无法处理! '.format(self.__metadata_xml_file_name__))

@@ -9,6 +9,7 @@ class CParserCustom(CParser):
     """
     本类不处理业务, 仅仅将该类需要存储的属性保存好即可
     """
+
     def custom_init(self):
         """
         自定义初始化

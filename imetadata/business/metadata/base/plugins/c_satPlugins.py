@@ -184,4 +184,4 @@ class CSatPlugins(CPlugins):
         except:
             parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
             return CResult.merge_result(self.Exception,
-                                       '元数据文件[{0}]格式不合法, 无法处理! '.format(metadata_xml_file_name))
+                                        '元数据文件[{0}]格式不合法, 无法处理! '.format(metadata_xml_file_name))

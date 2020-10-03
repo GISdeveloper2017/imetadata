@@ -52,13 +52,14 @@ class CMetaDataParser(CParser):
         1. 文件完整性检查
         1. 文件元数据提取并分析
         1. 业务元数据提取并分析
+        todo(王西亚) 这里似乎对元数据处理到入库处理的保护不够, 是否考虑阶段性入库
         :return:
         """
         file_quality_text = self.metadata.quality.to_xml()
         quality_result = self.metadata.quality.quality_result()
 
         # 处理元数据
-        metadata_type, metadata_text = self.metadata.metadata()
+        metadata_extract_result, metadata_extract_memo, metadata_type, metadata_text = self.metadata.metadata()
         metadata_json = None
         metadata_xml = None
         if metadata_type == self.MetaDataFormat_XML:
@@ -67,7 +68,7 @@ class CMetaDataParser(CParser):
             metadata_json = metadata_text
 
         # 处理业务元数据
-        metadata_bus_type, metadata_bus_text = self.metadata.metadata_bus()
+        metadata_bus_extract_result, metadata_bus_extract_memo, metadata_bus_type, metadata_bus_text = self.metadata.metadata_bus()
         metadata_bus_json = None
         metadata_bus_xml = None
         if metadata_bus_type == self.MetaDataFormat_XML:
@@ -75,32 +76,44 @@ class CMetaDataParser(CParser):
         elif metadata_bus_type == self.MetaDataFormat_Json:
             metadata_bus_json = metadata_bus_text
 
-        CFactory().give_me_db(self.file_info.__db_server_id__).execute('''
+        # 所有元数据入库
+        CFactory().give_me_db(self.file_info.__db_server_id__).execute(
+            '''
             update dm2_storage_object
             set dso_quality = :dso_quality
                 , dso_quality_result = :dso_quality_result
+                , dso_metadata_result = :dso_metadata_result
+                , dsometadataparsememo = :dsometadataparsememo
                 , dsometadatatype = :dsometadatatype
                 , dsometadatatext = :dsometadatatext
                 , dsometadatajson = :dsometadatajson
                 , dsometadataxml = :dsometadataxml
+                , dso_metadata_bus_result = :dso_metadata_bus_result
+                , dsometadata_bus_parsememo = :dsometadata_bus_parsememo
                 , dsometadatatype_bus = :dsometadatatype_bus
                 , dsometadatatext_bus = :dsometadatatext_bus
                 , dsometadatajson_bus = :dsometadatajson_bus
                 , dsometadataxml_bus = :dsometadataxml_bus
             where dsoid = :dsoid
-            ''', {'dso_quality': file_quality_text,
-                  'dsoid': self.object_id,
-                  'dso_quality_result': quality_result,
-                  'dsometadatatype': metadata_type,
-                  'dsometadatatext': metadata_text,
-                  'dsometadatajson': metadata_json,
-                  'dsometadataxml': metadata_xml,
-                  'dsometadatatype_bus': metadata_bus_type,
-                  'dsometadatatext_bus': metadata_bus_text,
-                  'dsometadatajson_bus': metadata_bus_json,
-                  'dsometadataxml_bus': metadata_bus_xml
-                  }
-                                                                       )
+            ''',
+            {
+                'dso_quality': file_quality_text,
+                'dsoid': self.object_id,
+                'dso_quality_result': quality_result,
+                'dso_metadata_result': metadata_extract_result,
+                'dsometadataparsememo': metadata_extract_memo,
+                'dsometadatatype': metadata_type,
+                'dsometadatatext': metadata_text,
+                'dsometadatajson': metadata_json,
+                'dsometadataxml': metadata_xml,
+                'dso_metadata_bus_result': metadata_extract_result,
+                'dsometadata_bus_parsememo': metadata_bus_extract_memo,
+                'dsometadatatype_bus': metadata_bus_type,
+                'dsometadatatext_bus': metadata_bus_text,
+                'dsometadatajson_bus': metadata_bus_json,
+                'dsometadataxml_bus': metadata_bus_xml
+            }
+        )
         return CResult.merge_result(self.Success, '处理完毕!')
 
     def custom_init(self):
@@ -117,16 +130,17 @@ class CMetaDataParser(CParser):
 
         for qa_item in list_qa:
             self.metadata.quality.append_total_quality(
-                CAudit.a_file(CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
-                              CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
-                              CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
-                              CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
-                              CFile.join_file(
-                                        self.file_content.content_root_dir,
-                                        CUtils.dict_value_by_name(qa_item, self.Name_FileName, '')
-                                    ),
-                              qa_item
-                              )
+                CAudit.a_file(
+                    CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
+                    CFile.join_file(
+                        self.file_content.content_root_dir,
+                        CUtils.dict_value_by_name(qa_item, self.Name_FileName, '')
+                    ),
+                    qa_item
+                )
             )
 
     def batch_qa_metadata_xml(self, list_qa: list):
@@ -224,6 +238,7 @@ class CMetaDataParser(CParser):
         :param metadata_engine_type:
         :return:
         """
-        md_extractor = CMDExtractorMng.give_me_extractor(metadata_engine_type, self.object_id, self.object_name, self.file_info, self.file_content)
+        md_extractor = CMDExtractorMng.give_me_extractor(metadata_engine_type, self.object_id, self.object_name,
+                                                         self.file_info, self.file_content)
         if not isinstance(md_extractor, CParserCustom):
             return md_extractor.process()

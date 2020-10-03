@@ -44,7 +44,7 @@ class CVectorMDReader(CMDReader):
             if CFile.check_and_create_directory(file_name_with_path):
                 json_vector.to_file(file_name_with_path)
             return CResult.merge_result(CResult.Failure,
-                                       '文件[{0}]打开失败!'.format(self.__file_name_with_path__))
+                                        '文件[{0}]打开失败!'.format(self.__file_name_with_path__))
 
         try:
             layer_count = vector_ds.GetLayerCount()
@@ -56,7 +56,7 @@ class CVectorMDReader(CMDReader):
                 if CFile.check_and_create_directory(file_name_with_path):
                     json_vector.to_file(file_name_with_path)
                 return CResult.merge_result(CResult.Failure,
-                                           '文件[{0}]没有图层!'.format(self.__file_name_with_path__))
+                                            '文件[{0}]没有图层!'.format(self.__file_name_with_path__))
 
             shp_lyr = vector_ds.GetLayer(0)
             if shp_lyr is None:
@@ -67,7 +67,7 @@ class CVectorMDReader(CMDReader):
                 if CFile.check_and_create_directory(file_name_with_path):
                     json_vector.to_file(file_name_with_path)
                 return CResult.merge_result(CResult.Failure,
-                                           '文件[{0}]读取图层失败!'.format(self.__file_name_with_path__))
+                                            '文件[{0}]读取图层失败!'.format(self.__file_name_with_path__))
             driver = vector_ds.GetDriver()
             if driver is None:
                 message = '文件[{0}]读取驱动失败!'.format(self.__file_name_with_path__)
@@ -77,7 +77,7 @@ class CVectorMDReader(CMDReader):
                 if CFile.check_and_create_directory(file_name_with_path):
                     json_vector.to_file(file_name_with_path)
                 return CResult.merge_result(CResult.Failure,
-                                           '文件[{0}]读取驱动失败!'.format(self.__file_name_with_path__))
+                                            '文件[{0}]读取驱动失败!'.format(self.__file_name_with_path__))
 
             # 定义datasource子节点,并添加到矢量json对象中
             json_datasource = CJson()
@@ -131,7 +131,7 @@ class CVectorMDReader(CMDReader):
                 json_vector.to_file(file_name_with_path)
             CLogger().info('文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
             return CResult.merge_result(CResult.Success,
-                                       '文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
+                                        '文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
         except Exception as error:
             CLogger().info('get_metadata_2_file解析错误：{0}'.format(error))
             message = 'get_metadata_2_file解析错误：文件：｛0｝,错误信息为{1}'.format(self.__file_name_with_path__, error)
@@ -141,7 +141,7 @@ class CVectorMDReader(CMDReader):
             if CFile.check_and_create_directory(file_name_with_path):
                 json_vector.to_file(file_name_with_path)
             return CResult.merge_result(CResult.Failure,
-                                       '文件[{0}]读取异常!｛1｝'.format(self.__file_name_with_path__, error))
+                                        '文件[{0}]读取异常!｛1｝'.format(self.__file_name_with_path__, error))
         finally:
             vector_ds.Destroy()
             vector_ds = None

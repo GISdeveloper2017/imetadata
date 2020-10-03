@@ -1613,7 +1613,8 @@ BEGIN
 
     select count(*)
     from dm_order_delivery
-    where orderid = NEW.orderid and datastatus != -1
+    where orderid = NEW.orderid
+      and datastatus != -1
     INTO STRICT i_allDataDelivery;
     IF (i_allDataDelivery = 0) THEN -- 如果所有数据均分发完成，则将数据管理订单标记为完成
         update dm_order set orderstate = -1, lastmodifytime = current_timestamp where orderid = NEW.orderid;
@@ -1767,7 +1768,8 @@ BEGIN
 
     select count(*)
     from dm_order_delivery
-    where orderid = NEW.orderid and datastatus != -1
+    where orderid = NEW.orderid
+      and datastatus != -1
     INTO STRICT i_SomeDataNotSuccess;
     select count(*)
     from dm_order_delivery

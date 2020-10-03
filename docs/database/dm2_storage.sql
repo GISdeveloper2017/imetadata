@@ -2089,19 +2089,28 @@ alter table dm2_storage_object
     add column dso_add_time timestamp(6) without time zone DEFAULT now();
 COMMENT ON COLUMN dm2_storage_object.dso_add_time IS '入库时间';
 
-alter table dm2_storage_object add column dso_time jsonb;
+alter table dm2_storage_object
+    add column dso_time jsonb;
 COMMENT ON COLUMN dm2_storage_object.dso_time IS '时间';
 
-alter table dm2_storage_object add column dso_geo_bb_native geometry;
-alter table dm2_storage_object add column dso_geo_native    geometry;
-alter table dm2_storage_object add column dso_center_native geometry;
+alter table dm2_storage_object
+    add column dso_geo_bb_native geometry;
+alter table dm2_storage_object
+    add column dso_geo_native geometry;
+alter table dm2_storage_object
+    add column dso_center_native geometry;
 
-alter table dm2_storage_object add column dso_geo_bb_wgs84  geometry;
-alter table dm2_storage_object add column dso_geo_wgs84     geometry;
-alter table dm2_storage_object add column dso_center_wgs84  geometry;
+alter table dm2_storage_object
+    add column dso_geo_bb_wgs84 geometry;
+alter table dm2_storage_object
+    add column dso_geo_wgs84 geometry;
+alter table dm2_storage_object
+    add column dso_center_wgs84 geometry;
 
-alter table dm2_storage_object add column area  double precision default 0.0;
-alter table dm2_storage_object add column length  bigint default 0;
+alter table dm2_storage_object
+    add column area double precision default 0.0;
+alter table dm2_storage_object
+    add column length bigint default 0;
 
 
 COMMENT ON COLUMN public.dm2_storage_object.dso_geo_bb_native IS '对象-原始-外包框';
@@ -2120,20 +2129,25 @@ drop table dm2_storage_object_spatial;
     2020-09-24 针对文件详情表, 进行扩展
 */
 
-alter table dm2_storage_obj_detail add column dodStorageId character varying(100);
-alter table dm2_storage_obj_detail add column dodFileRelationName character varying(2000);
+alter table dm2_storage_obj_detail
+    add column dodStorageId character varying(100);
+alter table dm2_storage_obj_detail
+    add column dodFileRelationName character varying(2000);
 COMMENT ON COLUMN public.dm2_storage_obj_detail.dodStorageId IS '存储标识';
 COMMENT ON COLUMN public.dm2_storage_obj_detail.dodFileRelationName IS '相对路径';
-alter table dm2_storage_obj_detail add column dodfiletype character varying(100);
+alter table dm2_storage_obj_detail
+    add column dodfiletype character varying(100);
 COMMENT ON COLUMN public.dm2_storage_obj_detail.dodfiletype IS '文件类型';
 
 /*
     2020-09-27 针对对象表, 扩展对象的质检结果字段
 */
 
-alter table dm2_storage_object add column dso_quality xml;
+alter table dm2_storage_object
+    add column dso_quality xml;
 COMMENT ON COLUMN public.dm2_storage_object.dso_quality IS '质检详情';
-alter table dm2_storage_object add column dso_quality_result character varying(100) ;
+alter table dm2_storage_object
+    add column dso_quality_result character varying(100);
 COMMENT ON COLUMN public.dm2_storage_object.dso_quality_result IS '质检结果';
 
 /*
@@ -2141,8 +2155,10 @@ COMMENT ON COLUMN public.dm2_storage_object.dso_quality_result IS '质检结果'
     . 处于考虑质检结果对各个专题的支持能力, 特对质检项目进行分级管理, 在质检结束后, 将质检结果分级汇总
 */
 
-alter table dm2_storage_object drop dso_quality_result;
-alter table dm2_storage_object add column dso_quality_result jsonb ;
+alter table dm2_storage_object
+    drop dso_quality_result;
+alter table dm2_storage_object
+    add column dso_quality_result jsonb;
 COMMENT ON COLUMN public.dm2_storage_object.dso_quality_result IS '质检结果';
 
 /*
@@ -2150,13 +2166,35 @@ COMMENT ON COLUMN public.dm2_storage_object.dso_quality_result IS '质检结果'
     . 考虑到对质检\元数据\业务元数据\时间\空间\快视图等解析过程中可能出现的异常情况, 在数据表中增加对应的备注记录字段
 */
 
-alter table dm2_storage_object add column dso_time_parsermemo text ;
-COMMENT ON COLUMN public.dm2_storage_object.dso_time_parsermemo IS '时间解析结果';
-alter table dm2_storage_object add column dso_spatial_parsermemo text ;
-COMMENT ON COLUMN public.dm2_storage_object.dso_spatial_parsermemo IS '空间解析结果';
-alter table dm2_storage_object add column dso_view_parsermemo text ;
-COMMENT ON COLUMN public.dm2_storage_object.dso_view_parsermemo IS '可视化解析结果';
-alter table dm2_storage_object add column dso_browser character varying(2000) ;
+alter table dm2_storage_object
+    add column dso_time_parsermemo text;
+COMMENT ON COLUMN public.dm2_storage_object.dso_time_parsermemo IS '时间解析说明';
+alter table dm2_storage_object
+    add column dso_spatial_parsermemo text;
+COMMENT ON COLUMN public.dm2_storage_object.dso_spatial_parsermemo IS '空间解析说明';
+alter table dm2_storage_object
+    add column dso_view_parsermemo text;
+COMMENT ON COLUMN public.dm2_storage_object.dso_view_parsermemo IS '可视化解析说明';
+alter table dm2_storage_object
+    add column dso_browser character varying(2000);
 COMMENT ON COLUMN public.dm2_storage_object.dso_browser IS '快视图文件地址';
-alter table dm2_storage_object add column dso_thumb character varying(2000) ;
+alter table dm2_storage_object
+    add column dso_thumb character varying(2000);
 COMMENT ON COLUMN public.dm2_storage_object.dso_thumb IS '拇指图文件地址';
+
+alter table dm2_storage_object
+    add column dso_metadata_result int default 0;
+COMMENT ON COLUMN public.dm2_storage_object.dso_metadata_result IS '元数据解析结果';
+alter table dm2_storage_object
+    add column dso_metadata_bus_result int default 0;
+COMMENT ON COLUMN public.dm2_storage_object.dso_metadata_bus_result IS '业务元数据解析结果';
+alter table dm2_storage_object
+    add column dso_spatial_result int default 0;
+COMMENT ON COLUMN public.dm2_storage_object.dso_spatial_result IS '空间元数据解析结果';
+alter table dm2_storage_object
+    add column dso_view_result int default 0;
+COMMENT ON COLUMN public.dm2_storage_object.dso_view_result IS '可视化元数据解析结果';
+alter table dm2_storage_object
+    add column dso_time_result int default 0;
+COMMENT ON COLUMN public.dm2_storage_object.dso_time_result IS '时间元数据解析结果';
+

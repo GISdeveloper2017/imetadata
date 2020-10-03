@@ -8,8 +8,6 @@ from imetadata.business.metadata.base.content.c_virtualContent import CVirtualCo
 
 
 class CVirtualContentPackage(CVirtualContent):
-
-
     """
     虚拟内容目录
     . 在读取普通文件数据时, 虚拟内容目录是文件所在的子目录

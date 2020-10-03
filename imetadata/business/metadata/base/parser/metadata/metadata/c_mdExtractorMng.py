@@ -13,7 +13,8 @@ from imetadata.business.metadata.base.parser.metadata.metadata.c_mdExtractorRast
 
 class CMDExtractorMng(CResource):
     @classmethod
-    def give_me_extractor(cls, extract_type, object_id: str, object_name: str, file_info: CDMFilePathInfoEx, file_content: CVirtualContent):
+    def give_me_extractor(cls, extract_type, object_id: str, object_name: str, file_info: CDMFilePathInfoEx,
+                          file_content: CVirtualContent):
         input_parser_type = CUtils.any_2_str(extract_type)
 
         if CUtils.equal_ignore_case(input_parser_type, cls.MetaDataEngine_Raster):

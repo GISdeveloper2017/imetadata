@@ -157,10 +157,12 @@ class CQuality(CResource):
 
     def quality_result_of_level(self, qa_level):
         if self.__xml_obj__.xpath_one(
-                '//*[@{0}="{1}" and {2}="{3}"]'.format(self.Name_Result, self.QA_Result_Error, self.Name_Level, qa_level)) is not None:
+                '//*[@{0}="{1}" and {2}="{3}"]'.format(self.Name_Result, self.QA_Result_Error, self.Name_Level,
+                                                       qa_level)) is not None:
             return self.QA_Result_Error
         elif self.__xml_obj__.xpath_one(
-                '//*[@{0}="{1}" and {2}="{3}"]'.format(self.Name_Result, self.QA_Result_Warn, self.Name_Level, qa_level)) is not None:
+                '//*[@{0}="{1}" and {2}="{3}"]'.format(self.Name_Result, self.QA_Result_Warn, self.Name_Level,
+                                                       qa_level)) is not None:
             return self.QA_Result_Warn
         else:
             return self.QA_Result_Pass

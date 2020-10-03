@@ -15,4 +15,3 @@ class CTagsParser_GF_InMainName(CTagsParser):
         """
         super().custom_init()
         self.__tags_parser_text__ = self.file_info.__file_main_name__
-

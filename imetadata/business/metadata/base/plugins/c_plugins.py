@@ -231,6 +231,8 @@ class CPlugins(CResource):
                 parser.batch_qa_metadata_xml(self.init_qa_metadata_xml_list(parser))
             elif parser.metadata.metadata_type == self.MetaDataFormat_Json:
                 parser.batch_qa_metadata_json_item(self.init_qa_metadata_json_list(parser))
+        else:
+            parser.metadata.set_metadata(self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text, '')
 
         # 这里将结果信息丢弃不用, 因为在提取业务元数据的方法中, 已经将异常信息记录到质检数据中
         result = self.init_metadata_bus(parser)
@@ -239,6 +241,9 @@ class CPlugins(CResource):
                 parser.batch_qa_metadata_bus_xml_item(self.init_qa_metadata_bus_xml_list(parser))
             elif parser.metadata.metadata_type == self.MetaDataFormat_Json:
                 parser.batch_qa_metadata_bus_json_item(self.init_qa_metadata_bus_json_list(parser))
+        else:
+            parser.metadata.set_metadata_bus(self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text,
+                                             '')
 
         # 其次, 根据合法的数据\元数据\业务元数据内容, 提取其他元数据内容, 如果其中出现异常, 则写入质检结果中
         self.parser_metadata_after_qa(parser)
@@ -265,8 +270,10 @@ class CPlugins(CResource):
         :param parser:
         :return:
         """
-        default_metadata_engine = CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_MetaDataEngine,
-                                                            None)
+        default_metadata_engine = CUtils.dict_value_by_name(
+            self.get_information(),
+            self.Plugins_Info_MetaDataEngine,
+            None)
         if default_metadata_engine is not None:
             result = parser.process_default_metadata(default_metadata_engine)
             if CResult.result_success(result):
@@ -279,24 +286,25 @@ class CPlugins(CResource):
 
                 if not CFile.file_or_path_exist(file_metadata_name_with_path):
                     parser.metadata.set_metadata(
-                        False,
+                        self.DB_False,
                         '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path),
                         self.MetaDataFormat_Text,
                         '')
                     return CResult.merge_result(self.Exception,
-                                               '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path))
+                                                '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path))
 
                 try:
-                    parser.metadata.set_metadata_file(True, '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path), metadata_format, file_metadata_name_with_path)
+                    parser.metadata.set_metadata_file(self.DB_True, '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path),
+                                                      metadata_format, file_metadata_name_with_path)
                     return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path))
                 except Exception as error:
                     parser.metadata.set_metadata(
-                        False,
+                        self.DB_False,
                         '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(file_metadata_name_with_path, error.__str__()),
                         self.MetaDataFormat_Text,
                         '')
                     return CResult.merge_result(self.Exception,
-                                               '元数据文件[{0}]格式不合法, 无法处理! '.format(file_metadata_name_with_path))
+                                                '元数据文件[{0}]格式不合法, 无法处理! '.format(file_metadata_name_with_path))
             else:
                 return result
         else:

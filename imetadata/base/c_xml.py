@@ -87,7 +87,8 @@ class CXml:
         通过给定的xml内容, 对xml对象进行初始化
         :return:
         """
-        return etree.tostring(self.__xml_tree__, xml_declaration=False, pretty_print=False, encoding="utf-8").decode('utf-8')
+        return etree.tostring(self.__xml_tree__, xml_declaration=False, pretty_print=False, encoding="utf-8").decode(
+            'utf-8')
 
     def xpath_one(self, query) -> etree:
         """

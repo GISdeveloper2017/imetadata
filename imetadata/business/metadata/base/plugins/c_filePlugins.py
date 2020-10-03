@@ -14,6 +14,7 @@ class CFilePlugins(CPlugins):
     """
     常规文件识别插件
     """
+
     def __init__(self, file_info: CFileInfoEx):
         super().__init__(file_info)
         if self.file_info is not None:

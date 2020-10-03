@@ -75,7 +75,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
         """
         if not CFile.file_or_path_exist(self.__bus_metadata_xml_file_name__):
             return CResult.merge_result(self.Failure,
-                                       '元数据文件[{0}]不存在, 无法解析! '.format(self.__bus_metadata_xml_file_name__))
+                                        '元数据文件[{0}]不存在, 无法解析! '.format(self.__bus_metadata_xml_file_name__))
 
         try:
             parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, self.__bus_metadata_xml_file_name__)
@@ -83,4 +83,4 @@ class C21ATBusDataSetPlugins(CDirPlugins):
         except:
             parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
             return CResult.merge_result(self.Exception,
-                                       '元数据文件[{0}]格式不合法, 无法处理! '.format(self.__bus_metadata_xml_file_name__))
+                                        '元数据文件[{0}]格式不合法, 无法处理! '.format(self.__bus_metadata_xml_file_name__))

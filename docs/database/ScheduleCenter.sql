@@ -145,11 +145,13 @@ values ( 'test', '测试', null, 0, null
 
 --启动所有调度
 update sch_center_mission
-set scmcommand = 'start', scmstatus = 1;
+set scmcommand = 'start',
+    scmstatus  = 1;
 
 --停止所有调度
 update sch_center_mission
-set scmcommand = 'shutdown', scmstatus = 0;
+set scmcommand = 'shutdown',
+    scmstatus  = 0;
 
 update sch_center_mission
 set scmcommand   = 'stop',
