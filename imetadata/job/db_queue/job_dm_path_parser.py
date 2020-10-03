@@ -7,7 +7,7 @@ from __future__ import absolute_import
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
-from imetadata.base.c_utils import CUtils
+from imetadata.base.c_result import CResult
 from imetadata.business.metadata.base.fileinfo.c_dmFileInfo import CDMFileInfo
 from imetadata.business.metadata.base.fileinfo.c_dmPathInfo import CDMPathInfo
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
@@ -86,9 +86,9 @@ where dsdscanfilestatus = 2
         CLogger().debug('处理的目录为: {0}'.format(ds_subpath))
         try:
             self.parser_path(dataset, ds_id, ds_subpath, ds_rule_content)
-            return CUtils.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_subpath))
+            return CResult.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_subpath))
         except:
-            return CUtils.merge_result(self.Failure, '目录为[{0}]下的文件和子目录扫描处理出现错误!'.format(ds_subpath))
+            return CResult.merge_result(self.Failure, '目录为[{0}]下的文件和子目录扫描处理出现错误!'.format(ds_subpath))
         finally:
             self.exchange_file_or_subpath_valid_unknown2invalid(ds_id)
 
@@ -139,7 +139,7 @@ where dsdscanfilestatus = 2
             where dsdid = :dsdid
             ''', {'dsdid': ds_id}
         )
-        return CUtils.merge_result(CUtils.Success, '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path))
+        return CResult.merge_result(CResult.Success, '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path))
 
     def init_file_or_subpath_valid_unknown(self, ds_id):
         """

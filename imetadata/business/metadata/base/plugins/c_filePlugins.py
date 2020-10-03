@@ -2,7 +2,6 @@
 # @Time : 2020/9/19 17:50 
 # @Author : 王西亚 
 # @File : c_filePlugins.py
-from abc import abstractmethod
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx

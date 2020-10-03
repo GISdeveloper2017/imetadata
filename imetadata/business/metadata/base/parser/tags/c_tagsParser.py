@@ -2,6 +2,7 @@
 # @Time : 2020/9/25 08:05 
 # @Author : 王西亚 
 # @File : c_tagsParser.py
+from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.c_parser import CParser
 from imetadata.database.c_factory import CFactory
@@ -66,24 +67,24 @@ class CTagsParser(CParser):
         text_part_list = CUtils.split(self.__tags_parser_text__, self.__tags_parser_split_list__)
         # 1.绑定tag_custom
         process_result = self.process_tag(sql_tag_custom, text_part_list)
-        if not CUtils.result_success(process_result):
+        if not CResult.result_success(process_result):
             return process_result
 
         # 2.绑定tag_custom_bus
         process_result = self.process_tag(sql_tag_custom_bus, text_part_list)
-        if not CUtils.result_success(process_result):
+        if not CResult.result_success(process_result):
             return process_result
 
         # 3.绑定tag_time
         process_result = self.process_tag(sql_tag_time, text_part_list)
-        if not CUtils.result_success(process_result):
+        if not CResult.result_success(process_result):
             return process_result
 
         # 4.绑定tag_space
         process_result = self.process_tag(sql_tag_space, text_part_list)
-        if not CUtils.result_success(process_result):
+        if not CResult.result_success(process_result):
             return process_result
-        return CUtils.merge_result(self.Success, '处理完毕!')
+        return CResult.merge_result(self.Success, '处理完毕!')
 
     def custom_init(self):
         """
@@ -119,7 +120,7 @@ class CTagsParser(CParser):
             if len(list_tag_id) > 0:
                 process_result = self.update_object_tags(self.object_id, list_tag_id)
                 return process_result
-        return CUtils.merge_result(self.Success, '处理完毕!')
+        return CResult.merge_result(self.Success, '处理完毕!')
 
     def update_object_tags(self, object_id: str, list_tag_id: list) -> str:
         """
@@ -146,8 +147,8 @@ class CTagsParser(CParser):
             sql_tag_update_list.append(sql_tag_update_tuple)
         if len(sql_tag_update_list) > 0:
             if not CFactory().give_me_db(self.file_info.db_server_id).execute_batch(sql_tag_update_list):
-                return CUtils.merge_result(self.Failure, '处理失败!')
-        return CUtils.merge_result(self.Success, '处理完毕!')
+                return CResult.merge_result(self.Failure, '处理失败!')
+        return CResult.merge_result(self.Success, '处理完毕!')
 
 
 if __name__ == '__main__':

@@ -5,10 +5,10 @@
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
+from imetadata.business.metadata.base.parser.c_parserCustom import CParserCustom
 from imetadata.business.metadata.base.parser.detail.c_detailParser_all_file_of_dir import CDetailParser_All_File_Of_Dir
 from imetadata.business.metadata.base.parser.detail.c_detailParser_all_file_of_same_dir import \
     CDetailParser_All_File_Of_Same_Dir
-from imetadata.business.metadata.base.parser.c_parserCustom import CParserCustom
 from imetadata.business.metadata.base.parser.detail.c_detailParser_file_of_dir import CDetailParser_File_Of_Dir
 from imetadata.business.metadata.base.parser.detail.c_detailParser_file_of_same_dir import \
     CDetailParser_File_Of_Same_Dir

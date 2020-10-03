@@ -3,7 +3,6 @@
 # @Author : 王西亚 
 # @File : test_c_utils.py
 
-import pytest
 from imetadata.base.c_utils import CUtils
 
 

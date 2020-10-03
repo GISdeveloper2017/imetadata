@@ -3,8 +3,9 @@
 # @Author : 王西亚 
 # @File : c_parser.py
 from abc import abstractmethod
+
 from imetadata.base.c_resource import CResource
-from imetadata.base.c_utils import CUtils
+from imetadata.base.c_result import CResult
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 
 
@@ -36,7 +37,7 @@ class CParser(CResource):
         """
         :return:
         """
-        return CUtils.merge_result(self.Success, '处理完毕!')
+        return CResult.merge_result(self.Success, '处理完毕!')
 
     def custom_init(self):
         """

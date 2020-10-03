@@ -5,6 +5,7 @@
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
+from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.c_parser import CParser
 from imetadata.database.c_factory import CFactory
@@ -22,7 +23,7 @@ class CDetailParser(CParser):
         :return:
         """
         if self.__detail_file_path__ == '':
-            return CUtils.merge_result(self.Success, '附属目录为空, 表明无需处理附属文件, 处理结束!')
+            return CResult.merge_result(self.Success, '附属目录为空, 表明无需处理附属文件, 处理结束!')
 
         sql_detail_delete = '''
             delete from dm2_storage_obj_detail where dodobjectid = '{0}'
@@ -74,9 +75,9 @@ class CDetailParser(CParser):
         if len(sql_detail_insert_params_list) > 0:
             CFactory().give_me_db(self.file_info.db_server_id).execute(sql_detail_delete)  # 先删除detail表中对应的记录
             if not CFactory().give_me_db(self.file_info.db_server_id).execute_batch(sql_detail_insert_params_list):
-                return CUtils.merge_result(self.Failure, '处理失败!')
+                return CResult.merge_result(self.Failure, '处理失败!')
 
-        return CUtils.merge_result(self.Success, '处理完毕!')
+        return CResult.merge_result(self.Success, '处理完毕!')
 
     def custom_init(self):
         """

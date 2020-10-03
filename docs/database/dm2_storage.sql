@@ -2144,3 +2144,19 @@ COMMENT ON COLUMN public.dm2_storage_object.dso_quality_result IS '质检结果'
 alter table dm2_storage_object drop dso_quality_result;
 alter table dm2_storage_object add column dso_quality_result jsonb ;
 COMMENT ON COLUMN public.dm2_storage_object.dso_quality_result IS '质检结果';
+
+/*
+    2020-10-03 王西亚
+    . 考虑到对质检\元数据\业务元数据\时间\空间\快视图等解析过程中可能出现的异常情况, 在数据表中增加对应的备注记录字段
+*/
+
+alter table dm2_storage_object add column dso_time_parsermemo text ;
+COMMENT ON COLUMN public.dm2_storage_object.dso_time_parsermemo IS '时间解析结果';
+alter table dm2_storage_object add column dso_spatial_parsermemo text ;
+COMMENT ON COLUMN public.dm2_storage_object.dso_spatial_parsermemo IS '空间解析结果';
+alter table dm2_storage_object add column dso_view_parsermemo text ;
+COMMENT ON COLUMN public.dm2_storage_object.dso_view_parsermemo IS '可视化解析结果';
+alter table dm2_storage_object add column dso_browser character varying(2000) ;
+COMMENT ON COLUMN public.dm2_storage_object.dso_browser IS '快视图文件地址';
+alter table dm2_storage_object add column dso_thumb character varying(2000) ;
+COMMENT ON COLUMN public.dm2_storage_object.dso_thumb IS '拇指图文件地址';

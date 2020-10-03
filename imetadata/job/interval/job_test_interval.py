@@ -7,11 +7,11 @@ from __future__ import absolute_import
 
 import time
 
-from imetadata.base.c_utils import CUtils
+from imetadata.base.c_result import CResult
 from imetadata.schedule.job.c_timeJob import CTimeJob
 
 
 class job_test_interval(CTimeJob):
     def execute(self) -> str:
         time.sleep(10)
-        return CUtils.merge_result(CUtils.Success, '任务执行成功结束！')
+        return CResult.merge_result(CResult.Success, '任务执行成功结束！')

@@ -2,10 +2,7 @@
 # @Time : 2020/9/21 18:03 
 # @Author : 王西亚 
 # @File : c_virtualContent_File.py
-from imetadata.base.Exceptions import ZipFileCanNotOpenException
 from imetadata.base.c_file import CFile
-from imetadata.base.c_sys import CSys
-from imetadata.base.c_utils import CUtils
 from imetadata.base.c_zip import CZip
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
 

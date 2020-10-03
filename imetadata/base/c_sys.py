@@ -2,10 +2,10 @@
 # -*- coding:utf-8 -*-
 
 import os
+import platform
 import sys
 
 from imetadata.base.c_resource import CResource
-import platform
 
 
 class CSys(CResource):

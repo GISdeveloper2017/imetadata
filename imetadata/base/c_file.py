@@ -2,11 +2,14 @@
 # -*- coding:utf-8 -*-
 
 from __future__ import absolute_import
+
 import os
 import shutil
 import time
 from fnmatch import fnmatch
+
 from sortedcontainers import SortedList
+
 from imetadata.base.c_utils import CUtils
 
 

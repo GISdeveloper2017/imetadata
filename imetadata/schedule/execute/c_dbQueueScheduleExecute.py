@@ -7,7 +7,7 @@
 import time
 
 from imetadata.base.c_logger import CLogger
-from imetadata.base.c_utils import CUtils
+from imetadata.base.c_result import CResult
 from imetadata.schedule.execute.c_scheduleExecute import CScheduleExecute
 from imetadata.schedule.job.c_dbQueueJob import CDBQueueJob
 
@@ -35,7 +35,7 @@ class CDBQueueScheduleExecute(CScheduleExecute):
         schedule.abnormal_mission_restart()
         while True:
             mission_process_result = schedule.execute()
-            if not CUtils.result_success(mission_process_result):
+            if not CResult.result_success(mission_process_result):
                 time.sleep(5)
 
             if self.should_stop():

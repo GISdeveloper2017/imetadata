@@ -6,10 +6,10 @@
 
 from __future__ import absolute_import
 
+from imetadata.base.Exceptions import DBException
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
-from imetadata.base.c_utils import CUtils
-from imetadata.base.Exceptions import DBException
+from imetadata.base.c_result import CResult
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
 from imetadata.database.c_factory import CFactory
 
@@ -89,9 +89,9 @@ where dstid = :dstid
             else:
                 db.execute(sql_insert_root_storage_dir, params)
             db.execute(sql_on_mission_finished, {'dstid': storage_id})
-            return CUtils.merge_result(CUtils.Success, '存储扫描处理成功')
+            return CResult.merge_result(CResult.Success, '存储扫描处理成功')
         except DBException as err:
-            return CUtils.merge_result(CUtils.Exception, '存储扫描失败, 原因为{0}'.format(err.__str__))
+            return CResult.merge_result(CResult.Exception, '存储扫描失败, 原因为{0}'.format(err.__str__))
 
 
 if __name__ == '__main__':

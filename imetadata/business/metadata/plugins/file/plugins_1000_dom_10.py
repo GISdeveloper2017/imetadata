@@ -89,14 +89,14 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
         metadata_xml_file_name = CFile.join_file(self.file_content.content_root_dir,
                                                  '{0}.xml'.format(self.classified_object_name()))
         # if not CFile.file_or_path_exist(metadata_xml_file_name):
-        return CUtils.merge_result(self.Failure, '元数据文件[{0}]不存在, 无法解析! '.format(metadata_xml_file_name))
+        return CResult.merge_result(self.Failure, '元数据文件[{0}]不存在, 无法解析! '.format(metadata_xml_file_name))
 
         # try:
         #     parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, metadata_xml_file_name)
-        #     return CUtils.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(metadata_xml_file_name))
+        #     return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(metadata_xml_file_name))
         # except:
         #     parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
-        #     return CUtils.merge_result(self.Exception,
+        #     return CResult.merge_result(self.Exception,
         #                                        '元数据文件[{0}]格式不合法, 无法处理! '.format(metadata_xml_file_name))
 
 

@@ -13,11 +13,15 @@ class CMetaData(CResource):
     def __init__(self):
         self.__quality__ = CQuality()
 
+        self.__metadata_extract_result__ = False
+        self.__metadata_extract_memo__ = ''
         self.__metadata_text__ = None
         self.__metadata_xml__ = CXml()
         self.__metadata_json__ = CJson()
         self.__metadata_type__ = self.MetaDataFormat_Text
 
+        self.__metadata_bus_extract_result__ = False
+        self.__metadata_bus_extract_memo__ = ''
         self.__metadata_bus_text__ = None
         self.__metadata_bus_xml__ = CXml()
         self.__metadata_bus_json__ = CJson()
@@ -54,11 +58,11 @@ class CMetaData(CResource):
 
     def metadata(self):
         if self.__metadata_type__ == self.MetaDataFormat_Json:
-            return self.__metadata_type__, self.__metadata_json__.to_json()
+            return self.__metadata_extract_result__, self.__metadata_extract_memo__, self.__metadata_type__, self.__metadata_json__.to_json()
         elif self.__metadata_type__ == self.MetaDataFormat_XML:
-            return self.__metadata_type__, self.__metadata_xml__.to_xml()
+            return self.__metadata_extract_result__, self.__metadata_extract_memo__, self.__metadata_type__, self.__metadata_xml__.to_xml()
         else:
-            return self.__metadata_type__, self.__metadata_text__
+            return self.__metadata_extract_result__, self.__metadata_extract_memo__, self.__metadata_type__, self.__metadata_text__
 
     @property
     def metadata_type(self):
@@ -80,7 +84,9 @@ class CMetaData(CResource):
     def metadata_bus_json(self) -> CJson:
         return self.__metadata_bus_json__
 
-    def set_metadata(self, metadata_type, metadata_text):
+    def set_metadata(self, metadata_extract_result, metadata_extract_memo, metadata_type, metadata_text):
+        self.__metadata_extract_result__ = metadata_extract_result
+        self.__metadata_extract_memo__ = metadata_extract_memo
         self.__metadata_type__ = metadata_type
         if self.__metadata_type__ == self.MetaDataFormat_Json:
             self.__metadata_text__ = ''
@@ -95,7 +101,9 @@ class CMetaData(CResource):
             self.__metadata_xml__ = CXml()
             self.__metadata_json__ = CJson()
 
-    def set_metadata_file(self, metadata_type, file_name):
+    def set_metadata_file(self, metadata_extract_result, metadata_extract_memo, metadata_type, file_name):
+        self.__metadata_extract_result__ = metadata_extract_result
+        self.__metadata_extract_memo__ = metadata_extract_memo
         self.__metadata_type__ = metadata_type
         if self.__metadata_type__ == self.MetaDataFormat_Json:
             self.__metadata_text__ = ''
@@ -112,13 +120,15 @@ class CMetaData(CResource):
 
     def metadata_bus(self):
         if self.__metadata_bus_type__ == self.MetaDataFormat_Json:
-            return self.__metadata_bus_type__, self.__metadata_bus_json__.to_json()
+            return self.__metadata_bus_extract_result__, self.__metadata_bus_extract_memo__, self.__metadata_bus_type__, self.__metadata_bus_json__.to_json()
         elif self.__metadata_bus_type__ == self.MetaDataFormat_XML:
-            return self.__metadata_bus_type__, self.__metadata_bus_xml__.to_xml()
+            return self.__metadata_bus_extract_result__, self.__metadata_bus_extract_memo__, self.__metadata_bus_type__, self.__metadata_bus_xml__.to_xml()
         else:
-            return self.__metadata_bus_type__, self.__metadata_bus_text__
+            return self.__metadata_bus_extract_result__, self.__metadata_bus_extract_memo__, self.__metadata_bus_type__, self.__metadata_bus_text__
 
-    def set_metadata_bus(self, metadata_bus_type, metadata_bus_text):
+    def set_metadata_bus(self, metadata_bus_extract_result, metadata_bus_extract_memo, metadata_bus_type, metadata_bus_text):
+        self.__metadata_bus_extract_result__ = metadata_bus_extract_result
+        self.__metadata_bus_extract_memo__ = metadata_bus_extract_memo
         self.__metadata_bus_type__ = metadata_bus_type
         if self.__metadata_bus_type__ == self.MetaDataFormat_Json:
             self.__metadata_bus_text__ = ''
@@ -133,7 +143,9 @@ class CMetaData(CResource):
             self.__metadata_bus_xml__ = CXml()
             self.__metadata_bus_json__ = CJson()
 
-    def set_metadata_bus_file(self, metadata_type, file_name):
+    def set_metadata_bus_file(self, metadata_bus_extract_result, metadata_bus_extract_memo, metadata_type, file_name):
+        self.__metadata_bus_extract_result__ = metadata_bus_extract_result
+        self.__metadata_bus_extract_memo__ = metadata_bus_extract_memo
         self.__metadata_bus_type__ = metadata_type
         if self.__metadata_bus_type__ == self.MetaDataFormat_Json:
             self.__metadata_bus_text__ = ''

@@ -2,44 +2,16 @@
 # -*- coding:utf-8 -*-
 
 from __future__ import absolute_import
-import uuid
+
 import re
+import uuid
 
 import pinyin
 
-from imetadata.base.c_json import CJson
 from imetadata.base.c_resource import CResource
 
 
 class CUtils(CResource):
-
-    @classmethod
-    def merge_result(cls, result, message=None, base=None) -> str:
-        new_result = CJson()
-        if base is not None:
-            new_result.load_json_text(base)
-
-        new_result.set_value_of_name(cls.Name_Result, result)
-        if message is not None:
-            new_result.set_value_of_name(cls.Name_Message, message)
-        return new_result.to_json()
-
-    @classmethod
-    def merge_result_info(cls, result_text, info_name: str, value):
-        return CJson.json_set_attr(result_text, info_name, value)
-
-    @classmethod
-    def result_success(cls, result_text) -> bool:
-        return CJson.json_attr_value(result_text, cls.Name_Result, cls.Failure) == cls.Success
-
-    @classmethod
-    def result_info(cls, result_text, info_name: str, default_value):
-        return CJson.json_attr_value(result_text, info_name, default_value)
-
-    @classmethod
-    def result_message(cls, result_text) -> str:
-        return CJson.json_attr_value(result_text, cls.Name_Message, '')
-
     @classmethod
     def one_id(cls) -> str:
         name = 'metadata.org'

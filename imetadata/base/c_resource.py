@@ -53,6 +53,8 @@ class CResource:
 
     Name_Total = 'total'
     Name_Data = 'data'
+    Name_DataBase = 'database'
+    Name_DataBases = 'databases'
     Name_Item = 'item'
     Name_Items = 'items'
     Name_Records = 'records'
@@ -61,6 +63,9 @@ class CResource:
     Name_Format = 'format'
     Name_Size = 'size'
     Name_Length = 'length'
+    Name_Time = 'time'
+    Name_Start_Time = 'start_time'
+    Name_End_Time = 'end_time'
 
     Dir_Type_Directory = 1
     Dir_Type_VirtualDirectory = 2

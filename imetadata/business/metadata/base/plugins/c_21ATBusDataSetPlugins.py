@@ -6,6 +6,7 @@
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
+from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
@@ -73,13 +74,13 @@ class C21ATBusDataSetPlugins(CDirPlugins):
         :return:
         """
         if not CFile.file_or_path_exist(self.__bus_metadata_xml_file_name__):
-            return CUtils.merge_result(self.Failure,
+            return CResult.merge_result(self.Failure,
                                        '元数据文件[{0}]不存在, 无法解析! '.format(self.__bus_metadata_xml_file_name__))
 
         try:
             parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, self.__bus_metadata_xml_file_name__)
-            return CUtils.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(self.__bus_metadata_xml_file_name__))
+            return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(self.__bus_metadata_xml_file_name__))
         except:
             parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
-            return CUtils.merge_result(self.Exception,
+            return CResult.merge_result(self.Exception,
                                        '元数据文件[{0}]格式不合法, 无法处理! '.format(self.__bus_metadata_xml_file_name__))

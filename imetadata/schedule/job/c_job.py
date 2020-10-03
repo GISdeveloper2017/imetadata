@@ -7,7 +7,7 @@ from abc import abstractmethod
 
 from imetadata.base.c_json import CJson
 from imetadata.base.c_resource import CResource
-from imetadata.base.c_utils import CUtils
+from imetadata.base.c_result import CResult
 
 
 class CJob(CResource):
@@ -33,7 +33,7 @@ class CJob(CResource):
 
     @abstractmethod
     def execute(self) -> str:
-        return CUtils.merge_result(CUtils.Failure, '没有可执行的任务！')
+        return CResult.merge_result(CResult.Failure, '没有可执行的任务！')
 
     def before_execute(self):
         pass

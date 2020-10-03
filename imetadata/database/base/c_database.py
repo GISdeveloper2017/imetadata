@@ -19,9 +19,9 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
+from imetadata.base.Exceptions import *
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CUtils
-from imetadata.base.Exceptions import *
 from imetadata.database.base.c_dataset import CDataSet
 
 

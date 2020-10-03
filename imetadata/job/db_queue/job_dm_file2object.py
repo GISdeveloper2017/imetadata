@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 
 from imetadata.base.c_logger import CLogger
-from imetadata.base.c_utils import CUtils
+from imetadata.base.c_result import CResult
 from imetadata.business.metadata.base.fileinfo.c_dmFileInfo import CDMFileInfo
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
 from imetadata.database.c_factory import CFactory
@@ -91,7 +91,7 @@ where dsfscanstatus = 2
 
         if not file_obj.__file_existed__:
             file_obj.db_update_status_on_file_invalid()
-            return CUtils.merge_result(CUtils.Success, '文件[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_file_name_with_path))
+            return CResult.merge_result(CResult.Success, '文件[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_file_name_with_path))
         else:
             file_obj.db_file2object()
 
@@ -102,7 +102,7 @@ where dsfscanstatus = 2
         '''
         CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_directory_status, {'dsfid': ds_file_id})
 
-        return CUtils.merge_result(CUtils.Success, '文件[{0}]处理顺利完成!'.format(ds_file_name_with_path))
+        return CResult.merge_result(CResult.Success, '文件[{0}]处理顺利完成!'.format(ds_file_name_with_path))
 
 
 if __name__ == '__main__':

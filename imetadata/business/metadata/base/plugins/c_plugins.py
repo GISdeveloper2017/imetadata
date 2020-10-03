@@ -8,6 +8,7 @@ from abc import abstractmethod
 from imetadata.base.Exceptions import FileContentWapperNotExistException
 from imetadata.base.c_file import CFile
 from imetadata.base.c_resource import CResource
+from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
@@ -173,7 +174,7 @@ class CPlugins(CResource):
         if not isinstance(parser, CParserCustom):
             return parser.process()
 
-        return CUtils.merge_result(self.Success, '处理完毕!')
+        return CResult.merge_result(self.Success, '处理完毕!')
 
     def parser_detail(self, parser: CParser) -> str:
         """
@@ -183,7 +184,7 @@ class CPlugins(CResource):
         if not isinstance(parser, CParserCustom):
             return parser.process()
 
-        return CUtils.merge_result(self.Success, '处理完毕!')
+        return CResult.merge_result(self.Success, '处理完毕!')
 
     def create_file_content(self):
         pass
@@ -220,28 +221,33 @@ class CPlugins(CResource):
                 1. XML元数据数据项检测
         :return: 返回
         """
+        # 首先要判断和验证与数据质量相关的核心内容
         parser.batch_qa_file(self.init_qa_file_list(parser))
 
+        # 这里将结果信息丢弃不用, 因为在提取元数据的方法中, 已经将异常信息记录到质检数据中
         result = self.init_metadata(parser)
-        if CUtils.result_success(result):
+        if CResult.result_success(result):
             if parser.metadata.metadata_type == self.MetaDataFormat_XML:
                 parser.batch_qa_metadata_xml(self.init_qa_metadata_xml_list(parser))
             elif parser.metadata.metadata_type == self.MetaDataFormat_Json:
                 parser.batch_qa_metadata_json_item(self.init_qa_metadata_json_list(parser))
 
+        # 这里将结果信息丢弃不用, 因为在提取业务元数据的方法中, 已经将异常信息记录到质检数据中
         result = self.init_metadata_bus(parser)
-        if CUtils.result_success(result):
+        if CResult.result_success(result):
             if parser.metadata.metadata_type == self.MetaDataFormat_XML:
                 parser.batch_qa_metadata_bus_xml_item(self.init_qa_metadata_bus_xml_list(parser))
             elif parser.metadata.metadata_type == self.MetaDataFormat_Json:
                 parser.batch_qa_metadata_bus_json_item(self.init_qa_metadata_bus_json_list(parser))
 
-        self.parser_metadata_custom(parser)
+        # 其次, 根据合法的数据\元数据\业务元数据内容, 提取其他元数据内容, 如果其中出现异常, 则写入质检结果中
+        self.parser_metadata_after_qa(parser)
 
         if not isinstance(parser, CParserCustom):
             return parser.process()
 
-        return CUtils.merge_result(self.Success, '处理完毕!')
+        # 这里应该永远都是成功信息
+        return CResult.merge_result(self.Success, '处理完毕!')
 
     def parser_last_process(self, parser: CParser) -> str:
         """
@@ -251,7 +257,7 @@ class CPlugins(CResource):
         if not isinstance(parser, CParserCustom):
             return parser.process()
 
-        return CUtils.merge_result(self.Success, '处理完毕!')
+        return CResult.merge_result(self.Success, '处理完毕!')
 
     def init_metadata(self, parser: CMetaDataParser) -> str:
         """
@@ -263,28 +269,38 @@ class CPlugins(CResource):
                                                             None)
         if default_metadata_engine is not None:
             result = parser.process_default_metadata(default_metadata_engine)
-            if CUtils.result_success(result):
-                file_metadata_name_with_path = CFile.join_file(self.file_content.work_root_dir, self.FileName_MetaData)
-                if not CFile.file_or_path_exist(file_metadata_name_with_path):
-                    return CUtils.merge_result(self.Exception,
-                                               '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path))
+            if CResult.result_success(result):
+                metadata_format = CResult.result_info(result, self.Name_Format, self.MetaDataFormat_Text)
 
-                metadata_format = CUtils.result_info(result, self.Name_Format, self.MetaDataFormat_Text)
-                metadata_filename = CUtils.result_info(result, self.Name_FileName, None)
+                file_metadata_name_with_path = CFile.join_file(self.file_content.work_root_dir, self.FileName_MetaData)
+                metadata_filename = CResult.result_info(result, self.Name_FileName, None)
                 if metadata_filename is not None:
                     file_metadata_name_with_path = metadata_filename
 
+                if not CFile.file_or_path_exist(file_metadata_name_with_path):
+                    parser.metadata.set_metadata(
+                        False,
+                        '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path),
+                        self.MetaDataFormat_Text,
+                        '')
+                    return CResult.merge_result(self.Exception,
+                                               '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path))
+
                 try:
-                    parser.metadata.set_metadata_file(metadata_format, file_metadata_name_with_path)
-                    return CUtils.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path))
-                except:
-                    parser.metadata.set_metadata(self.MetaDataFormat_Text, '')
-                    return CUtils.merge_result(self.Exception,
+                    parser.metadata.set_metadata_file(True, '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path), metadata_format, file_metadata_name_with_path)
+                    return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path))
+                except Exception as error:
+                    parser.metadata.set_metadata(
+                        False,
+                        '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(file_metadata_name_with_path, error.__str__()),
+                        self.MetaDataFormat_Text,
+                        '')
+                    return CResult.merge_result(self.Exception,
                                                '元数据文件[{0}]格式不合法, 无法处理! '.format(file_metadata_name_with_path))
             else:
                 return result
         else:
-            return CUtils.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
+            return CResult.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
 
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
@@ -292,15 +308,21 @@ class CPlugins(CResource):
         :param parser:
         :return:
         """
-        return CUtils.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
+        return CResult.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
 
-    def parser_metadata_custom(self, parser: CMetaDataParser):
+    def parser_metadata_after_qa(self, parser: CMetaDataParser):
         """
-        自定义的元数据处理逻辑
+        在质检完成之后, 元数据处理逻辑
         :param parser:
         :return:
         """
-        pass
+        quality_result = parser.metadata.quality.quality_result()
+        # 根据质检结果, 处理详细的时间信息
+        self.parser_metadata_time_after_qa(quality_result, parser)
+        # 根据质检结果, 处理详细的空间信息
+        self.parser_metadata_spatial_after_qa(quality_result, parser)
+        # 根据质检结果, 处理详细的可视化信息
+        self.parser_metadata_view_after_qa(quality_result, parser)
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
@@ -348,3 +370,19 @@ class CPlugins(CResource):
         :return:
         """
         return []
+
+    def parser_metadata_time_after_qa(self, quality_result, parser):
+        """
+        根据质检结果, 处理详细的时间信息
+        todo(赵宇飞) 在这里对详细的时间信息进程处理, 一般包括具体的time, start_time, end_time进行设置
+        :param quality_result:
+        :param parser:
+        :return:
+        """
+        pass
+
+    def parser_metadata_spatial_after_qa(self, quality_result, parser):
+        pass
+
+    def parser_metadata_view_after_qa(self, quality_result, parser):
+        pass

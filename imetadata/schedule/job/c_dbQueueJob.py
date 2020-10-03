@@ -3,8 +3,9 @@
 
 from abc import abstractmethod
 
-from imetadata.base.c_utils import CUtils
 from imetadata.base.Exceptions import *
+from imetadata.base.c_result import CResult
+from imetadata.base.c_utils import CUtils
 from imetadata.database.base.c_dataset import CDataSet
 from imetadata.database.c_factory import CFactory
 from imetadata.schedule.job.c_job import CJob
@@ -46,14 +47,14 @@ class CDBQueueJob(CJob):
 
     @abstractmethod
     def process_mission(self, dataset) -> str:
-        return CUtils.merge_result(CUtils.Success, '测试成功')
+        return CResult.merge_result(CResult.Success, '测试成功')
 
     def execute(self) -> str:
         mission_data = self.get_mission_info()
         if not mission_data.is_empty():
             return self.process_mission(mission_data)
         else:
-            return CUtils.merge_result(CUtils.Failure, '没有可执行的任务！')
+            return CResult.merge_result(CResult.Failure, '没有可执行的任务！')
 
     def get_mission_info(self) -> CDataSet:
         mission_flag = CUtils.one_id()

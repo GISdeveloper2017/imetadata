@@ -17,9 +17,12 @@
 """
 
 from __future__ import absolute_import
+
 import re
 from copy import deepcopy
+
 from lxml import etree
+
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 

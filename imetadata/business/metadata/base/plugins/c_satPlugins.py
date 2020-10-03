@@ -5,6 +5,7 @@
 from abc import abstractmethod
 
 from imetadata.base.c_file import CFile
+from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.content.c_virtualContent_Dir import CVirtualContentDir
 from imetadata.business.metadata.base.content.c_virtualContent_Package import CVirtualContentPackage
@@ -175,12 +176,12 @@ class CSatPlugins(CPlugins):
         """
         metadata_xml_file_name = self.get_bus_metadata_filename_by_file()
         if not CFile.file_or_path_exist(metadata_xml_file_name):
-            return CUtils.merge_result(self.Failure, '元数据文件[{0}]不存在, 无法解析! '.format(metadata_xml_file_name))
+            return CResult.merge_result(self.Failure, '元数据文件[{0}]不存在, 无法解析! '.format(metadata_xml_file_name))
 
         try:
             parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, metadata_xml_file_name)
-            return CUtils.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(metadata_xml_file_name))
+            return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(metadata_xml_file_name))
         except:
             parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
-            return CUtils.merge_result(self.Exception,
+            return CResult.merge_result(self.Exception,
                                        '元数据文件[{0}]格式不合法, 无法处理! '.format(metadata_xml_file_name))

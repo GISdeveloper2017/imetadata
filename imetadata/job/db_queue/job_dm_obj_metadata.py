@@ -7,6 +7,7 @@
 from __future__ import absolute_import
 
 from imetadata.base.c_logger import CLogger
+from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
@@ -94,7 +95,7 @@ where dsometadataparsestatus = 2
                   , dsometadataparsememo = '文件或目录不存在，元数据无法解析'
                 where dsoid = :dsoid
                 ''', {'dsoid': dso_id})
-            return CUtils.merge_result(self.Success, '文件或目录[{0}]不存在，元数据无法解析, 元数据处理正常结束!'.format(
+            return CResult.merge_result(self.Success, '文件或目录[{0}]不存在，元数据无法解析, 元数据处理正常结束!'.format(
                 ds_file_info.value_by_name(0, 'query_object_fullname', '')))
 
         sql_get_rule = '''
@@ -120,7 +121,7 @@ where dsometadataparsestatus = 2
                                           )
         plugins_obj = CPluginsMng.plugins(file_info_obj, dso_object_type)
         if plugins_obj is None:
-            return CUtils.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，元数据无法解析, 处理结束!'.format(
+            return CResult.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，元数据无法解析, 处理结束!'.format(
                 ds_file_info.value_by_name(0, 'query_object_fullname', ''),
                 dso_object_type)
                                        )
@@ -134,7 +135,7 @@ where dsometadataparsestatus = 2
                                               plugins_obj.get_information())
             process_result = plugins_obj.parser_metadata(metadata_parser)
 
-            if CUtils.result_success(process_result):
+            if CResult.result_success(process_result):
                 CFactory().give_me_db(self.get_mission_db_id()).execute('''
                     update dm2_storage_object
                     set dsometadataparsestatus = 0
@@ -143,17 +144,17 @@ where dsometadataparsestatus = 2
                     where dsoid = :dsoid
                     ''', {'dsoid': dso_id, 'dsometadataparsememo': '文件或目录[{0}]元数据解析成功结束!'.format(
                     ds_file_info.value_by_name(0, 'query_object_fullname', ''))})
-                return CUtils.merge_result(self.Success, '文件或目录[{0}]元数据解析成功结束!'.format(
+                return CResult.merge_result(self.Success, '文件或目录[{0}]元数据解析成功结束!'.format(
                     ds_file_info.value_by_name(0, 'query_object_fullname', '')))
             else:
                 self.db_update_object_status(dso_id, '文件或目录[{0}]元数据解析过程出现错误! 错误原因为: {1}'.format(
-                    ds_file_info.value_by_name(0, 'query_object_fullname', ''), CUtils.result_message(process_result)))
+                    ds_file_info.value_by_name(0, 'query_object_fullname', ''), CResult.result_message(process_result)))
                 return process_result
         except Exception as error:
             self.db_update_object_status(dso_id, '文件或目录[{0}]元数据解析过程出现错误! 错误原因为: {1}'.format(
                 ds_file_info.value_by_name(0, 'query_object_fullname', ''), error.__str__()))
 
-            return CUtils.merge_result(self.Failure, '文件或目录[{0}]元数据解析过程出现错误! 错误原因为: {1}'.format(
+            return CResult.merge_result(self.Failure, '文件或目录[{0}]元数据解析过程出现错误! 错误原因为: {1}'.format(
                 ds_file_info.value_by_name(0, 'query_object_fullname', ''), error.__str__()))
         finally:
             plugins_obj.destroy_virtual_content()

@@ -4,16 +4,16 @@
 # @File : c_vectorMDReader.py
 import time
 
+import gdal
 import psutil
+from osgeo import ogr
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
+from imetadata.base.c_result import CResult
 from imetadata.base.c_sys import CSys
-from imetadata.base.c_utils import CUtils
 from imetadata.tool.mdreader.c_mdreader import CMDReader
-from osgeo import ogr
-import gdal
 
 
 class CVectorMDReader(CMDReader):
@@ -43,7 +43,7 @@ class CVectorMDReader(CMDReader):
             # 判断路径是否存在，不存在则创建
             if CFile.check_and_create_directory(file_name_with_path):
                 json_vector.to_file(file_name_with_path)
-            return CUtils.merge_result(CUtils.Failure,
+            return CResult.merge_result(CResult.Failure,
                                        '文件[{0}]打开失败!'.format(self.__file_name_with_path__))
 
         try:
@@ -55,7 +55,7 @@ class CVectorMDReader(CMDReader):
                 # 判断路径是否存在，不存在则创建
                 if CFile.check_and_create_directory(file_name_with_path):
                     json_vector.to_file(file_name_with_path)
-                return CUtils.merge_result(CUtils.Failure,
+                return CResult.merge_result(CResult.Failure,
                                            '文件[{0}]没有图层!'.format(self.__file_name_with_path__))
 
             shp_lyr = vector_ds.GetLayer(0)
@@ -66,7 +66,7 @@ class CVectorMDReader(CMDReader):
                 # 判断路径是否存在，不存在则创建
                 if CFile.check_and_create_directory(file_name_with_path):
                     json_vector.to_file(file_name_with_path)
-                return CUtils.merge_result(CUtils.Failure,
+                return CResult.merge_result(CResult.Failure,
                                            '文件[{0}]读取图层失败!'.format(self.__file_name_with_path__))
             driver = vector_ds.GetDriver()
             if driver is None:
@@ -76,7 +76,7 @@ class CVectorMDReader(CMDReader):
                 # 判断路径是否存在，不存在则创建
                 if CFile.check_and_create_directory(file_name_with_path):
                     json_vector.to_file(file_name_with_path)
-                return CUtils.merge_result(CUtils.Failure,
+                return CResult.merge_result(CResult.Failure,
                                            '文件[{0}]读取驱动失败!'.format(self.__file_name_with_path__))
 
             # 定义datasource子节点,并添加到矢量json对象中
@@ -130,7 +130,7 @@ class CVectorMDReader(CMDReader):
             if CFile.check_and_create_directory(file_name_with_path):
                 json_vector.to_file(file_name_with_path)
             CLogger().info('文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
-            return CUtils.merge_result(CUtils.Success,
+            return CResult.merge_result(CResult.Success,
                                        '文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
         except Exception as error:
             CLogger().info('get_metadata_2_file解析错误：{0}'.format(error))
@@ -140,7 +140,7 @@ class CVectorMDReader(CMDReader):
             # 判断路径是否存在，不存在则创建
             if CFile.check_and_create_directory(file_name_with_path):
                 json_vector.to_file(file_name_with_path)
-            return CUtils.merge_result(CUtils.Failure,
+            return CResult.merge_result(CResult.Failure,
                                        '文件[{0}]读取异常!｛1｝'.format(self.__file_name_with_path__, error))
         finally:
             vector_ds.Destroy()

@@ -3,6 +3,7 @@
 # @Author : 王西亚 
 # @File : c_metaDataParser.py
 from imetadata.base.c_file import CFile
+from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
@@ -56,6 +57,7 @@ class CMetaDataParser(CParser):
         file_quality_text = self.metadata.quality.to_xml()
         quality_result = self.metadata.quality.quality_result()
 
+        # 处理元数据
         metadata_type, metadata_text = self.metadata.metadata()
         metadata_json = None
         metadata_xml = None
@@ -64,6 +66,7 @@ class CMetaDataParser(CParser):
         elif metadata_type == self.MetaDataFormat_Json:
             metadata_json = metadata_text
 
+        # 处理业务元数据
         metadata_bus_type, metadata_bus_text = self.metadata.metadata_bus()
         metadata_bus_json = None
         metadata_bus_xml = None
@@ -98,7 +101,7 @@ class CMetaDataParser(CParser):
                   'dsometadataxml_bus': metadata_bus_xml
                   }
                                                                        )
-        return CUtils.merge_result(self.Success, '处理完毕!')
+        return CResult.merge_result(self.Success, '处理完毕!')
 
     def custom_init(self):
         pass
