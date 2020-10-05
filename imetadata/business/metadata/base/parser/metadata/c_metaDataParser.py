@@ -298,3 +298,38 @@ class CMetaDataParser(CParser):
             }
         )
         return CResult.merge_result(self.Success, '可视化元数据处理完毕!')
+
+    def save_metadata_spatial(self) -> str:
+        """
+        完成空间元数据的入库更新操作
+        :return:
+        """
+        mdt_spatial_result, mdt_spatial_memo, mdt_spatial = self.metadata.metadata_spatial()
+
+        # 所有元数据入库
+        CFactory().give_me_db(self.file_info.__db_server_id__).execute(
+            '''
+            update dm2_storage_object
+            set dso_spatial_result = :dso_spatial_result
+                , dso_spatial_parsermemo = :dso_spatial_parsermemo
+                , dso_center_native = :dso_center_native
+                , dso_geo_bb_native = :dso_geo_bb_native
+                , dso_geo_native = :dso_geo_native
+                , dso_center_wgs84 = :dso_center_wgs84
+                , dso_geo_bb_wgs84 = :dso_geo_bb_wgs84
+                , dso_geo_wgs84 = :dso_geo_wgs84
+            where dsoid = :dsoid
+            ''',
+            {
+                'dsoid': self.object_id,
+                'dso_spatial_result': mdt_spatial_result,
+                'dso_spatial_parsermemo': mdt_spatial_memo,
+                'dso_center_native': mdt_spatial.native_center,
+                'dso_geo_bb_native': mdt_spatial.native_box,
+                'dso_geo_native': mdt_spatial.native_geom,
+                'dso_center_wgs84': mdt_spatial.wgs84_center,
+                'dso_geo_bb_wgs84': mdt_spatial.wgs84_bbox,
+                'dso_geo_wgs84': mdt_spatial.wgs84_geom
+            }
+        )
+        return CResult.merge_result(self.Success, '空间元数据处理完毕!')

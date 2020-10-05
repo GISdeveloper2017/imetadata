@@ -7,6 +7,7 @@ from imetadata.base.c_json import CJson
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.parser.metadata.quality.c_quality import CQuality
+from imetadata.business.metadata.base.parser.metadata.spatial.c_mdSpatial import CMDSpatial
 
 
 class CMetaData(CResource):
@@ -38,12 +39,7 @@ class CMetaData(CResource):
 
         self.__metadata_spatial_extract_result__ = self.DB_False
         self.__metadata_spatial_extract_memo__ = ''
-        self.__metadata_spatial_native_bbox__ = None
-        self.__metadata_spatial_native_geom__ = None
-        self.__metadata_spatial_native_center__ = None
-        self.__metadata_spatial_wgs84_bbox__ = None
-        self.__metadata_spatial_wgs84_geom__ = None
-        self.__metadata_spatial_wgs84_center__ = None
+        self.__metadata_spatial__ = CMDSpatial()
 
     def metadata_time(self):
         if self.__metadata_time_extract_result__ == self.DB_True:
@@ -59,9 +55,9 @@ class CMetaData(CResource):
 
     def metadata_spatial(self):
         if self.__metadata_spatial_extract_result__ == self.DB_True:
-            return self.__metadata_spatial_extract_result__, self.__metadata_spatial_extract_memo__
+            return self.__metadata_spatial_extract_result__, self.__metadata_spatial_extract_memo__, self.__metadata_spatial__
         else:
-            return self.__metadata_spatial_extract_result__, self.__metadata_spatial_extract_memo__
+            return self.__metadata_spatial_extract_result__, self.__metadata_spatial_extract_memo__, self.__metadata_spatial__
 
     @property
     def quality(self):

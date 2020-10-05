@@ -4,6 +4,12 @@
 # @File : c_resource.py
 
 class CResource:
+    Name_Password = 'password'
+    Name_UserName = 'username'
+    Port_Postgresql_Default = 5432
+    Name_Port = 'port'
+    Name_Host = 'host'
+    Host_LocalHost = '127.0.0.1'
     OS_Windows = 'windows'
     OS_Linux = 'linux'
 
@@ -40,6 +46,10 @@ class CResource:
     Job_Params_DB_Server_ID = 'db_server_id'
     Name_Parallel_Count = 'parallel_count'
     Name_Process = 'process'
+    
+    DB_Type_Postgresql = 'postgresql'
+
+    DB_Server_ID_Default = '0'
 
     Status_Finish = 0
 
@@ -88,8 +98,9 @@ class CResource:
 
     Name_MetaData = 'metadata'
     Name_Plugins = 'plugins'
-    Name_WorkDir = 'workdir'
+    Name_Work = 'work'
     Name_Business = 'business'
+    Name_View = 'view'
 
     FileExt_Py = 'py'
 
@@ -157,3 +168,7 @@ class CResource:
 
     Name_Min = 'min'
     Name_Max = 'max'
+
+    ModuleName_MetaData = 'metadata'
+    ModuleName_DataMining = 'datamining'
+    ModuleName_Data2Service = 'data2service'

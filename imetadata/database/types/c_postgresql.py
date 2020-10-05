@@ -22,7 +22,7 @@ from imetadata.database.base.c_database import CDataBase
 
 class CPostgreSQL(CDataBase):
     def __init__(self, database_option):
-        CDataBase.__init__(self, database_option)
+        super().__init__(self, database_option)
 
     def db_connection(self):
         return "postgresql+psycopg2://{0}:{1}@{2}:{3}/{4}".format(

@@ -18,14 +18,22 @@ class CFactory(CResource):
         pass
 
     def create_db(self, database) -> CDataBase:
-        if database['job'].strip().lower() == CDataBase.DATABASE_POSTGRESQL:
+        if database[self.Name_Type].strip().lower() == CDataBase.DATABASE_POSTGRESQL:
             return CPostgreSQL(database)
         else:
-            raise DBException(database['id'])
+            raise DBException(CUtils.dict_value_by_name(database, self.Name_ID, self.DB_Server_ID_Default))
 
-    def give_me_db(self, db_id: str = '0') -> CDataBase:
+    def give_me_db(self, db_id=None) -> CDataBase:
+        if db_id is None:
+            rt_db_id = self.DB_Server_ID_Default
+        else:
+            rt_db_id = CUtils.any_2_str(db_id)
+
+        if CUtils.equal_ignore_case(rt_db_id, ''):
+            rt_db_id = self.DB_Server_ID_Default
+
         for database in CUtils.dict_value_by_name(settings.application, self.Name_DataBases, None):
-            if db_id == database['id']:
+            if rt_db_id == CUtils.dict_value_by_name(database, self.Name_ID, self.DB_Server_ID_Default):
                 return self.create_db(database)
 
-        raise Exception('未找到标示为%s的数据库定义！' % db_id)
+        raise Exception('未找到标示为[{0}]]的数据库定义！'.format(rt_db_id))
