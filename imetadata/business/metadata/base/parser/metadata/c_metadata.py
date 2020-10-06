@@ -5,6 +5,7 @@
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_resource import CResource
+from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.parser.metadata.quality.c_quality import CQuality
 from imetadata.business.metadata.base.parser.metadata.spatial.c_mdSpatial import CMDSpatial
@@ -110,6 +111,46 @@ class CMetaData(CResource):
 
     def metadata_bus_json(self) -> CJson:
         return self.__metadata_bus_json__
+
+    def set_metadata_spatial(self, result: int, memo: str, spatial_metadata_type=None, spatial_metadata=None):
+        self.__metadata_spatial_extract_result__ = result
+        self.__metadata_spatial_extract_memo__ = memo
+        if spatial_metadata_type is None:
+            return
+
+        if spatial_metadata_type == CResource.Spatial_MetaData_Type_Native_Center:
+            self.__metadata_spatial__.native_center = spatial_metadata
+        elif spatial_metadata_type == CResource.Spatial_MetaData_Type_Native_BBox:
+            self.__metadata_spatial__.native_box = spatial_metadata
+        elif spatial_metadata_type == CResource.Spatial_MetaData_Type_Native_Geom:
+            self.__metadata_spatial__.native_geom = spatial_metadata
+        elif spatial_metadata_type == CResource.Spatial_MetaData_Type_Wgs84_Center:
+            self.__metadata_spatial__.wgs84_center = spatial_metadata
+        elif spatial_metadata_type == CResource.Spatial_MetaData_Type_Wgs84_BBox:
+            self.__metadata_spatial__.wgs84_bbox = spatial_metadata
+        elif spatial_metadata_type == CResource.Spatial_MetaData_Type_Wgs84_Geom:
+            self.__metadata_spatial__.wgs84_geom = spatial_metadata
+        else:
+            pass
+
+    def set_metadata_view(self, result: int, memo: str, view_metadata_type=None, view_metadata=None):
+        self.__metadata_view_extract_result__ = result
+        self.__metadata_view_extract_memo__ = memo
+        if view_metadata_type is None:
+            return
+
+        if view_metadata_type == CResource.View_MetaData_Type_Browse:
+            self.__browse_img_file_name__ = view_metadata
+        elif view_metadata_type == CResource.View_MetaData_Type_Thumb:
+            self.__thumb_img_file_name__ = view_metadata
+        else:
+            pass
+
+    def set_metadata_time(self, result: int, memo: str, time_attr_name=None, time_attr_value=None):
+        self.__metadata_time_extract_result__ = result
+        self.__metadata_time_extract_memo__ = memo
+        if time_attr_name is not None:
+            self.__time_information__.set_value_of_name(CUtils.any_2_str(time_attr_name), time_attr_value)
 
     def set_metadata(self, metadata_extract_result: int, metadata_extract_memo: str, metadata_type: int, metadata_text):
         self.__metadata_extract_result__ = metadata_extract_result

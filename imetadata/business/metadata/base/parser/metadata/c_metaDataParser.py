@@ -8,10 +8,11 @@ from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.c_parser import CParser
-from imetadata.business.metadata.base.parser.c_parserCustom import CParserCustom
 from imetadata.business.metadata.base.parser.metadata.c_metadata import CMetaData
 from imetadata.business.metadata.base.parser.metadata.metadata.c_mdExtractorMng import CMDExtractorMng
 from imetadata.business.metadata.base.parser.metadata.quality.c_audit import CAudit
+from imetadata.business.metadata.base.parser.metadata.spatial.c_spatialExtractorMng import CSpatialExtractorMng
+from imetadata.business.metadata.base.parser.metadata.view.c_viewCreatorMng import CViewCreatorMng
 from imetadata.database.c_factory import CFactory
 
 
@@ -54,65 +55,6 @@ class CMetaDataParser(CParser):
         1. 业务元数据提取并分析
         :return:
         """
-        file_quality_text = self.metadata.quality.to_xml()
-        quality_result = self.metadata.quality.quality_result()
-
-        # 处理元数据
-        metadata_extract_result, metadata_extract_memo, metadata_type, metadata_text = self.metadata.metadata()
-        metadata_json = None
-        metadata_xml = None
-        if metadata_type == self.MetaDataFormat_XML:
-            metadata_xml = metadata_text
-        elif metadata_type == self.MetaDataFormat_Json:
-            metadata_json = metadata_text
-
-        # 处理业务元数据
-        metadata_bus_extract_result, metadata_bus_extract_memo, metadata_bus_type, metadata_bus_text = self.metadata.metadata_bus()
-        metadata_bus_json = None
-        metadata_bus_xml = None
-        if metadata_bus_type == self.MetaDataFormat_XML:
-            metadata_bus_xml = metadata_bus_text
-        elif metadata_bus_type == self.MetaDataFormat_Json:
-            metadata_bus_json = metadata_bus_text
-
-        # 所有元数据入库
-        CFactory().give_me_db(self.file_info.__db_server_id__).execute(
-            '''
-            update dm2_storage_object
-            set dso_quality = :dso_quality
-                , dso_quality_result = :dso_quality_result
-                , dso_metadata_result = :dso_metadata_result
-                , dsometadataparsememo = :dsometadataparsememo
-                , dsometadatatype = :dsometadatatype
-                , dsometadatatext = :dsometadatatext
-                , dsometadatajson = :dsometadatajson
-                , dsometadataxml = :dsometadataxml
-                , dso_metadata_bus_result = :dso_metadata_bus_result
-                , dsometadata_bus_parsememo = :dsometadata_bus_parsememo
-                , dsometadatatype_bus = :dsometadatatype_bus
-                , dsometadatatext_bus = :dsometadatatext_bus
-                , dsometadatajson_bus = :dsometadatajson_bus
-                , dsometadataxml_bus = :dsometadataxml_bus
-            where dsoid = :dsoid
-            ''',
-            {
-                'dso_quality': file_quality_text,
-                'dsoid': self.object_id,
-                'dso_quality_result': quality_result,
-                'dso_metadata_result': metadata_extract_result,
-                'dsometadataparsememo': metadata_extract_memo,
-                'dsometadatatype': metadata_type,
-                'dsometadatatext': metadata_text,
-                'dsometadatajson': metadata_json,
-                'dsometadataxml': metadata_xml,
-                'dso_metadata_bus_result': metadata_extract_result,
-                'dsometadata_bus_parsememo': metadata_bus_extract_memo,
-                'dsometadatatype_bus': metadata_bus_type,
-                'dsometadatatext_bus': metadata_bus_text,
-                'dsometadatajson_bus': metadata_bus_json,
-                'dsometadataxml_bus': metadata_bus_xml
-            }
-        )
         return CResult.merge_result(self.Success, '处理完毕!')
 
     def custom_init(self):
@@ -239,8 +181,88 @@ class CMetaDataParser(CParser):
         """
         md_extractor = CMDExtractorMng.give_me_extractor(metadata_engine_type, self.object_id, self.object_name,
                                                          self.file_info, self.file_content)
-        if not isinstance(md_extractor, CParserCustom):
-            return md_extractor.process()
+        return md_extractor.process()
+
+    def process_default_view(self, engine_type):
+        """
+        内置的可视化元数据提取
+        :param engine_type:
+        :return:
+        """
+        md_view_creator = CViewCreatorMng.give_me_creator(engine_type, self.object_id, self.object_name,
+                                                          self.file_info, self.file_content)
+        return md_view_creator.process()
+
+    def process_default_spatial(self, engine_type):
+        """
+        内置的可视化元数据提取
+        :param engine_type:
+        :return:
+        """
+        md_spatial_extractor = CSpatialExtractorMng.give_me_extractor(engine_type, self.object_id, self.object_name,
+                                                            self.file_info, self.file_content)
+        return md_spatial_extractor.process()
+
+    def save_metadata_data_and_bus(self) -> str:
+        file_quality_text = self.metadata.quality.to_xml()
+        quality_result = self.metadata.quality.quality_result()
+
+        metadata_extract_result, metadata_extract_memo, metadata_type, metadata_text = self.metadata.metadata()
+        metadata_json = None
+        metadata_xml = None
+        if metadata_type == self.MetaDataFormat_XML:
+            metadata_xml = metadata_text
+        elif metadata_type == self.MetaDataFormat_Json:
+            metadata_json = metadata_text
+
+        # 处理业务元数据
+        metadata_bus_extract_result, metadata_bus_extract_memo, metadata_bus_type, metadata_bus_text = self.metadata.metadata_bus()
+        metadata_bus_json = None
+        metadata_bus_xml = None
+        if metadata_bus_type == self.MetaDataFormat_XML:
+            metadata_bus_xml = metadata_bus_text
+        elif metadata_bus_type == self.MetaDataFormat_Json:
+            metadata_bus_json = metadata_bus_text
+
+        # 所有元数据入库
+        CFactory().give_me_db(self.file_info.__db_server_id__).execute(
+            '''
+            update dm2_storage_object
+            set dso_quality = :dso_quality
+                , dso_quality_result = :dso_quality_result
+                , dso_metadata_result = :dso_metadata_result
+                , dsometadataparsememo = :dsometadataparsememo
+                , dsometadatatype = :dsometadatatype
+                , dsometadatatext = :dsometadatatext
+                , dsometadatajson = :dsometadatajson
+                , dsometadataxml = :dsometadataxml
+                , dso_metadata_bus_result = :dso_metadata_bus_result
+                , dsometadata_bus_parsememo = :dsometadata_bus_parsememo
+                , dsometadatatype_bus = :dsometadatatype_bus
+                , dsometadatatext_bus = :dsometadatatext_bus
+                , dsometadatajson_bus = :dsometadatajson_bus
+                , dsometadataxml_bus = :dsometadataxml_bus
+            where dsoid = :dsoid
+            ''',
+            {
+                'dso_quality': file_quality_text,
+                'dsoid': self.object_id,
+                'dso_quality_result': quality_result,
+                'dso_metadata_result': metadata_extract_result,
+                'dsometadataparsememo': metadata_extract_memo,
+                'dsometadatatype': metadata_type,
+                'dsometadatatext': metadata_text,
+                'dsometadatajson': metadata_json,
+                'dsometadataxml': metadata_xml,
+                'dso_metadata_bus_result': metadata_extract_result,
+                'dsometadata_bus_parsememo': metadata_bus_extract_memo,
+                'dsometadatatype_bus': metadata_bus_type,
+                'dsometadatatext_bus': metadata_bus_text,
+                'dsometadatajson_bus': metadata_bus_json,
+                'dsometadataxml_bus': metadata_bus_xml
+            }
+        )
+        return CResult.merge_result(self.Success, '元数据和业务元数据处理完毕!')
 
     def save_metadata_time(self) -> str:
         """

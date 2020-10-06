@@ -20,7 +20,6 @@ class plugins_3000_gdb(CDirPlugins):
         information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
-        information[self.Plugins_Info_QCEngine] = None
         return information
 
     def classified(self):

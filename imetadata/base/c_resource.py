@@ -4,6 +4,23 @@
 # @File : c_resource.py
 
 class CResource:
+    Spatial_MetaData_Type_Native_Center = 11
+    Spatial_MetaData_Type_Native_BBox = 12
+    Spatial_MetaData_Type_Native_Geom = 13
+    Spatial_MetaData_Type_Wgs84_Center = 21
+    Spatial_MetaData_Type_Wgs84_BBox = 22
+    Spatial_MetaData_Type_Wgs84_Geom = 23
+
+    View_MetaData_Type_Browse = 11
+    View_MetaData_Type_Thumb = 12
+
+    Name_Native_Center = 'native_center'
+    Name_Native_BBox = 'native_bbox'
+    Name_Native_Geom = 'native_geom'
+    Name_Wgs84_Center = 'wgs84_center'
+    Name_Wgs84_BBox = 'wgs84_bbox'
+    Name_Wgs84_Geom = 'wgs84_geom'
+
     Name_Password = 'password'
     Name_UserName = 'username'
     Port_Postgresql_Default = 5432
@@ -22,6 +39,9 @@ class CResource:
     NAME_CMD_TRIGGER = 'cmd_trigger'
     NAME_CMD_ALGORITHM = 'cmd_algorithm'
     NAME_CMD_PARAMS = 'cmd_params'
+
+    Name_Browse = 'browse'
+    Name_Thumb = 'thumb'
 
     CMD_START = 'start'
     CMD_STOP = 'stop'
@@ -145,6 +165,10 @@ class CResource:
     MetaDataEngine_Raster = 'raster'
     MetaDataEngine_Vector = 'vector'
     MetaDataEngine_Document = 'document'
+
+    BrowseEngine_Raster = 'raster'
+    BrowseEngine_Vector = 'vector'
+    BrowseEngine_Document = 'document'
 
     DetailEngine_Same_File_Main_Name = 'same_file_main_name'
     DetailEngine_File_Of_Same_Dir = 'file_of_same_dir'

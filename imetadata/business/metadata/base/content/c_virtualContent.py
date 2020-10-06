@@ -16,6 +16,7 @@ class CVirtualContent(CResource):
     __target_name__ = None
     __virtual_content_root_dir__ = None
     __work_root_dir__ = None
+    __view_root_dir__ = None
 
     """
     虚拟内容目录
@@ -28,6 +29,7 @@ class CVirtualContent(CResource):
         self.__target_name__ = target_name
         self.__temp_subpath_name__ = CUtils.one_id()
         self.__work_root_dir__ = CFile.join_file(CSys.get_work_root_dir(), self.__temp_subpath_name__)
+        self.__view_root_dir__ = CSys.get_metadata_view_root_dir()
 
     @abstractmethod
     def create_virtual_content(self) -> bool:
@@ -47,3 +49,7 @@ class CVirtualContent(CResource):
     @property
     def work_root_dir(self):
         return self.__work_root_dir__
+
+    @property
+    def view_root_dir(self):
+        return self.__view_root_dir__
