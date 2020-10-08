@@ -33,6 +33,10 @@ class CUtils(CResource):
         return str1.strip().lower() == str2.strip().lower()
 
     @classmethod
+    def quote(cls, str1: str) -> str:
+        return "'{0}'".format(str1.strip())
+
+    @classmethod
     def dict_value_by_name(cls, dict_obj: dict, name: str, default_value, ignore_case=True) -> any:
         keys = dict_obj.keys()
         for key in keys:

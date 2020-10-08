@@ -4,6 +4,17 @@
 # @File : c_mdSpatial.py
 
 class CMDSpatial:
+    """
+    空间元数据信息:
+    . 原生中心点坐标
+    . 原生外包框
+    . 原生外边框
+    . Wgs84中心点坐标
+    . Wgs84外包框
+    . Wgs84外边框
+    注意: 所有上述内容都是文件名, 这样将较大的内容存储在文件中, 便于后续处理
+    """
+
     def __init__(self):
         self.__native_bbox__ = None
         self.__native_geom__ = None

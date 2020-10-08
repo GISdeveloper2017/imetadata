@@ -5,12 +5,12 @@
 
 from abc import abstractmethod
 
-from imetadata.base.Exceptions import FileContentWapperNotExistException
 from imetadata.base.c_file import CFile
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
+from imetadata.base.exceptions import FileContentWapperNotExistException
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.c_parser import CParser

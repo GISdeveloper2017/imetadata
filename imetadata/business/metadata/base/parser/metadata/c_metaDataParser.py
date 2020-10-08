@@ -13,6 +13,7 @@ from imetadata.business.metadata.base.parser.metadata.metadata.c_mdExtractorMng 
 from imetadata.business.metadata.base.parser.metadata.quality.c_audit import CAudit
 from imetadata.business.metadata.base.parser.metadata.spatial.c_spatialExtractorMng import CSpatialExtractorMng
 from imetadata.business.metadata.base.parser.metadata.view.c_viewCreatorMng import CViewCreatorMng
+from imetadata.database.base.c_dataset import CDataSet
 from imetadata.database.c_factory import CFactory
 
 
@@ -200,7 +201,7 @@ class CMetaDataParser(CParser):
         :return:
         """
         md_spatial_extractor = CSpatialExtractorMng.give_me_extractor(engine_type, self.object_id, self.object_name,
-                                                            self.file_info, self.file_content)
+                                                                      self.file_info, self.file_content)
         return md_spatial_extractor.process()
 
     def save_metadata_data_and_bus(self) -> str:
@@ -327,7 +328,17 @@ class CMetaDataParser(CParser):
         :return:
         """
         mdt_spatial_result, mdt_spatial_memo, mdt_spatial = self.metadata.metadata_spatial()
-
+        params = {
+            'dsoid': self.object_id,
+            'dso_spatial_result': mdt_spatial_result,
+            'dso_spatial_parsermemo': mdt_spatial_memo
+        }
+        CDataSet.file2param(params, 'dso_center_native', mdt_spatial.native_center)
+        CDataSet.file2param(params, 'dso_geo_bb_native', mdt_spatial.native_box)
+        CDataSet.file2param(params, 'dso_geo_native', mdt_spatial.native_geom)
+        CDataSet.file2param(params, 'dso_center_wgs84', mdt_spatial.wgs84_center)
+        CDataSet.file2param(params, 'dso_geo_bb_wgs84', mdt_spatial.wgs84_bbox)
+        CDataSet.file2param(params, 'dso_geo_wgs84', mdt_spatial.wgs84_geom)
         # 所有元数据入库
         CFactory().give_me_db(self.file_info.__db_server_id__).execute(
             '''
@@ -341,17 +352,6 @@ class CMetaDataParser(CParser):
                 , dso_geo_bb_wgs84 = :dso_geo_bb_wgs84
                 , dso_geo_wgs84 = :dso_geo_wgs84
             where dsoid = :dsoid
-            ''',
-            {
-                'dsoid': self.object_id,
-                'dso_spatial_result': mdt_spatial_result,
-                'dso_spatial_parsermemo': mdt_spatial_memo,
-                'dso_center_native': mdt_spatial.native_center,
-                'dso_geo_bb_native': mdt_spatial.native_box,
-                'dso_geo_native': mdt_spatial.native_geom,
-                'dso_center_wgs84': mdt_spatial.wgs84_center,
-                'dso_geo_bb_wgs84': mdt_spatial.wgs84_bbox,
-                'dso_geo_wgs84': mdt_spatial.wgs84_geom
-            }
+            ''', params
         )
         return CResult.merge_result(self.Success, '空间元数据处理完毕!')

@@ -12,6 +12,7 @@
 """
 
 import urllib.parse
+from abc import abstractmethod
 
 from sqlalchemy import create_engine
 from sqlalchemy import text
@@ -19,11 +20,12 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
-from imetadata.base.Exceptions import *
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
+from imetadata.base.exceptions import *
 from imetadata.database.base.c_dataset import CDataSet
+from imetadata.database.base.sql.c_sql import CSql
 
 
 class CDataBase(CResource):
@@ -48,10 +50,13 @@ class CDataBase(CResource):
         todo(王西亚) 这里需要考虑数据库访问密码的明文存储和解密事宜
         :param database_option:
         """
+        self.__sql__ = self.create_default_sql()
+
         self.__db_conn_id__ = CUtils.dict_value_by_name(database_option, self.Name_ID, self.DB_Server_ID_Default)
         self.__db_conn_type__ = CUtils.dict_value_by_name(database_option, self.Name_Type, self.DB_Type_Postgresql)
         self.__db_conn_host__ = CUtils.dict_value_by_name(database_option, CResource.Name_Host, self.Host_LocalHost)
-        self.__db_conn_port__ = CUtils.dict_value_by_name(database_option, CResource.Name_Port, CResource.Port_Postgresql_Default)
+        self.__db_conn_port__ = CUtils.dict_value_by_name(database_option, CResource.Name_Port,
+                                                          CResource.Port_Postgresql_Default)
         self.__db_conn_name__ = CUtils.dict_value_by_name(database_option, CResource.Name_DataBase, '')
         self.__db_conn_username__ = CUtils.dict_value_by_name(database_option, CResource.Name_UserName, '')
         self.__db_conn_password_native__ = CUtils.dict_value_by_name(database_option, CResource.Name_Password, '')
@@ -63,6 +68,9 @@ class CDataBase(CResource):
 
     def db_connection(self):
         return ''
+
+    def sql(self):
+        return self.__sql__
 
     def __prepare_params_of_execute_sql__(self, engine, sql, params):
         """
@@ -78,13 +86,14 @@ class CDataBase(CResource):
         else:
             statement = text(sql)
             exe_params = statement.compile(engine).params
+
             new_params = {}
             exe_params_names = exe_params.keys()
             new_params = dict()
             for exe_param_name in exe_params_names:
                 exe_param_value = CUtils.dict_value_by_name(params, exe_param_name, None)
                 if exe_param_value is not None:
-                    new_params[exe_param_name] = str(exe_param_value)
+                    new_params[exe_param_name] = exe_param_value
                 else:
                     new_params[exe_param_name] = None
             return new_params
@@ -249,3 +258,7 @@ class CDataBase(CResource):
             return False
         finally:
             self.session_close(session)
+
+    @abstractmethod
+    def create_default_sql(self) -> CSql:
+        pass

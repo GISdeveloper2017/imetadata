@@ -10,8 +10,6 @@ class plugins_3001_shp(CVectorFilePlugins):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Name] = 'shp'
-        # information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Same_Dir
-        # information[self.Plugins_Info_DetailEngine] = self.DetailEngine_File_Of_Same_Dir
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
         return information
 

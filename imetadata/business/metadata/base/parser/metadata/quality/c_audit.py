@@ -77,12 +77,14 @@ class CAudit(CResource):
         """
         result_list = list()
 
-        result_list.append(cls.__a_check_file_size__(
-            result_template,
-            file_name_with_path,
-            CUtils.dict_value_by_name(qa_items, cls.Name_Min, -1),
-            CUtils.dict_value_by_name(qa_items, cls.Name_Max, -1)
-        ))
+        result_list.append(
+            cls.__a_check_file_size__(
+                result_template,
+                file_name_with_path,
+                CUtils.dict_value_by_name(qa_items, cls.Name_Min, -1),
+                CUtils.dict_value_by_name(qa_items, cls.Name_Max, -1)
+            )
+        )
 
         return result_list
 

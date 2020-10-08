@@ -2,8 +2,8 @@
 # @Time : 2020/9/22 10:40 
 # @Author : 王西亚 
 # @File : c_zip.py
-from imetadata.base.Exceptions import ZipFileCanNotOpenException
 from imetadata.base.c_file import CFile
+from imetadata.base.exceptions import ZipFileCanNotOpenException
 from imetadata.base.zip.c_zip_base import CZipBase
 from imetadata.base.zip.c_zip_tarfile import CZip_TarFile
 from imetadata.base.zip.c_zip_zipfile import CZip_ZipFile

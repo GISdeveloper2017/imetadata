@@ -15,7 +15,7 @@ from imetadata.business.metadata.base.parser.metadata.view.c_viewCreatorVector i
 class CViewCreatorMng(CResource):
     @classmethod
     def give_me_creator(cls, extract_type, object_id: str, object_name: str, file_info: CDMFilePathInfoEx,
-                          file_content: CVirtualContent):
+                        file_content: CVirtualContent):
         input_parser_type = CUtils.any_2_str(extract_type)
 
         if CUtils.equal_ignore_case(input_parser_type, cls.BrowseEngine_Raster):

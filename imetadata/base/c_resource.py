@@ -66,7 +66,7 @@ class CResource:
     Job_Params_DB_Server_ID = 'db_server_id'
     Name_Parallel_Count = 'parallel_count'
     Name_Process = 'process'
-    
+
     DB_Type_Postgresql = 'postgresql'
 
     DB_Server_ID_Default = '0'

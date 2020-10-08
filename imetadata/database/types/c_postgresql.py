@@ -18,11 +18,13 @@ engine = create_engine('postgresql+pg8000://scott:tiger@localhost:port/mydatabas
 """
 
 from imetadata.database.base.c_database import CDataBase
+from imetadata.database.base.sql.c_sql import CSql
+from imetadata.database.types.sql.c_sqlPostgresql import CSqlPostgresql
 
 
 class CPostgreSQL(CDataBase):
-    def __init__(self, database_option):
-        super().__init__(self, database_option)
+    def create_default_sql(self) -> CSql:
+        return CSqlPostgresql(self.DATABASE_POSTGRESQL, 0)
 
     def db_connection(self):
         return "postgresql+psycopg2://{0}:{1}@{2}:{3}/{4}".format(

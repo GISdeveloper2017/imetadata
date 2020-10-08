@@ -169,7 +169,8 @@ class CMetaData(CResource):
             self.__metadata_xml__ = CXml()
             self.__metadata_json__ = CJson()
 
-    def set_metadata_file(self, metadata_extract_result: int, metadata_extract_memo: str, metadata_type: int, file_name):
+    def set_metadata_file(self, metadata_extract_result: int, metadata_extract_memo: str, metadata_type: int,
+                          file_name):
         self.__metadata_extract_result__ = metadata_extract_result
         self.__metadata_extract_memo__ = metadata_extract_memo
         self.__metadata_type__ = metadata_type
@@ -212,7 +213,8 @@ class CMetaData(CResource):
             self.__metadata_bus_xml__ = CXml()
             self.__metadata_bus_json__ = CJson()
 
-    def set_metadata_bus_file(self, metadata_bus_extract_result: int, metadata_bus_extract_memo: str, metadata_type: int, file_name):
+    def set_metadata_bus_file(self, metadata_bus_extract_result: int, metadata_bus_extract_memo: str,
+                              metadata_type: int, file_name):
         self.__metadata_bus_extract_result__ = metadata_bus_extract_result
         self.__metadata_bus_extract_memo__ = metadata_bus_extract_memo
         self.__metadata_bus_type__ = metadata_type

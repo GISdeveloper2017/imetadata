@@ -10,6 +10,7 @@ class plugins_4000_img(CRasterFilePlugins):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Name] = 'img'
+        information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
         return information
 
     def get_classified_character(self):

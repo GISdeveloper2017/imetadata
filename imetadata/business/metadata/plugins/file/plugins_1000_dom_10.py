@@ -4,6 +4,7 @@
 # @File : plugins_1000_dom_10.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
+from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
@@ -59,13 +60,13 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
         下面判别第8910位是数字
         """
         char_1 = file_main_name[0:1]
-        char_4 = file_main_name[3:4]
         char_2_3 = file_main_name[1:3]
+        char_4 = file_main_name[3:4]
         char_5_to_7 = file_main_name[4:7]
         char_8_to_10 = file_main_name[7:10]
         if CUtils.text_is_alpha(char_1) is False \
-                or CUtils.text_is_alpha(char_4) is False \
                 or CUtils.text_is_numeric(char_2_3) is False \
+                or CUtils.text_is_alpha(char_4) is False \
                 or CUtils.text_is_numeric(char_5_to_7) is False \
                 or CUtils.text_is_numeric(char_8_to_10) is False:
             return self.Object_Confirm_IUnKnown, self.__object_name__

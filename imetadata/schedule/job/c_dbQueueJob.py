@@ -3,9 +3,9 @@
 
 from abc import abstractmethod
 
-from imetadata.base.Exceptions import *
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
+from imetadata.base.exceptions import *
 from imetadata.database.base.c_dataset import CDataSet
 from imetadata.database.c_factory import CFactory
 from imetadata.schedule.job.c_job import CJob

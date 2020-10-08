@@ -56,3 +56,8 @@ class FileException(Exception):
 class ZipFileCanNotOpenException(FileException):
     def __str__(self):
         print("压缩文件[%s]无法打开!" % self.__file_name__)
+
+
+class PathNotCreateException(FileException):
+    def __str__(self):
+        print("目录[%s]无法创建!" % self.__file_name__)

@@ -58,7 +58,7 @@ class CFile:
         try:
             if not os.path.exists(file_path):
                 os.makedirs(file_path)
-            return True
+            return cls.file_or_path_exist(file_path)
         except OSError as error:
             return False
 
