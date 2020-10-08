@@ -84,7 +84,7 @@ class CSys(CResource):
     def get_work_root_dir(cls):
         json_obj = CJson()
         json_obj.load_obj(settings.application)
-        rt_path = json_obj.xpath_one('{1}.{2}'.format(cls.Name_Directory, cls.Name_Work), None)
+        rt_path = json_obj.xpath_one('{0}.{1}'.format(cls.Name_Directory, cls.Name_Work), None)
         if CUtils.equal_ignore_case(CUtils.any_2_str(rt_path), ''):
             rt_path = os.path.join(cls.get_project_dir(), cls.Name_Work)
 

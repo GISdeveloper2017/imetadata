@@ -19,6 +19,9 @@ class CFilePlugins_GUOTU(CFilePlugins):
     MetaData_Rule_Type_DEM = 'dem'
     MetaData_Rule_Type_SD = 'sd'
 
+    _metadata_bus_file_ext = None  # 业务元数据文件后缀名
+    _metadata_bus_file_with_path = None  # 业务元数据全文件名
+
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = None
