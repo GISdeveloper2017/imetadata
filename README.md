@@ -1,13 +1,108 @@
 # imetadata
 时空数据入库管理引擎
 
-# 提示
-1. 系统运行命令
+# 运行与设置
+## 系统运行命令
 在iMetaData子目录下, 运行命令行
 ```
 python.exe ScheduleCreator.py
 python.exe ScheduleCreator.py -log /your_log_file_path
 ```
+
+## 设置
+### 全局设置
+在iMetaData子目录下, 修改配置文件settings.py
+1. 示例
+```python
+application = {
+    'databases': [
+        {'id': '0', 'type': 'postgresql',
+         'host': '127.0.0.1', 'port': '5432', 'database': 'test', 'username': 'postgres', 'password': 'postgres'}
+    ],
+    'directory': {
+        'work': ''
+    },
+    'metadata': {
+        'directory': {
+            'view': ''
+        },
+        'plugins': {
+            'dir': [
+                {'plugin': ['plugins_1000_dom_10', 'plugins_1000_dom_12'], 'keyword': 'dom'},
+                {'plugin': ['plugins_1010_dem_10', 'plugins_1010_dem_12'], 'keyword': 'dem'}
+            ]
+        }
+    }
+}
+```
+1. databases
+    * 数据库配置节点
+    * 配置内容为数组, 可支持多个数据库同时连接
+    * 每一个数据库的配置说明:
+        * id: 数据库的标识, 配置后, 在代码中可以使用CFactory().give_me_db('[id]')来直接访问该数据库
+        * type: 数据库类型, 目前支持postgresql和mysql
+        * host: 数据库ip地址
+        * port: 数据库访问端口号
+        * database: 数据库名称
+        * username: 用户名
+        * password: 密码(暂时存储明文, 后期改为密文)
+1. directory:
+    * 目录配置
+    * work: 工作路径, 为系统内置进行数据处理的临时目录, 建议大于20G
+1. metadata:
+    * 数据入库管理模块的专用配置
+    * directory:
+        * 数管的目录设置
+        * view: 数管中用于存储空间数据快视图, 拇指图等文件的根目录, 存储空间自行根据每一个空间数据的元数据存储大小统计
+    * plugins:
+        * 自定义识别插件的配置
+        * dir:
+            * 目录识别插件的特定配置
+            * 使用数组记录, 支持多个匹配模式
+            * 每一个匹配模式的说明:
+                * keyword: 
+                    * 关键字, 目录必须等于关键词, 则目录下的文件, 按plugin中的设置顺序识别
+                    * 注意: 如果关键字为空, 则所有子目录都优先按plugin中的插件顺序识别
+                * plugin:
+                    * 匹配关键字的目录下, 将按插件顺序识别
+                    * 使用数组记录, 支持多个插件
+                    * 识别顺序为从左到右
+        * 自定义识别插件后, 仍然无法识别的数据, 系统将按内置的插件识别
+
+### 其他配置
+#### 数管
+##### 自定义目录识别插件
+1. 在目录下, 添加特定的标识文件, 用于管理和控制目录下的数据识别
+1. 标识文件: metadata.rule
+1. 标识文件的格式为xml
+样例:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <type>DOM</type>
+    <plugins>
+        <file>
+            <plugin>plugins_1000_dom_10</plugin>
+            <plugin>plugins_1000_dom_12</plugin>
+        </file>
+        <dir>
+            <plugin>plugins_1000_dom_10</plugin>
+            <plugin>plugins_1000_dom_12</plugin>
+        </dir>
+    </plugins>
+</root>
+```
+说明:
+1. root: (*) 根节点, 不可修改和缺失
+1. type: (*) 当前目录的业务类型, 等同于将目录名改为type节点中的名称, 不可修改和缺失
+    * 示例中为dom, 则表明该目录将按dom类型进行数据识别
+    * dom类型的识别, 参见全局设置中数管plugins的配置, 此类型等于keyword
+1. plugins: (可选) 也可以在此文件中直接设置目录下识别的插件
+    * 需要分别在file和dir子目录下设置文件和子目录的识别
+    * 识别顺序为从上到下
+
+    **注意: 在这里设置识别的插件后, 系统将忽略全局设置中的插件!!!**
+
 
 # 说明
 ## 任务登记
@@ -53,10 +148,13 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 # 进度
 
 ## 插件
+ |类型|名称|开发人|进度|说明|
+ |  ----  |  ----  |  ----  | ----  | ----  |
+ |卫星数据插件| GF1-PMS |赵宇飞|完成|高分一号PMS传感器|
 
 
 ## 调度
- |小类|进度|开发人|算法|说明|
+ |类型|进度|开发人|算法|说明|
  |  ----  |  ----  |  ----  | ----  | ----  |
  |db_queue| 已完成 |wangxy|job_dm_root_parser|根目录扫描调度, 处理dm2_storage表队列, dsStatus:0->1->2->0|
  |db_queue| 已完成 |zhaoyf, wangxy|job_dm_path2object|目录识别对象调度, 处理dm2_storage_directory表队列, dsScanStatus:0->1->2->0|
@@ -72,6 +170,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
  |已完成|支持在metadata.rule中设置当前目录下的文件的优先识别插件|
  |已完成|支持在应用程序配置中, 设置特定目录下的文件的优先识别插件|
   
+
 
 # 2020-09-23
 ## 数据管理核心算法
