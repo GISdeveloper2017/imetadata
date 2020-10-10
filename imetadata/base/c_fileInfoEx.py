@@ -37,3 +37,7 @@ class CFileInfoEx(CFileInfo):
                 return CXml.get_element_text(xml_obj.xpath_one('/root/ProductType'))
             except:
                 return default_value
+
+    @property
+    def rule_content(self):
+        return self.__rule_content__

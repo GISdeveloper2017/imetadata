@@ -118,6 +118,7 @@ class CResource:
 
     Name_MetaData = 'metadata'
     Name_Plugins = 'plugins'
+    Name_Plugin = 'plugin'
     Name_Work = 'work'
     Name_Business = 'business'
     Name_View = 'view'
@@ -148,7 +149,12 @@ class CResource:
     Name_Custom = 'custom'
     Name_Root = 'root'
 
+    Name_Keyword = 'keyword'
+
     Path_MD_Rule_Type = '/root/type'
+    Path_MD_Rule_Plugins_Dir = '/root/plugins/dir/plugin'
+    Path_MD_Rule_Plugins_File = '/root/plugins/file/plugin'
+    Path_Setting_Plugins_Dir = 'metadata.plugins.dir'
 
     TextMatchType_Common = 'common'
     TextMatchType_Regex = 'regex'
@@ -189,6 +195,15 @@ class CResource:
     QA_Level_Min = 1
     QA_Level_2 = 2
     QA_Level_Max = 3
+    '''
+    实体质检
+    
+    元数据
+    业务元数据
+    可检索
+    可发布
+    内部拓扑关系: 可分析
+    '''
 
     Name_Min = 'min'
     Name_Max = 'max'

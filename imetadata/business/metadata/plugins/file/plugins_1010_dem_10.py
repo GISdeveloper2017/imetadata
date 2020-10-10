@@ -10,18 +10,18 @@ from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CM
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
 
 
-class plugins_1000_dom_10(CFilePlugins_GUOTU):
+class plugins_1010_dem_10(CFilePlugins_GUOTU):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = 'DOM数据'
-        information[self.Plugins_Info_Name] = 'dom_10'
+        information[self.Plugins_Info_Title] = 'DEM数据'
+        information[self.Plugins_Info_Name] = 'dem_10'
 
         return information
 
     def classified(self):
         """
         设计国土行业数据的dom-10验证规则
-        todo 负责人 赵宇飞 在这里检验dom-10的元数据文件格式时, 应该一个一个类型的对比, 找到文件时, 将该文件的格式和文件名存储到类的私有属性中, 以便在元数据处理时直接使用
+        todo 负责人 赵宇飞 在这里检验dem-10的元数据文件格式时, 应该一个一个类型的对比, 找到文件时, 将该文件的格式和文件名存储到类的私有属性中, 以便在元数据处理时直接使用
         :return:
         """
         super().classified()
@@ -89,7 +89,7 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
         提取xml格式的业务元数据, 加载到parser的metadata对象中
-        todo 负责人 赵宇飞 在这里将dom-10的元数据, 转换为xml, 存储到parser.metadata.set_metadata_bus_file中
+        todo 负责人 赵宇飞 在这里将dem-10的元数据, 转换为xml, 存储到parser.metadata.set_metadata_bus_file中
         :param parser:
         :return:
         """
@@ -111,16 +111,16 @@ if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
     #                        '/Users/wangxiya/Documents/交换/1.给我的/即时服务产品/业务数据集/DOM/湖北单个成果数据/H49G001026/H49G001026.tif',
     #                        '/Users/wangxiya/Documents/交换', '<root><type>dom</type></root>')
-    file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
+    file_info = CFileInfoEx(plugins_1010_dem_10.FileType_File,
                             r'D:\data\tif\wsiearth_H49G001026\H49G001026.tif',
                             r'D:\data\tif', '<root><type>dom</type></root>')
-    plugins = plugins_1000_dom_10(file_info)
+    plugins = plugins_1010_dem_10(file_info)
     object_confirm, object_name = plugins.classified()
-    if object_confirm == plugins_1000_dom_10.Object_Confirm_IUnKnown:
+    if object_confirm == plugins_1010_dem_10.Object_Confirm_IUnKnown:
         print('对不起, 您给你的文件, 我不认识')
-    elif object_confirm == plugins_1000_dom_10.Object_Confirm_IKnown_Not:
+    elif object_confirm == plugins_1010_dem_10.Object_Confirm_IKnown_Not:
         print('您给你的文件, 我确认它不是对象')
-    elif object_confirm == plugins_1000_dom_10.Object_Confirm_IKnown:
+    elif object_confirm == plugins_1010_dem_10.Object_Confirm_IKnown:
         print('您给你的文件, 我确认它的类型是[{0}], 对象名称为[{1}]'.format(plugins.get_id(), object_name))
-    elif object_confirm == plugins_1000_dom_10.Object_Confirm_Maybe:
+    elif object_confirm == plugins_1010_dem_10.Object_Confirm_Maybe:
         print('您给你的文件, 我确认它的类型是[{0}], 对象名称为[{1}]'.format(plugins.get_id(), object_name))

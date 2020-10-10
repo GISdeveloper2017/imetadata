@@ -19,7 +19,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
     __bus_metadata_xml_file_name__ = None
 
     Path_21AT_MD_Content_ProductType = '/root/ProductType'
-    Path_21AT_MD_Content_ProductName = '/root/DNName'
+    Path_21AT_MD_Content_ProductName = '/root/DSName'
 
     def get_information(self) -> dict:
         information = super().get_information()
@@ -35,6 +35,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_TagsEngine] = 'global_dim'
         information[self.Plugins_Info_DetailEngine] = None
+        information[self.Plugins_Info_HasChildObj] = self.DB_True
 
         return information
 

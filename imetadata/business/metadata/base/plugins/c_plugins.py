@@ -98,6 +98,8 @@ class CPlugins(CResource):
     Plugins_Info_Type = 'dsodtype'
     # 插件大类-中文-内置
     Plugins_Info_Type_Title = 'dsodtype_title'
+    # 插件-对象是否允许包含子对象
+    Plugins_Info_HasChildObj = 'dsod_has_child_obj'
 
     # 插件处理引擎-内置-元数据处理
     Plugins_Info_MetaDataEngine = 'dsod_metadata_engine'
@@ -155,6 +157,8 @@ class CPlugins(CResource):
         information[self.Plugins_Info_ID] = self.get_id()
         information[self.Plugins_Info_ViewEngine] = None
         information[self.Plugins_Info_SpatialEngine] = None
+        information[self.Plugins_Info_HasChildObj] = self.DB_False
+
         return information
 
     def get_id(self) -> str:
@@ -435,7 +439,33 @@ class CPlugins(CResource):
         :param parser:
         :return:
         """
-        pass
+        default_engine = CUtils.dict_value_by_name(
+            self.get_information(),
+            self.Plugins_Info_SpatialEngine,
+            None)
+        if default_engine is not None:
+            result = parser.process_default_spatial(default_engine)
+            if CResult.result_success(result):
+                try:
+                    parser.metadata.set_metadata_spatial(
+                        self.DB_True,
+                        '元数据文件[{0}]成功加载! '.format(self.file_info.__file_name_with_full_path__),
+                        self.Name_Native_Center,
+                        None
+                    )
+                    return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(self.file_info.__file_name_with_full_path__))
+                except Exception as error:
+                    parser.metadata.set_metadata(
+                        self.DB_False,
+                        '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(self.file_info.__file_name_with_full_path__, error.__str__()),
+                        self.MetaDataFormat_Text,
+                        '')
+                    return CResult.merge_result(self.Exception,
+                                                '元数据文件[{0}]格式不合法, 无法处理! '.format(self.file_info.__file_name_with_full_path__))
+            else:
+                return result
+        else:
+            return CResult.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
 
     def parser_metadata_view_after_qa(self, quality_result, parser):
         """
@@ -451,41 +481,42 @@ class CPlugins(CResource):
             self.Plugins_Info_ViewEngine,
             None)
         if default_engine is not None:
-            result = parser.process_default_metadata(default_engine)
+            result = parser.process_default_view(default_engine)
             if CResult.result_success(result):
-                metadata_format = CResult.result_info(result, self.Name_Format, self.MetaDataFormat_Text)
-
-                file_metadata_name_with_path = CFile.join_file(self.file_content.work_root_dir, self.FileName_MetaData)
-                metadata_filename = CResult.result_info(result, self.Name_FileName, None)
-                if metadata_filename is not None:
-                    file_metadata_name_with_path = metadata_filename
-
-                if not CFile.file_or_path_exist(file_metadata_name_with_path):
-                    parser.metadata.set_metadata(
-                        self.DB_False,
-                        '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path),
-                        self.MetaDataFormat_Text,
-                        '')
-                    return CResult.merge_result(self.Exception,
-                                                '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path))
+                metadata_view_browse = CResult.result_info(result, self.Name_Browse, None)
+                metadata_view_thumb = CResult.result_info(result, self.Name_Thumb, None)
 
                 try:
-                    parser.metadata.set_metadata_file(self.DB_True,
-                                                      '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path),
-                                                      metadata_format, file_metadata_name_with_path)
-                    return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path))
+                    parser.metadata.set_metadata_view(
+                        self.DB_True,
+                        '文件[{0}]的预览图成功加载! '.format(self.file_info.__file_name_with_full_path__),
+                        self.Name_Browse,
+                        metadata_view_browse
+                    )
+                    parser.metadata.set_metadata_view(
+                        self.DB_True,
+                        '文件[{0}]的拇指图成功加载! '.format(self.file_info.__file_name_with_full_path__),
+                        self.Name_Thumb,
+                        metadata_view_thumb
+                    )
+                    return CResult.merge_result(
+                        self.Success,
+                        '文件[{0}]的可视元数据成功加载! '.format(self.file_info.__file_name_with_full_path__)
+                    )
                 except Exception as error:
                     parser.metadata.set_metadata(
                         self.DB_False,
-                        '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(file_metadata_name_with_path, error.__str__()),
+                        '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(self.file_info.__file_name_with_full_path__,
+                                                                   error.__str__()),
                         self.MetaDataFormat_Text,
                         '')
-                    return CResult.merge_result(self.Exception,
-                                                '元数据文件[{0}]格式不合法, 无法处理! '.format(file_metadata_name_with_path))
+                    return CResult.merge_result(
+                        self.Exception,
+                        '元数据文件[{0}]格式不合法, 无法处理! '.format(self.file_info.__file_name_with_full_path__))
             else:
                 return result
         else:
-            return CResult.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
+            return CResult.merge_result(self.Success, '可视元数据引擎未设置, 将在子类中自行实现! ')
 
     def parser_metadata_with_qa(self, parser: CMetaDataParser) -> str:
         """

@@ -115,7 +115,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
         """
         db_object_confirm = self.__ds_file_or_path__.value_by_name(0, 'dsf_object_confirm',
                                                                    self.Object_Confirm_IUnKnown)
-
+        db_object_id = CUtils.one_id()
         if (db_object_confirm == self.Object_Confirm_IKnown) or (db_object_confirm == self.Object_Confirm_Maybe):
             db_object_size = self.__ds_file_or_path__.value_by_name(0, 'dsffilesize', 0)
             db_path_modify_time = self.__ds_file_or_path__.value_by_name(0, 'dsffilemodifytime', '')
@@ -129,8 +129,9 @@ class CDMFileInfo(CDMFilePathInfoEx):
                 db_object_id = self.__ds_file_or_path__.value_by_name(0, 'dsf_object_id', '')
                 db_object_type = self.__ds_file_or_path__.value_by_name(0, 'dsf_object_type', '')
                 CLogger().debug(
-                    '系统发现文件[{0}]的大小或最后修改时间有变化, 将删除它关联的对象{1}.{2}, 重新识别'.format(self.__file_main_name__, db_object_type,
-                                                                              db_object_id))
+                    '系统发现文件[{0}]的大小或最后修改时间有变化, 将删除它关联的对象{1}.{2}, 重新识别'.format(
+                        self.__file_main_name__, db_object_type,
+                        db_object_id))
                 self.db_delete_object_by_id(db_object_id)
 
         object_confirm = self.Object_Confirm_IUnKnown
@@ -160,7 +161,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
                 values(:dsoid, :dsoobjectname, :dsoobjecttype, :dsodatatype, :dsoalphacode, :dsoaliasname, :dsoparentobjid)
                 '''
 
-            new_dso_id = CUtils.one_id()
+            new_dso_id = db_object_id
 
             sql_update_file_object = '''
                 update dm2_storage_file

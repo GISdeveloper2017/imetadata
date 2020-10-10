@@ -82,7 +82,7 @@ class CDMPathInfo(CDMFilePathInfoEx):
         """
         :return:
         """
-
+        db_object_id = CUtils.one_id()
         db_object_confirm = self.__ds_file_or_path__.value_by_name(0, 'dsd_object_confirm',
                                                                    self.Object_Confirm_IUnKnown)
 
@@ -127,12 +127,16 @@ class CDMPathInfo(CDMFilePathInfoEx):
                 values(:dsoid, :dsoobjectname, :dsoobjecttype, :dsodatatype, :dsoalphacode, :dsoaliasname, :dsoparentobjid)
                 '''
 
-            new_dso_id = CUtils.one_id()
+            new_dso_id = db_object_id
+            scan_file_and_subdir = 0
+            if CUtils.dict_value_by_name(classified_obj.get_information(), classified_obj.Plugins_Info_HasChildObj, self.DB_False) == self.DB_True:
+                scan_file_and_subdir = 1
 
             sql_update_path_object = '''
                 update dm2_storage_directory
                 set dsd_object_confirm = :dsd_object_confirm, dsd_object_id = :dsd_object_id, dsd_object_type = :dsd_object_type
-                    , dsdscanfilestatus = 0, dsdscandirstatus = 0, dsd_directory_valid = -1, dsddirlastmodifytime = :fileModifyTime
+                    , dsdscanfilestatus = :dsdscanfilestatus, dsdscandirstatus = :dsdscandirstatus
+                    , dsd_directory_valid = -1, dsddirlastmodifytime = :fileModifyTime
                 where dsdid = :dsdid
                 '''
 
@@ -154,6 +158,8 @@ class CDMPathInfo(CDMFilePathInfoEx):
                 params['dsd_object_confirm'] = object_confirm
                 params['dsd_object_id'] = new_dso_id
                 params['dsd_object_type'] = object_type
+                params['dsdscanfilestatus'] = scan_file_and_subdir
+                params['dsdscandirstatus'] = scan_file_and_subdir
                 params['fileModifyTime'] = CUtils.any_2_str(self.__file_modify_time__)
                 engine.session_execute(session, sql_update_path_object, params)
 

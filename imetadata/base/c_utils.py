@@ -2,12 +2,9 @@
 # -*- coding:utf-8 -*-
 
 from __future__ import absolute_import
-
 import re
 import uuid
-
 import pinyin
-
 from imetadata.base.c_resource import CResource
 
 
@@ -97,7 +94,7 @@ class CUtils(CResource):
         :param split_sep_list:
         :return:
         """
-        text_part_list = split_text.split(split_sep_list[0], 99)
+        text_part_list = split_text.split(split_sep_list[0])
         for index in range(len(split_sep_list)):
             if index == 0:
                 continue
@@ -110,17 +107,16 @@ class CUtils(CResource):
     @classmethod
     def __split_list(cls, text_part_list: list, split_sep: str) -> list:
         """
-        私有方法：根据分割的文本段数组、分隔符获取分割后的结果集合（去重）
+        私有方法：根据分割的文本段数组、分隔符获取分割后的结果集合
         @param text_part_list:
         @param split_sep:
         @return:
         """
         result_list = []
         for text_item in text_part_list:
-            text_part_list2 = text_item.split(split_sep, 99)
+            text_part_list2 = text_item.split(split_sep)
             for item in text_part_list2:
-                if not result_list.__contains__(item):
-                    result_list.append(item)
+                result_list.append(item)
         return result_list
 
     @classmethod
@@ -134,9 +130,9 @@ class CUtils(CResource):
         if cls.equal_ignore_case(rt_src_text, ''):
             return ''
         else:
-            return pinyin.get_initial((src_text), delimiter="").lower().strip().replace(' ', '')
+            return pinyin.get_initial(src_text, delimiter="").lower().strip().replace(' ', '')
 
 
 if __name__ == '__main__':
-    text_alpha = r'你好 ABC中国'
-    print(CUtils.alpha_text(text_alpha))
+    text_alpha = r'你/好 A\B\B C/中_国'
+    print(CUtils.split(text_alpha, ['/', '\\', ' ', '_', '-']))

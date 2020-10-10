@@ -341,3 +341,21 @@ class CXml:
             return
 
         parent_node.remove(xml_node)
+
+    @classmethod
+    def xml_xpath(cls, xml_str: str, query: str) -> list:
+        try:
+            xml_obj = CXml()
+            xml_obj.load_xml(xml_str)
+            return xml_obj.xpath(query)
+        except:
+            return []
+
+    @classmethod
+    def xml_xpath_one(cls, xml_str: str, query: str):
+        try:
+            xml_obj = CXml()
+            xml_obj.load_xml(xml_str)
+            return xml_obj.xpath_one(query)
+        except:
+            return None

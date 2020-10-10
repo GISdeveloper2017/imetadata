@@ -41,3 +41,7 @@ class CFileInfo(CResource):
             self.__file_create_time__ = CFile.file_create_time(self.__file_name_with_full_path__)
             self.__file_access_time__ = CFile.file_access_time(self.__file_name_with_full_path__)
             self.__file_modify_time__ = CFile.file_modify_time(self.__file_name_with_full_path__)
+
+    @property
+    def file_type(self):
+        return self.__file_type__

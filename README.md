@@ -50,14 +50,28 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
      |db_queue|process.parallel_count|并行worker的个数|{"process": {"parallel_count": 1}}|
 
 
-# RoadMap
-1. 进度报告
+# 进度
 
-     |进度|开发人|类型|算法|说明|
-     |  ----  |  ----  |  ----  | ----  | ----  |
-     | 已完成 |wangxy|db_queue|job_dm_root_parser|根目录扫描调度, 处理dm2_storage表队列, dsStatus:0->1->2->0|
-     | 建设中 |zhaoyf, wangxy|db_queue|job_dm_path2object|目录识别对象调度, 处理dm2_storage_directory表队列, dsScanStatus:0->1->2->0|
-     | 建设中 |zhaoyf, wangxy|db_queue|job_dm_path_parser|目录下的子目录扫描调度, 处理dm2_storage_directory表队列, dsScanFileStatus:0->1->2->0|
+## 插件
+
+
+## 调度
+ |小类|进度|开发人|算法|说明|
+ |  ----  |  ----  |  ----  | ----  | ----  |
+ |db_queue| 已完成 |wangxy|job_dm_root_parser|根目录扫描调度, 处理dm2_storage表队列, dsStatus:0->1->2->0|
+ |db_queue| 已完成 |zhaoyf, wangxy|job_dm_path2object|目录识别对象调度, 处理dm2_storage_directory表队列, dsScanStatus:0->1->2->0|
+ |db_queue| 已完成 |zhaoyf, wangxy|job_dm_path_parser|目录下的子目录扫描调度, 处理dm2_storage_directory表队列, dsScanFileStatus:0->1->2->0|
+ |db_queue| 已完成 |zhaoyf, wangxy|job_dm_file2object|目录识别对象调度, 处理dm2_storage_directory表队列, dsScanStatus:0->1->2->0|
+ |db_queue| 进行中 |zhaoyf|job_dm_obj_tags|对象的标签自动识别|
+ |db_queue| 进行中 |zhaoyf|job_dm_obj_detail|对象的附属文件解析|
+ |db_queue| 进行中 |zhaoyf|job_dm_obj_metadata|对象的质检及元数据解析|
+
+## 框架
+ |进度|说明|
+ | ---- | ---- |
+ |已完成|支持在metadata.rule中设置当前目录下的文件的优先识别插件|
+ |已完成|支持在应用程序配置中, 设置特定目录下的文件的优先识别插件|
+  
 
 # 2020-09-23
 ## 数据管理核心算法

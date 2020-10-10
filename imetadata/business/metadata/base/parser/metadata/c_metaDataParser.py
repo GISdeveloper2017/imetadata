@@ -71,19 +71,19 @@ class CMetaDataParser(CParser):
             return
 
         for qa_item in list_qa:
-            self.metadata.quality.append_total_quality(
-                CAudit.a_file(
-                    CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
-                    CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
-                    CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
-                    CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
-                    CFile.join_file(
-                        self.file_content.content_root_dir,
-                        CUtils.dict_value_by_name(qa_item, self.Name_FileName, '')
-                    ),
-                    qa_item
-                )
+            list_result = CAudit.a_file(
+                CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
+                CFile.join_file(
+                    self.file_content.content_root_dir,
+                    CUtils.dict_value_by_name(qa_item, self.Name_FileName, '')
+                ),
+                qa_item
             )
+            for item_result in list_result:
+                self.metadata.quality.append_total_quality(item_result)
 
     def batch_qa_metadata_xml(self, list_qa: list):
         """

@@ -96,6 +96,28 @@ class CJson:
             return result_list
 
     @classmethod
+    def json_path(cls, json_text, json_path_str: str) -> list:
+        """
+        获取一个属性的值, 如果属性不存在, 则返回默认值
+
+        :param json_path_str:
+        :param json_text:
+        :param attr_value_default:
+        :return:
+        """
+        if json_text is None:
+            return []
+        elif str(json_text) == '':
+            return []
+        else:
+            json = CJson()
+            try:
+                json.load_json_text(json_text)
+                return json.xpath(json_path_str)
+            except Exception as err:
+                return []
+
+    @classmethod
     def json_attr_value(cls, json_text, json_path_str: str, attr_value_default) -> any:
         """
         获取一个属性的值, 如果属性不存在, 则返回默认值
@@ -140,10 +162,50 @@ class CJson:
         json.load_file(filename)
         return json.to_json()
 
+    @classmethod
+    def dict_data_by_path(cls, obj: dict, path_str: str) -> list:
+        """
+        将一个字典对象, 按json解析, 并以指定的path获取其中的对象
+
+        :param path_str:
+        :param obj:
+        :return:
+        """
+        if obj is None:
+            return []
+        elif str(obj) == '':
+            return []
+        else:
+            json = CJson()
+            try:
+                json.load_obj(obj)
+                return json.xpath(path_str)
+            except Exception as err:
+                return []
+
+    @classmethod
+    def dict_attr_by_path(cls, obj: dict, path_str: str, attr_value_default=None):
+        """
+        将一个字典对象, 按json解析, 并以指定的path获取其中的对象
+
+        :param attr_value_default:
+        :param path_str:
+        :param obj:
+        :return:
+        """
+        if obj is None:
+            return attr_value_default
+        elif str(obj) == '':
+            return attr_value_default
+        else:
+            json = CJson()
+            try:
+                json.load_obj(obj)
+                return json.xpath_one(path_str, attr_value_default)
+            except Exception as err:
+                return attr_value_default
+
 
 if __name__ == '__main__':
-    json_obj = CJson()
-    json_obj.set_value_of_name('test', 'value')
-    json_obj.set_value_of_name('test1', 2)
-    print(json_obj.to_json())
-    print(json_obj.xpath_one('test1', 'nothing'))
+    dict_obj = {'a': {'name': 'a1', 'sex': 0, 'birthday': '2020-01-01'}, 'b': 'other'}
+    print(CJson.dict_attr_by_path(dict_obj, 'a.birthday1'))

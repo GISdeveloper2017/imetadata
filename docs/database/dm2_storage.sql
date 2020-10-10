@@ -2115,10 +2115,18 @@ alter table dm2_storage_object
 
 COMMENT ON COLUMN public.dm2_storage_object.dso_geo_bb_native IS '对象-原始-外包框';
 COMMENT ON COLUMN public.dm2_storage_object.dso_geo_native IS '对象-原始-外边框';
-COMMENT ON COLUMN public.dm2_storage_object.dso_center_native IS '对象-原始-中心点';
+COMMENT ON COLUMN public.dm2_storage_object.dso_center_native IS '对象-原始-重心点';
 COMMENT ON COLUMN public.dm2_storage_object.dso_geo_bb_wgs84 IS '对象-WGS84-外包框';
 COMMENT ON COLUMN public.dm2_storage_object.dso_geo_wgs84 IS '对象-WGS84-外边框';
-COMMENT ON COLUMN public.dm2_storage_object.dso_center_wgs84 IS '对象-WGS84-中心点';
+COMMENT ON COLUMN public.dm2_storage_object.dso_center_wgs84 IS '对象-WGS84-重心点';
+
+prj_native text
+prj_proj4   200
+prj_projname: 50 kg
+prj_coordinate 50 CGCS2000
+prj_degree  10 3
+prj_zone    10 34
+prj_source  int 1-实体;2-业务元数据;9-人工指定
 
 COMMENT ON COLUMN public.dm2_storage_object.area IS '面积';
 COMMENT ON COLUMN public.dm2_storage_object.length IS '长度';
