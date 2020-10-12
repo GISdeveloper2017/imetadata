@@ -89,6 +89,30 @@ class CAudit(CResource):
         return result_list
 
     @classmethod
+    def __a_check_value_in_list__(cls, result_template: dict, value, title_prefix, value_list: list):
+        """
+        根据规则, 验证值的合法性
+        注意: 值有可能为None!
+        todo 负责人 赵宇飞 这里仅仅对值进行了字典检验, 请添加其他检验, 比如大小判断, 数值类型判断, 长度检验等内容
+        :param result_template: 检查结果的模板
+        :param value: 待检验的值, 可能为None
+        :param qa_items: 检查项目, keywords
+        :return:
+        """
+        result_dict = result_template
+        if CUtils.list_count(value_list, value) > 0:
+            result_dict[cls.Name_Message] = '{0}的值在指定列表中, 符合要求!'.format(title_prefix)
+            result_dict[cls.Name_Result] = cls.QA_Result_Pass
+        else:
+            result_dict[cls.Name_Message] = '{0}的值[{1}], 不在指定列表中, 请检查修正!'.format(title_prefix, value)
+
+        return result_dict
+
+    @classmethod
+    def __a_check_value_datatype__(cls, result_template, value, title_prefix, value_type):
+        pass
+
+    @classmethod
     def __a_check_value__(cls, result_template: dict, value, title_prefix, qa_items: dict) -> list:
         """
         根据规则, 验证值的合法性
@@ -100,15 +124,14 @@ class CAudit(CResource):
         :return:
         """
         result_list = list()
-        result_dict = result_template
+
         value_list = CUtils.dict_value_by_name(qa_items, cls.Name_List, None)
         if value_list is not None:
-            if CUtils.list_count(value_list, value) > 0:
-                result_dict[cls.Name_Message] = '{0}的值在指定列表中, 符合要求!'.format(title_prefix)
-                result_dict[cls.Name_Result] = cls.QA_Result_Pass
-            else:
-                result_dict[cls.Name_Message] = '{0}的值[{1}], 不在指定列表中, 请检查修正!'.format(title_prefix, value)
-            result_list.append(result_dict)
+            result_list.append(cls.__a_check_value_in_list__(result_template, value, title_prefix, value_list))
+
+        value_type = CUtils.dict_value_by_name(qa_items, cls.Name_DataType, None)
+        if value_type is not None:
+            result_list.append(cls.__a_check_value_datatype__(result_template, value, title_prefix, value_type))
 
         return result_list
 
