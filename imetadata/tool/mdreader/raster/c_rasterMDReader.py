@@ -15,7 +15,7 @@ class CRasterMDReader(CMDReader):
     """
      TODO 张源博 栅格数据文件的元数据读取器（已修改过3次）
         新增修改内容：
-         1 coordinate节点扩展子节点wkt/esri,
+         1 coordinate节点扩展子节点wkt/esri/proj4
          2 boundingbox扩展子节点，包含原始范围source节点，转为wgs84节点，msg节点（说明转wgs84的结果，转换失败需要说明原因）
     """
 
