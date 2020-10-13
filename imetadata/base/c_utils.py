@@ -134,7 +134,7 @@ class CUtils(CResource):
 
 
 if __name__ == '__main__':
-    text_alpha = r'你/好 A\B\B C/中_国'
-    print(CUtils.split(text_alpha, ['/', '\\', ' ', '_', '-']))
-    check_text = '12.1'
-    print(CUtils.text_is_fioat(check_text))
+    # text_alpha = r'你/好 A\B\B C/中_国'
+    # print(CUtils.split(text_alpha, ['/', '\\', ' ', '_', '-']))
+    check_text = '-12'
+    print(CUtils.text_is_numeric(check_text))
