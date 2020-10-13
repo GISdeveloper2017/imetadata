@@ -316,10 +316,9 @@ class CPlugins(CResource):
         :param parser:
         :return:
         """
-        quality_result = parser.metadata.quality.quality_result()
         # 根据质检结果, 处理详细的时间信息
         try:
-            self.parser_metadata_time_after_qa(quality_result, parser)
+            self.parser_metadata_time_after_qa(parser)
         except Exception as error:
             parser.metadata.set_metadata_time(
                 self.Exception,
@@ -333,7 +332,7 @@ class CPlugins(CResource):
 
         # 根据质检结果, 处理详细的空间信息
         try:
-            self.parser_metadata_spatial_after_qa(quality_result, parser)
+            self.parser_metadata_spatial_after_qa(parser)
         except Exception as error:
             parser.metadata.set_metadata_spatial(
                 self.Exception,
@@ -347,7 +346,7 @@ class CPlugins(CResource):
 
         # 根据质检结果, 处理详细的可视化信息
         try:
-            self.parser_metadata_view_after_qa(quality_result, parser)
+            self.parser_metadata_view_after_qa(parser)
         except Exception as error:
             parser.metadata.set_metadata_view(
                 self.Exception,
@@ -417,25 +416,23 @@ class CPlugins(CResource):
         """
         return []
 
-    def parser_metadata_time_after_qa(self, quality_result, parser) -> str:
+    def parser_metadata_time_after_qa(self, parser) -> str:
         """
         继承本方法, 对详细的时间元数据信息进行处理
         todo(全体) 继承本方法, 对详细的时间元数据信息进行处理, 一般包括具体的time, start_time, end_time进行设置, 示例:
             parser.metadata.set_metadata_time(self.Success, '', self.Name_Time, CTime.now())
             parser.metadata.set_metadata_time(self.Success, '', self.Name_Start_Time, CTime.now())
             parser.metadata.set_metadata_time(self.Success, '', self.Name_End_Time, CTime.now())
-        :param quality_result:
         :param parser:
         :return:
         """
         pass
 
-    def parser_metadata_spatial_after_qa(self, quality_result, parser):
+    def parser_metadata_spatial_after_qa(self, parser):
         """
         继承本方法, 对详细的空间元数据信息进行处理
         todo(全体) 继承本方法, 对详细的空间元数据信息进行处理, 一般包括原生的中心点, 外包框, 外边框, 以及Wgs84的中心点, 外包框, 外边框, 示例:
             parser.metadata.set_metadata_spatial(self.Success, '', self.Spatial_MetaData_Type_Native_Center, 'Point(0 0)')
-        :param quality_result:
         :param parser:
         :return:
         """
@@ -467,12 +464,11 @@ class CPlugins(CResource):
         else:
             return CResult.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
 
-    def parser_metadata_view_after_qa(self, quality_result, parser):
+    def parser_metadata_view_after_qa(self, parser):
         """
         继承本方法, 对详细的可视元数据信息进行处理
         todo(全体) 继承本方法, 对详细的可视元数据信息进行处理, 一般包括拇指图, 快视图等等, 示例:
             parser.metadata.set_metadata_view(self.Success, '', self.View_MetaData_Type_Thumb, '/aa/bb.png')
-        :param quality_result:
         :param parser:
         :return:
         """

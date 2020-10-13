@@ -139,6 +139,7 @@ class CResource:
     Name_Catalog = 'catalog'
     Name_Title = 'title'
     Name_Level = 'level'
+    Name_Group = 'group'
     Name_Type = 'type'
 
     Name_DataType = 'datatype'
@@ -192,22 +193,17 @@ class CResource:
     QA_Type_FileExist = 'file_exist'
     QA_Type_XML_Node_Exist = 'xml_node_exist'
 
-    QA_Level_Min = 1
-    QA_Level_2 = 2
-    QA_Level_Max = 3
-    '''
-    实体质检
-    
-    元数据
-    业务元数据
-    可检索
-    可发布
-    内部拓扑关系: 可分析
-    '''
-
     Name_Min = 'min'
     Name_Max = 'max'
 
     ModuleName_MetaData = 'metadata'
     ModuleName_DataMining = 'datamining'
     ModuleName_Data2Service = 'data2service'
+
+    # 投影坐标信息来源; 1-数据;2-业务元数据;9-人工指定
+    Prj_Source_Data = 1
+    Prj_Source_BusMetaData = 2
+    Prj_Source_Custom = 9
+
+    # 质检-分组-数据完整性
+    QA_Group_Data_Integrity = 'di'

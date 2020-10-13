@@ -44,14 +44,20 @@ class CQuality(CResource):
         self.__node_metadata_bus__ = CXml.create_element(self.__node_metadata__, self.Name_Business)
         self.__node_metadata_data__ = CXml.create_element(self.__node_metadata__, self.Name_Data)
 
-    def __append_quality_info__(self, xml_node, quality_id, quality_level, quality_title, quality_result, quality_memo):
+    def __append_quality_info__(self, xml_node, audit_result: dict):
+        quality_id = CUtils.dict_value_by_name(audit_result, self.Name_ID, '')
+        quality_title = CUtils.dict_value_by_name(audit_result, self.Name_Title, '')
+        quality_group = CUtils.dict_value_by_name(audit_result, self.Name_Group, self.QA_Group_Data_Integrity)
+        quality_result = CUtils.dict_value_by_name(audit_result, self.Name_Result, self.QA_Result_Pass)
+        quality_memo = CUtils.dict_value_by_name(audit_result, self.Name_Message, '')
+
         temp_node = CXml.node_xpath_one(xml_node, './{0}[@id="{1}"]'.format(self.Name_Item, quality_id))
         if temp_node is not None:
             CXml.remove(temp_node)
 
         temp_node = CXml.create_element(xml_node, self.Name_Item)
         CXml.set_attr(temp_node, self.Name_ID, quality_id)
-        CXml.set_attr(temp_node, self.Name_Level, quality_level)
+        CXml.set_attr(temp_node, self.Name_Group, quality_group)
         CXml.set_attr(temp_node, self.Name_Title, quality_title)
         CXml.set_attr(temp_node, self.Name_Result, quality_result)
         CXml.set_element_text(temp_node, quality_memo)
@@ -66,13 +72,7 @@ class CQuality(CResource):
         :param audit_result:
         :return:
         """
-        quality_id = CUtils.dict_value_by_name(audit_result, self.Name_ID, '')
-        quality_title = CUtils.dict_value_by_name(audit_result, self.Name_Title, '')
-        quality_level = CUtils.dict_value_by_name(audit_result, self.Name_Level, 0)
-        quality_result = CUtils.dict_value_by_name(audit_result, self.Name_Result, self.QA_Result_Pass)
-        quality_memo = CUtils.dict_value_by_name(audit_result, self.Name_Message, '')
-        self.__append_quality_info__(self.__node_total__, quality_id, quality_level, quality_title, quality_result,
-                                     quality_memo)
+        self.__append_quality_info__(self.__node_total__, audit_result)
 
     def append_data_quality(self, audit_result: dict):
         """
@@ -80,13 +80,7 @@ class CQuality(CResource):
         :param audit_result:
         :return:
         """
-        quality_id = CUtils.dict_value_by_name(audit_result, self.Name_ID, '')
-        quality_title = CUtils.dict_value_by_name(audit_result, self.Name_Title, '')
-        quality_level = CUtils.dict_value_by_name(audit_result, self.Name_Level, 0)
-        quality_result = CUtils.dict_value_by_name(audit_result, self.Name_Result, self.QA_Result_Pass)
-        quality_memo = CUtils.dict_value_by_name(audit_result, self.Name_Message, '')
-        self.__append_quality_info__(self.__node_data_items__, quality_id, quality_level, quality_title, quality_result,
-                                     quality_memo)
+        self.__append_quality_info__(self.__node_data_items__, audit_result)
 
     def append_data_records_quality(self, record_index, audit_result: dict):
         """
@@ -95,16 +89,13 @@ class CQuality(CResource):
         :param audit_result:
         :return:
         """
-        temp_node = CXml.node_xpath_one(self.__node_data_records__,
-                                        './{0}[@index="{1}"]'.format(self.Name_Record, record_index))
+        temp_node = CXml.node_xpath_one(
+            self.__node_data_records__,
+            './{0}[@index="{1}"]'.format(self.Name_Record, record_index)
+        )
         if temp_node is None:
             temp_node = CXml.create_element(self.__node_data_records__, self.Name_Record)
-        quality_id = CUtils.dict_value_by_name(audit_result, self.Name_ID, '')
-        quality_title = CUtils.dict_value_by_name(audit_result, self.Name_Title, '')
-        quality_level = CUtils.dict_value_by_name(audit_result, self.Name_Level, 0)
-        quality_result = CUtils.dict_value_by_name(audit_result, self.Name_Result, self.QA_Result_Pass)
-        quality_memo = CUtils.dict_value_by_name(audit_result, self.Name_Message, '')
-        self.__append_quality_info__(temp_node, quality_id, quality_level, quality_title, quality_result, quality_memo)
+        self.__append_quality_info__(temp_node, audit_result)
 
     def append_metadata_data_quality(self, audit_result: dict):
         """
@@ -112,13 +103,7 @@ class CQuality(CResource):
         :param audit_result:
         :return:
         """
-        quality_id = CUtils.dict_value_by_name(audit_result, self.Name_ID, '')
-        quality_title = CUtils.dict_value_by_name(audit_result, self.Name_Title, '')
-        quality_level = CUtils.dict_value_by_name(audit_result, self.Name_Level, 0)
-        quality_result = CUtils.dict_value_by_name(audit_result, self.Name_Result, self.QA_Result_Pass)
-        quality_memo = CUtils.dict_value_by_name(audit_result, self.Name_Message, '')
-        self.__append_quality_info__(self.__node_metadata_data__, quality_id, quality_level, quality_title,
-                                     quality_result, quality_memo)
+        self.__append_quality_info__(self.__node_metadata_data__, audit_result)
 
     def append_metadata_bus_quality(self, audit_result: dict):
         """
@@ -126,13 +111,7 @@ class CQuality(CResource):
         :param audit_result:
         :return:
         """
-        quality_id = CUtils.dict_value_by_name(audit_result, self.Name_ID, '')
-        quality_title = CUtils.dict_value_by_name(audit_result, self.Name_Title, '')
-        quality_level = CUtils.dict_value_by_name(audit_result, self.Name_Level, 0)
-        quality_result = CUtils.dict_value_by_name(audit_result, self.Name_Result, self.QA_Result_Pass)
-        quality_memo = CUtils.dict_value_by_name(audit_result, self.Name_Message, '')
-        self.__append_quality_info__(self.__node_metadata_bus__, quality_id, quality_level, quality_title,
-                                     quality_result, quality_memo)
+        self.__append_quality_info__(self.__node_metadata_bus__, audit_result)
 
     def save_as(self, file_name_with_path):
         """
@@ -148,21 +127,3 @@ class CQuality(CResource):
         :return:
         """
         return self.__xml_obj__.to_xml()
-
-    def quality_result(self) -> str:
-        json_obj = CJson()
-        for qa_level in range(self.QA_Level_Min, self.QA_Level_Max + 1):
-            json_obj.set_value_of_name('level_{0}'.format(qa_level), self.quality_result_of_level(qa_level))
-        return json_obj.to_json()
-
-    def quality_result_of_level(self, qa_level):
-        if self.__xml_obj__.xpath_one(
-                '//*[@{0}="{1}" and {2}="{3}"]'.format(self.Name_Result, self.QA_Result_Error, self.Name_Level,
-                                                       qa_level)) is not None:
-            return self.QA_Result_Error
-        elif self.__xml_obj__.xpath_one(
-                '//*[@{0}="{1}" and {2}="{3}"]'.format(self.Name_Result, self.QA_Result_Warn, self.Name_Level,
-                                                       qa_level)) is not None:
-            return self.QA_Result_Warn
-        else:
-            return self.QA_Result_Pass

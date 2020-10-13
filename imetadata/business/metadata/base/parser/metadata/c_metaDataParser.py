@@ -74,7 +74,7 @@ class CMetaDataParser(CParser):
             list_result = CAudit.a_file(
                 CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
                 CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
-                CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                CUtils.dict_value_by_name(qa_item, self.Name_Group, self.QA_Group_Data_Integrity),
                 CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
                 CFile.join_file(
                     self.file_content.content_root_dir,
@@ -98,7 +98,7 @@ class CMetaDataParser(CParser):
             list_result = CAudit.a_xml_attribute(
                 CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
                 CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
-                CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                CUtils.dict_value_by_name(qa_item, self.Name_Group, self.QA_Group_Data_Integrity),
                 CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
                 self.metadata.metadata_xml(),
                 CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
@@ -121,7 +121,7 @@ class CMetaDataParser(CParser):
             list_result = CAudit.a_xml_element(
                 CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
                 CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
-                CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                CUtils.dict_value_by_name(qa_item, self.Name_Group, self.QA_Group_Data_Integrity),
                 CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
                 self.metadata.metadata_bus_xml(),
                 CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
@@ -143,7 +143,7 @@ class CMetaDataParser(CParser):
             list_result = CAudit.a_json_element(
                 CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
                 CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
-                CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                CUtils.dict_value_by_name(qa_item, self.Name_Group, self.QA_Group_Data_Integrity),
                 CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
                 self.metadata.metadata_json(),
                 CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
@@ -165,7 +165,7 @@ class CMetaDataParser(CParser):
             list_result = CAudit.a_json_element(
                 CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
                 CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
-                CUtils.dict_value_by_name(qa_item, self.Name_Level, self.QA_Level_Min),
+                CUtils.dict_value_by_name(qa_item, self.Name_Group, self.QA_Group_Data_Integrity),
                 CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
                 self.metadata.metadata_bus_json(),
                 CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
@@ -206,7 +206,6 @@ class CMetaDataParser(CParser):
 
     def save_metadata_data_and_bus(self) -> str:
         file_quality_text = self.metadata.quality.to_xml()
-        quality_result = self.metadata.quality.quality_result()
 
         metadata_extract_result, metadata_extract_memo, metadata_type, metadata_text = self.metadata.metadata()
         metadata_json = None
@@ -230,7 +229,6 @@ class CMetaDataParser(CParser):
             '''
             update dm2_storage_object
             set dso_quality = :dso_quality
-                , dso_quality_result = :dso_quality_result
                 , dso_metadata_result = :dso_metadata_result
                 , dsometadataparsememo = :dsometadataparsememo
                 , dsometadatatype = :dsometadatatype
@@ -248,7 +246,6 @@ class CMetaDataParser(CParser):
             {
                 'dso_quality': file_quality_text,
                 'dsoid': self.object_id,
-                'dso_quality_result': quality_result,
                 'dso_metadata_result': metadata_extract_result,
                 'dsometadataparsememo': metadata_extract_memo,
                 'dsometadatatype': metadata_type,
@@ -331,7 +328,14 @@ class CMetaDataParser(CParser):
         params = {
             'dsoid': self.object_id,
             'dso_spatial_result': mdt_spatial_result,
-            'dso_spatial_parsermemo': mdt_spatial_memo
+            'dso_spatial_parsermemo': mdt_spatial_memo,
+            'dso_prj_wkt': mdt_spatial.prj_wkt,
+            'dso_prj_proj4': mdt_spatial.prj_proj4,
+            'dso_prj_project': mdt_spatial.prj_project,
+            'dso_prj_coordinate': mdt_spatial.prj_coordinate,
+            'dso_prj_degree': mdt_spatial.prj_degree,
+            'dso_prj_zone': mdt_spatial.prj_zone,
+            'dso_prj_source': mdt_spatial.prj_source
         }
         CDataSet.file2param(params, 'dso_center_native', mdt_spatial.native_center)
         CDataSet.file2param(params, 'dso_geo_bb_native', mdt_spatial.native_box)
@@ -351,6 +355,13 @@ class CMetaDataParser(CParser):
                 , dso_center_wgs84 = :dso_center_wgs84
                 , dso_geo_bb_wgs84 = :dso_geo_bb_wgs84
                 , dso_geo_wgs84 = :dso_geo_wgs84
+                , dso_prj_wkt = :dso_prj_wkt
+                , dso_prj_proj4 = :dso_prj_proj4
+                , dso_prj_project = :dso_prj_project
+                , dso_prj_coordinate = :dso_prj_coordinate
+                , dso_prj_degree = :dso_prj_degree
+                , dso_prj_zone = :dso_prj_zone
+                , dso_prj_source = :dso_prj_source
             where dsoid = :dsoid
             ''', params
         )

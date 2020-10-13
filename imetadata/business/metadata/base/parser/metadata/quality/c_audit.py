@@ -136,19 +136,19 @@ class CAudit(CResource):
         return result_list
 
     @classmethod
-    def __init_audit_dict__(cls, audit_id, audit_title, audit_level, audit_result) -> dict:
+    def __init_audit_dict__(cls, audit_id, audit_title, audit_group, audit_result) -> dict:
         result_dict = dict()
         result_dict[cls.Name_ID] = audit_id
         result_dict[cls.Name_Title] = audit_title
-        result_dict[cls.Name_Level] = audit_level
+        result_dict[cls.Name_Group] = audit_group
         result_dict[cls.Name_Result] = audit_result
 
         return result_dict
 
     @classmethod
-    def a_file(cls, audit_id, audit_title, audit_level, audit_result, file_name_with_path,
+    def a_file(cls, audit_id, audit_title, audit_group, audit_result, file_name_with_path,
                qa_items: dict) -> list:
-        result_dict = cls.__init_audit_dict__(audit_id, audit_title, audit_level, audit_result)
+        result_dict = cls.__init_audit_dict__(audit_id, audit_title, audit_group, audit_result)
 
         if CFile.file_or_path_exist(file_name_with_path):
             return cls.__a_check_file__(result_dict, file_name_with_path, qa_items)
@@ -158,20 +158,20 @@ class CAudit(CResource):
         return [result_dict]
 
     @classmethod
-    def a_xml_element(cls, audit_id, audit_title, audit_level, audit_result, xml_obj: CXml, xpath: str,
+    def a_xml_element(cls, audit_id, audit_title, audit_group, audit_result, xml_obj: CXml, xpath: str,
                       qa_items: dict) -> list:
         """
         判断一个xml元数据中, 指定的xpath, 对应的element, 满足 kargs参数中的检测项目
         :param audit_id:
         :param audit_title:
-        :param audit_level:
+        :param audit_group:
         :param audit_result:
         :param xml_obj:
         :param xpath:
         :param qa_items:
         :return:
         """
-        result_dict = cls.__init_audit_dict__(audit_id, audit_title, audit_level, audit_result)
+        result_dict = cls.__init_audit_dict__(audit_id, audit_title, audit_group, audit_result)
         if xml_obj is None:
             result_dict[cls.Name_Message] = 'XML对象不合法, 节点[{0}]不存在'.format(xpath)
             return [result_dict]
@@ -185,9 +185,9 @@ class CAudit(CResource):
             return [result_dict]
 
     @classmethod
-    def a_xml_attribute(cls, audit_id, audit_title, audit_level, audit_result, xml_obj: CXml, xpath: str,
+    def a_xml_attribute(cls, audit_id, audit_title, audit_group, audit_result, xml_obj: CXml, xpath: str,
                         attr_name: str, qa_items: dict) -> list:
-        result_dict = cls.__init_audit_dict__(audit_id, audit_title, audit_level, audit_result)
+        result_dict = cls.__init_audit_dict__(audit_id, audit_title, audit_group, audit_result)
         if xml_obj is None:
             result_dict[cls.Name_Message] = 'XML对象不合法, 节点[{0}]不存在'.format(xpath)
             return [result_dict]
@@ -206,20 +206,20 @@ class CAudit(CResource):
         return [result_dict]
 
     @classmethod
-    def a_json_element(cls, audit_id, audit_title, audit_level, audit_result, json_obj: CJson, xpath: str,
+    def a_json_element(cls, audit_id, audit_title, audit_group, audit_result, json_obj: CJson, xpath: str,
                        qa_items: dict) -> list:
         """
         判断一个json元数据中, 指定的jsonpath, 对应的element, 满足qa_items参数中的检测项目
         :param audit_id:
         :param audit_title:
-        :param audit_level:
+        :param audit_group:
         :param audit_result:
         :param json_obj:
         :param xpath:
         :param qa_items:
         :return:
         """
-        result_dict = cls.__init_audit_dict__(audit_id, audit_title, audit_level, audit_result)
+        result_dict = cls.__init_audit_dict__(audit_id, audit_title, audit_group, audit_result)
         if json_obj is None:
             result_dict[cls.Name_Message] = 'Json对象不合法, 节点[{0}]不存在'.format(xpath)
             return [result_dict]

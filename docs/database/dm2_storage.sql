@@ -2120,14 +2120,6 @@ COMMENT ON COLUMN public.dm2_storage_object.dso_geo_bb_wgs84 IS '对象-WGS84-�
 COMMENT ON COLUMN public.dm2_storage_object.dso_geo_wgs84 IS '对象-WGS84-外边框';
 COMMENT ON COLUMN public.dm2_storage_object.dso_center_wgs84 IS '对象-WGS84-重心点';
 
-prj_native text
-prj_proj4   200
-prj_projname: 50 kg
-prj_coordinate 50 CGCS2000
-prj_degree  10 3
-prj_zone    10 34
-prj_source  int 1-实体;2-业务元数据;9-人工指定
-
 COMMENT ON COLUMN public.dm2_storage_object.area IS '面积';
 COMMENT ON COLUMN public.dm2_storage_object.length IS '长度';
 
@@ -2206,3 +2198,26 @@ alter table dm2_storage_object
     add column dso_time_result int default 0;
 COMMENT ON COLUMN public.dm2_storage_object.dso_time_result IS '时间元数据解析结果';
 
+/*
+    2020-10-13
+    对对象表进行优化完善:
+    1. 扩展投影坐标信息
+    2. 取消质检结果字段
+*/
+
+alter table dm2_storage_object drop dso_quality_result;
+
+alter table dm2_storage_object add column dso_prj_wkt character varying(1000);
+COMMENT ON COLUMN public.dm2_storage_object.dso_prj_wkt IS '坐标投影-wkt';
+alter table dm2_storage_object add column dso_prj_proj4 character varying(200);
+COMMENT ON COLUMN public.dm2_storage_object.dso_prj_proj4 IS '坐标投影-proj4';
+alter table dm2_storage_object add column dso_prj_project character varying(50);
+COMMENT ON COLUMN public.dm2_storage_object.dso_prj_project IS '坐标投影-投影';
+alter table dm2_storage_object add column dso_prj_coordinate character varying(50);
+COMMENT ON COLUMN public.dm2_storage_object.dso_prj_coordinate IS '坐标投影-坐标系';
+alter table dm2_storage_object add column dso_prj_degree character varying(10);
+COMMENT ON COLUMN public.dm2_storage_object.dso_prj_degree IS '坐标投影-度';
+alter table dm2_storage_object add column dso_prj_zone character varying(10);
+COMMENT ON COLUMN public.dm2_storage_object.dso_prj_zone IS '坐标投影-带';
+alter table dm2_storage_object add column dso_prj_source int default 1;
+COMMENT ON COLUMN public.dm2_storage_object.dso_prj_source IS '坐标投影-信息来源;1-实体;2-业务元数据;9-人工指定';

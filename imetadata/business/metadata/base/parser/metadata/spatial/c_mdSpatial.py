@@ -23,6 +23,70 @@ class CMDSpatial:
         self.__wgs84_geom__ = None
         self.__wgs84_center__ = None
 
+        self.__prj_wkt__ = None
+        self.__prj_proj4__ = None
+        self.__prj_project__ = None
+        self.__prj_coordinate__ = None
+        self.__prj_degree__ = None
+        self.__prj_zone__ = None
+        self.__prj_source__ = None
+
+    @property
+    def prj_source(self):
+        return self.__prj_source__
+
+    @prj_source.setter
+    def prj_source(self, value):
+        self.__prj_source__ = value
+
+    @property
+    def prj_wkt(self):
+        return self.__prj_wkt__
+
+    @prj_wkt.setter
+    def prj_wkt(self, value):
+        self.__prj_wkt__ = value
+
+    @property
+    def prj_proj4(self):
+        return self.__prj_proj4__
+
+    @prj_proj4.setter
+    def prj_proj4(self, value):
+        self.__prj_proj4__ = value
+
+    @property
+    def prj_project(self):
+        return self.__prj_project__
+
+    @prj_project.setter
+    def prj_project(self, value):
+        self.__prj_project__ = value
+
+    @property
+    def prj_coordinate(self):
+        return self.__prj_coordinate__
+
+    @prj_coordinate.setter
+    def prj_coordinate(self, value):
+        self.__prj_coordinate__ = value
+
+    @property
+    def prj_degree(self):
+        return self.__prj_degree__
+
+    @prj_degree.setter
+    def prj_degree(self, value):
+        self.__prj_degree__ = value
+
+    @property
+    def prj_zone(self):
+        return self.__prj_zone__
+
+    @prj_zone.setter
+    def prj_zone(self, value):
+        self.__prj_zone__ = value
+
     @property
     def native_box(self):
         return self.__native_bbox__

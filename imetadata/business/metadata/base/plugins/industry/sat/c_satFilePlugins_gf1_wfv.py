@@ -73,10 +73,19 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         :return:
         """
         return [
-            {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
-             self.Name_Title: '全色文件', self.Name_Level: self.QA_Level_Min, self.Name_Result: self.QA_Result_Error}
-            , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()), self.Name_ID: 'mss_tif',
-               self.Name_Title: '多光谱文件', self.Name_Level: self.QA_Level_Min, self.Name_Result: self.QA_Result_Error}
+            {
+                self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()),
+                self.Name_ID: 'pan_tif',
+                self.Name_Title: '全色文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            }, {
+                self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()),
+                self.Name_ID: 'mss_tif',
+                self.Name_Title: '多光谱文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            }
         ]
 
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser):
@@ -91,7 +100,7 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                 self.Name_XPath: '/ProductMetaData/SceneID1',
                 self.Name_ID: 'SceneID',
                 self.Name_Title: '景编号',
-                self.Name_Level: self.QA_Level_Max,
+                self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error
             },
             {
@@ -99,7 +108,7 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                 self.Name_XPath: '/ProductMetaData/OrbitID2',
                 self.Name_ID: 'OrbitID',
                 self.Name_Title: '轨道编号',
-                self.Name_Level: self.QA_Level_2,
+                self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error
             }
         ]
@@ -109,5 +118,7 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         卫星数据解压后, 哪个文件是业务元数据?
         :return:
         """
-        return CFile.join_file(self.file_content.content_root_dir,
-                               '{0}-PAN1.xml'.format(self.classified_object_name()))
+        return CFile.join_file(
+            self.file_content.content_root_dir,
+            '{0}-PAN1.xml'.format(self.classified_object_name())
+        )
