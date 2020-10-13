@@ -110,6 +110,14 @@ class CAudit(CResource):
 
     @classmethod
     def __a_check_value_datatype__(cls, result_template, value, title_prefix, value_type):
+        """
+        TODO 王学谦 对字段值根据字段类型进行检验（正整数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
+        :param result_template: 检查结果的模板
+        :param value: 待检验的值, 可能为None
+        :param title_prefix:
+        :param value_type: 类型（整数类型、小数类型、文本型、日期类型）
+        :return:
+        """
         pass
 
     @classmethod
