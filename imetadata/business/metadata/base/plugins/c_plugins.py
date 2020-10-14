@@ -544,4 +544,12 @@ class CPlugins(CResource):
             parser.metadata.set_metadata_bus(
                 self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text, '')
 
+        self.qa_custom(parser)
+
         return parser.save_metadata_data_and_bus()
+
+    def qa_custom(self, parser: CMetaDataParser):
+        """
+        自定义的质检方法
+        """
+        pass
