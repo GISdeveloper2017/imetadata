@@ -17,11 +17,11 @@ class CRasterMDReader(CMDReader):
         新增修改内容：
          1 coordinate节点扩展子节点wkt/esri/proj4
          2 boundingbox扩展子节点，包含原始范围source节点，转为wgs84节点，msg节点（说明转wgs84的结果，转换失败需要说明原因）
-         3 overview valid（true/false） 判断是否有金字塔
+         3 pyramid: true/false 判断是否有金字塔
     """
 
     def get_metadata_2_file(self, file_name_with_path: str):
-        # print('你的任务: 将文件{0}的元数据信息, 提取出来, 存储到文件{1}中'.format(self.__file_name_with_path__, file_name_with_path))
+        # print('你的任务:  将文件{0}的元数据信息, 提取出来, 存储到文件{1}中'.format(self.__file_name_with_path__, file_name_with_path))
         raster_ds = None
         json_raster = None
         try:
@@ -97,7 +97,6 @@ class CRasterMDReader(CMDReader):
 
             # 投影信息
             projection = raster_ds.GetProjection()
-            print(projection)
             if projection is None:
                 message = '文件[{0}]读取文件投影信息失败!'.format(self.__file_name_with_path__)
                 json_raster.set_value_of_name('result', self.Failure)
@@ -108,13 +107,19 @@ class CRasterMDReader(CMDReader):
                 return CResult.merge_result(CResult.Failure,
                                             '文件[{0}]读取文件投影信息失败!'.format(self.__file_name_with_path__))
             # 定义coordinate子对象
-            spatial = osr.SpatialReference()
+            json_coordinate = CJson()
+            spatial = raster_ds.GetSpatialRef()
             if spatial.ImportFromWkt(projection) == gdal.CE_None:
                 proj_wkt = spatial.ExportToWkt()
-                json_raster.set_value_of_name('coordinate', proj_wkt)
+                json_coordinate.set_value_of_name('wkt', proj_wkt)
             else:
-                json_raster.set_value_of_name('coordinate', projection)
+                json_coordinate.set_value_of_name('wkt', projection)
+            proj4 = spatial.ExportToProj4()
+            json_coordinate.set_value_of_name('proj4', proj4)
+            esri = spatial.MorphToESRI()
+            json_coordinate.set_value_of_name('esri', esri)
             spatial = None
+            json_raster.set_value_of_name('coordinate', json_coordinate.__json_obj__)
 
             # 仿射变换信息
             geo_transform = raster_ds.GetGeoTransform()
@@ -213,6 +218,16 @@ class CRasterMDReader(CMDReader):
             # 定义bands子节点
             band_list = self.get_bands_by_raster(band_count, raster_ds)
             json_raster.set_value_of_name('bands', band_list)
+
+            # 定义pyramid子节点
+            band = raster_ds.GetRasterBand(1)
+            overviews = band.GetOverviewCount()
+            if overviews > 0:
+                pyramid = True
+            else:
+                pyramid = False
+            band = None
+            json_raster.set_value_of_name('pyramid', pyramid)
 
             # 定义result子节点
             json_raster.set_value_of_name('result', result_success)
@@ -338,10 +353,14 @@ class CRasterMDReader(CMDReader):
             point_right_bottom_x = geo_transform[0] + image_size_x * geo_transform[1] + image_size_y * geo_transform[2]
             point_right_bottom_y = geo_transform[3] + image_size_x * geo_transform[4] + image_size_y * geo_transform[5]
             json_bounding = CJson()
-            json_bounding.set_value_of_name('left', point_left_top_x)
-            json_bounding.set_value_of_name('top', point_left_top_y)
-            json_bounding.set_value_of_name('right', point_right_bottom_x)
-            json_bounding.set_value_of_name('bottom', point_right_bottom_y)
+            json_source = CJson()
+            json_source.set_value_of_name('left', point_left_top_x)
+            json_source.set_value_of_name('top', point_left_top_y)
+            json_source.set_value_of_name('right', point_right_bottom_x)
+            json_source.set_value_of_name('bottom', point_right_bottom_y)
+            json_WGS84 = CJson()
+            json_bounding.set_value_of_name('source', json_source.__json_obj__)
+            json_bounding.set_value_of_name('wgs84', json_WGS84.__json_obj__)
             return json_origin, json_pixel, json_bounding
         else:
             json_geo_transform = CJson()
@@ -357,10 +376,14 @@ class CRasterMDReader(CMDReader):
             point_right_bottom_x = geo_transform[0] + image_size_x * geo_transform[1] + image_size_y * geo_transform[2]
             point_right_bottom_y = geo_transform[3] + image_size_x * geo_transform[4] + image_size_y * geo_transform[5]
             json_bounding = CJson()
-            json_bounding.set_value_of_name('left', point_left_top_x)
-            json_bounding.set_value_of_name('top', point_left_top_y)
-            json_bounding.set_value_of_name('right', point_right_bottom_x)
-            json_bounding.set_value_of_name('bottom', point_right_bottom_y)
+            json_source = CJson()
+            json_source.set_value_of_name('left', point_left_top_x)
+            json_source.set_value_of_name('top', point_left_top_y)
+            json_source.set_value_of_name('right', point_right_bottom_x)
+            json_source.set_value_of_name('bottom', point_right_bottom_y)
+            json_WGS84 = CJson()
+            json_bounding.set_value_of_name('source', json_source.__json_obj__)
+            json_bounding.set_value_of_name('wgs84', json_WGS84.__json_obj__)
             return json_geo_transform, json_bounding
 
     def get_bands_by_raster(self, band_count: int, raster_ds) -> list:
@@ -498,14 +521,15 @@ class CRasterMDReader(CMDReader):
                 json_band.set_value_of_name('color_table', json_color_table.__json_obj__)
 
             band_list.append(json_band.__json_obj__)
+            band = None
         return band_list
 
 
 if __name__ == '__main__':
     # CRasterMDReader('/aa/bb/cc.img').get_metadata_2_file('/aa/bb/cc.json')
-    # CRasterMDReader(r'D:\App\test\镶嵌影像\石嘴山市-3.img').get_metadata_2_file(r'D:\test\镶嵌影像\石嘴山市-3.json')
+    CRasterMDReader(r'D:\App\test\镶嵌影像\石嘴山市-3.img').get_metadata_2_file(r'D:\test\raster_test\石嘴山市-3.json')
     # CRasterMDReader(r'D:\test\wsiearth-tif\wsiearth.tif').get_metadata_2_file(
-    #     r'D:\test\wsiearth-tif-test\wsiearth.json')
+    #     r'D:\test\raster_test\wsiearth.json')
     # CRasterMDReader(r'D:\test\DOM\广西影像数据\2772.0-509.0\2772.0-509.0.img').get_metadata_2_file(
     #     r'D:\test\raster_test\2772.0-509.0-1.json')
     # CRasterMDReader(r'D:\test\DOM\湖北单个成果数据\H49G001026\H49G001026.tif').get_metadata_2_file(
@@ -517,6 +541,5 @@ if __name__ == '__main__':
     # CRasterMDReader(r'D:\test\卫星数据\单目录单数据\GF1_PMS1_E65.2_N26.6_20130927_L1A0000090284\GF1_PMS1_E65.2_N26'
     #                 r'.6_20130927_L1A0000090284-PAN1.tiff').get_metadata_2_file(
     #     r'D:\test\raster_test\GF1_PMS1_E65.2_N26.6_20130927_L1A0000090284-PAN1.json')
-    CRasterMDReader(r'D:\test\卫星数据\一目录单数据\GF1_PMS1_E85.9_N44.1_20140821_L1A0000311315-PAN1.tiff').get_metadata_2_file(
-        r'D:\test\raster_test\GF1_PMS1_E85.9_N44.1_20140821_L1A0000311315-PAN1_dem.json')
-
+    # CRasterMDReader(r'D:\test\卫星数据\一目录单数据\GF1_PMS1_E85.9_N44.1_20140821_L1A0000311315-PAN1.tiff').get_metadata_2_file(
+    #     r'D:\test\raster_test\GF1_PMS1_E85.9_N44.1_20140821_L1A0000311315-PAN1_dem.json')
