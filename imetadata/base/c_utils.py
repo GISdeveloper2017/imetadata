@@ -69,31 +69,6 @@ class CUtils(CResource):
         return re.search(regex, text) is not None
 
     @classmethod
-    def text_is_fioat(cls, check_text: str) -> bool:
-        """
-        判断是否为小数
-            1.小数点个数可以使用.count()方法
-            2.按照小数点进行分割 例如： 1.98 [1,98]
-            3.正小数：小数点左边是整数，右边也是整数 可以使用.isdigits()方法
-            4.负小数：小数点左边是是负号开头，但是只有一个负号，右边也是整数
-        :param check_text:
-        :return:
-        """
-        check_text = cls.any_2_str(check_text)
-        check_text_list = None
-        if check_text.count(".") == 1:  # 小数点个数
-            check_text_list = check_text.split(".")
-        if check_text_list is None:
-            return False
-        left = check_text_list[0]  # 小数点左边
-        right = check_text_list[1]  # 小数点右边
-        if left.isdigit() and right.isdigit():
-            return True
-        elif left.startswith('-') and left.count('-') == 1 and left.split('-')[1].isdigit() and right.isdigit():
-            return True
-        return False
-
-    @classmethod
     def text_is_numeric(cls, check_text: str) -> bool:
         """
         判断是否为数字
@@ -159,7 +134,7 @@ class CUtils(CResource):
 
 
 if __name__ == '__main__':
-    text_alpha = r'你/好 A\B\B C/中_国'
-    print(CUtils.split(text_alpha, ['/', '\\', ' ', '_', '-']))
-    check_text = '12.1'
-    print(CUtils.text_is_fioat(check_text))
+    # text_alpha = r'你/好 A\B\B C/中_国'
+    # print(CUtils.split(text_alpha, ['/', '\\', ' ', '_', '-']))
+    check_text = '-12'
+    print(CUtils.text_is_numeric(check_text))
