@@ -2221,3 +2221,17 @@ alter table dm2_storage_object add column dso_prj_zone character varying(10);
 COMMENT ON COLUMN public.dm2_storage_object.dso_prj_zone IS '坐标投影-带';
 alter table dm2_storage_object add column dso_prj_source int default 1;
 COMMENT ON COLUMN public.dm2_storage_object.dso_prj_source IS '坐标投影-信息来源;1-实体;2-业务元数据;9-人工指定';
+
+/*
+    2020-10-14
+    1. 数管与第三方系统的发布设计
+        1. dso_da_status(int): 发布规则审核-状态
+        1. dso_da_proc_id(varchar): 发布规则审核-并行标识
+        1. dso_da_result(jsonb): 发布规则审核-结果
+*/
+alter table dm2_storage_object add column dso_da_status int default 1;
+COMMENT ON COLUMN public.dm2_storage_object.dso_da_status IS '发布规则审核-状态';
+alter table dm2_storage_object add column dso_da_proc_id character varying(100);
+COMMENT ON COLUMN public.dm2_storage_object.dso_da_proc_id IS '发布规则审核-并行标识';
+alter table dm2_storage_object add column dso_da_result jsonb;
+COMMENT ON COLUMN public.dm2_storage_object.dso_da_result IS '发布规则审核-结果';
