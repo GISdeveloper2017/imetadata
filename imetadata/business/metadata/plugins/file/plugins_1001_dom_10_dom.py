@@ -39,19 +39,19 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU):
         #     or CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'mat')) \
         #     or CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'mdb'))
 
-        # 记录业务元数据文件全文件名及后缀名
-        check_file_metadata_name_exist = False
-        ext_list = ['xls', 'xlsx', 'mat', 'mdb']
-        for ext in ext_list:
-            temp_metadata_bus_file = '{0}.{1}'.format(file_metadata_name_with_path, ext)
-            if CFile.file_or_path_exist(temp_metadata_bus_file):
-                check_file_metadata_name_exist = True
-                self._metadata_bus_file_ext = ext
-                self._metadata_bus_file_with_path = temp_metadata_bus_file
-                break
-
-        if not check_file_metadata_name_exist:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+        # # 记录业务元数据文件全文件名及后缀名 这里不需要
+        # check_file_metadata_name_exist = False
+        # ext_list = ['xls', 'xlsx', 'mat', 'mdb']
+        # for ext in ext_list:
+        #     temp_metadata_bus_file = '{0}.{1}'.format(file_metadata_name_with_path, ext)
+        #     if CFile.file_or_path_exist(temp_metadata_bus_file):
+        #         check_file_metadata_name_exist = True
+        #         self._metadata_bus_file_ext = ext
+        #         self._metadata_bus_file_with_path = temp_metadata_bus_file
+        #         break
+        #
+        # if not check_file_metadata_name_exist:
+        #     return self.Object_Confirm_IUnKnown, self.__object_name__
 
         check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'tif'))
 
