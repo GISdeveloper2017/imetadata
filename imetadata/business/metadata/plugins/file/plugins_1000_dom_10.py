@@ -2,10 +2,13 @@
 # @Time : 2020/9/21 16:45 
 # @Author : 王西亚 
 # @File : plugins_1000_dom_10.py
+import pypyodbc
+
 from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
 
@@ -86,41 +89,88 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
 
         return self.__object_confirm__, self.__object_name__
 
+    def mdb_to_xml(self, file_main_name, file_with_path, xml_obj):
+        """
+        mdb文件转xml文件 by王学谦 初版，需要改进与调试
+        :param file_main_name:
+        :param file_with_path:
+        :param: xml_obj
+        """
+        tablename = file_main_name  # 暂时 表名为与文件名一样 by王学谦
+
+        # conn = pypyodbc.connect('DSN=mdb'); #linux配置，需要配置mdbtools, unixODBC, libmdbodbc
+        mdb = 'Driver={Microsoft Access Driver (*.mdb,*.accdb)};' + 'DBQ={0}'.format(file_with_path)  # win的驱动，需要安装
+        conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
+        cur = conn.cursor()
+        sql = "SELECT * FROM " + tablename
+        cur.execute(sql)
+        alldata = cur.fetchall()
+        # total_rows = len(alldata)  # 行
+        # total_cols = len(alldata[0])  # 列
+        xml_obj.create_element(xml_obj.xpath_one('/root'), 'property')
+        xml_obj.set_attr(xml_obj.xpath_one('/root/property'), 'tablename', tablename)
+        i = 0
+        for row in cur.description:
+            xml_obj.create_element(xml_obj.xpath_one('/root/property'), 'item')
+            xml_obj.set_attr(xml_obj.xpath_one('/root/property/item[{0}}'.format(i)), 'name', row[0])
+            xml_obj.set_element_text(xml_obj.xpath_one('/root/property/item[{0}}'.format(i)), alldata[0][i])
+            i += 1
+        cur.close()
+        conn.close()
+        return xml_obj
+
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
         提取xml格式的业务元数据, 加载到parser的metadata对象中
-        todo 负责人 赵宇飞 在这里将dom-10的元数据, 转换为xml, 存储到parser.metadata.set_metadata_bus_file中
+        todo 负责人 王学谦 在这里将dom-10的元数据, 转换为xml, 存储到parser.metadata.set_metadata_bus_file中
         :param parser:
         :return:
         """
+        xml_obj = CXml()
+        xml_obj.new_xml('root')
+        if self._metadata_bus_file_ext == 'mdb':
+            xml_obj.set_attr(xml_obj.xpath_one('/root'), 'type', 'dom_mdb')
+            xml_obj = self.mdb_to_xml(self.file_info.__file_main_name__, self._metadata_bus_file_with_path, xml_obj)
+        elif self._metadata_bus_file_ext == 'mat':
+            pass
+        elif self._metadata_bus_file_ext == 'xls':
+            pass
+        elif self._metadata_bus_file_ext == 'xlsx':
+            pass
+
         metadata_xml_file_name = CFile.join_file(self.file_content.content_root_dir,
                                                  '{0}.xml'.format(self.classified_object_name()))
-        # if not CFile.file_or_path_exist(metadata_xml_file_name):
-        return CResult.merge_result(self.Failure, '元数据文件[{0}]不存在, 无法解析! '.format(metadata_xml_file_name))
-
-        # try:
-        #     parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, metadata_xml_file_name)
-        #     return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(metadata_xml_file_name))
-        # except:
-        #     parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
-        #     return CResult.merge_result(self.Exception,
-        #                                        '元数据文件[{0}]格式不合法, 无法处理! '.format(metadata_xml_file_name))
+        xml_obj.save_file(metadata_xml_file_name)
+        if not CFile.file_or_path_exist(metadata_xml_file_name):  # 注释放开
+            return CResult.merge_result(self.Failure, '元数据文件[{0}]不存在, 无法解析! '.format(metadata_xml_file_name))
+        try:
+            parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, metadata_xml_file_name)
+            return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(metadata_xml_file_name))
+        except:
+            parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
+            return CResult.merge_result(self.Exception,
+                                        '元数据文件[{0}]格式不合法, 无法处理! '.format(metadata_xml_file_name))
 
 
 if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
     #                        '/Users/wangxiya/Documents/交换/1.给我的/即时服务产品/业务数据集/DOM/湖北单个成果数据/H49G001026/H49G001026.tif',
     #                        '/Users/wangxiya/Documents/交换', '<root><type>dom</type></root>')
-    file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
-                            r'D:\data\tif\wsiearth_H49G001026\H49G001026.tif',
-                            r'D:\data\tif', '<root><type>dom</type></root>')
-    plugins = plugins_1000_dom_10(file_info)
-    object_confirm, object_name = plugins.classified()
-    if object_confirm == plugins_1000_dom_10.Object_Confirm_IUnKnown:
-        print('对不起, 您给你的文件, 我不认识')
-    elif object_confirm == plugins_1000_dom_10.Object_Confirm_IKnown_Not:
-        print('您给你的文件, 我确认它不是对象')
-    elif object_confirm == plugins_1000_dom_10.Object_Confirm_IKnown:
-        print('您给你的文件, 我确认它的类型是[{0}], 对象名称为[{1}]'.format(plugins.get_id(), object_name))
-    elif object_confirm == plugins_1000_dom_10.Object_Confirm_Maybe:
-        print('您给你的文件, 我确认它的类型是[{0}], 对象名称为[{1}]'.format(plugins.get_id(), object_name))
+    # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
+    #                         r'D:\data\tif\wsiearth_H49G001026\H49G001026.tif',
+    #                         r'D:\data\tif', '<root><type>dom</type></root>')
+    # plugins = plugins_1000_dom_10(file_info)
+    # object_confirm, object_name = plugins.classified()
+    # if object_confirm == plugins_1000_dom_10.Object_Confirm_IUnKnown:
+    #     print('对不起, 您给你的文件, 我不认识')
+    # elif object_confirm == plugins_1000_dom_10.Object_Confirm_IKnown_Not:
+    #     print('您给你的文件, 我确认它不是对象')
+    # elif object_confirm == plugins_1000_dom_10.Object_Confirm_IKnown:
+    #     print('您给你的文件, 我确认它的类型是[{0}], 对象名称为[{1}]'.format(plugins.get_id(), object_name))
+    # elif object_confirm == plugins_1000_dom_10.Object_Confirm_Maybe:
+    #     print('您给你的文件, 我确认它的类型是[{0}], 对象名称为[{1}]'.format(plugins.get_id(), object_name))
+    xml_obj = CXml()
+    xml_obj.new_xml('root')
+    xml_obj.set_attr(xml_obj.xpath_one('/root'), 'type', 'dom_mdb')
+    xml_obj = self.mdb_to_xml('G49G001030', 'D:\\work\\测试数据\\数据入库3\\DOM\\湖南标准分幅成果数据\\G49G001030\\G49G001030.mdb', xml_obj)
+    xml_obj.save_file('')
