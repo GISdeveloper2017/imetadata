@@ -18,7 +18,6 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU):
 
         return information
 
-
     def classified(self):
         """
         设计国土行业数据的dom-10_dom验证规则
@@ -33,26 +32,26 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU):
         if not check_file_main_name_length:
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
-        file_metadata_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
+        file_metadata_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
         # check_file_metadata_name_exist = \
         #     CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'xls')) \
         #     or CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'xlsx')) \
         #     or CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'mat')) \
         #     or CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'mdb'))
 
-        # 记录业务元数据文件全文件名及后缀名
-        check_file_metadata_name_exist = False
-        ext_list = ['xls', 'xlsx', 'mat', 'mdb']
-        for ext in ext_list:
-            temp_metadata_bus_file = '{0}.{1}'.format(file_metadata_name_with_path, ext)
-            if CFile.file_or_path_exist(temp_metadata_bus_file):
-                check_file_metadata_name_exist = True
-                self._metadata_bus_file_ext = ext
-                self._metadata_bus_file_with_path = temp_metadata_bus_file
-                break
-
-        if not check_file_metadata_name_exist:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+        # # 记录业务元数据文件全文件名及后缀名 这里不需要
+        # check_file_metadata_name_exist = False
+        # ext_list = ['xls', 'xlsx', 'mat', 'mdb']
+        # for ext in ext_list:
+        #     temp_metadata_bus_file = '{0}.{1}'.format(file_metadata_name_with_path, ext)
+        #     if CFile.file_or_path_exist(temp_metadata_bus_file):
+        #         check_file_metadata_name_exist = True
+        #         self._metadata_bus_file_ext = ext
+        #         self._metadata_bus_file_with_path = temp_metadata_bus_file
+        #         break
+        #
+        # if not check_file_metadata_name_exist:
+        #     return self.Object_Confirm_IUnKnown, self.__object_name__
 
         check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'tif'))
 
@@ -77,10 +76,10 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU):
                 or CUtils.text_is_numeric(char_2_3) is False \
                 or CUtils.text_is_alpha(char_4) is False \
                 or CUtils.text_is_numeric(char_5_to_7) is False \
-                or CUtils.text_is_numeric(char_8_to_10) is False :
-
+                or CUtils.text_is_numeric(char_8_to_10) is False:
             return self.Object_Confirm_IUnKnown, self.__object_name__
-        if char_11_to_13 != 'DOM' :
+
+        if CUtils.equal_ignore_case(char_11_to_13, 'DOM'):
             return self.Object_Confirm_IUnKnown, self.__object_name__
         if CUtils.equal_ignore_case(file_ext, 'tif'):
             self.__object_confirm__ = self.Object_Confirm_IKnown
@@ -91,7 +90,42 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU):
 
         return self.__object_confirm__, self.__object_name__
 
+    def qa_custom(self, parser: CMetaDataParser):
+        """
+        自定义的质检方法
+        """
+        # 记录业务元数据文件全文件名及后缀名
+        file_metadata_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
+        check_file_metadata_name_exist = False
+        ext_list = ['xls', 'xlsx', 'mat', 'mdb']
+        for ext in ext_list:
+            temp_metadata_bus_file = '{0}.{1}'.format(file_metadata_name_with_path, ext)
+            if CFile.file_or_path_exist(temp_metadata_bus_file):
+                check_file_metadata_name_exist = True
+                self._metadata_bus_file_ext = ext
+                self._metadata_bus_file_with_path = temp_metadata_bus_file
+                break
 
+        if not check_file_metadata_name_exist:
+            self.metadata.quality.append_total_quality(
+                {
+                    self.Name_FileName: '',
+                    self.Name_ID: 'metadata_file',
+                    self.Name_Title: '元数据文件',
+                    self.Name_Result: self.QA_Result_Error,
+                    self.Name_Message: '本文件缺少业务元数据'
+                }
+            )
+        else:
+            self.metadata.quality.append_total_quality(
+                {
+                    self.Name_FileName: '',
+                    self.Name_ID: 'metadata_file',
+                    self.Name_Title: '元数据文件',
+                    self.Name_Result: self.QA_Result_Pass,
+                    self.Name_Message: '业务元数据[{0}]存在'.format(self._metadata_bus_file_with_path)
+                }
+            )
 
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
@@ -131,4 +165,3 @@ if __name__ == '__main__':
         print('您给你的文件, 我确认它的类型是[{0}], 对象名称为[{1}]'.format(plugins.get_id(), object_name))
     elif object_confirm == plugins_1001_dom_10_dom.Object_Confirm_Maybe:
         print('您给你的文件, 我确认它的类型是[{0}], 对象名称为[{1}]'.format(plugins.get_id(), object_name))
-
