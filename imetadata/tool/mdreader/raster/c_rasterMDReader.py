@@ -235,7 +235,7 @@ class CRasterMDReader(CMDReader):
             if CFile.check_and_create_directory(file_name_with_path):
                 json_raster.to_file(file_name_with_path)
             CLogger().info('文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
-            return CResult.merge_result(CResult.Failure,
+            return CResult.merge_result(CResult.Success,
                                         '文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
 
         except Exception as error:

@@ -23,6 +23,6 @@ class CMDExtractorVector(CMDExtractor):
         # p_one = Process(target=vector_mdreader.get_metadata_2_file, args=(out_metadata_file_fullname,))
         # p_one.start()
         # p_one.join()
-        return CResult.merge_result_info(result, self.Name_Format, self.MetaDataFormat_Text)
+        return CResult.merge_result_info(result, self.Name_Format, self.MetaDataFormat_Json)
         # return CResult.merge_result_info(CResult.merge_result(self.Success, '处理完毕!'), self.Name_Format,
         #                                  self.MetaDataFormat_Text)
