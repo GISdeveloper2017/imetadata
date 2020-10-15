@@ -92,9 +92,8 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
     def mdb_to_xml(self, file_main_name, file_with_path, xml_obj):
         """
         mdb文件转xml文件 by王学谦 初版，需要改进与调试
-        :param file_main_name:
-        :param file_with_path:
-        :param: xml_obj
+        :param parser:
+        :return: xml_obj
         """
         tablename = file_main_name  # 暂时 表名为与文件名一样 by王学谦
 
@@ -112,8 +111,8 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
         i = 0
         for row in cur.description:
             xml_obj.create_element(xml_obj.xpath_one('/root/property'), 'item')
-            xml_obj.set_attr(xml_obj.xpath_one('/root/property/item[{0}}'.format(i)), 'name', row[0])
-            xml_obj.set_element_text(xml_obj.xpath_one('/root/property/item[{0}}'.format(i)), alldata[0][i])
+            xml_obj.set_attr(xml_obj.xpath_one('/root/property/item[{0}]'.format(i + 1)), 'name', row[0])
+            xml_obj.set_element_text(xml_obj.xpath_one('/root/property/item[{0}]'.format(i + 1)), alldata[0][i])
             i += 1
         cur.close()
         conn.close()
@@ -126,21 +125,24 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
         :param parser:
         :return:
         """
-        xml_obj = CXml()
-        xml_obj.new_xml('root')
-        if self._metadata_bus_file_ext == 'mdb':
-            xml_obj.set_attr(xml_obj.xpath_one('/root'), 'type', 'dom_mdb')
-            xml_obj = self.mdb_to_xml(self.file_info.__file_main_name__, self._metadata_bus_file_with_path, xml_obj)
-        elif self._metadata_bus_file_ext == 'mat':
-            pass
-        elif self._metadata_bus_file_ext == 'xls':
-            pass
-        elif self._metadata_bus_file_ext == 'xlsx':
-            pass
-
         metadata_xml_file_name = CFile.join_file(self.file_content.content_root_dir,
                                                  '{0}.xml'.format(self.classified_object_name()))
-        xml_obj.save_file(metadata_xml_file_name)
+        xml_obj = CXml()
+        try:
+            if self._metadata_bus_file_ext == 'mdb':
+                xml_obj.new_xml('root')
+                xml_obj.set_attr(xml_obj.xpath_one('/root'), 'type', 'dom_mdb')
+                xml_obj = self.mdb_to_xml(self.file_info.__file_main_name__, self._metadata_bus_file_with_path, xml_obj)
+            elif self._metadata_bus_file_ext == 'mat':
+                pass
+            elif self._metadata_bus_file_ext == 'xls':
+                pass
+            elif self._metadata_bus_file_ext == 'xlsx':
+                pass
+            xml_obj.save_file(metadata_xml_file_name)
+        except:
+            pass  # 异常信息由下面处理
+
         if not CFile.file_or_path_exist(metadata_xml_file_name):  # 注释放开
             return CResult.merge_result(self.Failure, '元数据文件[{0}]不存在, 无法解析! '.format(metadata_xml_file_name))
         try:
@@ -156,10 +158,10 @@ if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
     #                        '/Users/wangxiya/Documents/交换/1.给我的/即时服务产品/业务数据集/DOM/湖北单个成果数据/H49G001026/H49G001026.tif',
     #                        '/Users/wangxiya/Documents/交换', '<root><type>dom</type></root>')
-    # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
-    #                         r'D:\data\tif\wsiearth_H49G001026\H49G001026.tif',
-    #                         r'D:\data\tif', '<root><type>dom</type></root>')
-    # plugins = plugins_1000_dom_10(file_info)
+    file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
+                            r'D:\data\tif\wsiearth_H49G001026\H49G001026.tif',
+                            r'D:\data\tif', '<root><type>dom</type></root>')
+    plugins = plugins_1000_dom_10(file_info)
     # object_confirm, object_name = plugins.classified()
     # if object_confirm == plugins_1000_dom_10.Object_Confirm_IUnKnown:
     #     print('对不起, 您给你的文件, 我不认识')
@@ -172,5 +174,6 @@ if __name__ == '__main__':
     xml_obj = CXml()
     xml_obj.new_xml('root')
     xml_obj.set_attr(xml_obj.xpath_one('/root'), 'type', 'dom_mdb')
-    xml_obj = self.mdb_to_xml('G49G001030', 'D:\\work\\测试数据\\数据入库3\\DOM\\湖南标准分幅成果数据\\G49G001030\\G49G001030.mdb', xml_obj)
-    xml_obj.save_file('')
+    xml_obj = plugins.mdb_to_xml('G49G001030', 'D:\\work\\测试数据\\数据入库3\\DOM\\湖南标准分幅成果数据\\G49G001030\\G49G001030.mdb', xml_obj)
+    xml_obj.save_file('D:\\work\\资料\\调试日志.xml')
+    print('结束')

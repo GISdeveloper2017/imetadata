@@ -107,22 +107,24 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU):
                 break
 
         if not check_file_metadata_name_exist:
-            self.metadata.quality.append_total_quality(
+            parser.metadata.quality.append_total_quality(
                 {
                     self.Name_FileName: '',
                     self.Name_ID: 'metadata_file',
                     self.Name_Title: '元数据文件',
                     self.Name_Result: self.QA_Result_Error,
+                    self.Name_Group: self.QA_Group_Data_Integrity,
                     self.Name_Message: '本文件缺少业务元数据'
                 }
             )
         else:
-            self.metadata.quality.append_total_quality(
+            parser.metadata.quality.append_total_quality(
                 {
-                    self.Name_FileName: '',
+                    self.Name_FileName: self._metadata_bus_file_with_path,
                     self.Name_ID: 'metadata_file',
                     self.Name_Title: '元数据文件',
                     self.Name_Result: self.QA_Result_Pass,
+                    self.Name_Group: self.QA_Group_Data_Integrity,
                     self.Name_Message: '业务元数据[{0}]存在'.format(self._metadata_bus_file_with_path)
                 }
             )
