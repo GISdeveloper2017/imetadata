@@ -2,6 +2,8 @@
 # @Time : 2020/9/16 09:02 
 # @Author : 王西亚 
 # @File : c_rasterMDReader.py
+
+
 from osgeo import gdal, osr
 import math
 from imetadata.base.c_file import CFile
@@ -234,12 +236,9 @@ class CRasterMDReader(CMDReader):
             band = None
             json_raster.set_value_of_name('pyramid', pyramid)
 
-
-
-
             # 定义result子节点
             json_raster.set_value_of_name('result', result_success)
-
+            # 判断路径是否存在，不存在则创建
             if CFile.check_and_create_directory(file_name_with_path):
                 json_raster.to_file(file_name_with_path)
             CLogger().info('文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
@@ -263,33 +262,36 @@ class CRasterMDReader(CMDReader):
         json_wgs84 = CJson()
         spatial_ref = osr.SpatialReference()
         spatial_ref.SetWellKnownGeogCS('WGS84')
-        json_wgs84_coordinate = CJson()
         wgs84_wkt = spatial_ref.ExportToWkt()
         wgs84_proj4 = spatial_ref.ExportToProj4()
         spatial_ref.MorphToESRI()
         wgs84_esri = spatial_ref.ExportToWkt()
+        json_wgs84_coordinate = CJson()
         json_wgs84_coordinate.set_value_of_name('wkt', wgs84_wkt)
         json_wgs84_coordinate.set_value_of_name('proj4', wgs84_proj4)
         json_wgs84_coordinate.set_value_of_name('esri', wgs84_esri)
         json_wgs84.set_value_of_name('coordinate', json_wgs84_coordinate.__json_obj__)
-        source = osr.SpatialReference(projection)
-        lat_long = source.CloneGeogCS()
-        coordinate_transform = osr.CreateCoordinateTransformation(source, lat_long)
-        if coordinate_transform is not None:
-            dx = [geo_transform[0], geo_transform[3]]
-            dy = [geo_transform[1], geo_transform[5]]
-            dz = [geo_transform[2], geo_transform[4]]
-            coordinate_transform.TransformPoints(2, dx, dy, dz)
-            point_left_top_x = dx[0]
-            point_left_top_y = dx[1]
-            point_right_bottom_x = dx[0] + image_size_x * dy[0] + image_size_y * dz[0]
-            point_right_bottom_y = dx[1] + image_size_x * dz[1] + image_size_y * dy[1]
+
+        point_left_top_x = geo_transform[0]
+        point_left_top_y = geo_transform[3]
+        point_right_bottom_x = geo_transform[0] + image_size_x * geo_transform[1] + image_size_y * geo_transform[2]
+        point_right_bottom_y = geo_transform[3] + image_size_x * geo_transform[4] + image_size_y * geo_transform[5]
+        rb = (0, 0)
+        lu = (0, 0)
+        if projection.strip() != '':
+            prosrs = osr.SpatialReference()
+            prosrs.ImportFromWkt(projection)
+            geosrs = prosrs.CloneGeogCS()
+            ct = osr.CreateCoordinateTransformation(prosrs, geosrs)
+            rb = ct.TransformPoint(point_right_bottom_x, point_right_bottom_y)
+            lu = ct.TransformPoint(point_left_top_x, point_left_top_y)
             json_bounding = CJson()
-            json_bounding.set_value_of_name('left', point_left_top_x)
-            json_bounding.set_value_of_name('top', point_left_top_y)
-            json_bounding.set_value_of_name('right', point_right_bottom_x)
-            json_bounding.set_value_of_name('bottom', point_right_bottom_y)
-            json_wgs84.set_value_of_name('boundingbox', json_bounding)
+            json_bounding.set_value_of_name('left', lu[0])
+            json_bounding.set_value_of_name('top', lu[1])
+            json_bounding.set_value_of_name('right', rb[0])
+            json_bounding.set_value_of_name('bottom', rb[1])
+            json_wgs84.set_value_of_name('boundingbox', json_bounding.__json_obj__)
+            json_wgs84.set_value_of_name('msg', 'wgs84转换成功！')
         else:
             json_wgs84.set_value_of_name('msg', 'wgs84转换失败！')
         return json_wgs84

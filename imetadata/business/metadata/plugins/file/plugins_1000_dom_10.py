@@ -11,9 +11,10 @@ from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
+from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu_bus import CFilePlugins_GUOTU_BUS
 
 
-class plugins_1000_dom_10(CFilePlugins_GUOTU):
+class plugins_1000_dom_10(CFilePlugins_GUOTU_BUS):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = 'DOM数据'
@@ -108,8 +109,8 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU):
         alldata = cur.fetchall()
         # total_rows = len(alldata)  # 行
         # total_cols = len(alldata[0])  # 列
-        xml_obj.create_element(xml_obj.xpath_one('/root'), 'property')
-        xml_obj.set_attr(xml_obj.xpath_one('/root/property'), 'tablename', tablename)
+        node_property = xml_obj.create_element(xml_obj.xpath_one('/root'), 'property')
+        xml_obj.set_attr(node_property, 'tablename', tablename)
         for i, row in enumerate(cur.description):
             if CUtils.equal_ignore_case(row[0], 'shape'):  # 跳过shape字段
                 continue

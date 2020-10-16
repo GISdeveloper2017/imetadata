@@ -8,9 +8,10 @@ from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
+from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu_bus import CFilePlugins_GUOTU_BUS
 
 
-class plugins_1001_dom_10_dom(CFilePlugins_GUOTU):
+class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_BUS):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = 'DOM数据'
