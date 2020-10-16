@@ -2,15 +2,12 @@
 # @Time : 2020/9/21 16:45 
 # @Author : 王西亚 
 # @File : plugins_1000_dom_10.py
-import pypyodbc
-
 from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
-from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu_bus import CFilePlugins_GUOTU_BUS
 
 
@@ -44,18 +41,18 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU_BUS):
         #     or CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'mdb'))
 
         # 记录业务元数据文件全文件名及后缀名
-        check_file_metadata_name_exist = False
-        ext_list = ['xls', 'xlsx', 'mat', 'mdb']
-        for ext in ext_list:
-            temp_metadata_bus_file = '{0}.{1}'.format(file_metadata_name_with_path, ext)
-            if CFile.file_or_path_exist(temp_metadata_bus_file):
-                check_file_metadata_name_exist = True
-                self._metadata_bus_file_ext = ext
-                self._metadata_bus_file_with_path = temp_metadata_bus_file
-                break
-
-        if not check_file_metadata_name_exist:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+        # check_file_metadata_name_exist = False
+        # ext_list = ['xls', 'xlsx', 'mat', 'mdb']
+        # for ext in ext_list:
+        #     temp_metadata_bus_file = '{0}.{1}'.format(file_metadata_name_with_path, ext)
+        #     if CFile.file_or_path_exist(temp_metadata_bus_file):
+        #         check_file_metadata_name_exist = True
+        #         self._metadata_bus_file_ext = ext
+        #         self._metadata_bus_file_with_path = temp_metadata_bus_file
+        #         break
+        #
+        # if not check_file_metadata_name_exist:
+        #     return self.Object_Confirm_IUnKnown, self.__object_name__
 
         check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'tif'))
 
@@ -90,37 +87,6 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU_BUS):
 
         return self.__object_confirm__, self.__object_name__
 
-    def mdb_to_xml(self, file_main_name, file_with_path, xml_obj):
-        """
-        mdb文件转xml文件 by王学谦 初版，需要改进与调试
-        :param file_main_name:文件主名，不带后缀名，同时也是mdb的表名
-        :param file_with_path:文件全名，带路径
-        :param xml_obj:进行转换的xml对象，一半在函数外提前定义
-        :return: xml_obj:转换好的xml对象
-        """
-        tablename = file_main_name  # 暂时 表名为与文件名一样 by王学谦
-
-        # conn = pypyodbc.connect('DSN=mdb'); #linux配置，需要配置mdbtools, unixODBC, libmdbodbc
-        mdb = 'Driver={Microsoft Access Driver (*.mdb,*.accdb)};' + 'DBQ={0}'.format(file_with_path)  # win的驱动，需要安装
-        conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
-        cur = conn.cursor()
-        sql = "SELECT * FROM " + tablename
-        cur.execute(sql)
-        alldata = cur.fetchall()
-        # total_rows = len(alldata)  # 行
-        # total_cols = len(alldata[0])  # 列
-        node_property = xml_obj.create_element(xml_obj.xpath_one('/root'), 'property')
-        xml_obj.set_attr(node_property, 'tablename', tablename)
-        for i, row in enumerate(cur.description):
-            if CUtils.equal_ignore_case(row[0], 'shape'):  # 跳过shape字段
-                continue
-            xml_obj.create_element(xml_obj.xpath_one('/root/property'), 'item')
-            xml_obj.set_attr(xml_obj.xpath_one('/root/property/item[last()]'), 'name', row[0])
-            xml_obj.set_element_text(xml_obj.xpath_one('/root/property/item[last()]'), alldata[0][i])
-        cur.close()
-        conn.close()
-        return xml_obj
-
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
         提取xml格式的业务元数据, 加载到parser的metadata对象中
@@ -128,38 +94,52 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU_BUS):
         :param parser:
         :return:
         """
-        metadata_xml_file_name = CFile.join_file(self.file_content.content_root_dir,
-                                                 '{0}.xml'.format(self.classified_object_name()))
-        # metadata_xml_file_name = CFile.join_file(self.file_content.work_root_dir, self.FileName_MetaData)
-        xml_obj = CXml()
+        if not self.identify_dom_or_dem_metadata_bus_file():
+            return CResult.merge_result(self.Failure, '元数据文件不存在, 无法解析! ')
+
+        # metadata_xml_file_name = CFile.join_file(self.file_content.content_root_dir,
+        #                                         '{0}.xml'.format(self.classified_object_name()))
+        # 获取业务元数据文件文件主名，全名与类型
+        metadata_bus_file_main_name = self.file_info.__file_main_name__
+        metadata_bus_file_name = self._metadata_bus_file_with_path
+        metadata_bus_file_ext = self._metadata_bus_file_ext
+        # 构建虚拟xml文件
+        metadata_xml_file_name = CFile.join_file(self.file_content.work_root_dir, self.FileName_MetaData)
         try:
-            if self._metadata_bus_file_ext == 'mdb':
-                xml_obj.new_xml('root')
+            # 构建用于转换格式的xml对象，并建立根节点
+            xml_obj = CXml()
+            xml_obj.new_xml('root')
+            if CUtils.equal_ignore_case(metadata_bus_file_ext, 'mdb'):
                 xml_obj.set_attr(xml_obj.xpath_one('/root'), 'type', 'dom_mdb')
-                xml_obj = self.mdb_to_xml(self.file_info.__file_main_name__, self._metadata_bus_file_with_path, xml_obj)
-                metadata_xml_file_name = CFile.join_file(self.file_content.work_root_dir, self.FileName_MetaData)
-            elif self._metadata_bus_file_ext == 'mat':
+                xml_obj = self.mdb_to_xml(metadata_bus_file_main_name, metadata_bus_file_name, xml_obj)
+            elif CUtils.equal_ignore_case(metadata_bus_file_ext, 'mat'):
                 pass
-            elif self._metadata_bus_file_ext == 'xls':
+            elif CUtils.equal_ignore_case(metadata_bus_file_ext, 'xls'):
                 pass
-            elif self._metadata_bus_file_ext == 'xlsx':
+            elif CUtils.equal_ignore_case(metadata_bus_file_ext, 'xlsx'):
                 pass
             xml_obj.save_file(metadata_xml_file_name)
         except:
-            pass  # 异常信息由下面处理
-        
-        if not CFile.file_or_path_exist(metadata_xml_file_name):  # 注释放开
-            return CResult.merge_result(self.Failure, '元数据文件[{0}]不存在, 无法解析! '.format(metadata_xml_file_name))
+            return CResult.merge_result(self.Failure, '元数据文件[{0}]解析异常! '.format(metadata_bus_file_name))
+
+        # if not CFile.file_or_path_exist(metadata_xml_file_name):
+        #     return CResult.merge_result(self.Failure, '元数据文件[{0}]不存在, 无法解析! '.format(metadata_xml_file_name))
         try:
-            parser.metadata.set_metadata_bus_file(self.Success, '元数据文件[{0}]成功加载! '.format(metadata_xml_file_name),
-                                                  self.MetaDataFormat_XML, metadata_xml_file_name)
-            return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(metadata_xml_file_name))
+            parser.metadata.set_metadata_bus_file(self.Success,
+                                                  '元数据文件[{0}]成功加载! '.format(metadata_bus_file_name),
+                                                  self.MetaDataFormat_XML,
+                                                  metadata_xml_file_name)
+            return CResult.merge_result(self.Success,
+                                        '元数据文件[{0}]成功加载! '.format(metadata_bus_file_name))
         except:
             parser.metadata.set_metadata_bus(self.Exception,
-                                             '元数据文件[{0}]格式不合法, 无法处理! '.format(metadata_xml_file_name),
-                                             self.MetaDataFormat_Text, '')
+                                             '元数据文件[{0}]格式不合法或解析异常, 无法处理! '.format(metadata_bus_file_name),
+                                             self.MetaDataFormat_Text,
+                                             '')
             return CResult.merge_result(self.Exception,
-                                        '元数据文件[{0}]格式不合法, 无法处理! '.format(metadata_xml_file_name))
+                                        '元数据文件[{0}]格式不合法或解析异常, 无法处理! '.format(metadata_bus_file_name))
+
+
 
 
 if __name__ == '__main__':
