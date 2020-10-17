@@ -18,7 +18,7 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
         :param parser:
         :return:
         """
-        if self.__metadata_bus_transformer_type__ is None:
+        if super().metadata_bus_transformer_type is None:
             parser.metadata.set_metadata_bus(self.DB_True, '', self.MetaDataFormat_Text, '')
             return CResult.merge_result(self.Success, '本数据无业务元数据, 无须解析!')
 
@@ -28,8 +28,8 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
             parser.file_info,
             parser.file_content,
             parser.metadata,
-            self.__metadata_bus_transformer_type__,
-            self.__metadata_bus_src_filename_with_path__
+            super().metadata_bus_transformer_type,
+            super().metadata_bus_src_filename_with_path
         )
         return transformer.process()
 
@@ -47,8 +47,8 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
             temp_metadata_bus_file = '{0}.{1}'.format(file_metadata_name_with_path, ext)
             if CFile.file_or_path_exist(temp_metadata_bus_file):
                 check_file_metadata_name_exist = True
-                self.__metadata_bus_transformer_type__ = ext
-                self.__metadata_bus_src_filename_with_path__ = temp_metadata_bus_file
+                super().metadata_bus_transformer_type = ext
+                super().metadata_bus_src_filename_with_path = temp_metadata_bus_file
                 break
 
         if not check_file_metadata_name_exist:
@@ -65,11 +65,11 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
         else:
             parser.metadata.quality.append_total_quality(
                 {
-                    self.Name_FileName: self._metadata_bus_file_with_path,
+                    self.Name_FileName: super().metadata_bus_src_filename_with_path,
                     self.Name_ID: 'metadata_file',
                     self.Name_Title: '元数据文件',
                     self.Name_Result: self.QA_Result_Pass,
                     self.Name_Group: self.QA_Group_Data_Integrity,
-                    self.Name_Message: '业务元数据[{0}]存在'.format(self._metadata_bus_file_with_path)
+                    self.Name_Message: '业务元数据[{0}]存在'.format(super().metadata_bus_src_filename_with_path)
                 }
             )

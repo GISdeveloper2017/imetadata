@@ -9,6 +9,7 @@ from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.content.c_virtualContent_Dir import CVirtualContentDir
 from imetadata.business.metadata.base.content.c_virtualContent_Package import CVirtualContentPackage
+from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerCommon import CMDTransformerCommon
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
 
@@ -173,14 +174,49 @@ class CSatPlugins(CPlugins):
         :param parser:
         :return:
         """
-        metadata_xml_file_name = self.get_bus_metadata_filename_by_file()
-        if not CFile.file_or_path_exist(metadata_xml_file_name):
-            return CResult.merge_result(self.Failure, '元数据文件[{0}]不存在, 无法解析! '.format(metadata_xml_file_name))
+        if super().metadata_bus_src_filename_with_path is None:
+            parser.metadata.set_metadata_bus(self.DB_True, '', self.MetaDataFormat_Text, '')
+            return CResult.merge_result(self.Success, '本卫星数据无业务元数据, 无须解析!')
 
-        try:
-            parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, metadata_xml_file_name)
-            return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(metadata_xml_file_name))
-        except:
-            parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
-            return CResult.merge_result(self.Exception,
-                                        '元数据文件[{0}]格式不合法, 无法处理! '.format(metadata_xml_file_name))
+        transformer = CMDTransformerCommon(
+            parser.object_id,
+            parser.object_name,
+            parser.file_info,
+            parser.file_content,
+            parser.metadata,
+            super().metadata_bus_transformer_type,
+            super().metadata_bus_src_filename_with_path
+        )
+        return transformer.process()
+
+    def qa_file_custom(self, parser: CMetaDataParser):
+        """
+        自定义的文件存在性质检, 发生在元数据解析之前
+        :param parser:
+        :return:
+        """
+        super().qa_file_custom(parser)
+        super().metadata_bus_transformer_type = self.Transformer_XML
+        super().metadata_bus_src_filename_with_path = self.get_bus_metadata_filename_by_file()
+        if not CFile.file_or_path_exist(self.metadata_bus_src_filename_with_path):
+            parser.metadata.quality.append_total_quality(
+                {
+                    self.Name_FileName: '',
+                    self.Name_ID: 'metadata_file_bus',
+                    self.Name_Title: '业务元数据文件',
+                    self.Name_Result: self.QA_Result_Error,
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Message: '本文件缺少业务元数据'
+                }
+            )
+        else:
+            parser.metadata.quality.append_total_quality(
+                {
+                    self.Name_FileName: self.metadata_bus_src_filename_with_path,
+                    self.Name_ID: 'metadata_file_bus',
+                    self.Name_Title: '业务元数据文件',
+                    self.Name_Result: self.QA_Result_Pass,
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Message: '业务元数据[{0}]存在'.format(self.metadata_bus_src_filename_with_path)
+                }
+            )

@@ -116,10 +116,6 @@ class CPlugins(CResource):
 
     MetaData_Rule_Type_None = 'none'
 
-    # 在质检中或者在识别过程中, 需要明确元数据的类型, 和文件名!!!否则将被视为无业务数据集
-    __metadata_bus_transformer_type__ = None
-    __metadata_bus_src_filename_with_path__ = None
-
     __file_content__: CVirtualContent = None
     __file_info__: CDMFilePathInfoEx = None
     __metadata_rule_obj__: CXml = None
@@ -133,8 +129,28 @@ class CPlugins(CResource):
         """
         self.__metadata_rule_obj__ = CXml()
         self.__file_info__ = file_info
+
+        # 在质检中或者在识别过程中, 需要明确元数据的类型, 和文件名!!!否则将被视为无业务数据集
+        self.__metadata_bus_transformer_type__ = None
+        self.__metadata_bus_src_filename_with_path__ = None
         if self.file_info is not None:
             self.__metadata_rule_obj__.load_xml(self.file_info.__rule_content__)
+
+    @property
+    def metadata_bus_transformer_type(self):
+        return self.__metadata_bus_transformer_type__
+
+    @metadata_bus_transformer_type.setter
+    def metadata_bus_transformer_type(self, value):
+        self.__metadata_bus_transformer_type__ = value
+
+    @property
+    def metadata_bus_src_filename_with_path(self):
+        return self.__metadata_bus_src_filename_with_path__
+
+    @metadata_bus_src_filename_with_path.setter
+    def metadata_bus_src_filename_with_path(self, value):
+        self.__metadata_bus_src_filename_with_path__ = value
 
     @property
     def file_content(self):
