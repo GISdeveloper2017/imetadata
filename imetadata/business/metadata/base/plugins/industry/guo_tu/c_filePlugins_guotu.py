@@ -12,15 +12,13 @@ from imetadata.business.metadata.base.plugins.c_filePlugins import CFilePlugins
 class CFilePlugins_GUOTU(CFilePlugins):
     """
     国土行业文件入库插件
-    todo 在这里补充国土行业数据的其他类型
+    todo(提示) 在质检中或者在识别过程中, 可以直接确定业务元数据的类型和源文件名, 这样系统将按照内置的几种类型的标准处理方法进行自动处理,
+        否则需要自行处理业务元数据
     """
 
     MetaData_Rule_Type_DOM = 'dom'
     MetaData_Rule_Type_DEM = 'dem'
     MetaData_Rule_Type_SD = 'sd'
-
-    _metadata_bus_file_ext = None  # 业务元数据文件后缀名
-    _metadata_bus_file_with_path = None  # 业务元数据全文件名
 
     def get_information(self) -> dict:
         information = super().get_information()
@@ -51,39 +49,3 @@ class CFilePlugins_GUOTU(CFilePlugins):
         self.__object_name__ = None
         self.__object_confirm__ = self.Object_Confirm_IUnKnown
         return self.__object_confirm__, self.__object_name__
-        # if not self.get_classified_rule_valid():
-        #     return self.__object_confirm__, self.__object_name__
-        # else:
-        #     return self.classified_by_character_guotu()
-
-    # def get_classified_rule_valid(self) -> bool:
-    #     """
-    #     验证当前验证规则是否有效
-    #     :return:
-    #     """
-    #     metadata_rule_type = self.get_metadata_rule_type()
-    #     if CUtils.equal_ignore_case(metadata_rule_type, self.MetaData_Rule_Type_None):
-    #         file_path = self.file_info.__file_path_with_rel_path__
-    #         return CFile.subpath_in_path(self.get_classified_metadata_rule_type(), file_path)
-    #     else:
-    #         return CUtils.equal_ignore_case(self.get_metadata_rule_type(), self.get_classified_metadata_rule_type())
-    #
-    # @abstractmethod
-    # def get_classified_metadata_rule_type(self):
-    #     """
-    #     设置需要提前验证的元数据规则类型
-    #     :return:
-    #     """
-    #     return self.MetaData_Rule_Type_None
-    #
-    # @abstractmethod
-    # def classified_by_character_guotu(self):
-    #     """
-    #     默认的识别模式
-    #     根据文件名的特征, 进行对象类型识别
-    #
-    #     :return: 返回两个结果
-    #     .[0]: 概率, 0-不知道;1-可能是;-1确认是
-    #     .[1]: 识别的对象的名称, 如GF1-xxxxxx-000-000
-    #     """
-    #     return self.__object_confirm__, self.__object_name__

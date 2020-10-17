@@ -164,10 +164,6 @@ class CResource:
     DB_True = -1
     DB_False = 0
 
-    MetaDataFormat_Text = 0
-    MetaDataFormat_Json = 1
-    MetaDataFormat_XML = 2
-
     Engine_Custom = Name_Custom
 
     MetaDataEngine_Raster = 'raster'
@@ -208,3 +204,16 @@ class CResource:
 
     # 质检-分组-数据完整性
     QA_Group_Data_Integrity = 'di'
+
+    MetaDataFormat_Text = 0
+    MetaDataFormat_Json = 1
+    MetaDataFormat_XML = 2
+
+    Transformer_DOM_MDB = 'mdb'
+    Transformer_DOM_MAT = 'mat'
+    Transformer_DOM_XLS = 'xls'
+    Transformer_DOM_XLSX = 'xlsx'
+
+    Transformer_XML = 'xml'
+    Transformer_Json = 'json'
+    Transformer_TXT = 'txt'

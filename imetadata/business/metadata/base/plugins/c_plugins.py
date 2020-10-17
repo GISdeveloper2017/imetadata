@@ -116,6 +116,10 @@ class CPlugins(CResource):
 
     MetaData_Rule_Type_None = 'none'
 
+    # 在质检中或者在识别过程中, 需要明确元数据的类型, 和文件名!!!否则将被视为无业务数据集
+    __metadata_bus_transformer_type__ = None
+    __metadata_bus_src_filename_with_path__ = None
+
     __file_content__: CVirtualContent = None
     __file_info__: CDMFilePathInfoEx = None
     __metadata_rule_obj__: CXml = None
@@ -521,6 +525,8 @@ class CPlugins(CResource):
         :return:
         """
         parser.batch_qa_file(self.init_qa_file_list(parser))
+        # 自定义的文件完整性质检
+        self.qa_file_custom(parser)
 
         # 这里将结果信息丢弃不用, 因为在提取元数据的方法中, 已经将异常信息记录到质检数据中
         result = self.init_metadata(parser)
@@ -543,14 +549,22 @@ class CPlugins(CResource):
         else:
             parser.metadata.set_metadata_bus(
                 self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text, '')
-
-        self.qa_custom(parser)
+        # 自定义的元数据质检
+        self.qa_metadata_custom(parser)
 
         return parser.save_metadata_data_and_bus()
 
-    def qa_custom(self, parser: CMetaDataParser):
+    def qa_metadata_custom(self, parser: CMetaDataParser):
         """
-        自定义的质检方法
+        自定义的质检方法, 发生在元数据解析之后
+        :param parser:
+        :return:
+        """
+        pass
+
+    def qa_file_custom(self, parser: CMetaDataParser):
+        """
+        自定义的文件存在性质检, 发生在元数据解析之前
         :param parser:
         :return:
         """
