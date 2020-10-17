@@ -103,6 +103,7 @@ class CResource:
 
     FileName_MetaData_Rule = 'metadata.rule'
     FileName_MetaData = 'metadata.json'
+    FileName_MetaData_Bus = 'metadata_bus.xml'
 
     Object_Confirm_IUnKnown = 0
     Object_Confirm_Maybe = 1

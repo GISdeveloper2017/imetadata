@@ -142,6 +142,8 @@ class CFile:
 
     @classmethod
     def file_or_path_exist(cls, dir_name_with_path: str):
+        if dir_name_with_path is None:
+            return False
         return os.path.exists(dir_name_with_path)
 
     @classmethod

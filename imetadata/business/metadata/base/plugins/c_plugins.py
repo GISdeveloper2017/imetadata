@@ -551,5 +551,7 @@ class CPlugins(CResource):
     def qa_custom(self, parser: CMetaDataParser):
         """
         自定义的质检方法
+        :param parser:
+        :return:
         """
         pass

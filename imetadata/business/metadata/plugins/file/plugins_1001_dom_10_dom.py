@@ -8,9 +8,10 @@ from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
+from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu_bus import CFilePlugins_GUOTU_BUS
 
 
-class plugins_1001_dom_10_dom(CFilePlugins_GUOTU):
+class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_BUS):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = 'DOM数据'
@@ -107,22 +108,24 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU):
                 break
 
         if not check_file_metadata_name_exist:
-            self.metadata.quality.append_total_quality(
+            parser.metadata.quality.append_total_quality(
                 {
                     self.Name_FileName: '',
                     self.Name_ID: 'metadata_file',
                     self.Name_Title: '元数据文件',
                     self.Name_Result: self.QA_Result_Error,
+                    self.Name_Group: self.QA_Group_Data_Integrity,
                     self.Name_Message: '本文件缺少业务元数据'
                 }
             )
         else:
-            self.metadata.quality.append_total_quality(
+            parser.metadata.quality.append_total_quality(
                 {
-                    self.Name_FileName: '',
+                    self.Name_FileName: self._metadata_bus_file_with_path,
                     self.Name_ID: 'metadata_file',
                     self.Name_Title: '元数据文件',
                     self.Name_Result: self.QA_Result_Pass,
+                    self.Name_Group: self.QA_Group_Data_Integrity,
                     self.Name_Message: '业务元数据[{0}]存在'.format(self._metadata_bus_file_with_path)
                 }
             )
