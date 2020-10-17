@@ -42,7 +42,6 @@ select
   , dm2_storage_file.dsfext as query_file_ext
   , dm2_storage_file.dsffilemodifytime as query_file_modifytime
   , dm2_storage_file.dsffilesize as query_file_size
-  , dm2_storage_file.dsffileattr as query_file_attr
   , dm2_storage_file.dsf_object_type as query_file_object_type
   , dm2_storage_file.dsf_object_confirm as query_file_object_confirm
   , dm2_storage_file.dsf_object_id as query_file_object_id

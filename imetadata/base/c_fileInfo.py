@@ -19,7 +19,6 @@ class CFileInfo(CResource):
     __file_existed__: bool
 
     __file_size__: int = 0
-    __file_attr__: int = 32
     __file_create_time__ = None
     __file_access_time__ = None
     __file_modify_time__ = None

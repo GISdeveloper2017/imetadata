@@ -21,7 +21,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
             self.__ds_file_or_path__ = engine.one_row('''
             select dsfid, dsfstorageid, dsfdirectoryid, dsffilerelationname, dsffilename, dsffilemainname, dsfext, 
                 dsffilecreatetime, dsffilemodifytime, dsffilevalid, 
-                dsf_object_type, dsf_object_confirm, dsf_object_id, dsffileattr, dsffilesize, dsfparentobjid
+                dsf_object_type, dsf_object_confirm, dsf_object_id, dsffilesize, dsfparentobjid
             from dm2_storage_file
             where dsfstorageid = :dsfStorageID and dsfdirectoryid = :dsfDirectoryId and dsffilerelationname = :dsfFileRelationName
             ''', {'dsfStorageID': self.__storage_id__, 'dsfDirectoryId': self.__parent_id__,
@@ -34,7 +34,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
             self.__ds_file_or_path__ = engine.one_row('''
                 select dsfid, dsfstorageid, dsfdirectoryid, dsffilerelationname, dsffilename, dsffilemainname, dsfext, 
                     dsffilecreatetime, dsffilemodifytime, dsffilevalid, 
-                    dsf_object_type, dsf_object_confirm, dsf_object_id, dsffileattr, dsffilesize, dsfparentobjid
+                    dsf_object_type, dsf_object_confirm, dsf_object_id, dsffilesize, dsfparentobjid
                 from dm2_storage_file
                 where dsfid = :dsfID
                 ''', {'dsfid': self.__my_id__})
@@ -76,12 +76,12 @@ class CDMFileInfo(CDMFilePathInfoEx):
             dsfid, dsfstorageid, dsfdirectoryid, dsffilerelationname, dsffilename, dsffilemainname, dsfext
             , dsffilecreatetime, dsffilemodifytime, dsfaddtime, dsflastmodifytime, dsffilevalid
             , dsfscanstatus, dsfprocessid, dsf_object_type, dsf_object_confirm, dsf_object_id
-            , dsffileattr, dsffilesize, dsfparentobjid) 
+            , dsffilesize, dsfparentobjid) 
         values(
             :dsfid, :dsfstorageid, :dsfdirectoryid, :dsffilerelationname, :dsffilename, :dsffilemainname, :dsfext
             , :dsffilecreatetime, :dsffilemodifytime, now(), now(), -1
             , 1, null, null, 0, null
-            , 32, :dsffilesize, :dsfparentobjid)
+            , :dsffilesize, :dsfparentobjid)
         '''
         params = dict()
         params['dsfid'] = self.__my_id__

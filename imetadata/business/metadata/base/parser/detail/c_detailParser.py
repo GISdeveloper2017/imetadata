@@ -32,11 +32,11 @@ class CDetailParser(CParser):
         sql_detail_insert = '''
         INSERT INTO dm2_storage_obj_detail(
             dodid, dodobjectid, dodfilename, dodfileext, dodfilesize, 
-            dodfileattr, dodfilecreatetime, dodfilemodifytime, 
+            dodfilecreatetime, dodfilemodifytime, 
             dodlastmodifytime, dodstorageid, dodfilerelationname, dodfiletype)
         VALUES (
             :dodid, :dodobjectid, :dodfilename, :dodfileext, :dodfilesize, 
-            :dodfileattr, :dodfilecreatetime, :dodfilemodifytime, now(), 
+            :dodfilecreatetime, :dodfilemodifytime, now(), 
             :dodstorageid, :dodfilerelationname, :dodfiletype)
         '''
 
@@ -64,7 +64,6 @@ class CDetailParser(CParser):
             params['dodfilename'] = CFile.file_name(item_file_name_with_path)
             params['dodfileext'] = CFile.file_ext(item_file_name_with_path)
             params['dodfilesize'] = CFile.file_size(item_file_name_with_path)
-            params['dodfileattr'] = 32
             params['dodfilecreatetime'] = CFile.file_create_time(item_file_name_with_path)
             params['dodfilemodifytime'] = CFile.file_modify_time(item_file_name_with_path)
             params['dodstorageid'] = query_storage_id
