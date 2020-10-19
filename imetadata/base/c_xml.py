@@ -61,7 +61,7 @@ class CXml:
             self.__xml_root_node__ = etree.XML(xml_content.strip(), parser)
             self.__xml_tree__ = etree.ElementTree(self.__xml_root_node__)
 
-    def new_xml(self, root_element_name):
+    def new_xml(self, root_element_name) -> etree:
         """
         新建一个xml对象, 必须给定根节点名称
 
@@ -70,6 +70,7 @@ class CXml:
         """
         self.__xml_root_node__ = etree.Element(root_element_name)
         self.__xml_tree__ = etree.ElementTree(self.__xml_root_node__)
+        return self.__xml_root_node_
 
     def save_file(self, filename, encoding=Encoding_UTF8):
         """

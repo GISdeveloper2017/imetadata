@@ -29,6 +29,10 @@ class CMDTransformer(CParser):
         return self.__transformer_type__
 
     @property
+    def metadata(self):
+        return self.__metadata__
+
+    @property
     def transformer_src_filename(self):
         return self.__transformer_src_filename__
 
