@@ -74,7 +74,7 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU_DOM):
         :param parser:
         :return:
         """
-        if self.__metadata_bus_transformer_type__ is None:
+        if self.metadata_bus_transformer_type is None:
             parser.metadata.set_metadata_bus(self.DB_True, '', self.MetaDataFormat_Text, '')
             return CResult.merge_result(self.Success, '本数据无业务元数据, 无须解析!')
 
@@ -84,10 +84,18 @@ class plugins_1000_dom_10(CFilePlugins_GUOTU_DOM):
             parser.file_info,
             parser.file_content,
             parser.metadata,
-            self.__metadata_bus_transformer_type__,
-            self.__metadata_bus_src_filename_with_path__
+            self.metadata_bus_transformer_type,
+            self.metadata_bus_src_filename_with_path
         )
         return transformer.process()
+
+    def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
+        """
+        初始化默认的, 业务元数据xml文件的检验列表
+        :param parser:
+        :return:
+        """
+        return []
 
 
 if __name__ == '__main__':

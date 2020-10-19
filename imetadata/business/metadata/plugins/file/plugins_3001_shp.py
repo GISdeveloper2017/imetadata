@@ -43,7 +43,7 @@ class plugins_3001_shp(CVectorFilePlugins):
         """
         return [
             {self.Name_FileName: '{0}.dbf'.format(self.classified_object_name()), self.Name_ID: 'dbf',
-             self.Name_Title: '属性数据文件', self.Name_Result: self.QA_Result_Error, 'size': {'min': 1, 'max': 100000}}
+             self.Name_Title: '属性数据文件', self.Name_Result: self.QA_Result_Error, 'size': {'min': 1, 'max': 100000}, 'format': 'xml'}
             , {self.Name_FileName: '{0}.prj'.format(self.classified_object_name()), self.Name_ID: 'prj',
                self.Name_Title: '投影文件', self.Name_Result: self.QA_Result_Warn}
             , {self.Name_FileName: '{0}.shx'.format(self.classified_object_name()), self.Name_ID: 'shx',
@@ -53,3 +53,35 @@ class plugins_3001_shp(CVectorFilePlugins):
             , {self.Name_FileName: '{0}.sbx'.format(self.classified_object_name()), self.Name_ID: 'sbx',
                self.Name_Title: 'sbx文件', self.Name_Result: self.QA_Result_Error}
         ]
+
+    def init_qa_metadata_xml_list(self, parser: CMetaDataParser) -> list:
+        """
+        初始化默认的, 元数据xml文件的检验列表
+        :param parser:
+        :return:
+        """
+        return []
+
+    def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
+        """
+        初始化默认的, 业务元数据xml文件的检验列表
+        :param parser:
+        :return:
+        """
+        return []
+
+    def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
+        """
+        设置解析json格式元数据的检验规则列表, 为空表示无检查规则
+        :param parser:
+        :return:
+        """
+        return []
+
+    def init_qa_metadata_bus_json_list(self, parser: CMetaDataParser) -> list:
+        """
+        设置解析json格式业务元数据的检验规则列表, 为空表示无检查规则
+        :param parser:
+        :return:
+        """
+        return []

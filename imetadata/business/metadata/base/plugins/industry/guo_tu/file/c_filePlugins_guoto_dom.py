@@ -73,3 +73,11 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
                     self.Name_Message: '业务元数据[{0}]存在'.format(self.metadata_bus_src_filename_with_path)
                 }
             )
+
+    def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
+        """
+        设置解析json格式元数据的检验规则列表, 为空表示无检查规则
+        :param parser:
+        :return:
+        """
+        return []

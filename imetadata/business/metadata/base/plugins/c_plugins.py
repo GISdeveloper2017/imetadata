@@ -423,6 +423,22 @@ class CPlugins(CResource):
         """
         return []
 
+    def default_qa_metadata_json_list_raster(self, object_name: str) -> list:
+        """
+        默认的影像实体元数据质检
+        :param object_name:
+        :return:
+        """
+        return []
+
+    def default_qa_metadata_json_list_vector(self, object_name: str) -> list:
+        """
+        默认的矢量实体元数据质检
+        :param object_name:
+        :return:
+        """
+        return []
+
     def parser_metadata_time_after_qa(self, parser) -> str:
         """
         继承本方法, 对详细的时间元数据信息进行处理
