@@ -70,7 +70,7 @@ class CXml:
         """
         self.__xml_root_node__ = etree.Element(root_element_name)
         self.__xml_tree__ = etree.ElementTree(self.__xml_root_node__)
-        return self.__xml_root_node_
+        return self.__xml_root_node__
 
     def save_file(self, filename, encoding=Encoding_UTF8):
         """

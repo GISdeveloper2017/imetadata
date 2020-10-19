@@ -10,59 +10,6 @@ from imetadata.base.c_xml import CXml
 
 
 class CAudit(CResource):
-    @classmethod
-    def __a_check_file_size__(cls, result_template: dict, file_name_with_path: str, size_min: int,
-                              size_max: int) -> list:
-        """
-        根据规则, 验证文件大小的合法性
-        :param result_template 检查结果的模板
-        :param file_name_with_path: 文件名
-        :param size_min: 最小要求, -1表示忽略比较
-        :param size_max: 最大要求, -1表示忽略比较
-        :return:
-        """
-        result_dict = result_template
-
-        file_size = CFile.file_size(file_name_with_path)
-
-        if size_min != -1 and size_min != -1:
-            if size_min <= file_size <= size_max:
-                result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]在指定的[{2}-{3}]范围内, 符合要求!'.format(
-                    CFile.file_name(file_name_with_path),
-                    file_size, size_min,
-                    size_max)
-                result_dict[cls.Name_Result] = cls.QA_Result_Pass
-            else:
-                result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]在指定的[{2}-{3}]范围外, 请检查!'.format(
-                    CFile.file_name(file_name_with_path),
-                    file_size, size_min,
-                    size_max)
-        elif size_min != -1:
-            if size_min <= file_size:
-                result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]大于最小值[{2}], 符合要求!'.format(
-                    CFile.file_name(file_name_with_path),
-                    file_size, size_min)
-                result_dict[cls.Name_Result] = cls.QA_Result_Pass
-            else:
-                result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]低于最小值[{2}], 请检查!'.format(
-                    CFile.file_name(file_name_with_path), file_size,
-                    size_min)
-        elif size_max != -1:
-            if size_max >= file_size:
-                result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]低于最大值[{2}], 符合要求!'.format(
-                    CFile.file_name(file_name_with_path),
-                    file_size, size_max)
-                result_dict[cls.Name_Result] = cls.QA_Result_Pass
-            else:
-                result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]超过最大值[{2}], 请检查!'.format(
-                    CFile.file_name(file_name_with_path),
-                    file_size, size_max)
-        else:
-            result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]未给定限定范围, 默认符合要求!'.format(
-                CFile.file_name(file_name_with_path), file_size)
-            result_dict[cls.Name_Result] = cls.QA_Result_Pass
-
-        return result_dict
 
     @classmethod
     def __a_check_file__(cls, result_template: dict, file_name_with_path: str, qa_items: dict) -> list:
@@ -81,44 +28,20 @@ class CAudit(CResource):
             cls.__a_check_file_size__(
                 result_template,
                 file_name_with_path,
-                CUtils.dict_value_by_name(qa_items, cls.Name_Min, -1),
-                CUtils.dict_value_by_name(qa_items, cls.Name_Max, -1)
+                CJson.dict_attr_by_path(qa_items, '{0}.{1}'.format(cls.Name_Size, cls.Name_Min), -1),
+                CJson.dict_attr_by_path(qa_items, '{0}.{1}'.format(cls.Name_Size, cls.Name_Max), -1)
+            )
+        )
+
+        result_list.append(
+            cls.__a_check_file_format__(
+                result_template,
+                file_name_with_path,
+                CJson.dict_attr_by_path(qa_items, cls.Name_Format, None)
             )
         )
 
         return result_list
-
-    @classmethod
-    def __a_check_value_in_list__(cls, result_template: dict, value, title_prefix, value_list: list):
-        """
-        根据规则, 验证值的合法性
-        注意: 值有可能为None!
-        todo 负责人 赵宇飞 这里仅仅对值进行了字典检验, 请添加其他检验, 比如大小判断, 数值类型判断, 长度检验等内容
-        :param result_template: 检查结果的模板
-        :param value: 待检验的值, 可能为None
-        :param qa_items: 检查项目, keywords
-        :return:
-        """
-        result_dict = result_template
-        if CUtils.list_count(value_list, value) > 0:
-            result_dict[cls.Name_Message] = '{0}的值在指定列表中, 符合要求!'.format(title_prefix)
-            result_dict[cls.Name_Result] = cls.QA_Result_Pass
-        else:
-            result_dict[cls.Name_Message] = '{0}的值[{1}], 不在指定列表中, 请检查修正!'.format(title_prefix, value)
-
-        return result_dict
-
-    @classmethod
-    def __a_check_value_datatype__(cls, result_template, value, title_prefix, value_type):
-        """
-        TODO 王学谦 对字段值根据字段类型进行检验（正整数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
-        :param result_template: 检查结果的模板
-        :param value: 待检验的值, 可能为None
-        :param title_prefix:
-        :param value_type: 类型（正整数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
-        :return:
-        """
-        pass
 
     @classmethod
     def __a_check_value__(cls, result_template: dict, value, title_prefix, qa_items: dict) -> list:
@@ -133,13 +56,27 @@ class CAudit(CResource):
         """
         result_list = list()
 
-        value_list = CUtils.dict_value_by_name(qa_items, cls.Name_List, None)
-        if value_list is not None:
-            result_list.append(cls.__a_check_value_in_list__(result_template, value, title_prefix, value_list))
+        value_not_null = CUtils.dict_value_by_name(qa_items, cls.Name_NotNull, None)
+        if value_not_null is not None:
+            result_list.append(cls.__a_check_value_not_null__(result_template, value, title_prefix))
 
-        value_type = CUtils.dict_value_by_name(qa_items, cls.Name_DataType, None)
-        if value_type is not None:
-            result_list.append(cls.__a_check_value_datatype__(result_template, value, title_prefix, value_type))
+            if not CUtils.equal_ignore_case(value, ''):
+                value_type = CUtils.dict_value_by_name(qa_items, cls.Name_DataType, None)
+                if value_type is not None:
+                    result_list.append(cls.__a_check_value_datatype__(result_template, value, title_prefix, value_type))
+
+                value_width = CUtils.dict_value_by_name(qa_items, cls.Name_Width, None)
+                if value_type is not None:
+                    result_list.append(cls.__a_check_value_width__(result_template, value, title_prefix, value_width))
+
+                value_list = CUtils.dict_value_by_name(qa_items, cls.Name_List, None)
+                if value_list is not None:
+                    result_list.append(cls.__a_check_value_in_list__(result_template, value, title_prefix, value_list))
+
+                value_sql = CUtils.dict_value_by_name(qa_items, cls.Name_SQL, None)
+                if value_type is not None:
+                    value_sql_db_server_id = CUtils.dict_value_by_name(qa_items, cls.Name_DataBase, cls.DB_Server_ID_Default)
+                    result_list.append(cls.__a_check_value_in_sql__(result_template, value, title_prefix, value_sql_db_server_id, value_sql))
 
         return result_list
 
@@ -238,3 +175,146 @@ class CAudit(CResource):
         else:
             result_dict[cls.Name_Message] = 'Json对象的节点[{0}]不存在, 请检查修正!'.format(xpath)
             return [result_dict]
+
+    @classmethod
+    def __a_check_value_width__(cls, result_template: dict, value, title_prefix, value_width):
+        """
+        根据规则, 验证值的合法性
+        注意: 值有可能为None!
+        todo 负责人 赵宇飞 这里仅仅对值进行了字典检验, 请添加其他检验, 比如大小判断, 数值类型判断, 长度检验等内容
+        :param result_template: 检查结果的模板
+        :param value: 待检验的值, 可能为None
+        :param title_prefix: 提示文本的前缀
+        :param value_width: 检查value的宽度
+        :return:
+        """
+        pass
+
+    @classmethod
+    def __a_check_value_in_list__(cls, result_template: dict, value, title_prefix, value_list: list):
+        """
+        根据规则, 验证值的合法性
+        注意: 值有可能为None!
+        todo 负责人 赵宇飞 这里仅仅对值进行了字典检验, 请添加其他检验, 比如大小判断, 数值类型判断, 长度检验等内容
+        :param result_template: 检查结果的模板
+        :param value: 待检验的值, 可能为None
+        :param title_prefix: 提示文本的前缀
+        :param value_list: 检查value的必须存在于指定的列表
+        :return:
+        """
+        result_dict = result_template
+        if CUtils.list_count(value_list, value) > 0:
+            result_dict[cls.Name_Message] = '{0}的值在指定列表中, 符合要求!'.format(title_prefix)
+            result_dict[cls.Name_Result] = cls.QA_Result_Pass
+        else:
+            result_dict[cls.Name_Message] = '{0}的值[{1}], 不在指定列表中, 请检查修正!'.format(title_prefix, value)
+
+        return result_dict
+
+    @classmethod
+    def __a_check_value_in_sql__(cls, result_template: dict, value, title_prefix, db_server_id: str, sql: str):
+        """
+        根据规则, 验证值的合法性
+        注意: 值有可能为None!
+        todo 负责人 赵宇飞 这里判断值在指定的sql查询必须有结果
+        :param result_template: 检查结果的模板
+        :param value: 待检验的值, 可能为None
+        :param title_prefix: 提示文本的前缀
+        :param db_server_id: 检查value的必须存在于指定的数据库中
+        :param sql: 检查value的必须存在于指定的sql中, sql中只有一个参数, 注意
+        :return:
+        """
+        pass
+
+    @classmethod
+    def __a_check_value_datatype__(cls, result_template: dict, value, title_prefix, value_type):
+        """
+        TODO 王学谦 对字段值根据字段类型进行检验（正整数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
+        :param result_template: 检查结果的模板
+        :param value: 待检验的值, 可能为None
+        :param title_prefix:
+        :param value_type: 类型（正整数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
+        :return:
+        """
+        pass
+
+    @classmethod
+    def __a_check_value_not_null__(cls, result_template: dict, value, title_prefix):
+        pass
+
+    @classmethod
+    def __a_check_file_format__(cls, result_template: dict, file_name_with_path: str, file_format: str):
+        result_dict = result_template
+
+        if CUtils.equal_ignore_case(file_format, cls.MetaDataFormat_XML):
+            try:
+                CXml().load_file(file_name_with_path)
+                result_dict[cls.Name_Message] = '文件[{0}]为合法的XML, 符合要求!'.format(
+                    CFile.file_name(file_name_with_path))
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            except:
+                result_dict[cls.Name_Message] = '文件[{0}]不是合法的XML, 请检查!'.format(
+                    CFile.file_name(file_name_with_path))
+        elif CUtils.equal_ignore_case(file_format, cls.MetaDataFormat_Json):
+            try:
+                CJson().load_file(file_name_with_path)
+                result_dict[cls.Name_Message] = '文件[{0}]为合法的JSON, 符合要求!'.format(
+                    CFile.file_name(file_name_with_path))
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            except:
+                result_dict[cls.Name_Message] = '文件[{0}]不是合法的JSON, 请检查!'.format(
+                    CFile.file_name(file_name_with_path))
+
+    @classmethod
+    def __a_check_file_size__(cls, result_template: dict, file_name_with_path: str, size_min: int,
+                              size_max: int) -> list:
+        """
+        根据规则, 验证文件大小的合法性
+        :param result_template 检查结果的模板
+        :param file_name_with_path: 文件名
+        :param size_min: 最小要求, -1表示忽略比较
+        :param size_max: 最大要求, -1表示忽略比较
+        :return:
+        """
+        result_dict = result_template
+
+        file_size = CFile.file_size(file_name_with_path)
+
+        if size_min != -1 and size_min != -1:
+            if size_min <= file_size <= size_max:
+                result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]在指定的[{2}-{3}]范围内, 符合要求!'.format(
+                    CFile.file_name(file_name_with_path),
+                    file_size, size_min,
+                    size_max)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]在指定的[{2}-{3}]范围外, 请检查!'.format(
+                    CFile.file_name(file_name_with_path),
+                    file_size, size_min,
+                    size_max)
+        elif size_min != -1:
+            if size_min <= file_size:
+                result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]大于最小值[{2}], 符合要求!'.format(
+                    CFile.file_name(file_name_with_path),
+                    file_size, size_min)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]低于最小值[{2}], 请检查!'.format(
+                    CFile.file_name(file_name_with_path), file_size,
+                    size_min)
+        elif size_max != -1:
+            if size_max >= file_size:
+                result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]低于最大值[{2}], 符合要求!'.format(
+                    CFile.file_name(file_name_with_path),
+                    file_size, size_max)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]超过最大值[{2}], 请检查!'.format(
+                    CFile.file_name(file_name_with_path),
+                    file_size, size_max)
+        else:
+            result_dict[cls.Name_Message] = '文件[{0}]的大小[{1}]未给定限定范围, 默认符合要求!'.format(
+                CFile.file_name(file_name_with_path), file_size)
+            result_dict[cls.Name_Result] = cls.QA_Result_Pass
+
+        return result_dict

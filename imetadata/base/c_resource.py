@@ -144,6 +144,9 @@ class CResource:
     Name_Type = 'type'
 
     Name_DataType = 'datatype'
+    Name_Width = 'width'
+    Name_SQL = 'sql'
+    Name_NotNull = 'notnull'
 
     Name_XPath = 'xpath'
     Name_Attr_Name = 'attr_name'
