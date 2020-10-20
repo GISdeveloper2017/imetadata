@@ -113,7 +113,7 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             }
         ]
 
-    def get_bus_metadata_filename_by_file(self) -> str:
+    def get_metadata_bus_filename_by_file(self) -> str:
         """
         卫星数据解压后, 哪个文件是业务元数据?
         :return:

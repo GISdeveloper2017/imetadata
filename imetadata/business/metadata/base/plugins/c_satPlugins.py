@@ -147,7 +147,7 @@ class CSatPlugins(CPlugins):
         return self.file_info.__file_main_name__
 
     @abstractmethod
-    def get_bus_metadata_filename_by_file(self) -> str:
+    def get_metadata_bus_filename_by_file(self) -> str:
         """
         卫星数据解压后, 哪个文件是业务元数据?
         :return:
@@ -174,7 +174,7 @@ class CSatPlugins(CPlugins):
         :param parser:
         :return:
         """
-        if super().metadata_bus_src_filename_with_path is None:
+        if self.metadata_bus_src_filename_with_path is None:
             parser.metadata.set_metadata_bus(self.DB_True, '', self.MetaDataFormat_Text, '')
             return CResult.merge_result(self.Success, '本卫星数据无业务元数据, 无须解析!')
 
@@ -184,8 +184,8 @@ class CSatPlugins(CPlugins):
             parser.file_info,
             parser.file_content,
             parser.metadata,
-            super().metadata_bus_transformer_type,
-            super().metadata_bus_src_filename_with_path
+            self.metadata_bus_transformer_type,
+            self.metadata_bus_src_filename_with_path
         )
         return transformer.process()
 
@@ -196,8 +196,8 @@ class CSatPlugins(CPlugins):
         :return:
         """
         super().qa_file_custom(parser)
-        super().metadata_bus_transformer_type = self.Transformer_XML
-        super().metadata_bus_src_filename_with_path = self.get_bus_metadata_filename_by_file()
+        self.metadata_bus_transformer_type = self.Transformer_XML
+        self.metadata_bus_src_filename_with_path = self.get_metadata_bus_filename_by_file()
         if not CFile.file_or_path_exist(self.metadata_bus_src_filename_with_path):
             parser.metadata.quality.append_total_quality(
                 {

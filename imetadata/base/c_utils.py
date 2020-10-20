@@ -27,7 +27,7 @@ class CUtils(CResource):
 
     @classmethod
     def equal_ignore_case(cls, str1: str, str2: str) -> bool:
-        return str1.strip().lower() == str2.strip().lower()
+        return cls.any_2_str(str1).strip().lower() == cls.any_2_str(str2).strip().lower()
 
     @classmethod
     def quote(cls, str1: str) -> str:

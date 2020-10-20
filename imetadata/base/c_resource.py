@@ -11,6 +11,14 @@ class CResource:
     Spatial_MetaData_Type_Wgs84_BBox = 22
     Spatial_MetaData_Type_Wgs84_Geom = 23
 
+    Spatial_MetaData_Type_Prj_Wkt = 24
+    Spatial_MetaData_Type_Prj_Proj4 = 25
+    Spatial_MetaData_Type_Prj_Project = 26
+    Spatial_MetaData_Type_Prj_Coordinate = 27
+    Spatial_MetaData_Type_Prj_Degree = 28
+    Spatial_MetaData_Type_Prj_Zone = 29
+    Spatial_MetaData_Type_Prj_Source = 30
+
     View_MetaData_Type_Browse = 11
     View_MetaData_Type_Thumb = 12
 

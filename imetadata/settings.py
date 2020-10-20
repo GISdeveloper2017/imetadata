@@ -21,11 +21,11 @@ application = {
          'host': '127.0.0.1', 'port': '5432', 'database': 'test', 'username': 'postgres', 'password': 'postgres'}
     ],
     'directory': {
-        'work': ''
+        'work': '/Users/wangxiya/Documents/交换/9.数管/9.工作目录'
     },
     'metadata': {
         'directory': {
-            'view': ''
+            'view': '/Users/wangxiya/Documents/交换/9.数管/0.编目'
         },
         'plugins': {
             'dir': [

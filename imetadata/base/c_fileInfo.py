@@ -12,6 +12,8 @@ class CFileInfo(CResource):
     __file_name_without_path__: str
 
     __file_main_name__: str
+    __file_main_name_with_full_path__: str
+
     __file_ext__: str
     __file_path__: str
 
@@ -30,6 +32,8 @@ class CFileInfo(CResource):
         self.__file_main_name__ = CFile.file_main_name(self.__file_name_with_full_path__)
         self.__file_ext__ = CFile.file_ext(self.__file_name_with_full_path__)
         self.__file_path__ = CFile.file_path(self.__file_name_with_full_path__)
+
+        self.__file_main_name_with_full_path__ = CFile.join_file(self.__file_path__, self.__file_main_name__)
 
         self.__file_type__ = file_type
         self.__file_existed__ = CFile.file_or_path_exist(self.__file_name_with_full_path__)

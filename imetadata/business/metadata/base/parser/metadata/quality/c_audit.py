@@ -324,6 +324,12 @@ class CAudit(CResource):
             except:
                 result_dict[cls.Name_Message] = '文件[{0}]不是合法的JSON, 请检查!'.format(
                     CFile.file_name(file_name_with_path))
+        else:
+            result_dict[cls.Name_Message] = '文件[{0}]未给定格式要求, 默认符合要求!'.format(
+                CFile.file_name(file_name_with_path))
+            result_dict[cls.Name_Result] = cls.QA_Result_Pass
+
+        return result_dict
 
     @classmethod
     def __a_check_file_size__(cls, result_template: dict, file_name_with_path: str, size_min: int,

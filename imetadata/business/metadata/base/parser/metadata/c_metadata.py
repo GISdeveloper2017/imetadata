@@ -130,6 +130,20 @@ class CMetaData(CResource):
             self.__metadata_spatial__.wgs84_bbox = spatial_metadata
         elif spatial_metadata_type == CResource.Spatial_MetaData_Type_Wgs84_Geom:
             self.__metadata_spatial__.wgs84_geom = spatial_metadata
+        elif spatial_metadata_type == CResource.Spatial_MetaData_Type_Prj_Wkt:
+            self.__metadata_spatial__.prj_wkt = spatial_metadata
+        elif spatial_metadata_type == CResource.Spatial_MetaData_Type_Prj_Proj4:
+            self.__metadata_spatial__.prj_proj4 = spatial_metadata
+        elif spatial_metadata_type == CResource.Spatial_MetaData_Type_Prj_Project:
+            self.__metadata_spatial__.prj_project = spatial_metadata
+        elif spatial_metadata_type == CResource.Spatial_MetaData_Type_Prj_Coordinate:
+            self.__metadata_spatial__.prj_coordinate = spatial_metadata
+        elif spatial_metadata_type == CResource.Spatial_MetaData_Type_Prj_Degree:
+            self.__metadata_spatial__.prj_degree = spatial_metadata
+        elif spatial_metadata_type == CResource.Spatial_MetaData_Type_Prj_Zone:
+            self.__metadata_spatial__.prj_zone = spatial_metadata
+        elif spatial_metadata_type == CResource.Spatial_MetaData_Type_Prj_Source:
+            self.__metadata_spatial__.prj_source = spatial_metadata
         else:
             pass
 

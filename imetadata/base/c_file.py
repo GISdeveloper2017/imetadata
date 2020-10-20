@@ -176,9 +176,10 @@ class CFile:
             f.close()
 
     @classmethod
-    def __file_or_dir_fullname_of_path_recurse(cls, result_file_fullname_list: [], path: str,
-                                               is_recurse_subpath: bool = False, match_str: str = '*',
-                                               match_type: int = MatchType_Common):
+    def __file_or_dir_fullname_of_path_recurse(
+            cls, result_file_fullname_list: [], path: str,
+            is_recurse_subpath: bool = False, match_str: str = '*',
+            match_type: int = MatchType_Common):
         """
             私有方法，递归路径获取路径下的所有文件和文件夹的全文件名，仅供内部函数file_or_dir_fullname_of_path调用
         @param result_file_fullname_list:
@@ -213,6 +214,28 @@ class CFile:
             cls.__file_or_dir_fullname_of_path_recurse(list_file_fullname, path, is_recurse_subpath, match_str,
                                                        match_type)
         return list_file_fullname
+
+    @classmethod
+    def copy_file_to(cls, file_name_with_path: str, target_path: str):
+        if not os.path.exists(target_path):
+            os.makedirs(target_path)
+
+        if cls.file_or_path_exist(file_name_with_path):
+            shutil.copy(file_name_with_path, target_path)
+
+    @classmethod
+    def copy_path_to(cls, source_path: str, target_path: str):
+        if not os.path.exists(target_path):
+            os.makedirs(target_path)
+
+        if cls.file_or_path_exist(source_path):
+            # root 所指的是当前正在遍历的这个文件夹的本身的地址
+            # dirs 是一个 list，内容是该文件夹中所有的目录的名字(不包括子目录)
+            # files 同样是 list, 内容是该文件夹中所有的文件(不包括子目录)
+            for root, dirs, files in os.walk(source_path):
+                for file in files:
+                    src_file = os.path.join(root, file)
+                    shutil.copy(src_file, target_path)
 
 
 if __name__ == '__main__':
