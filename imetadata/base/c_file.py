@@ -6,6 +6,7 @@ from __future__ import absolute_import
 import os
 import shutil
 import time
+import chardet
 from fnmatch import fnmatch
 
 from sortedcontainers import SortedList
@@ -164,14 +165,49 @@ class CFile:
         return subpath_list.count(sub_path.lower()) > 0
 
     @classmethod
+    def identify_encoding(cls, text):
+        """
+        TODO 王学谦 编码格式识别
+        :param text:需要转换的文本
+        :return true_text:转换后的编码格式
+        """
+        identify_result = chardet.detect(text)
+        identify_encoding = identify_result['encoding']
+        # identify_probability = identify_result['confidence'] # 成功概率
+        # 由于windows系统的编码有可能是Windows-1254,打印出来后还是乱码,所以不直接用UTF-8编码
+        if CUtils.equal_ignore_case(identify_encoding, 'Windows-1254'):
+            identify_encoding = 'UTF-8'
+        return identify_encoding
+
+    @classmethod
     def file_2_str(cls, file_name_with_path: str):
         if not cls.file_or_path_exist(file_name_with_path):
             return ''
 
-        f = open(file_name_with_path, "r")
+        f = open(file_name_with_path, "rb")
         try:
             txt = f.read()
-            return txt
+            encoding = cls.identify_encoding(txt[:1000])
+            true_txt = txt.decode(encoding, "ignore")
+            return true_txt
+        finally:
+            f.close()
+
+    @classmethod
+    def file_2_list(cls, file_name_with_path: str):
+        if not cls.file_or_path_exist(file_name_with_path):
+            return ''
+
+        f = open(file_name_with_path, "rb")
+        try:
+            txt_tem = f.read(1000)
+            encoding = CFile.identify_encoding(txt_tem)
+            f.seek(0)
+            txt_list = f.readlines()
+            for index, txt in enumerate(txt_list):
+                txt = txt.decode(encoding, "ignore")
+                txt_list[index] = txt
+            return txt_list
         finally:
             f.close()
 
