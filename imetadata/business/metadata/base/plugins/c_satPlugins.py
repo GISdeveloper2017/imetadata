@@ -7,6 +7,7 @@ from abc import abstractmethod
 from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.content.c_virtualContent_Dir import CVirtualContentDir
 from imetadata.business.metadata.base.content.c_virtualContent_Package import CVirtualContentPackage
 from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerCommon import CMDTransformerCommon
