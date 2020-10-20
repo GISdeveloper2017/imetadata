@@ -3,10 +3,10 @@
 # @Author : 赵宇飞
 # @File : plugins_1040_third_survey_block.py
 from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_third_survey import \
-    c_filePlugins_guoto_third_survey
+    CFilePlugins_GUOTU_Third_Survey
 
 
-class plugins_1040_third_survey_block(c_filePlugins_guoto_third_survey):
+class plugins_1040_third_survey_block(CFilePlugins_GUOTU_Third_Survey):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = '三调影像'

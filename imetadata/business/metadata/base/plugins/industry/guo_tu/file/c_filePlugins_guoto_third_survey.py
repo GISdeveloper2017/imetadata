@@ -6,7 +6,7 @@ from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CM
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
 
 
-class c_filePlugins_guoto_third_survey(CFilePlugins_GUOTU):
+class CFilePlugins_GUOTU_Third_Survey(CFilePlugins_GUOTU):
 
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
