@@ -6,11 +6,15 @@
 
 from osgeo import gdal, osr
 import math
+import time
+import psutil
+from imetadata.base.c_sys import CSys
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
 from imetadata.tool.mdreader.c_mdreader import CMDReader
+from multiprocessing import Process
 
 
 class CRasterMDReader(CMDReader):
@@ -26,14 +30,15 @@ class CRasterMDReader(CMDReader):
         # print('你的任务:  将文件{0}的元数据信息, 提取出来, 存储到文件{1}中'.format(self.__file_name_with_path__, file_name_with_path))
         raster_ds = None
         json_raster = None
+
+        result_success = abs(self.Success)  # 成功的标记，元数据json中的为1，而系统常量为-1，暂采用绝对值
+        gdal.AllRegister()
+        gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
+
+        # 定义栅格数据的json对像
+        json_raster = CJson()
+
         try:
-            result_success = abs(self.Success)  # 成功的标记，元数据json中的为1，而系统常量为-1，暂采用绝对值
-            gdal.AllRegister()
-            gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
-
-            # 定义栅格数据的json对像
-            json_raster = CJson()
-
             # 打开影像数据集
             raster_ds = gdal.Open(self.__file_name_with_path__, gdal.GA_ReadOnly)
             if raster_ds is None:
@@ -236,6 +241,10 @@ class CRasterMDReader(CMDReader):
             band = None
             json_raster.set_value_of_name('pyramid', pyramid)
 
+            # 原始gdal_info
+            # json_info = gdal.Info(raster_ds, format='json')
+            # json_raster.set_value_of_name('info', json_info)
+
             # 定义result子节点
             json_raster.set_value_of_name('result', result_success)
             # 判断路径是否存在，不存在则创建
@@ -259,6 +268,14 @@ class CRasterMDReader(CMDReader):
             del raster_ds
 
     def transform_to_WGS84(self, geo_transform: list, image_size_x: int, image_size_y: int, projection) -> CJson:
+        """
+        wgs84坐标系转换结果（wgs84节点）
+        :param geo_transform:
+        :param image_size_x:
+        :param image_size_y:
+        :param projection:
+        :return:
+        """
         json_wgs84 = CJson()
         spatial_ref = osr.SpatialReference()
         spatial_ref.SetWellKnownGeogCS('WGS84')
@@ -272,6 +289,8 @@ class CRasterMDReader(CMDReader):
         json_wgs84_coordinate.set_value_of_name('esri', wgs84_esri)
         json_wgs84.set_value_of_name('coordinate', json_wgs84_coordinate.__json_obj__)
 
+        source_projection = osr.SpatialReference(wkt=projection)
+        source = source_projection.GetAttrValue('DATUM', 0)
         point_left_top_x = geo_transform[0]
         point_left_top_y = geo_transform[3]
         point_right_bottom_x = geo_transform[0] + image_size_x * geo_transform[1] + image_size_y * geo_transform[2]
@@ -283,22 +302,25 @@ class CRasterMDReader(CMDReader):
             prosrs.ImportFromWkt(projection)
             geosrs = prosrs.CloneGeogCS()
             ct = osr.CreateCoordinateTransformation(prosrs, geosrs)
-            rb = ct.TransformPoint(point_right_bottom_x, point_right_bottom_y)
-            lu = ct.TransformPoint(point_left_top_x, point_left_top_y)
-            json_bounding = CJson()
-            json_bounding.set_value_of_name('left', lu[0])
-            json_bounding.set_value_of_name('top', lu[1])
-            json_bounding.set_value_of_name('right', rb[0])
-            json_bounding.set_value_of_name('bottom', rb[1])
-            json_wgs84.set_value_of_name('boundingbox', json_bounding.__json_obj__)
-            json_wgs84.set_value_of_name('msg', 'wgs84转换成功！')
+            if ct is not None:
+                rb = ct.TransformPoint(point_right_bottom_x, point_right_bottom_y)
+                lu = ct.TransformPoint(point_left_top_x, point_left_top_y)
+                json_bounding = CJson()
+                json_bounding.set_value_of_name('left', lu[0])
+                json_bounding.set_value_of_name('top', lu[1])
+                json_bounding.set_value_of_name('right', rb[0])
+                json_bounding.set_value_of_name('bottom', rb[1])
+                json_wgs84.set_value_of_name('boundingbox', json_bounding.__json_obj__)
+                json_wgs84.set_value_of_name('msg', 'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换成功！'.format(source))
+            else:
+                json_wgs84.set_value_of_name('msg', 'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(source))
         else:
-            json_wgs84.set_value_of_name('msg', 'wgs84转换失败！')
+            json_wgs84.set_value_of_name('msg', 'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：文件不存在coordinate信息！'.format(source))
         return json_wgs84
 
     def get_other_metadata_by_raster(self, other_metadata: dict) -> CJson:
         """
-        获取栅格文件的sub、geo、rpc元数据信息
+        获取栅格文件的subdatasets、geolocation、rpc元数据信息
         :param other_metadata:
         :return:
         """
@@ -314,7 +336,7 @@ class CRasterMDReader(CMDReader):
 
     def get_gcp_by_raster(self, gcp_count: int, gcp_projection, raster_ds):
         """
-        获取栅格文件的GCPs信息
+        获取栅格文件的GCPs信息（gcp_projection、gcps节点）
         :param gcp_count:
         :param gcp_projection:
         :param raster_ds:
@@ -348,7 +370,7 @@ class CRasterMDReader(CMDReader):
 
     def get_corner_by_raster(self, image_size_x: int, image_size_y: int) -> CJson:
         """
-        处理栅格文件的角坐标信息
+        处理栅格文件的角坐标信息（corner_coordinate节点）
         :param image_size_x:
         :param image_size_y:
         :return:
@@ -378,7 +400,7 @@ class CRasterMDReader(CMDReader):
 
     def get_geotramsform_by_raster(self, geo_transform: tuple, image_size_x: int, image_size_y: int):
         """
-        将仿射变换信息写入json对象
+        将仿射变换信息写入json对象（origin、pixelsize、boundingbox节点）
         :param geo_transform:
         :param image_size_x:
         :param image_size_y:
@@ -425,7 +447,7 @@ class CRasterMDReader(CMDReader):
 
     def get_bands_by_raster(self, band_count: int, raster_ds) -> list:
         """
-        获取波段信息
+        获取波段信息（bands节点）
         :param band_count:
         :param raster_ds:
         :return:
@@ -538,21 +560,21 @@ class CRasterMDReader(CMDReader):
                 json_band.set_value_of_name('image_structure_metadata', image_metadata)
 
             color_table = band.GetRasterColorTable()
-            # print(dir(color_table))
             if color_interp == 'Palette' and color_table is not None:
                 json_color_table = CJson()
                 palette_interpretation = gdal.GetPaletteInterpretationName(color_table.GetPaletteInterpretation())
                 entry_count = color_table.GetCount()
                 json_color_table.set_value_of_name('palette_interpretation_name', palette_interpretation)
                 json_color_table.set_value_of_name('entry_count', entry_count)
-
                 color_entry = []
                 for i in range(entry_count):
                     entry = color_table.GetColorEntry(i)
-                    entry_RGB = color_table.GetColorEntryAsRGB(i, entry)
-                    # print(dir(entry_RGB))
+                    # entry_RGB = color_table.GetColorEntryAsRGB(i, entry)      有必要吗？这句可以删掉？
                     json_color_entry = CJson()
-                    json_color_entry.set_value_of_name('color', entry_RGB)
+                    json_color_entry.set_value_of_name('color1', entry[0])
+                    json_color_entry.set_value_of_name('color2', entry[1])
+                    json_color_entry.set_value_of_name('color3', entry[2])
+                    json_color_entry.set_value_of_name('color4', entry[3])
                     color_entry.append(json_color_entry.__json_obj__)
                 json_color_table.set_value_of_name('entrys', color_entry)
                 json_band.set_value_of_name('color_table', json_color_table.__json_obj__)
@@ -561,12 +583,22 @@ class CRasterMDReader(CMDReader):
             band = None
         return band_list
 
+    def get_Memory_Size(self, pid):
+        """
+        根据进程号来获取进程的内存大小 MB
+        @param pid:
+        @return:
+        """
+        process = psutil.Process(pid)
+        memInfo = process.memory_full_info()
+        return memInfo.uss / 1024 / 1024
+
 
 if __name__ == '__main__':
     # CRasterMDReader('/aa/bb/cc.img').get_metadata_2_file('/aa/bb/cc.json')
     # CRasterMDReader(r'D:\App\test\镶嵌影像\石嘴山市-3.img').get_metadata_2_file(r'D:\test\raster_test\石嘴山市-3.json')
-    CRasterMDReader(r'D:\test\wsiearth-tif\wsiearth.tif').get_metadata_2_file(
-        r'D:\test\raster_test\wsiearth.json')
+    # CRasterMDReader(r'D:\test\wsiearth-tif\wsiearth.tif').get_metadata_2_file(
+    #     r'D:\test\raster_test\wsiearth.json')
     # CRasterMDReader(r'D:\test\DOM\广西影像数据\2772.0-509.0\2772.0-509.0.img').get_metadata_2_file(
     #     r'D:\test\raster_test\2772.0-509.0-1.json')
     # CRasterMDReader(r'D:\test\DOM\湖北单个成果数据\H49G001026\H49G001026.tif').get_metadata_2_file(
@@ -580,3 +612,29 @@ if __name__ == '__main__':
     #     r'D:\test\raster_test\GF1_PMS1_E65.2_N26.6_20130927_L1A0000090284-PAN1.json')
     # CRasterMDReader(r'D:\test\卫星数据\一目录单数据\GF1_PMS1_E85.9_N44.1_20140821_L1A0000311315-PAN1.tiff').get_metadata_2_file(
     #     r'D:\test\raster_test\GF1_PMS1_E85.9_N44.1_20140821_L1A0000311315-PAN1_dem.json')
+
+    # 循环测试内存占用情况
+    # process_id = CSys.get_execute_process_id()
+    # print("process_id:{0}".format(process_id))
+    # pRasterMDReader = CRasterMDReader(r'D:\test\wsiearth-tif\wsiearth.tif')
+    # # pRasterMDReader = CRasterMDReader(r'D:\App\test\镶嵌影像\石嘴山市-3.img')
+    # for i in range(1500):
+    #     meta_file = r'D:\app1\cc{0}.json'.format(str(i))
+    #     pRasterMDReader.get_metadata_2_file(meta_file)
+    #     mem_size = pRasterMDReader.get_Memory_Size(process_id)
+    #     print("完成第{0}个数据！,python.exe【process_id:{1}】的内存大小:{2}MB".format(i, process_id, mem_size))
+
+    # 进程调用模式
+    start_time = time.time()
+    process_id = CSys.get_execute_process_id()
+    print("process_id:{0}".format(process_id))
+    out_metadata_file_fullname = CFile.join_file(r'D:\test\raster_test', 'wsiearth.json')
+    raster_mdreader = CRasterMDReader(r'D:\test\wsiearth-tif\wsiearth.tif')
+    p_one = Process(target=raster_mdreader.get_metadata_2_file, args=(out_metadata_file_fullname,))
+    p_one.start()
+    p_one.join()
+    mem_size = raster_mdreader.get_Memory_Size(process_id)
+    print("完成第{0}个数据！,python.exe【process_id:{1}】的内存大小:{2}MB".format(1, process_id, mem_size))
+    end_time = time.time()
+    print('time=%.4lfs'%(end_time-start_time))
+
