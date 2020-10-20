@@ -65,6 +65,20 @@ class CUtils(CResource):
             return str(obj)
 
     @classmethod
+    def int_2_format_str(cls, int_value: int, length: int) -> str:
+        rt_int_value = int_value
+        if rt_int_value is None:
+            rt_int_value = 1
+
+        str_value = cls.any_2_str(rt_int_value)
+        if len(str_value) >= length:
+            return str(str_value)
+        else:
+            count_zero = length - len(str_value)
+            str_zero = '0'*count_zero
+            return '{0}{1}'.format(str_zero, str_value)
+
+    @classmethod
     def text_match_re(cls, text, regex) -> bool:
         return re.search(regex, text) is not None
 
@@ -136,5 +150,6 @@ class CUtils(CResource):
 if __name__ == '__main__':
     # text_alpha = r'你/好 A\B\B C/中_国'
     # print(CUtils.split(text_alpha, ['/', '\\', ' ', '_', '-']))
-    check_text = '-12'
-    print(CUtils.text_is_numeric(check_text))
+    # check_text = '-12'
+    # print(CUtils.text_is_numeric(check_text))
+    print(CUtils.int_2_format_str(None, 2))

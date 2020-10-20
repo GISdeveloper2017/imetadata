@@ -220,3 +220,6 @@ class CResource:
     Transformer_XML = 'xml'
     Transformer_Json = 'json'
     Transformer_TXT = 'txt'
+
+    Seq_Type_AutoInc = 1
+    Seq_Type_Date_AutoInc = 2

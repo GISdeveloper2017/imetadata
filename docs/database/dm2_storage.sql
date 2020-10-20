@@ -569,3 +569,14 @@ create index idx_dm2_storage_object_def_name
 create index idx_dm2_storage_object_def_type
 	on dm2_storage_object_def (dsodtype);
 
+/*
+    2020-10-20
+    . 增加专用序列, 创建每日的数据批次
+*/
+
+create sequence sys_seq_autoinc increment by 1 minvalue 1 no maxvalue start with 1;
+create sequence sys_seq_date_autoinc increment by 1 minvalue 1 no maxvalue start with 1;
+
+delete from ro_global_config where gcfgid = 10001;
+insert into ro_global_config(gcfgid, gcfgcode, gcfgtitle, gcfgvalue, gcfgmemo)
+ values (10001, 'sys_seq_date_autoinc', '日期自增序列最后记录', current_date::text, null);

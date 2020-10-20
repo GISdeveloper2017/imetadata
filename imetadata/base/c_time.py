@@ -9,3 +9,7 @@ class CTime:
     @classmethod
     def now(cls):
         return datetime.datetime.now()
+
+    @classmethod
+    def today(cls):
+        return datetime.datetime.today()

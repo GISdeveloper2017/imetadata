@@ -262,3 +262,7 @@ class CDataBase(CResource):
     @abstractmethod
     def create_default_sql(self) -> CSql:
         pass
+
+    @abstractmethod
+    def seq_next_value(self, seq_type: int) -> str:
+        pass
