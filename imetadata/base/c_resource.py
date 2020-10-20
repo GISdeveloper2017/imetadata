@@ -232,13 +232,13 @@ class CResource:
     Seq_Type_AutoInc = 1
     Seq_Type_Date_AutoInc = 2
 
-    value_type_string = 'string'
-    value_type_date = 'date'
-    value_type_time = 'time'  # 小数
-
     Encoding_UTF8 = 'UTF-8'
     Encoding_GBK = 'GBK'
     Encoding_GBK2312 = 'GBK2312'
 
-    # value_type_decimal = 'decimal'  # 小数
-    # value_type_integer = 'integer'  # 整数
+    value_type_string = 'string' # 文本类型
+    value_type_date = 'date'  # 日期类型
+    value_type_time = 'time'  # 时间类型
+    value_type_decimal = 'decimal'  # 小数（包含负数）
+    value_type_integer = 'integer'  # 整数（包含负整数）
+    value_type_decimal_or_integer ='decimal_or_integer'  # 小数或整数（包含负数）

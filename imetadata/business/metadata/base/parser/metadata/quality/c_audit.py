@@ -281,6 +281,15 @@ class CAudit(CResource):
         elif CUtils.equal_ignore_case(value_type, cls.value_type_time):
             """待继续"""
             pass
+        elif CUtils.equal_ignore_case(value_type, cls.value_type_decimal):
+            """待继续"""
+            pass
+        elif CUtils.equal_ignore_case(value_type, cls.value_type_integer):
+            """待继续"""
+            pass
+        elif CUtils.equal_ignore_case(value_type, cls.value_type_decimal_or_integer):
+            """待继续"""
+            pass
 
         return result_dict
 
