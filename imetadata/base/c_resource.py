@@ -223,3 +223,9 @@ class CResource:
 
     Seq_Type_AutoInc = 1
     Seq_Type_Date_AutoInc = 2
+
+    value_type_string = 'string'
+    value_type_date = 'date'
+    value_type_time = 'time'  # 小数
+    #value_type_decimal = 'decimal'  # 小数
+    #value_type_integer = 'integer'  # 整数

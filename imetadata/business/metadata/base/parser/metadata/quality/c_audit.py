@@ -7,6 +7,7 @@ from imetadata.base.c_json import CJson
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
+from imetadata.database.c_factory import CFactory
 
 
 class CAudit(CResource):
@@ -75,8 +76,11 @@ class CAudit(CResource):
 
                 value_sql = CUtils.dict_value_by_name(qa_items, cls.Name_SQL, None)
                 if value_type is not None:
-                    value_sql_db_server_id = CUtils.dict_value_by_name(qa_items, cls.Name_DataBase, cls.DB_Server_ID_Default)
-                    result_list.append(cls.__a_check_value_in_sql__(result_template, value, title_prefix, value_sql_db_server_id, value_sql))
+                    value_sql_db_server_id = CUtils.dict_value_by_name(qa_items, cls.Name_DataBase,
+                                                                       cls.DB_Server_ID_Default)
+                    result_list.append(
+                        cls.__a_check_value_in_sql__(result_template, value, title_prefix, value_sql_db_server_id,
+                                                     value_sql))
 
         return result_list
 
@@ -188,7 +192,16 @@ class CAudit(CResource):
         :param value_width: 检查value的宽度
         :return:
         """
-        pass
+        result_dict = result_template
+        if len(value) == value_width:
+            result_dict[cls.Name_Message] = '{0}的值的宽度为{1}, 符合要求!'.format(title_prefix, value_width)
+            result_dict[cls.Name_Result] = cls.QA_Result_Pass
+        else:
+            result_dict[cls.Name_Message] = '{0}的值[{1}],宽度为[{2}]，不符合要求的宽度[{3}], 请检查修正!'.format(title_prefix,
+                                                                                               value, len(value),
+                                                                                               value_width)
+
+        return result_dict
 
     @classmethod
     def __a_check_value_in_list__(cls, result_template: dict, value, title_prefix, value_list: list):
@@ -224,23 +237,70 @@ class CAudit(CResource):
         :param sql: 检查value的必须存在于指定的sql中, sql中只有一个参数, 注意
         :return:
         """
-        pass
+        result_dict = result_template
+        is_exist_in_sql = False
+        ds = CFactory().give_me_db(db_server_id).one_row(sql)
+        if not ds.is_empty():
+            # field_count = ds.field_count()
+            for row_index in range(ds.size()):
+                row_value = ds.value_by_index(row_index, 0, "")  # 取出第1列的行值
+                if CUtils.equal_ignore_case(row_value, value):
+                    is_exist_in_sql = True
+                    break
+
+        if is_exist_in_sql:
+            result_dict[cls.Name_Message] = '{0}的值在指定的sql查询结果中, 符合要求!'.format(title_prefix)
+            result_dict[cls.Name_Result] = cls.QA_Result_Pass
+        else:
+            result_dict[cls.Name_Message] = '{0}的值[{1}], 不在指定的sql查询结果中, 请检查修正，sql为【{2}】!'.format(title_prefix, value,
+                                                                                                 sql)
+
+        return result_dict
 
     @classmethod
     def __a_check_value_datatype__(cls, result_template: dict, value, title_prefix, value_type):
         """
-        TODO 王学谦 对字段值根据字段类型进行检验（正整数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
+        TODO 赵宇飞 对字段值根据字段类型进行检验（正整数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
         :param result_template: 检查结果的模板
         :param value: 待检验的值, 可能为None
         :param title_prefix:
         :param value_type: 类型（正整数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
         :return:
         """
-        pass
+        result_dict = result_template
+        if CUtils.equal_ignore_case(value_type, cls.value_type_string):
+            if CUtils.text_is_string(value):
+                result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
+                                                                                         value_type)
+        elif CUtils.equal_ignore_case(value_type, cls.value_type_date):
+            """待继续"""
+            pass
+        elif CUtils.equal_ignore_case(value_type, cls.value_type_time):
+            """待继续"""
+            pass
+
+        return result_dict
 
     @classmethod
     def __a_check_value_not_null__(cls, result_template: dict, value, title_prefix):
-        pass
+        """
+            检查结果值是否不为空
+        @param result_template:
+        @param value:
+        @param title_prefix:
+        @return:
+        """
+        result_dict = result_template
+        if value is not None and (not CUtils.equal_ignore_case(value, '')):
+            result_dict[cls.Name_Message] = '{0}的值不为空, 符合要求!'.format(title_prefix)
+            result_dict[cls.Name_Result] = cls.QA_Result_Pass
+        else:
+            result_dict[cls.Name_Message] = '{0}的值为空, 请检查修正!'.format(title_prefix, value)
+
+        return result_dict
 
     @classmethod
     def __a_check_file_format__(cls, result_template: dict, file_name_with_path: str, file_format: str):

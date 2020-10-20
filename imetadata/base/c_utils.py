@@ -101,6 +101,15 @@ class CUtils(CResource):
         return check_text.isalpha()
 
     @classmethod
+    def text_is_string(cls, obj):
+        """
+        判断是否是字符串文本
+        @param obj:
+        @return:
+        """
+        return isinstance(obj, str)
+
+    @classmethod
     def split(cls, split_text: str, split_sep_list: list) -> list:
         """
         根据指定的分隔符数组, 对指定文本进行分割
