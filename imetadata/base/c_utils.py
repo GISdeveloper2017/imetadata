@@ -6,6 +6,7 @@ import re
 import uuid
 import pinyin
 from imetadata.base.c_resource import CResource
+from imetadata.base.c_time import CTime
 
 
 class CUtils(CResource):
@@ -90,6 +91,51 @@ class CUtils(CResource):
         :return:
         """
         return check_text.isdigit()
+
+    @classmethod
+    def text_is_date(cls, check_text: str) -> bool:
+        """
+        TODO 张源博 判断是否为日期（不包含时间），如20201022,2020/10/22,2020-10-22
+        @param check_text:
+        @return:
+        """
+        # try:
+        #     CTime.from_datetime_str(check_text, "%Y-%m-%d")
+        #     return True
+        # except:
+        #     return False
+        return True
+
+    @classmethod
+    def text_is_datetime(cls, check_text: str) -> bool:
+        """
+        TODO 张源博 判断是否为日期时间（包含时间），如20201022 22:22:22:345,2020/10/22 22:22:22:345,2020-10-22 22:22:22:345
+        @param check_text:
+        @return:
+        """
+        # try:
+        #     if ":" in check_text:
+        #         CTime.from_datetime_str(check_text, '%Y-%m-%d %H:%M:%S')
+        #     else:
+        #         return False
+        #     return True
+        # except:
+        #     return False
+        return True
+
+    @classmethod
+    def text_is_date_or_datetime(cls, check_text: str) -> bool:
+        """
+        判断是否为日期或日期时间），如20201022,2020/10/22,2020-10-22，
+            20201022 22:22:22:345,2020/10/22 22:22:22:345,2020-10-22 22:22:22:345
+        @param check_text:
+        @return:
+        """
+        if cls.text_is_date(check_text):
+            return True
+        elif cls.text_is_datetime(check_text):
+            return True
+        return False
 
     @classmethod
     def text_is_decimal(cls, check_text: str) -> bool:
@@ -212,8 +258,10 @@ if __name__ == '__main__':
     # print(CUtils.split(text_alpha, ['/', '\\', ' ', '_', '-']))
     check_text = '-125.02'
     check_text = '12'
+    check_text = '2001/01/01'
     print('check_text: ' + CUtils.any_2_str(check_text))
     print('numeric: ' + CUtils.any_2_str(CUtils.text_is_numeric(check_text)))
     print('decimal: ' + CUtils.any_2_str(CUtils.text_is_decimal(check_text)))
     print('integer: ' + CUtils.any_2_str(CUtils.text_is_integer(check_text)))
+    print('date: ' + CUtils.any_2_str(CUtils.text_is_date(check_text)))
     print(CUtils.int_2_format_str(None, 2))

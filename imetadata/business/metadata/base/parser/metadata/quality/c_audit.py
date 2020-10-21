@@ -276,11 +276,26 @@ class CAudit(CResource):
                 result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
                                                                                          value_type)
         elif CUtils.equal_ignore_case(value_type, cls.value_type_date):
-            """待继续"""
-            pass
-        elif CUtils.equal_ignore_case(value_type, cls.value_type_time):
-            """待继续"""
-            pass
+            if CUtils.text_is_date(value):
+                result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
+                                                                                         value_type)
+        elif CUtils.equal_ignore_case(value_type, cls.value_type_datetime):
+            if CUtils.text_is_datetime(value):
+                result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
+                                                                                         value_type)
+        elif CUtils.equal_ignore_case(value_type, cls.value_type_date_or_datetime):
+            if CUtils.text_is_date_or_datetime(value):
+                result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
+                                                                                         value_type)
         elif CUtils.equal_ignore_case(value_type, cls.value_type_decimal):
             if CUtils.text_is_decimal(value):
                 result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)

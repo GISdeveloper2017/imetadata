@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*- 
-# @Time : 2020/10/17 13:31 
-# @Author : 王西亚 
+# -*- coding: utf-8 -*-
+# @Time : 2020/10/17 13:31
+# @Author : 王西亚
 # @File : c_mdTransformerDOM.py
 
 from imetadata.base.c_result import CResult
@@ -30,14 +30,13 @@ class CMDTransformerDOM(CMDTransformer):
             if CUtils.equal_ignore_case(self.transformer_type, self.Transformer_DOM_MDB):
                 xml_obj = self.mdb_to_xml(file_metadata_name_with_path)
             elif CUtils.equal_ignore_case(self.transformer_type, self.Transformer_DOM_MAT):
-                pass
+                xml_obj = self.mat_to_xml(file_metadata_name_with_path)
             elif CUtils.equal_ignore_case(self.transformer_type, self.Transformer_DOM_XLS):
                 xml_obj = self.xls_to_xml(file_metadata_name_with_path)
             elif CUtils.equal_ignore_case(self.transformer_type, self.Transformer_DOM_XLSX):
                 xml_obj = self.xls_to_xml(file_metadata_name_with_path)
             else:
                 raise
-
             if xml_obj is not None:
                 super().metadata.set_metadata_bus(
                     self.Success,
@@ -74,7 +73,8 @@ class CMDTransformerDOM(CMDTransformer):
         cur = None
         try:
             # conn = pypyodbc.connect('DSN=mymdb'); #linux配置，需要配置mdbtools, unixODBC, libmdbodbc
-            mdb = 'Driver={Microsoft Access Driver (*.mdb,*.accdb)};' + 'DBQ={0}'.format(file_metadata_name_with_path)
+            mdb = 'Driver={Microsoft Access Driver (*.mdb,*.accdb)};' + 'DBQ={0}'.format(
+                file_metadata_name_with_path)  # win驱动，安装AccessDatabaseEngine_X64.exe驱动
             conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
             cur = conn.cursor()
 
@@ -106,15 +106,33 @@ class CMDTransformerDOM(CMDTransformer):
     def mat_to_xml(self, file_metadata_name_with_path: str):
         """
          TODO 王学谦 mat文件转xml,在函数外提前定义xml对象并获取父节点传入，函数会将通过父节点构造xml对象 by王学谦
-        :param file_metadata_name_with_path:查询的mdb文件全名，带路径
+        :param file_metadata_name_with_path:查询的mat文件全名，带路径
         :return xml_obj:将文件内容存储好的项目对象
         """
-        pass
+        text_list = CFile.file_2_list(file_metadata_name_with_path)
+        if (text_list is None) or CUtils.equal_ignore_case(str(text_list), ''):
+            raise
+        flag = False
+
+        xml_obj = CXml()
+        node_root = xml_obj.new_xml('root')
+        xml_obj.set_attr(node_root, self.Name_Type, self.transformer_type)
+        for index, row_text in enumerate(text_list):
+            if row_text.startswith('1\t'):
+                flag = True
+            row_list = re.split('\t+', row_text)
+            if flag:
+                node_item = xml_obj.create_element(node_root, 'item')
+                xml_obj.set_attr(node_item, self.Name_Name, row_list[1])
+                xml_obj.set_element_text(node_item, row_list[2].strip())
+        if not flag:
+            raise
+        return xml_obj
 
     def xls_to_xml(self, file_metadata_name_with_path: str):
         """
          TODO 王学谦 xls/xlsx文件转xml,在函数外提前定义xml对象并获取父节点传入，函数会将通过父节点构造xml对象 by王学谦
-        :param file_metadata_name_with_path:查询的mdb文件全名，带路径
+        :param file_metadata_name_with_path:查询的xls/xlsx文件全名，带路径
         :return xml_obj:将文件内容存储好的项目对象
         """
         all_data = xlrd.open_workbook(file_metadata_name_with_path)
@@ -142,12 +160,4 @@ class CMDTransformerDOM(CMDTransformer):
 
 if __name__ == '__main__':
     pass
-    # file_metadata_name_with_path = r'D:\work\测试数据\数据入库3\DOM\湖北单个成果数据\H49G001026\H49G001026.mat'
-    # text_list = CFile.file_2_list(file_metadata_name_with_path)
-    # text_secondary_array = None
-    # for index, row_text in enumerate(text_list):
-    #     text_first_array = re.split('\t+', row_text)
-    #     print(text_first_array)
-    #     text_secondary_array[index] = text_first_array
-    #
-    # print(text_secondary_array)
+    # file_metadata_name_with_path = r'D:\wor\测试数据\数据入库3\DOM\湖北单个成果数据\H49G001026\H49G001026.mat'
