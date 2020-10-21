@@ -439,7 +439,7 @@ class CPlugins(CResource):
         """
         return []
 
-    def parser_metadata_time_after_qa(self, parser) -> str:
+    def parser_metadata_time_after_qa(self, parser: CMetaDataParser) -> str:
         """
         继承本方法, 对详细的时间元数据信息进行处理
         todo(全体) 继承本方法, 对详细的时间元数据信息进行处理, 一般包括具体的time, start_time, end_time进行设置, 示例:
@@ -451,7 +451,7 @@ class CPlugins(CResource):
         """
         pass
 
-    def parser_metadata_spatial_after_qa(self, parser):
+    def parser_metadata_spatial_after_qa(self, parser: CMetaDataParser):
         """
         继承本方法, 对详细的空间元数据信息进行处理
         todo(全体) 继承本方法, 对详细的空间元数据信息进行处理, 一般包括原生的中心点, 外包框, 外边框, 以及Wgs84的中心点, 外包框, 外边框, 示例:
@@ -487,7 +487,7 @@ class CPlugins(CResource):
         else:
             return CResult.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
 
-    def parser_metadata_view_after_qa(self, parser):
+    def parser_metadata_view_after_qa(self, parser: CMetaDataParser):
         """
         继承本方法, 对详细的可视元数据信息进行处理
         todo(全体) 继承本方法, 对详细的可视元数据信息进行处理, 一般包括拇指图, 快视图等等, 示例:

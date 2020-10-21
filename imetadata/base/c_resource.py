@@ -98,6 +98,8 @@ class CResource:
     Name_Records = 'records'
     Name_Record = 'record'
 
+    Name_Source = 'source'
+
     Name_Format = 'format'
     Name_Size = 'size'
     Name_Length = 'length'

@@ -15,8 +15,10 @@ class CSatFilePlugins_gf1_pms(CSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = 'gf1_pms'
-        information[self.Plugins_Info_Name] = 'gf1_pms'
+        information[self.Plugins_Info_Title] = 'pms'
+        information[self.Plugins_Info_Name] = 'pms'
+        information[self.Plugins_Info_Code] = 'gf1'
+        information[self.Plugins_Info_Catalog] = '高分一号'
 
         return information
 
@@ -128,135 +130,62 @@ class CSatFilePlugins_gf1_pms(CSatPlugins):
             }
         ]
 
-    def parser_metadata_time_after_qa(self, parser) -> str:
+    def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
         """
-        继承本方法, 对详细的时间元数据信息进行处理
-        todo(全体) 继承本方法, 对详细的时间元数据信息进行处理, 一般包括具体的time, start_time, end_time进行设置, 示例:
-            parser.metadata.set_metadata_time(self.Success, '', self.Name_Time, CTime.now())
-            parser.metadata.set_metadata_time(self.Success, '', self.Name_Start_Time, CTime.now())
-            parser.metadata.set_metadata_time(self.Success, '', self.Name_End_Time, CTime.now())
+        标准模式的提取时间信息的列表
         :param parser:
         :return:
         """
-        parser.metadata.set_metadata_time(
-            self.Success,
-            '时间信息[{0}]成功解析! '.format(self.file_info.__file_name_with_full_path__),
-            self.Name_Time,
-            CXml.get_element_text(parser.metadata.metadata_bus_xml().xpath_one('/ProductMetaData/CenterTime'))
-        )
-        parser.metadata.set_metadata_time(
-            self.Success,
-            '时间信息[{0}]成功解析! '.format(self.file_info.__file_name_with_full_path__),
-            self.Name_Start_Time,
-            CXml.get_element_text(parser.metadata.metadata_bus_xml().xpath_one('/ProductMetaData/StartTime'))
-        )
-        parser.metadata.set_metadata_time(
-            self.Success,
-            '时间信息[{0}]成功解析! '.format(self.file_info.__file_name_with_full_path__),
-            self.Name_End_Time,
-            CXml.get_element_text(parser.metadata.metadata_bus_xml().xpath_one('/ProductMetaData/EndTime'))
-        )
-        return CResult.merge_result(
-            self.Success,
-            '数据文件[{0}]的时间信息解析成功! '.format(self.file_info.__file_name_with_full_path__)
-        )
+        return [
+            {
+                self.Name_ID: self.Name_Time,
+                self.Name_XPath: '/ProductMetaData/CenterTime'
+            },
+            {
+                self.Name_ID: self.Name_Start_Time,
+                self.Name_XPath: '/ProductMetaData/StartTime'
+            },
+            {
+                self.Name_ID: self.Name_End_Time,
+                self.Name_XPath: '/ProductMetaData/EndTime'
+            }
+        ]
 
-    def parser_metadata_spatial_after_qa(self, parser):
+    def parser_metadata_spatial_after_qa(self, parser: CMetaDataParser):
         """
         继承本方法, 对详细的空间元数据信息进行处理
-        todo(全体) 继承本方法, 对详细的空间元数据信息进行处理, 一般包括原生的中心点, 外包框, 外边框, 以及Wgs84的中心点, 外包框, 外边框, 示例:
-            parser.metadata.set_metadata_spatial(self.Success, '', self.Spatial_MetaData_Type_Native_Center, 'Point(0 0)')
+        注意:
+            super().parser_metadata_spatial_after_qa(parser)
+            要写在自定义的空间信息提取之后!!!
+
+        todo(全体) 继承本方法, 因为卫星数据的特殊性, 可以只取中心点和外包框
+
         :param parser:
         :return:
         """
+        parser.metadata.set_metadata_spatial(self.Success, '', self.Spatial_MetaData_Type_Native_Center, 'Point(0 0)')
+        parser.metadata.set_metadata_spatial(self.Success, '', self.Spatial_MetaData_Type_Native_BBox, 'Polygon(0 0, 0 1, 1 1, 1 0, 0 0)')
+
+        super().parser_metadata_spatial_after_qa(parser)
+
         return CResult.merge_result(
             self.Success,
             '数据文件[{0}]的空间信息解析成功! '.format(self.file_info.__file_name_with_full_path__)
         )
 
-    def parser_metadata_view_after_qa(self, parser):
+    def parser_metadata_view_list(self, parser: CMetaDataParser):
         """
-        继承本方法, 对详细的可视元数据信息进行处理
+        标准模式的反馈预览图和拇指图的名称
         :param parser:
         :return:
         """
-        data_date_time = CXml.get_element_text(
-            parser.metadata.metadata_bus_xml().xpath_one('/ProductMetaData/CenterTime'))
-
-        if CUtils.equal_ignore_case(data_date_time, ''):
-            data_date = CTime.today()
-        else:
-            data_date = CTime.from_datetime_str(data_date_time)
-
-        data_year = CTime.format_str(data_date, '%Y')
-        data_month = CTime.format_str(data_date, '%m')
-
-        data_view_sub_path = CFile.join_file(data_year, data_month)
-        data_view_sub_path = CFile.join_file(data_view_sub_path, self.classified_object_name())
-        data_view_sub_path = CFile.join_file(data_view_sub_path, self.file_info.__my_id__)
-        data_view_path = CFile.join_file(
-            self.file_content.view_root_dir,
-            data_view_sub_path
-        )
-
-        CFile.copy_file_to(
-            CFile.join_file(
-                self.file_content.content_root_dir,
-                '{0}-PAN1.jpg'.format(self.classified_object_name())
-            ), data_view_path)
-        CFile.copy_file_to(
-            CFile.join_file(
-                self.file_content.content_root_dir,
-                '{0}-PAN1_thumb.jpg'.format(self.classified_object_name())
-            ), data_view_path)
-        CFile.copy_file_to(
-            CFile.join_file(
-                self.file_content.content_root_dir,
-                '{0}-MSS1.jpg'.format(self.classified_object_name())
-            ), data_view_path)
-        CFile.copy_file_to(
-            CFile.join_file(
-                self.file_content.content_root_dir,
-                '{0}-MSS1_thumb.jpg'.format(self.classified_object_name())
-            ), data_view_path)
-        CFile.copy_file_to(
-            CFile.join_file(
-                self.file_content.content_root_dir,
-                '{0}-PAN1.xml'.format(self.classified_object_name())
-            ), data_view_path)
-        CFile.copy_file_to(
-            CFile.join_file(
-                self.file_content.content_root_dir,
-                '{0}-PAN1.rpb'.format(self.classified_object_name())
-            ), data_view_path)
-        CFile.copy_file_to(
-            CFile.join_file(
-                self.file_content.content_root_dir,
-                '{0}-MSS1.xml'.format(self.classified_object_name())
-            ), data_view_path)
-        CFile.copy_file_to(
-            CFile.join_file(
-                self.file_content.content_root_dir,
-                '{0}-MSS1.rpb'.format(self.classified_object_name())
-            ), data_view_path)
-
-        browse_file = CFile.join_file(data_view_sub_path, '{0}-PAN1.jpg'.format(self.classified_object_name()))
-        parser.metadata.set_metadata_view(
-            self.DB_True,
-            '文件[{0}]的预览图成功加载! '.format(self.file_info.__file_name_with_full_path__),
-            self.View_MetaData_Type_Browse,
-            browse_file
-        )
-
-        thumb_file = CFile.join_file(data_view_sub_path, '{0}-PAN1.jpg'.format(self.classified_object_name()))
-        parser.metadata.set_metadata_view(
-            self.DB_True,
-            '文件[{0}]的拇指图成功加载! '.format(self.file_info.__file_name_with_full_path__),
-            self.View_MetaData_Type_Thumb,
-            thumb_file
-        )
-
-        return CResult.merge_result(
-            self.Success,
-            '数据文件[{0}]的可视化信息解析成功! '.format(self.file_info.__file_name_with_full_path__)
-        )
+        return [
+            {
+                self.Name_ID: self.View_MetaData_Type_Browse,
+                self.Name_FileName: '{0}-PAN1.jpg'.format(self.classified_object_name())
+            },
+            {
+                self.Name_ID: self.View_MetaData_Type_Thumb,
+                self.Name_FileName: '{0}-PAN1_thumb.jpg'.format(self.classified_object_name())
+            }
+        ]

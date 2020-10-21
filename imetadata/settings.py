@@ -29,7 +29,7 @@ application = {
         },
         'plugins': {
             'dir': [
-                {'plugin': ['plugins_1000_dom_10', 'plugins_1000_dom_12'], 'keyword': 'dom'},
+                {'plugin': ['plugins_1000_dom_10', 'plugins_1002_dom_12'], 'keyword': 'dom'},
                 {'plugin': ['plugins_1010_dem_10', 'plugins_1010_dem_12'], 'keyword': 'dem'}
             ]
         }

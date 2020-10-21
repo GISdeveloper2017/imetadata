@@ -15,11 +15,14 @@ class CTime:
         return datetime.datetime.today()
 
     @classmethod
-    def from_datetime_str(cls, date_time_str: str, datetime_format: str = '%Y-%m-%d %H:%M:%S'):
-        return datetime.datetime.strptime(date_time_str, datetime_format)
+    def from_datetime_str(cls, date_time_str: str, default_date: datetime, datetime_format: str = '%Y-%m-%d %H:%M:%S'):
+        try:
+            return datetime.datetime.strptime(date_time_str, datetime_format)
+        except:
+            return default_date
 
     @classmethod
-    def format_str(cls, date_time_value: datetime, datetime_format: str):
+    def format_str(cls, date_time_value: datetime, datetime_format: str = '%Y-%m-%d %H:%M:%S'):
         return date_time_value.strftime(datetime_format)
 
 

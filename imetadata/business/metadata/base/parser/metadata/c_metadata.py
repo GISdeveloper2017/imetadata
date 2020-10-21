@@ -81,7 +81,7 @@ class CMetaData(CResource):
         self.__browse_img_file_name__ = value
 
     @property
-    def time_information(self):
+    def time_information(self) -> CJson:
         return self.__time_information__
 
     def metadata(self):
@@ -111,6 +111,9 @@ class CMetaData(CResource):
 
     def metadata_bus_json(self) -> CJson:
         return self.__metadata_bus_json__
+
+    def metadata_spatial_obj(self) -> CMDSpatial:
+        return self.__metadata_spatial__
 
     def set_metadata_spatial(self, result: int, memo: str, spatial_metadata_type=None, spatial_metadata=None):
         self.__metadata_spatial_extract_result__ = result
