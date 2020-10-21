@@ -76,16 +76,16 @@ class CMDTransformerDOM(CMDTransformer):
             mdb = 'Driver={Microsoft Access Driver (*.mdb,*.accdb)};' + 'DBQ={0}'.format(
                 file_metadata_name_with_path)  # win驱动，安装AccessDatabaseEngine_X64.exe驱动
             conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
-            cur = conn.cursor()
+            cur = conn.cursor()  # 游标
 
             sql = "SELECT * FROM " + self.object_name
             cur.execute(sql)
             table_data = cur.fetchall()
             # total_rows = len(alldata)  # 行
             # total_cols = len(alldata[0])  # 列
-            xml_obj = CXml()
+            xml_obj = CXml()  # 建立xml对象
             node_root = xml_obj.new_xml('root')
-            xml_obj.set_attr(node_root, self.Name_Type, self.transformer_type)
+            xml_obj.set_attr(node_root, self.Name_Type, self.transformer_type)  # 设置root节点与属性
             for field_index, row_obj in enumerate(cur.description):
                 row_name = row_obj[0]  # 字段名称
                 row_type = row_obj[1]  # 字段类型
@@ -93,7 +93,7 @@ class CMDTransformerDOM(CMDTransformer):
                     continue
                 node_item = xml_obj.create_element(node_root, 'item')
                 xml_obj.set_attr(node_item, self.Name_Name, row_name)
-                xml_obj.set_element_text(node_item, table_data[0][field_index])
+                xml_obj.set_element_text(node_item, table_data[0][field_index])  # 设置item节点与属性与内容
         except:
             raise
         finally:
@@ -105,28 +105,28 @@ class CMDTransformerDOM(CMDTransformer):
 
     def mat_to_xml(self, file_metadata_name_with_path: str):
         """
-         TODO 王学谦 mat文件转xml,在函数外提前定义xml对象并获取父节点传入，函数会将通过父节点构造xml对象 by王学谦
+        TODO 王学谦 mat文件转xml,在函数外提前定义xml对象并获取父节点传入，函数会将通过父节点构造xml对象 by王学谦
         :param file_metadata_name_with_path:查询的mat文件全名，带路径
         :return xml_obj:将文件内容存储好的项目对象
         """
-        text_list = CFile.file_2_list(file_metadata_name_with_path)
+        text_list = CFile.file_2_list(file_metadata_name_with_path)  # 获取mat文件作为列表
         if (text_list is None) or CUtils.equal_ignore_case(str(text_list), ''):
-            raise
-        flag = False
+            raise  # 如果获取的文件内容为空，则抛出异常
+        flag = False  # 设置标志
 
-        xml_obj = CXml()
+        xml_obj = CXml()  # 建立xml对象
         node_root = xml_obj.new_xml('root')
-        xml_obj.set_attr(node_root, self.Name_Type, self.transformer_type)
+        xml_obj.set_attr(node_root, self.Name_Type, self.transformer_type) # 设置root节点与属性
         for index, row_text in enumerate(text_list):
-            if row_text.startswith('1\t'):
+            if row_text.startswith('1\t'):  # 从开头为1+tab键的行开始录入
                 flag = True
-            row_list = re.split('\t+', row_text)
+            row_list = re.split('\t+', row_text)  # 利用正则表达式，根据一个或多个tab剪切字符
             if flag:
                 node_item = xml_obj.create_element(node_root, 'item')
                 xml_obj.set_attr(node_item, self.Name_Name, row_list[1])
-                xml_obj.set_element_text(node_item, row_list[2].strip())
+                xml_obj.set_element_text(node_item, row_list[2].strip())  # 设置item节点与属性与内容
         if not flag:
-            raise
+            raise   # 如果未找到1+tab键开头，则抛出异常
         return xml_obj
 
     def xls_to_xml(self, file_metadata_name_with_path: str):
@@ -135,26 +135,26 @@ class CMDTransformerDOM(CMDTransformer):
         :param file_metadata_name_with_path:查询的xls/xlsx文件全名，带路径
         :return xml_obj:将文件内容存储好的项目对象
         """
-        all_data = xlrd.open_workbook(file_metadata_name_with_path)
-        table_data = all_data.sheets()[0]
+        all_data = xlrd.open_workbook(file_metadata_name_with_path)  # 获取表格所有内容
+        table_data = all_data.sheets()[0]   # 默认获取第一个表格
 
-        cols_num = table_data.ncols
-        rows_num = table_data.nrows
-        cols_index = 0
+        cols_num = table_data.ncols  # 获取列数
+        rows_num = table_data.nrows  # 获取行数
+        cols_index = 0  # 预定义列的index
         if CUtils.equal_ignore_case(str(cols_num), str(2)):
-            pass
+            pass  # 无序号列从1列开始
         elif CUtils.equal_ignore_case(str(cols_num), str(3)):
-            cols_index = 1
+            cols_index = 1  # 有序号列从2列开始
         else:
             raise
 
-        xml_obj = CXml()
+        xml_obj = CXml()  # 建立xml对象
         node_root = xml_obj.new_xml('root')
-        xml_obj.set_attr(node_root, self.Name_Type, self.transformer_type)
+        xml_obj.set_attr(node_root, self.Name_Type, self.transformer_type)  # 设置root节点与属性
         for row in range(0, rows_num):
             node_item = xml_obj.create_element(node_root, 'item')
             xml_obj.set_attr(node_item, self.Name_Name, table_data.cell(row, cols_index).value)
-            xml_obj.set_element_text(node_item, table_data.cell(row, cols_index + 1).value)
+            xml_obj.set_element_text(node_item, table_data.cell(row, cols_index + 1).value)  # 设置item节点与属性与内容
         return xml_obj
 
 
