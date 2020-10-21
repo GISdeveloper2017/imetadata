@@ -282,15 +282,26 @@ class CAudit(CResource):
             """待继续"""
             pass
         elif CUtils.equal_ignore_case(value_type, cls.value_type_decimal):
-            """待继续"""
-            pass
+            if CUtils.text_is_decimal(value):
+                result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
+                                                                                         value_type)
         elif CUtils.equal_ignore_case(value_type, cls.value_type_integer):
-            """待继续"""
-            pass
+            if CUtils.text_is_integer(value):
+                result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
+                                                                                         value_type)
         elif CUtils.equal_ignore_case(value_type, cls.value_type_decimal_or_integer):
-            """待继续"""
-            pass
-
+            if CUtils.text_is_decimal_or_integer(value):
+                result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
+                                                                                         value_type)
         return result_dict
 
     @classmethod

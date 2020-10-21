@@ -117,6 +117,32 @@ class CUtils(CResource):
         return False
 
     @classmethod
+    def text_is_integer(cls, check_text: str) -> bool:
+        """
+        判断是否为整数（包含正负整数，不带.符号）
+        :param check_text:
+        :return:
+        """
+        try:
+            temp_value = int(check_text)
+            return isinstance(temp_value, int)
+        except ValueError:
+            return False
+
+    @classmethod
+    def text_is_decimal_or_integer(cls, check_text: str) -> bool:
+        """
+        判断是否为小数或整数（包含负数）
+        :param check_text:
+        :return:
+        """
+        if cls.text_is_decimal(check_text):
+            return True
+        elif cls.text_is_integer(check_text):
+            return True
+        return False
+
+    @classmethod
     def text_is_alpha(cls, check_text: str) -> bool:
         """
         判断是否字母
@@ -185,6 +211,9 @@ if __name__ == '__main__':
     # text_alpha = r'你/好 A\B\B C/中_国'
     # print(CUtils.split(text_alpha, ['/', '\\', ' ', '_', '-']))
     check_text = '-125.02'
-    print(CUtils.text_is_numeric(check_text))
-    print(CUtils.text_is_decimal(check_text))
+    check_text = '12'
+    print('check_text: ' + CUtils.any_2_str(check_text))
+    print('numeric: ' + CUtils.any_2_str(CUtils.text_is_numeric(check_text)))
+    print('decimal: ' + CUtils.any_2_str(CUtils.text_is_decimal(check_text)))
+    print('integer: ' + CUtils.any_2_str(CUtils.text_is_integer(check_text)))
     print(CUtils.int_2_format_str(None, 2))
