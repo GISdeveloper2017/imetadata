@@ -219,6 +219,9 @@ class CResource:
     MetaDataFormat_Text = 0
     MetaDataFormat_Json = 1
     MetaDataFormat_XML = 2
+    DataFormat_Vector_File = 3   # 矢量文件
+    DataFormat_Vector_Dataset = 4  # 矢量数据集
+    DataFormat_Raster_File = 5   # 影像文件
 
     Transformer_DOM_MDB = 'mdb'
     Transformer_DOM_MAT = 'mat'

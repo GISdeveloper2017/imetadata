@@ -185,7 +185,7 @@ class CAudit(CResource):
         """
         根据规则, 验证值的合法性
         注意: 值有可能为None!
-        todo 负责人 赵宇飞 这里仅仅对值进行了字典检验, 请添加其他检验, 比如大小判断, 数值类型判断, 长度检验等内容
+        todo 负责人 赵宇飞 这里对值进行了长度检验
         :param result_template: 检查结果的模板
         :param value: 待检验的值, 可能为None
         :param title_prefix: 提示文本的前缀
@@ -208,7 +208,7 @@ class CAudit(CResource):
         """
         根据规则, 验证值的合法性
         注意: 值有可能为None!
-        todo 负责人 赵宇飞 这里仅仅对值进行了字典检验, 请添加其他检验, 比如大小判断, 数值类型判断, 长度检验等内容
+        todo 负责人 赵宇飞 这里对值在列表中存在性检验
         :param result_template: 检查结果的模板
         :param value: 待检验的值, 可能为None
         :param title_prefix: 提示文本的前缀
@@ -322,7 +322,7 @@ class CAudit(CResource):
     @classmethod
     def __a_check_value_not_null__(cls, result_template: dict, value, title_prefix):
         """
-            检查结果值是否不为空
+            对结果值不为空进行校验
         @param result_template:
         @param value:
         @param title_prefix:
@@ -358,6 +358,38 @@ class CAudit(CResource):
                 result_dict[cls.Name_Result] = cls.QA_Result_Pass
             except:
                 result_dict[cls.Name_Message] = '文件[{0}]不是合法的JSON, 请检查!'.format(
+                    CFile.file_name(file_name_with_path))
+        elif CUtils.equal_ignore_case(file_format, cls.DataFormat_Vector_File):
+            # 判断是否能正常打开矢量数据文件 file_name_with_path
+            is_file_can_read = CUtils.is_vector_file_can_read(file_name_with_path)
+            if is_file_can_read:
+                result_dict[cls.Name_Message] = '文件[{0}]为合法的矢量数据, 符合要求!'.format(
+                    CFile.file_name(file_name_with_path))
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '文件[{0}]不是合法的矢量数据, 请检查!'.format(
+                    CFile.file_name(file_name_with_path))
+        elif CUtils.equal_ignore_case(file_format, cls.DataFormat_Vector_Dataset):
+            """
+            todo 判断是否能正常打开矢量数据集 file_name_with_path
+            """
+            is_can_read = CUtils.is_vector_dataset_can_read(file_name_with_path)
+            if is_can_read:
+                result_dict[cls.Name_Message] = '文件[{0}]为合法的矢量数据集, 符合要求!'.format(
+                    CFile.file_name(file_name_with_path))
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '文件[{0}]不是合法的矢量数据集, 请检查!'.format(
+                    CFile.file_name(file_name_with_path))
+        elif CUtils.equal_ignore_case(file_format, cls.DataFormat_Raster_File):
+            # 判断是否能正常打开影像数据文件 file_name_with_path
+            is_file_can_read = CUtils.is_raster_file_can_read(file_name_with_path)
+            if is_file_can_read:
+                result_dict[cls.Name_Message] = '文件[{0}]为合法的影像数据, 符合要求!'.format(
+                    CFile.file_name(file_name_with_path))
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '文件[{0}]不是合法的影像数据, 请检查!'.format(
                     CFile.file_name(file_name_with_path))
         else:
             result_dict[cls.Name_Message] = '文件[{0}]未给定格式要求, 默认符合要求!'.format(
