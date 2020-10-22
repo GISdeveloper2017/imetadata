@@ -166,6 +166,14 @@ class CResource:
 
     Name_Keyword = 'keyword'
 
+    Name_Img = 'img'
+    Name_Ige = 'ige'
+    Name_rrd = 'rrd'
+    Name_rde = 'rde'
+    Name_Tif = 'tif'
+    Name_Tiff = 'tiff'
+    Name_Shp = 'shp'
+
     Path_MD_Rule_Type = '/root/type'
     Path_MD_Rule_Plugins_Dir = '/root/plugins/dir/plugin'
     Path_MD_Rule_Plugins_File = '/root/plugins/file/plugin'
