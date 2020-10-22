@@ -9,6 +9,7 @@ from imetadata.base.c_resource import CResource
 from imetadata.base.c_time import CTime
 from osgeo import gdal, ogr, osr
 
+
 class CUtils(CResource):
     @classmethod
     def one_id(cls) -> str:
@@ -76,7 +77,7 @@ class CUtils(CResource):
             return str(str_value)
         else:
             count_zero = length - len(str_value)
-            str_zero = '0'*count_zero
+            str_zero = '0' * count_zero
             return '{0}{1}'.format(str_zero, str_value)
 
     @classmethod
@@ -190,6 +191,19 @@ class CUtils(CResource):
         return False
 
     @classmethod
+    def text_is_decimal_or_integer_positive(cls, check_text: str) -> bool:
+        """
+        判断是否为正小数或整数（不包含负数）
+        :param check_text:
+        :return:
+        """
+        if cls.text_is_decimal_or_integer(check_text):
+            value_num = float(check_text)
+            if value_num > 0:
+                return True
+        return False
+
+    @classmethod
     def text_is_alpha(cls, check_text: str) -> bool:
         """
         判断是否字母
@@ -292,6 +306,7 @@ class CUtils(CResource):
             """
             pass
         return False
+
 
 if __name__ == '__main__':
     # text_alpha = r'你/好 A\B\B C/中_国'

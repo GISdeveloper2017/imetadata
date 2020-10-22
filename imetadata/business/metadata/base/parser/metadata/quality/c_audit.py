@@ -317,6 +317,13 @@ class CAudit(CResource):
             else:
                 result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
                                                                                          value_type)
+        elif CUtils.equal_ignore_case(value_type, cls.value_type_decimal_or_integer_positive):
+            if CUtils.text_is_decimal_or_integer_positive(value):
+                result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
+                                                                                         value_type)
         return result_dict
 
     @classmethod
