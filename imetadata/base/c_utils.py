@@ -100,36 +100,57 @@ class CUtils(CResource):
         @param check_text:
         @return:
         """
-        # try:
-        #     CTime.from_datetime_str(check_text, "%Y-%m-%d")
-        #     return True
-        # except:
-        #     return False
+        time_format = "%Y{0}%m{0}%d"
+        sep_real = ""
+        sep_list = ['-', '/']
+        for sep in sep_list:
+            if sep in check_text:
+                sep_real = sep
+                break
+        time_format_real = time_format.format(sep_real)
+        default_date = CTime.now()
+        date_value = CTime.from_datetime_str(check_text, default_date, time_format_real)
+        if CUtils.equal_ignore_case(date_value, default_date):
+            return False
         return True
 
     @classmethod
     def text_is_datetime(cls, check_text: str) -> bool:
         """
-        TODO 张源博 判断是否为日期时间（包含时间），如20201022 22:22:22:345,
-        2020/10/22 22:22:22:345, 2020-10-22 22:22:22:345, 2020-10-22T22:22:22:000007
+        TODO 张源博 判断是否为日期时间（包含时间），如20201022 22:22:22.345,
+        2020/10/22 22:22:22.345, 2020-10-22 22:22:22.345, 2020-10-22T22:22:22.000007
         @param check_text:
         @return:
         """
-        # try:
-        #     if ":" in check_text:
-        #         CTime.from_datetime_str(check_text, '%Y-%m-%d %H:%M:%S')
-        #     else:
-        #         return False
-        #     return True
-        # except:
-        #     return False
+        time_format = "%Y{0}%m{0}%d{1}%H:%M:%S{2}"
+        sep_real = ""
+        sep_list = ['-', '/']
+        for sep in sep_list:
+            if sep in check_text:
+                sep_real = sep
+                break
+        # 判断是否带T，GMT
+        sign_real = " "
+        sign_list = ['T', 'CST']
+        for sign in sign_list:
+            if sign in check_text:
+                sign_real = sign
+                break
+        second_real = ""
+        if "." in check_text:
+            second_real = ".%f"
+        time_format_real = time_format.format(sep_real, sign_real, second_real)
+        default_date = CTime.now()
+        date_value = CTime.from_datetime_str(check_text, default_date, time_format_real)
+        if CUtils.equal_ignore_case(date_value, default_date):
+            return False
         return True
 
     @classmethod
     def text_is_date_or_datetime(cls, check_text: str) -> bool:
         """
         判断是否为日期或日期时间），如20201022,2020/10/22,2020-10-22，
-            20201022 22:22:22:345,2020/10/22 22:22:22:345,2020-10-22 22:22:22:345, 2020-10-22T22:22:22:000007
+            20201022 22:22:22.345,2020/10/22 22:22:22.345,2020-10-22 22:22:22.345, 2020-10-22T22:22:22.000007
         @param check_text:
         @return:
         """
