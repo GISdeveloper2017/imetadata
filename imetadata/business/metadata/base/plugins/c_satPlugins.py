@@ -235,10 +235,19 @@ class CSatPlugins(CPlugins):
         parser.metadata.metadata_spatial_obj().wgs84_geom = parser.metadata.metadata_spatial_obj().native_box
         parser.metadata.metadata_spatial_obj().wgs84_geom = parser.metadata.metadata_spatial_obj().native_box
 
-        parser.metadata.metadata_spatial_obj().prj_wkt = ''
-        parser.metadata.metadata_spatial_obj().prj_proj4 = ''
-        parser.metadata.metadata_spatial_obj().prj_project = ''
-        parser.metadata.metadata_spatial_obj().prj_coordinate = 'wgs 84'
+        parser.metadata.metadata_spatial_obj().prj_wkt = '''
+        GEOGCS["WGS 84",
+        DATUM["WGS_1984",
+            SPHEROID["WGS 84",6378137,298.257223563,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6326"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4326"]]
+        '''
+        parser.metadata.metadata_spatial_obj().prj_proj4 = '+proj=longlat +datum=WGS84 +no_defs'
+        parser.metadata.metadata_spatial_obj().prj_project = None
+        parser.metadata.metadata_spatial_obj().prj_coordinate = 'WGS 84'
         parser.metadata.metadata_spatial_obj().prj_degree = None
         parser.metadata.metadata_spatial_obj().prj_zone = None
         parser.metadata.metadata_spatial_obj().prj_source = self.Prj_Source_BusMetaData
