@@ -112,6 +112,7 @@ class CResource:
     Dir_Type_Root = 3
 
     FileName_MetaData_Rule = 'metadata.rule'
+    FileName_Ready_21AT = 'ready.21at'
     FileName_MetaData = 'metadata.json'
     FileName_MetaData_Bus = 'metadata_bus.xml'
 
@@ -143,6 +144,9 @@ class CResource:
     File_Status_Valid = -1
     File_Status_Invalid = 0
     File_Status_Unknown = 1
+
+    Storage_Type_Core = 'core'
+    Storage_Type_InBound = 'inbound'
 
     Name_ID = 'id'
     Name_Name = 'name'

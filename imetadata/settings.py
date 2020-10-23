@@ -24,14 +24,33 @@ application = {
         'work': '/Users/wangxiya/Documents/交换/9.数管/9.工作目录'
     },
     'metadata': {
+        'title': '数管配置',
         'directory': {
+            'title': '数管常规目录设置, 包括元数据存储目录',
             'view': '/Users/wangxiya/Documents/交换/9.数管/0.编目'
         },
         'plugins': {
+            'title': '特殊目录下的文件识别配置',
             'dir': [
                 {'plugin': ['plugins_1000_dom_10', 'plugins_1002_dom_12'], 'keyword': 'dom'},
                 {'plugin': ['plugins_1010_dem_10', 'plugins_1010_dem_12'], 'keyword': 'dem'}
             ]
+        },
+        'inbound': {
+            'title': '入库配置',
+            'dataset': [
+                {'id': 'dom', 'title': 'DOM数据集', 'storage': {'type': 'auto'}, 'path': '{batch_id}'},
+                {'id': 'l1', 'title': '散列卫星数据', 'storage': {'type': 'set', 'id': 'a'}, 'path': '{batch_id}'}
+            ],
+            'ignore': {
+                'file': ['.DS_Store', 'ready.21at', 'metadata.21at']
+            }
+        },
+        'outbound': {
+            'title': '出库配置'
+        },
+        'stocktaking': {
+            'title': '盘点配置'
         }
     }
 }
