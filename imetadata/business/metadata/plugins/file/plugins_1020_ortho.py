@@ -64,6 +64,7 @@ class plugins_1020_ortho(CFilePlugins_GUOTU):
     def qa_file_custom(self, parser: CMetaDataParser):
         """
         自定义的文件存在性质检, 发生在元数据解析之前
+        todo 负责人 王学谦
         :param parser:
         :return:
         """
@@ -103,6 +104,7 @@ class plugins_1020_ortho(CFilePlugins_GUOTU):
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 元数据xml文件的检验列表
+        todo 负责人 王学谦
         :param parser:
         :return:
         """
@@ -133,7 +135,7 @@ class plugins_1020_ortho(CFilePlugins_GUOTU):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
                 self.Name_Width: 8,
-                self.Name_Size:
+                self.Name_Range:
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
@@ -147,7 +149,7 @@ class plugins_1020_ortho(CFilePlugins_GUOTU):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
                 self.Name_Width: 8,
-                self.Name_Size:
+                self.Name_Range:
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
@@ -161,7 +163,7 @@ class plugins_1020_ortho(CFilePlugins_GUOTU):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
                 self.Name_Width: 8,
-                self.Name_Size:
+                self.Name_Range:
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
@@ -175,7 +177,7 @@ class plugins_1020_ortho(CFilePlugins_GUOTU):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
                 self.Name_Width: 8,
-                self.Name_Size:
+                self.Name_Range:
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
@@ -186,6 +188,7 @@ class plugins_1020_ortho(CFilePlugins_GUOTU):
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
         提取xml格式的业务元数据, 加载到parser的metadata对象中
+        todo 负责人 王学谦
         :param parser:
         :return:
         """
@@ -207,6 +210,7 @@ class plugins_1020_ortho(CFilePlugins_GUOTU):
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 业务元数据xml文件的检验列表
+        todo 负责人 王学谦
         :param parser:
         :return:
         """

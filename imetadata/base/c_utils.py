@@ -288,6 +288,20 @@ class CUtils(CResource):
         return len_text
 
     @classmethod
+    def to_decimal(cls, obj, default_value):
+        """
+        文本转小数
+        @param obj:
+        @param default_value:
+        @return:
+        """
+        try:
+            value = float(obj)
+            return value
+        except:
+            return default_value
+
+    @classmethod
     def split(cls, split_text: str, split_sep_list: list) -> list:
         """
         根据指定的分隔符数组, 对指定文本进行分割

@@ -103,6 +103,7 @@ class CResource:
     Name_Format = 'format'
     Name_Size = 'size'
     Name_Length = 'length'
+    Name_Range = 'range'
     Name_Time = 'time'
     Name_Start_Time = 'start_time'
     Name_End_Time = 'end_time'

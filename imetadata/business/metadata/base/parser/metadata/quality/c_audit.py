@@ -66,6 +66,10 @@ class CAudit(CResource):
             if value_type is not None:
                 result_list.append(cls.__a_check_value_datatype__(result_template, value, title_prefix, value_type))
 
+            value_range = CUtils.dict_value_by_name(qa_items, cls.Name_Range, None)
+            if value_range is not None:
+                result_list.append(cls.__a_check_value_range__(result_template, value, title_prefix, qa_items))
+
             value_width = CUtils.dict_value_by_name(qa_items, cls.Name_Width, None)
             if value_width is not None:
                 result_list.append(cls.__a_check_value_width__(result_template, value, title_prefix, value_width))
@@ -328,6 +332,66 @@ class CAudit(CResource):
         return result_dict
 
     @classmethod
+    def __a_check_value_range__(cls, result_template, value, title_prefix, qa_items):
+        """
+         判断数字的范围，如经纬度坐标值：（-180 ~ 180） （-90~90）
+        @param result_template:
+        @param value:
+        @param title_prefix:
+        @param qa_items:
+        @return:
+        """
+        default_value = -1.000001
+        range_max = CUtils.to_decimal(
+            CJson.dict_attr_by_path(qa_items, '{0}.{1}'.format(cls.Name_Range, cls.Name_Max), default_value))
+        range_min = CUtils.to_decimal(
+            CJson.dict_attr_by_path(qa_items, '{0}.{1}'.format(cls.Name_Range, cls.Name_Min), default_value))
+
+        result_dict = result_template
+
+        value_real = CUtils.to_decimal(value)
+
+        if range_max != default_value and range_min != default_value:
+            if range_min <= value_real <= range_max:
+                result_dict[cls.Name_Message] = '[{0}]的值[{1}]在指定的[{2}-{3}]范围内, 符合要求!'.format(
+                    title_prefix,
+                    value, range_min,
+                    range_max)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '[{0}]的值[{1}]在指定的[{2}-{3}]范围外, 请检查!'.format(
+                    title_prefix,
+                    value, range_min,
+                    range_max)
+        elif range_min != default_value:
+            if range_min <= value_real:
+                result_dict[cls.Name_Message] = '[{0}]的值[{1}]大于最小值[{2}], 符合要求!'.format(
+                    title_prefix,
+                    value, range_min)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '[{0}]的值[{1}]低于最小值[{2}], 请检查!'.format(
+                    title_prefix,
+                    value, range_min)
+        elif range_max != default_value:
+            if range_max >= value_real:
+                result_dict[cls.Name_Message] = '[{0}]的值[{1}]低于最大值[{2}], 符合要求!'.format(
+                    title_prefix,
+                    value, range_max)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '[{0}]的值[{1}]超过最大值[{2}], 请检查!'.format(
+                    title_prefix,
+                    value, range_max)
+        else:
+            result_dict[cls.Name_Message] = '[{0}]的值[{1}]未给定限定范围, 默认符合要求!'.format(
+                title_prefix, value)
+            result_dict[cls.Name_Result] = cls.QA_Result_Pass
+
+        return result_dict
+
+
+    @classmethod
     def __a_check_value_not_null__(cls, result_template: dict, value, title_prefix, value_not_null):
         """
             对结果值不为空进行校验
@@ -462,3 +526,5 @@ class CAudit(CResource):
             result_dict[cls.Name_Result] = cls.QA_Result_Pass
 
         return result_dict
+
+
