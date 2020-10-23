@@ -59,28 +59,28 @@ class CAudit(CResource):
 
         value_not_null = CUtils.dict_value_by_name(qa_items, cls.Name_NotNull, None)
         if value_not_null is not None:
-            result_list.append(cls.__a_check_value_not_null__(result_template, value, title_prefix))
+            result_list.append(cls.__a_check_value_not_null__(result_template, value, title_prefix, value_not_null))
 
-            if not CUtils.equal_ignore_case(value, ''):
-                value_type = CUtils.dict_value_by_name(qa_items, cls.Name_DataType, None)
-                if value_type is not None:
-                    result_list.append(cls.__a_check_value_datatype__(result_template, value, title_prefix, value_type))
+        if not CUtils.equal_ignore_case(value, ''):
+            value_type = CUtils.dict_value_by_name(qa_items, cls.Name_DataType, None)
+            if value_type is not None:
+                result_list.append(cls.__a_check_value_datatype__(result_template, value, title_prefix, value_type))
 
-                value_width = CUtils.dict_value_by_name(qa_items, cls.Name_Width, None)
-                if value_type is not None:
-                    result_list.append(cls.__a_check_value_width__(result_template, value, title_prefix, value_width))
+            value_width = CUtils.dict_value_by_name(qa_items, cls.Name_Width, None)
+            if value_width is not None:
+                result_list.append(cls.__a_check_value_width__(result_template, value, title_prefix, value_width))
 
-                value_list = CUtils.dict_value_by_name(qa_items, cls.Name_List, None)
-                if value_list is not None:
-                    result_list.append(cls.__a_check_value_in_list__(result_template, value, title_prefix, value_list))
+            value_list = CUtils.dict_value_by_name(qa_items, cls.Name_List, None)
+            if value_list is not None:
+                result_list.append(cls.__a_check_value_in_list__(result_template, value, title_prefix, value_list))
 
-                value_sql = CUtils.dict_value_by_name(qa_items, cls.Name_SQL, None)
-                if value_type is not None:
-                    value_sql_db_server_id = CUtils.dict_value_by_name(qa_items, cls.Name_DataBase,
-                                                                       cls.DB_Server_ID_Default)
-                    result_list.append(
-                        cls.__a_check_value_in_sql__(result_template, value, title_prefix, value_sql_db_server_id,
-                                                     value_sql))
+            value_sql = CUtils.dict_value_by_name(qa_items, cls.Name_SQL, None)
+            if value_sql is not None:
+                value_sql_db_server_id = CUtils.dict_value_by_name(qa_items, cls.Name_DataBase,
+                                                                   cls.DB_Server_ID_Default)
+                result_list.append(
+                    cls.__a_check_value_in_sql__(result_template, value, title_prefix, value_sql_db_server_id,
+                                                 value_sql))
 
         return result_list
 
@@ -193,12 +193,13 @@ class CAudit(CResource):
         :return:
         """
         result_dict = result_template
-        if len(value) <= value_width:
+        value_lenth = CUtils.len_of_text(value)
+        if value_lenth <= value_width:
             result_dict[cls.Name_Message] = '{0}的值的宽度不超过{1}, 符合要求!'.format(title_prefix, value_width)
             result_dict[cls.Name_Result] = cls.QA_Result_Pass
         else:
             result_dict[cls.Name_Message] = '{0}的值[{1}],宽度为[{2}]，不符合要求的宽度不超过[{3}], 请检查修正!'.format(title_prefix,
-                                                                                               value, len(value),
+                                                                                               value, value_lenth,
                                                                                                value_width)
 
         return result_dict
@@ -317,10 +318,17 @@ class CAudit(CResource):
             else:
                 result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
                                                                                          value_type)
+        elif CUtils.equal_ignore_case(value_type, cls.value_type_decimal_or_integer_positive):
+            if CUtils.text_is_decimal_or_integer_positive(value):
+                result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
+                                                                                         value_type)
         return result_dict
 
     @classmethod
-    def __a_check_value_not_null__(cls, result_template: dict, value, title_prefix):
+    def __a_check_value_not_null__(cls, result_template: dict, value, title_prefix, value_not_null):
         """
             对结果值不为空进行校验
         @param result_template:
@@ -329,12 +337,15 @@ class CAudit(CResource):
         @return:
         """
         result_dict = result_template
-        if value is not None and (not CUtils.equal_ignore_case(value, '')):
-            result_dict[cls.Name_Message] = '{0}的值不为空, 符合要求!'.format(title_prefix)
-            result_dict[cls.Name_Result] = cls.QA_Result_Pass
-        else:
-            result_dict[cls.Name_Message] = '{0}的值为空, 请检查修正!'.format(title_prefix, value)
+        if value_not_null is None or value_not_null is False:
+            return result_dict
 
+        if value_not_null is True:
+            if value is not None and (not CUtils.equal_ignore_case(value, '')):
+                result_dict[cls.Name_Message] = '{0}的值不为空, 符合要求!'.format(title_prefix)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值为空, 请检查修正!'.format(title_prefix, value)
         return result_dict
 
     @classmethod

@@ -9,6 +9,7 @@ from imetadata.base.c_resource import CResource
 from imetadata.base.c_time import CTime
 from osgeo import gdal, ogr, osr
 
+
 class CUtils(CResource):
     @classmethod
     def one_id(cls) -> str:
@@ -76,7 +77,7 @@ class CUtils(CResource):
             return str(str_value)
         else:
             count_zero = length - len(str_value)
-            str_zero = '0'*count_zero
+            str_zero = '0' * count_zero
             return '{0}{1}'.format(str_zero, str_value)
 
     @classmethod
@@ -99,36 +100,57 @@ class CUtils(CResource):
         @param check_text:
         @return:
         """
-        # try:
-        #     CTime.from_datetime_str(check_text, "%Y-%m-%d")
-        #     return True
-        # except:
-        #     return False
+        time_format = "%Y{0}%m{0}%d"
+        sep_real = ""
+        sep_list = ['-', '/']
+        for sep in sep_list:
+            if sep in check_text:
+                sep_real = sep
+                break
+        time_format_real = time_format.format(sep_real)
+        default_date = CTime.now()
+        date_value = CTime.from_datetime_str(check_text, default_date, time_format_real)
+        if CUtils.equal_ignore_case(date_value, default_date):
+            return False
         return True
 
     @classmethod
     def text_is_datetime(cls, check_text: str) -> bool:
         """
-        TODO 张源博 判断是否为日期时间（包含时间），如20201022 22:22:22:345,
-        2020/10/22 22:22:22:345, 2020-10-22 22:22:22:345, 2020-10-22T22:22:22:000007
+        TODO 张源博 判断是否为日期时间（包含时间），如20201022 22:22:22.345,
+        2020/10/22 22:22:22.345, 2020-10-22 22:22:22.345, 2020-10-22T22:22:22.000007
         @param check_text:
         @return:
         """
-        # try:
-        #     if ":" in check_text:
-        #         CTime.from_datetime_str(check_text, '%Y-%m-%d %H:%M:%S')
-        #     else:
-        #         return False
-        #     return True
-        # except:
-        #     return False
+        time_format = "%Y{0}%m{0}%d{1}%H:%M:%S{2}"
+        sep_real = ""
+        sep_list = ['-', '/']
+        for sep in sep_list:
+            if sep in check_text:
+                sep_real = sep
+                break
+        # 判断是否带T，GMT
+        sign_real = " "
+        sign_list = ['T', 'CST']
+        for sign in sign_list:
+            if sign in check_text:
+                sign_real = sign
+                break
+        second_real = ""
+        if "." in check_text:
+            second_real = ".%f"
+        time_format_real = time_format.format(sep_real, sign_real, second_real)
+        default_date = CTime.now()
+        date_value = CTime.from_datetime_str(check_text, default_date, time_format_real)
+        if CUtils.equal_ignore_case(date_value, default_date):
+            return False
         return True
 
     @classmethod
     def text_is_date_or_datetime(cls, check_text: str) -> bool:
         """
         判断是否为日期或日期时间），如20201022,2020/10/22,2020-10-22，
-            20201022 22:22:22:345,2020/10/22 22:22:22:345,2020-10-22 22:22:22:345, 2020-10-22T22:22:22:000007
+            20201022 22:22:22.345,2020/10/22 22:22:22.345,2020-10-22 22:22:22.345, 2020-10-22T22:22:22.000007
         @param check_text:
         @return:
         """
@@ -190,6 +212,19 @@ class CUtils(CResource):
         return False
 
     @classmethod
+    def text_is_decimal_or_integer_positive(cls, check_text: str) -> bool:
+        """
+        判断是否为正小数或整数（不包含负数）
+        :param check_text:
+        :return:
+        """
+        if cls.text_is_decimal_or_integer(check_text):
+            value_num = float(check_text)
+            if value_num > 0:
+                return True
+        return False
+
+    @classmethod
     def text_is_alpha(cls, check_text: str) -> bool:
         """
         判断是否字母
@@ -206,6 +241,17 @@ class CUtils(CResource):
         @return:
         """
         return isinstance(obj, str)
+
+    @classmethod
+    def len_of_text(cls, text_obj):
+        """
+        获取文本或数字类型的长度
+        @param text_obj:
+        @return:
+        """
+        value_str = CUtils.any_2_str(text_obj)
+        len_text = len(value_str)
+        return len_text
 
     @classmethod
     def split(cls, split_text: str, split_sep_list: list) -> list:
@@ -291,7 +337,8 @@ class CUtils(CResource):
               在这里获取块的大小，并且读取第1个块和最后一个块有值，才能确定影像正常可以读取
             """
             pass
-        return False
+        return True
+
 
 if __name__ == '__main__':
     # text_alpha = r'你/好 A\B\B C/中_国'

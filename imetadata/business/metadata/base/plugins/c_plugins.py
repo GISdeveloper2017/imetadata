@@ -561,9 +561,9 @@ class CPlugins(CResource):
         # 这里将结果信息丢弃不用, 因为在提取业务元数据的方法中, 已经将异常信息记录到质检数据中
         result = self.init_metadata_bus(parser)
         if CResult.result_success(result):
-            if parser.metadata.metadata_type == self.MetaDataFormat_XML:
+            if parser.metadata.metadata_bus_type == self.MetaDataFormat_XML:
                 parser.batch_qa_metadata_bus_xml_item(self.init_qa_metadata_bus_xml_list(parser))
-            elif parser.metadata.metadata_type == self.MetaDataFormat_Json:
+            elif parser.metadata.metadata_bus_type == self.MetaDataFormat_Json:
                 parser.batch_qa_metadata_bus_json_item(self.init_qa_metadata_bus_json_list(parser))
         else:
             parser.metadata.set_metadata_bus(
@@ -588,3 +588,164 @@ class CPlugins(CResource):
         :return:
         """
         pass
+
+    def init_qa_file_integrity_default_list(self, file_name_with_full_path: str):
+        """
+        todo 赵宇飞  常用的文件对象校验列表集合（img/tif/tiff/shp）,tiff暂无
+        @param file_name_with_path: img的全文件名
+        @return: 返回常用文件完整性的质检列表，如果是主文件，会有一个格式的项，用于质检文件的打开可读性
+        """
+        file_ext = CFile.file_ext(file_name_with_full_path)
+        if CUtils.equal_ignore_case(file_ext, self.Name_Img):
+            return self.init_qa_file_integrity_img_list(file_name_with_full_path)
+        elif CUtils.equal_ignore_case(file_ext, self.Name_Tif):
+            return self.init_qa_file_integrity_tif_list(file_name_with_full_path)
+        elif CUtils.equal_ignore_case(file_ext, self.Name_Shp):
+            return self.init_qa_file_integrity_shp_list(file_name_with_full_path)
+        return []
+
+
+    def init_qa_file_integrity_img_list(self, file_name_with_full_path: str):
+        """
+        todo 赵宇飞 对img数据进行完整性质检，并返回检查结果列表
+            xxx.img	文件	栅格数据可读	错误
+            xxx.ige	文件	img小于1M时必须存在	警告
+            xxx.rrd	文件	是否有金字塔，内置和外置金字塔文件	警告
+            xxx.rde	文件	rrd大于2G时存在	警告
+        @param file_name_with_path: img的全文件名
+        @return: 返回img的质检列表,如果是主文件img，会有一个格式的项，用于质检文件的打开可读性
+        """
+        file_main_name = CFile.file_main_name(file_name_with_full_path)
+        file_ext = CFile.file_ext(file_name_with_full_path)
+        file_path = CFile.file_path(file_name_with_full_path)
+
+        result_list = list()
+        if CUtils.equal_ignore_case(file_ext, self.Name_Img):
+            result_list.extend([
+                {
+                    self.Name_FileName: '{0}.img'.format(file_main_name),
+                    self.Name_ID: 'img',
+                    self.Name_Title: 'IMG影像',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error,
+                    self.Name_Format: self.DataFormat_Raster_File
+                }, {
+                    self.Name_FileName: '{0}.rrd'.format(file_main_name),
+                    self.Name_ID: 'rrd',
+                    self.Name_Title: '金字塔文件',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                }
+            ])
+
+            file_size = CFile.file_size(file_name_with_full_path)
+            if file_size < 1024 * 1024:
+                """img小于1M时必须存在 xxx.ige"""
+                result_list.extend([
+                    {
+                        self.Name_FileName: '{0}.ige'.format(file_main_name),
+                        self.Name_ID: 'ige',
+                        self.Name_Title: 'ige文件',
+                        self.Name_Group: self.QA_Group_Data_Integrity,
+                        self.Name_Result: self.QA_Result_Warn
+                    }
+                ])
+
+            rrd_file_with_path = CFile.join_file(file_path, '{0}.{1}'.format(file_main_name, self.Name_rrd))
+            if CFile.file_or_path_exist(rrd_file_with_path):
+                rrd_file_size = CFile.file_size(rrd_file_with_path)
+                if rrd_file_size > 1024 * 1024 * 1024 * 2:
+                    """xxx.rde	文件	rrd大于2G时存在"""
+                    result_list.extend([
+                        {
+                            self.Name_FileName: '{0}.rde'.format(file_main_name),
+                            self.Name_ID: 'rde',
+                            self.Name_Title: 'rde文件',
+                            self.Name_Group: self.QA_Group_Data_Integrity,
+                            self.Name_Result: self.QA_Result_Warn
+                        }
+                    ])
+        return result_list
+
+
+    def init_qa_file_integrity_tif_list(self, file_name_with_full_path: str):
+        """
+        todo 赵宇飞 对tif数据进行完整性质检，并返回检查结果列表
+            可用性	xxx.tif	文件	栅格数据可读	错误
+            完整性	xxx.tfw	文件	投影信息文件	警告
+        @param file_name_with_path: img的全文件名
+        @return: 返回img的质检列表,如果是主文件tif，会有一个格式的项，用于质检文件的打开可读性
+        """
+        file_main_name = CFile.file_main_name(file_name_with_full_path)
+        file_ext = CFile.file_ext(file_name_with_full_path)
+        # file_path = CFile.file_path(file_name_with_full_path)
+
+        result_list = list()
+        if CUtils.equal_ignore_case(file_ext, self.Name_Tif):
+            result_list.extend([
+                {
+                    self.Name_FileName: '{0}.tif'.format(file_main_name),
+                    self.Name_ID: 'tif',
+                    self.Name_Title: 'TIF影像',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error,
+                    self.Name_Format: self.DataFormat_Raster_File
+                }, {
+                    self.Name_FileName: '{0}.tfw'.format(file_main_name),
+                    self.Name_ID: 'tfw',
+                    self.Name_Title: 'TFW文件',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                }
+            ])
+        return result_list
+
+    def init_qa_file_integrity_shp_list(self, file_name_with_full_path: str):
+        """
+        todo 赵宇飞 对shp数据进行完整性质检，并返回检查结果列表
+        @param file_name_with_path: img的全文件名
+        @return: 返回img的质检列表,如果是主文件shp，会有一个格式的项，用于质检文件的打开可读性
+        """
+        file_main_name = CFile.file_main_name(file_name_with_full_path)
+        # file_ext = CFile.file_ext(file_name_with_full_path)
+        # file_path = CFile.file_path(file_name_with_full_path)
+        return [
+            {
+                self.Name_FileName: '{0}.shp'.format(file_main_name),
+                self.Name_ID: 'shp',
+                self.Name_Title: 'shp文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Format: self.DataFormat_Vector_File,
+                self.Name_Result: self.QA_Result_Error
+            },{
+                self.Name_FileName: '{0}.dbf'.format(file_main_name),
+                self.Name_ID: 'dbf',
+                self.Name_Title: '属性数据文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },{
+                self.Name_FileName: '{0}.prj'.format(file_main_name),
+                self.Name_ID: 'prj',
+                self.Name_Title: '投影文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Warn
+            }, {
+                self.Name_FileName: '{0}.shx'.format(file_main_name),
+                self.Name_ID: 'shx',
+                self.Name_Title: 'shx文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            }, {
+                self.Name_FileName: '{0}.sbn'.format(file_main_name),
+                self.Name_ID: 'sbn',
+                self.Name_Title: 'sbn文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            }, {
+                self.Name_FileName: '{0}.sbx'.format(file_main_name),
+                self.Name_ID: 'sbx',
+                self.Name_Title: 'sbx文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            }
+        ]

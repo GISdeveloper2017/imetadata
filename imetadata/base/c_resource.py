@@ -170,6 +170,14 @@ class CResource:
 
     Name_Keyword = 'keyword'
 
+    Name_Img = 'img'
+    Name_Ige = 'ige'
+    Name_rrd = 'rrd'
+    Name_rde = 'rde'
+    Name_Tif = 'tif'
+    Name_Tiff = 'tiff'
+    Name_Shp = 'shp'
+
     Path_MD_Rule_Type = '/root/type'
     Path_MD_Rule_Plugins_Dir = '/root/plugins/dir/plugin'
     Path_MD_Rule_Plugins_File = '/root/plugins/file/plugin'
@@ -248,7 +256,8 @@ class CResource:
     value_type_string = 'string' # 文本类型
     value_type_date = 'date'  # 日期类型
     value_type_datetime = 'datetime'  # 日期时间类型
-    value_type_date_or_datetime = 'date_or_datetime'  # 日期类型
+    value_type_date_or_datetime = 'date_or_datetime'  # 日期类型或日期时间类型
     value_type_decimal = 'decimal'  # 小数（包含负数）
     value_type_integer = 'integer'  # 整数（包含负整数）
     value_type_decimal_or_integer ='decimal_or_integer'  # 小数或整数（包含负数）
+    value_type_decimal_or_integer_positive ='positive_decimal_or_integer'  # 正小数或整数（不包含负数）

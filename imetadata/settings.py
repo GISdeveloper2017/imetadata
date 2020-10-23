@@ -32,8 +32,14 @@ application = {
         'plugins': {
             'title': '特殊目录下的文件识别配置',
             'dir': [
-                {'plugin': ['plugins_1000_dom_10', 'plugins_1002_dom_12'], 'keyword': 'dom'},
-                {'plugin': ['plugins_1010_dem_10', 'plugins_1010_dem_12'], 'keyword': 'dem'}
+                {'plugin': ['plugins_1000_dom_10', 'plugins_1001_dom_10_dom', 'plugins_1002_dom_12',
+                            'plugins_1003_dom_12_dom', 'plugins_1004_dom_part_2'], 'keyword': 'dom'},
+                {'plugin': ['plugins_1010_dem_10', 'plugins_1011_dem_10_dem', 'plugins_1012_dem_12',
+                            'plugins_1013_dem_12_dem', 'plugins_1014_dem_part_2', 'plugins_1015_dem_noframe'],
+                 'keyword': 'dem'},
+                {'plugin': ['plugins_1020_ortho'], 'keyword': '单景正射'},
+                {'plugin': ['plugins_1030_mosaic'], 'keyword': '镶嵌影像'},
+                {'plugin': ['plugins_1040_third_survey_block', 'plugins_1041_third_survey_noblock'], 'keyword': '三调影像'}
             ]
         },
         'inbound': {
