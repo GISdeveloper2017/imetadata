@@ -193,12 +193,13 @@ class CAudit(CResource):
         :return:
         """
         result_dict = result_template
-        if len(value) <= value_width:
+        value_lenth = CUtils.len_of_text(value)
+        if value_lenth <= value_width:
             result_dict[cls.Name_Message] = '{0}的值的宽度不超过{1}, 符合要求!'.format(title_prefix, value_width)
             result_dict[cls.Name_Result] = cls.QA_Result_Pass
         else:
             result_dict[cls.Name_Message] = '{0}的值[{1}],宽度为[{2}]，不符合要求的宽度不超过[{3}], 请检查修正!'.format(title_prefix,
-                                                                                               value, len(value),
+                                                                                               value, value_lenth,
                                                                                                value_width)
 
         return result_dict

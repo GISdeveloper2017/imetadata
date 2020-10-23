@@ -243,6 +243,17 @@ class CUtils(CResource):
         return isinstance(obj, str)
 
     @classmethod
+    def len_of_text(cls, text_obj):
+        """
+        获取文本或数字类型的长度
+        @param text_obj:
+        @return:
+        """
+        value_str = CUtils.any_2_str(text_obj)
+        len_text = len(value_str)
+        return len_text
+
+    @classmethod
     def split(cls, split_text: str, split_sep_list: list) -> list:
         """
         根据指定的分隔符数组, 对指定文本进行分割
