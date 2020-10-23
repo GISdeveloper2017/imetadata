@@ -326,7 +326,7 @@ class CUtils(CResource):
               在这里获取块的大小，并且读取第1个块和最后一个块有值，才能确定影像正常可以读取
             """
             pass
-        return False
+        return True
 
 
 if __name__ == '__main__':
