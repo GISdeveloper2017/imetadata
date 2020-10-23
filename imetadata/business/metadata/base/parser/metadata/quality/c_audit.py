@@ -59,7 +59,7 @@ class CAudit(CResource):
 
         value_not_null = CUtils.dict_value_by_name(qa_items, cls.Name_NotNull, None)
         if value_not_null is not None:
-            result_list.append(cls.__a_check_value_not_null__(result_template, value, title_prefix))
+            result_list.append(cls.__a_check_value_not_null__(result_template, value, title_prefix, value_not_null))
 
             if not CUtils.equal_ignore_case(value, ''):
                 value_type = CUtils.dict_value_by_name(qa_items, cls.Name_DataType, None)
@@ -327,7 +327,7 @@ class CAudit(CResource):
         return result_dict
 
     @classmethod
-    def __a_check_value_not_null__(cls, result_template: dict, value, title_prefix):
+    def __a_check_value_not_null__(cls, result_template: dict, value, title_prefix, value_not_null):
         """
             对结果值不为空进行校验
         @param result_template:
@@ -336,12 +336,15 @@ class CAudit(CResource):
         @return:
         """
         result_dict = result_template
-        if value is not None and (not CUtils.equal_ignore_case(value, '')):
-            result_dict[cls.Name_Message] = '{0}的值不为空, 符合要求!'.format(title_prefix)
-            result_dict[cls.Name_Result] = cls.QA_Result_Pass
-        else:
-            result_dict[cls.Name_Message] = '{0}的值为空, 请检查修正!'.format(title_prefix, value)
+        if value_not_null is None or value_not_null is False:
+            return result_dict
 
+        if value_not_null is True:
+            if value is not None and (not CUtils.equal_ignore_case(value, '')):
+                result_dict[cls.Name_Message] = '{0}的值不为空, 符合要求!'.format(title_prefix)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值为空, 请检查修正!'.format(title_prefix, value)
         return result_dict
 
     @classmethod

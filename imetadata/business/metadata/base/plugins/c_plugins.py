@@ -561,9 +561,9 @@ class CPlugins(CResource):
         # 这里将结果信息丢弃不用, 因为在提取业务元数据的方法中, 已经将异常信息记录到质检数据中
         result = self.init_metadata_bus(parser)
         if CResult.result_success(result):
-            if parser.metadata.metadata_type == self.MetaDataFormat_XML:
+            if parser.metadata.metadata_bus_type == self.MetaDataFormat_XML:
                 parser.batch_qa_metadata_bus_xml_item(self.init_qa_metadata_bus_xml_list(parser))
-            elif parser.metadata.metadata_type == self.MetaDataFormat_Json:
+            elif parser.metadata.metadata_bus_type == self.MetaDataFormat_Json:
                 parser.batch_qa_metadata_bus_json_item(self.init_qa_metadata_bus_json_list(parser))
         else:
             parser.metadata.set_metadata_bus(

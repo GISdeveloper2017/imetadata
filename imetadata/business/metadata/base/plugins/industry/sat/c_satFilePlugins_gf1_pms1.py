@@ -11,7 +11,7 @@ from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CM
 from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
 
 
-class CSatFilePlugins_gf1_pms(CSatPlugins):
+class CSatFilePlugins_gf1_pms1(CSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
