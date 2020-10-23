@@ -96,11 +96,45 @@ class CUtils(CResource):
     @classmethod
     def text_is_date(cls, check_text: str) -> bool:
         """
-        TODO 张源博 判断是否为日期（不包含时间），如20201022,2020/10/22,2020-10-22
+        TODO 赵宇飞 判断是否为年月日,或年月（不包含时间），如202010,2020/10,2020-10 或20201022,2020/10/22,2020-10-22
+        @param check_text:
+        @return:
+        """
+        if cls.text_is_date_day(check_text):
+            return True
+        elif cls.text_is_date_month(check_text):
+            return True
+        return False
+
+    @classmethod
+    def text_is_date_day(cls, check_text: str) -> bool:
+        """
+        TODO 张源博 判断是否为年月日（不包含时间），如20201022,2020/10/22,2020-10-22
         @param check_text:
         @return:
         """
         time_format = "%Y{0}%m{0}%d"
+        sep_real = ""
+        sep_list = ['-', '/']
+        for sep in sep_list:
+            if sep in check_text:
+                sep_real = sep
+                break
+        time_format_real = time_format.format(sep_real)
+        default_date = CTime.now()
+        date_value = CTime.from_datetime_str(check_text, default_date, time_format_real)
+        if CUtils.equal_ignore_case(date_value, default_date):
+            return False
+        return True
+
+    @classmethod
+    def text_is_date_month(cls, check_text: str) -> bool:
+        """
+        TODO 赵宇飞 判断是否为年月（不包含日），如202010,2020/10,2020-10
+        @param check_text:
+        @return:
+        """
+        time_format = "%Y{0}%m"
         sep_real = ""
         sep_list = ['-', '/']
         for sep in sep_list:
@@ -345,7 +379,7 @@ if __name__ == '__main__':
     # print(CUtils.split(text_alpha, ['/', '\\', ' ', '_', '-']))
     check_text = '-125.02'
     check_text = '12'
-    check_text = '2001/01/01'
+    check_text = '2001-01'
     print('check_text: ' + CUtils.any_2_str(check_text))
     print('numeric: ' + CUtils.any_2_str(CUtils.text_is_numeric(check_text)))
     print('decimal: ' + CUtils.any_2_str(CUtils.text_is_decimal(check_text)))
