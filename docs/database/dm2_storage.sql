@@ -580,3 +580,104 @@ create sequence sys_seq_date_autoinc increment by 1 minvalue 1 no maxvalue start
 delete from ro_global_config where gcfgid = 10001;
 insert into ro_global_config(gcfgid, gcfgcode, gcfgtitle, gcfgvalue, gcfgmemo)
  values (10001, 'sys_seq_date_autoinc', '日期自增序列最后记录', current_date::text, null);
+
+
+
+/*
+    2020-10-22
+    . 开始设计数据入库的具体设计
+        . 在dm2_storage表中, 增加不同类型的存储
+            . dstType varchar
+                . core: 核心存储
+                . inbound: 入库存储
+        . 在dm2_storage_directory表中, 增加其他属性字段
+            . dsdOtherOption jsonb
+                . 用于存储其他不重要的, 或者待扩展的信息
+                    . instore.allow: int(-1:true;0:false): 是否允许提交入库
+        . 在dm2_storage_file表中, 增加其他属性字段
+            . dsfOtherOption jsonb
+                . 用于存储其他不重要的, 或者待扩展的信息
+        . 在dm2_storage_object表中, 增加其他属性字段
+            . dsoOtherOption jsonb
+                . 用于存储其他不重要的, 或者待扩展的信息
+                    . instore.allow: int(-1:true;0:false): 是否允许提交入库
+*/
+alter table dm2_storage add column dstType varchar(20) default 'core';
+comment on column dm2_storage.dstType is '存储类型';
+
+alter table dm2_storage_directory add column dsdOtherOption jsonb;
+comment on column dm2_storage_directory.dsdOtherOption is '其他';
+
+alter table dm2_storage_file add column dsfOtherOption jsonb;
+comment on column dm2_storage_file.dsfOtherOption is '其他';
+
+alter table dm2_storage_object add column dsoOtherOption jsonb;
+comment on column dm2_storage_object.dsoOtherOption is '其他';
+
+alter table dm2_storage_object add column dso_quality_summary jsonb;
+comment on column dm2_storage_object.dso_quality_summary is '质检概况';
+
+/*
+    2020-10-23
+    开始数据入库的数据表设计
+    . dm2_storage_inbound
+        . 数据入库主表
+    . dm2_storage_inbound_log
+        . 数据入库日志
+*/
+drop table dm2_storage_inbound cascade ;
+
+create table dm2_storage_inbound
+(
+    dsiid         serial       not null
+        constraint dm2_storage_inbound_pk primary key,
+    dsistorageid  varchar(100) not null,
+    dsidirectory  varchar(2000),
+    dsibatchno    varchar(20),
+    dsiaddtime    timestamp(6) default now(),
+    dsistatus     integer default 0,
+    dsiProcTime   timestamp(6) default now(),
+    dsiProcID   varchar(100),
+    dsiProcMemo text,
+    dsiMemo     text
+);
+
+comment on table dm2_storage_inbound is '数管-入库';
+
+comment on column dm2_storage_inbound.dsiid is '标识';
+comment on column dm2_storage_inbound.dsistorageid is '存储标识';
+comment on column dm2_storage_inbound.dsidirectory is '目录名称';
+comment on column dm2_storage_inbound.dsibatchno is '批次编号';
+comment on column dm2_storage_inbound.dsistatus is '处理状态';
+comment on column dm2_storage_inbound.dsiProcTime is '最小处理时间';
+comment on column dm2_storage_inbound.dsiProcID is '处理标识';
+comment on column dm2_storage_inbound.dsiProcMemo is '处理结果';
+comment on column dm2_storage_inbound.dsiMemo is '备注';
+alter table dm2_storage_inbound owner to postgres;
+
+drop table dm2_storage_inbound_log cascade ;
+
+create table dm2_storage_inbound_log
+(
+    dsilid         serial       not null
+        constraint dm2_storage_inbound_log_pk primary key,
+    dsilownerid int not null,
+    dsildirectory  varchar(2000),
+    dsilfilename  varchar(2000),
+    dsilobjectname  varchar(100),
+    dsilobjecttype  varchar(100),
+    dsiladdtime    timestamp(6) default now(),
+    dsilinbound     integer default 0
+);
+
+comment on table dm2_storage_inbound_log is '数管-入库-日志';
+
+comment on column dm2_storage_inbound_log.dsilid is '标识';
+comment on column dm2_storage_inbound_log.dsilownerid is '所属入库记录标识';
+comment on column dm2_storage_inbound_log.dsildirectory is '目录';
+comment on column dm2_storage_inbound_log.dsilfilename is '文件名';
+comment on column dm2_storage_inbound_log.dsilobjectname is '对象名';
+comment on column dm2_storage_inbound_log.dsilobjecttype is '对象类型';
+comment on column dm2_storage_inbound_log.dsiladdtime is '添加时间';
+comment on column dm2_storage_inbound_log.dsilinbound is '是否允许入库';
+alter table dm2_storage_inbound_log owner to postgres;

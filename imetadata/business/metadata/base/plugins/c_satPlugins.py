@@ -12,6 +12,7 @@ from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.content.c_virtualContent_Dir import CVirtualContentDir
 from imetadata.business.metadata.base.content.c_virtualContent_Package import CVirtualContentPackage
+from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerCommon import CMDTransformerCommon
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
@@ -28,7 +29,13 @@ class CSatPlugins(CPlugins):
     Sat_Object_Status_File = 'file'
     Sat_Object_Status_Unknown = 'unknown'
 
-    __object_status__ = Sat_Object_Status_Unknown
+    def __init__(self, file_info: CDMFilePathInfoEx):
+        super().__init__(file_info)
+        self.__object_status__ = self.Sat_Object_Status_Unknown
+
+    @property
+    def object_status(self):
+        return self.__object_status__
 
     def get_information(self) -> dict:
         information = super().get_information()

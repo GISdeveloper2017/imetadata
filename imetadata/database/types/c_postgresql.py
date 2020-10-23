@@ -58,17 +58,12 @@ class CPostgreSQL(CDataBase):
                     where gcfgcode = 'sys_seq_date_autoinc'
                     ''')
             elif not CUtils.equal_ignore_case(last_seq_date, curr_seq_date):
-                self.execute_batch(
-                    [
-                        ('''
-                        select setval('sys_seq_date_autoinc', 1)
-                        ''')
-                        , ('''
-                        update ro_global_config set gcfgvalue = current_date::text
-                        where gcfgcode = 'sys_seq_date_autoinc'
-                        ''')
-                    ]
-                )
+                self.execute('''
+                update ro_global_config set gcfgvalue = current_date::text
+                where gcfgcode = 'sys_seq_date_autoinc'
+                ''')
+                next_value = self.one_row("select setval('sys_seq_date_autoinc', 1)").value_by_index(0, 0, 1)
+                return '{0}-{1}'.format(curr_seq_date, CUtils.int_2_format_str(next_value, 3))
 
             next_value = self.one_row("select nextval('sys_seq_date_autoinc')").value_by_index(0, 0, 1)
             return '{0}-{1}'.format(curr_seq_date, CUtils.int_2_format_str(next_value, 3))
