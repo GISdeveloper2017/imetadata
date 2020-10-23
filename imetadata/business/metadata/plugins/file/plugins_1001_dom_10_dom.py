@@ -69,28 +69,6 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
 
         return self.__object_confirm__, self.__object_name__
 
-    def init_metadata_bus(self, parser: CMetaDataParser) -> str:
-        """
-        提取xml格式的业务元数据, 加载到parser的metadata对象中
-        todo 负责人 王学谦 在这里将dom-10的元数据, 转换为xml, 存储到parser.metadata.set_metadata_bus_file中
-        :param parser:
-        :return:
-        """
-        if self.metadata_bus_transformer_type is None:
-            parser.metadata.set_metadata_bus(self.DB_True, '', self.MetaDataFormat_Text, '')
-            return CResult.merge_result(self.Success, '本数据无业务元数据, 无须解析!')
-
-        transformer = CMDTransformerDOM(
-            parser.object_id,
-            parser.object_name,
-            parser.file_info,
-            parser.file_content,
-            parser.metadata,
-            self.metadata_bus_transformer_type,
-            self.metadata_bus_src_filename_with_path
-        )
-        return transformer.process()
-
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 文件的质检列表
@@ -108,12 +86,9 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
         :param parser:
         :return:
         """
-        return [
-             {self.Name_FileName: '{0}.tfw'.format(self.classified_object_name()),
-              self.Name_ID: 'tfw',
-                self.Name_Title: '投影信息文件',
-              self.Name_Result: self.QA_Result_Warn}
-        ]
+        list_qa = list()
+        list_qa.extend(self.init_qa_file_integrity_tif_list(self.file_info.__file_main_name_with_full_path__))
+        return list_qa
 
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
@@ -125,7 +100,7 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_string,
+                self.Name_DataType: self.value_type_decimal_or_integer_positive,
                 self.Name_XPath: 'pixelsize.width',
                 self.Name_ID: 'width',
                 self.Name_Title: '影像宽度',
@@ -196,248 +171,385 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
         :param parser:
         :return:
         """
-        return [
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date,
-                self.Name_Width: 100,
-                self.Name_XPath: "//item[@name='ysjwjm']",
-                self.Name_ID: 'ysjwjm',
-                self.Name_Title: '带扩展元数据文件名',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date,
-                self.Name_Width: 100,
-                self.Name_XPath: "//item[@name='sjmc']",
-                self.Name_ID: 'sjmc',
-                self.Name_Title: '对象名称',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 50,
-                self.Name_XPath: "//item[@name='sjbqdwm']",
-                self.Name_ID: 'sjbqdwm',
-                self.Name_Title: '单位名称',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 50,
-                self.Name_XPath: "//item[@name='sjscdwm']",
-                self.Name_ID: 'sjscdwm',
-                self.Name_Title: '单位名称',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 50,
-                self.Name_XPath: "//item[@name='sjcbdwm']",
-                self.Name_ID: 'sjcbdwm',
-                self.Name_Title: '单位名称',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_string,
-                self.Name_XPath: "//item[@name='sjscsj']",
-                self.Name_ID: 'sjscsj',
-                self.Name_Title: '数据上传时间',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 100,
-                self.Name_XPath: "//item[@name='mj']",
-                self.Name_ID: 'mj',
-                self.Name_Title: '密级',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 20,
-                self.Name_XPath: "//item[@name='th']",
-                self.Name_ID: 'th',
-                self.Name_Title: '图号',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 20,
-                self.Name_XPath: "//item[@name='dmfbl']",
-                self.Name_ID: 'dmfbl',
-                self.Name_Title: '地面分辨率',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 20,
-                self.Name_XPath: "//item[@name='yxscms']",
-                self.Name_ID: 'yxscms',
-                self.Name_Title: '影像色彩模式',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 50,
-                self.Name_XPath: "//item[@name='xsws']",
-                self.Name_ID: 'xsws',
-                self.Name_Title: '影像位深',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 25,
-                self.Name_XPath: "//item[@name='sjgs']",
-                self.Name_ID: 'sjgs',
-                self.Name_Title: '时间格式',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 50,
-                self.Name_XPath: "//item[@name='dtty']",
-                self.Name_ID: 'dtty',
-                self.Name_Title: '地图投影',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 38,
-                self.Name_XPath: "//item[@name='wxmc']",
-                self.Name_ID: 'wxmc',
-                self.Name_Title: '卫星名称',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 20,
-                self.Name_XPath: "//item[@name='QSYXCGQLX']",
-                self.Name_ID: 'QSYXCGQLX',
-                self.Name_Title: '全色影像传感器',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Width: 8,
-                self.Name_XPath: "//item[@name='QSWXYXFBL']",
-                self.Name_ID: 'QSWXYXFBL',
-                self.Name_Title: '全色卫星影像分辨率',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 38,
-                self.Name_XPath: "//item[@name='QSWXYXGDH']",
-                self.Name_ID: 'QSWXYXGDH',
-                self.Name_Title: '全色卫星影像轨道号',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_XPath: "//item[@name='qswxyxhqsj']",
-                self.Name_ID: 'qswxyxhqsj',
-                self.Name_Title: '全色卫星影像获取时间',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 100,
-                self.Name_XPath: "//item[@name='DGPYXCGQLX']",
-                self.Name_ID: 'DGPYXCGQLX',
-                self.Name_Title: '多光谱影像传感器',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Width: 8,
-                self.Name_XPath: "//item[@name='DGPWXYXFBL']",
-                self.Name_ID: 'DGPWXYXFBL',
-                self.Name_Title: '多光谱卫星影像分辨率',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 100,
-                self.Name_XPath: "//item[@name='DGPWXYXGDH']",
-                self.Name_ID: 'DGPWXYXGDH',
-                self.Name_Title: '多光谱卫星影像轨道号',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_date,
-                self.Name_Width: 20,
-                self.Name_XPath: "//item[@name='DGPWXYXHQSJ']",
-                self.Name_ID: 'DGPWXYXHQSJ',
-                self.Name_Title: '多光谱卫星影像获取时间',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            }
-        ]
+        if self.metadata_bus_transformer_type == 'mdb':
+
+            return [
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 100,
+                    self.Name_XPath: "//item[@name='ysjwjm']",
+                    self.Name_ID: 'ysjwjm',
+                    self.Name_Title: '带扩展元数据文件名',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 100,
+                    self.Name_XPath: "//item[@name='sjmc']",
+                    self.Name_ID: 'sjmc',
+                    self.Name_Title: '对象名称',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 50,
+                    self.Name_XPath: "//item[@name='sjbqdwm']",
+                    self.Name_ID: 'sjbqdwm',
+                    self.Name_Title: '单位名称',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 50,
+                    self.Name_XPath: "//item[@name='sjscdwm']",
+                    self.Name_ID: 'sjscdwm',
+                    self.Name_Title: '单位名称',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 50,
+                    self.Name_XPath: "//item[@name='sjcbdwm']",
+                    self.Name_ID: 'sjcbdwm',
+                    self.Name_Title: '单位名称',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_date,
+                    self.Name_XPath: "//item[@name='sjscsj']",
+                    self.Name_ID: 'sjscsj',
+                    self.Name_Title: '数据上传时间',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 100,
+                    self.Name_XPath: "//item[@name='mj']",
+                    self.Name_ID: 'mj',
+                    self.Name_Title: '密级',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 20,
+                    self.Name_XPath: "//item[@name='th']",
+                    self.Name_ID: 'th',
+                    self.Name_Title: '图号',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 20,
+                    self.Name_XPath: "//item[@name='dmfbl']",
+                    self.Name_ID: 'dmfbl',
+                    self.Name_Title: '地面分辨率',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 20,
+                    self.Name_XPath: "//item[@name='yxscms']",
+                    self.Name_ID: 'yxscms',
+                    self.Name_Title: '影像色彩模式',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 50,
+                    self.Name_XPath: "//item[@name='xsws']",
+                    self.Name_ID: 'xsws',
+                    self.Name_Title: '影像位深',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 25,
+                    self.Name_XPath: "//item[@name='sjgs']",
+                    self.Name_ID: 'sjgs',
+                    self.Name_Title: '时间格式',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 50,
+                    self.Name_XPath: "//item[@name='dtty']",
+                    self.Name_ID: 'dtty',
+                    self.Name_Title: '地图投影',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 38,
+                    self.Name_XPath: "//item[@name='wxmc']",
+                    self.Name_ID: 'wxmc',
+                    self.Name_Title: '卫星名称',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 20,
+                    self.Name_XPath: "//item[@name='qsyxcgqlx']",
+                    self.Name_ID: 'qsyxcgqlx',
+                    self.Name_Title: '全色影像传感器',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_decimal_or_integer,
+                    self.Name_Width: 8,
+                    self.Name_XPath: "//item[@name='qswxyxfbl']",
+                    self.Name_ID: 'qswxyxfbl',
+                    self.Name_Title: '全色卫星影像分辨率',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 38,
+                    self.Name_XPath: "//item[@name='qswxyxgdh']",
+                    self.Name_ID: 'qswxyxgdh',
+                    self.Name_Title: '全色卫星影像轨道号',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_date,
+                    self.Name_XPath: "//item[@name='qswxyxhqsj']",
+                    self.Name_ID: 'qswxyxhqsj',
+                    self.Name_Title: '全色卫星影像获取时间',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 100,
+                    self.Name_XPath: "//item[@name='dgpyxcgqlx']",
+                    self.Name_ID: 'dgpyxcgqlx',
+                    self.Name_Title: '多光谱影像传感器',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_decimal_or_integer,
+                    self.Name_Width: 8,
+                    self.Name_XPath: "//item[@name='dgpwxyxfbl']",
+                    self.Name_ID: 'dgpwxyxfbl',
+                    self.Name_Title: '多光谱卫星影像分辨率',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 100,
+                    self.Name_XPath: "//item[@name='dgpwxyxgdh']",
+                    self.Name_ID: 'dgpwxyxgdh',
+                    self.Name_Title: '多光谱卫星影像轨道号',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_date,
+                    self.Name_XPath: "//item[@name='dgpwxyxhqsj']",
+                    self.Name_ID: 'dgpwxyxhqsj',
+                    self.Name_Title: '多光谱卫星影像获取时间',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                }
+            ]
+
+        else: #mat、xls、xlsx业务元数据
+
+            return [
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 100,
+                    self.Name_XPath: "//item[@name='数据名称']",
+                    self.Name_ID: '数据名称',
+                    self.Name_Title: '元数据文件名',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_date,
+                    self.Name_XPath: "//item[@name='数据生产时间']",
+                    self.Name_ID: '数据生产时间',
+                    self.Name_Title: '数据生产时间',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_date,
+                    self.Name_XPath: "//item[@name='航摄时间']",
+                    self.Name_ID: '航摄时间',
+                    self.Name_Title: '航摄时间',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 20,
+                    self.Name_XPath: "//item[@name='密级']",
+                    self.Name_ID: '密级',
+                    self.Name_Title: '密级',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 10,
+                    self.Name_XPath: "//item[@name='地面分辨率']",
+                    self.Name_ID: '地面分辨率',
+                    self.Name_Title: '地面分辨率',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 50,
+                    self.Name_XPath: "//item[@name='像素位数']",
+                    self.Name_ID: '像素位数',
+                    self.Name_Title: '像素位数',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 100,
+                    self.Name_XPath: "//item[@name='地图投影']",
+                    self.Name_ID: '地图投影',
+                    self.Name_Title: '地图投影',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 38,
+                    self.Name_XPath: "//item[@name='卫星名称']",
+                    self.Name_ID: '卫星名称',
+                    self.Name_Title: '卫星名称',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 25,
+                    self.Name_XPath: "//item[@name='数据格式']",
+                    self.Name_ID: '数据格式',
+                    self.Name_Title: '数据格式',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 100,
+                    self.Name_XPath: "//item[@name='数据生产单位名']",
+                    self.Name_ID: '数据生产单位名',
+                    self.Name_Title: '数据生产单位名',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 100,
+                    self.Name_XPath: "//item[@name='数据版权单位名']",
+                    self.Name_ID: '数据版权单位名',
+                    self.Name_Title: '数据版权单位名',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 100,
+                    self.Name_XPath: "//item[@name='数据出版单位名']",
+                    self.Name_ID: '数据出版单位名',
+                    self.Name_Title: '数据出版单位名',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                }
+            ]
+
 if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
     #                        '/Users/wangxiya/Documents/交换/1.给我的/即时服务产品/业务数据集/DOM/湖北单个成果数据/H49G001026/H49G001026.tif',

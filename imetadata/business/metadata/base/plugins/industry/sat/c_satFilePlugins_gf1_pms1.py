@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/9/21 17:35 
 # @Author : 王西亚 
-# @File : c_satFilePlugins_gf1_wfv.py
+# @File : c_satFilePlugins_gf1_pms1.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
 from imetadata.base.c_time import CTime
@@ -15,8 +15,8 @@ class CSatFilePlugins_gf1_pms1(CSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = 'pms'
-        information[self.Plugins_Info_Name] = 'pms'
+        information[self.Plugins_Info_Title] = 'pms1'
+        information[self.Plugins_Info_Name] = 'pms1'
         information[self.Plugins_Info_Code] = 'gf1'
         information[self.Plugins_Info_Catalog] = '高分一号'
 
@@ -114,19 +114,185 @@ class CSatFilePlugins_gf1_pms1(CSatPlugins):
         return [
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_XPath: '/ProductMetaData/SceneID',
-                self.Name_ID: 'SceneID',
-                self.Name_Title: '景编号',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
                 self.Name_XPath: '/ProductMetaData/OrbitID',
                 self.Name_ID: 'OrbitID',
                 self.Name_Title: '轨道编号',
                 self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType:self.value_type_string
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/TopLeftLatitude',
+                self.Name_ID: 'TopLeftLatitude',
+                self.Name_Title: '左上角维度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max:90
+                    }
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/TopLeftLongitude',
+                self.Name_ID: 'TopLeftLongitude',
+                self.Name_Title: '左上角经度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max:180
+                    }
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/TopRightLatitude',
+                self.Name_ID: 'TopRightLatitude',
+                self.Name_Title: '右上角维度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max:90
+                    }
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/TopRightLongitude',
+                self.Name_ID: 'TopRightLongitude',
+                self.Name_Title: '右上角经度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max:180
+                    }
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/BottomRightLatitude',
+                self.Name_ID: 'BottomRightLatitude',
+                self.Name_Title: '右下角维度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max:90
+                    }
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/BottomRightLongitude',
+                self.Name_ID: 'BottomRightLongitude',
+                self.Name_Title: '右下角经度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max:180
+                    }
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/BottomLeftLatitude',
+                self.Name_ID: 'BottomLeftLatitude',
+                self.Name_Title: '左下角维度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max:90
+                    }
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/BottomLeftLongitude',
+                self.Name_ID: 'BottomLeftLongitude',
+                self.Name_Title: '左下角经度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max:180
+                    }
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/ProduceTime',
+                self.Name_ID: 'ProduceTime',
+                self.Name_Title: '发布时间',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType:self.value_type_datetime
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/StartTime',
+                self.Name_ID: 'StartTime',
+                self.Name_Title: '开始时间',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_datetime
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/EndTime',
+                self.Name_ID: 'EndTime',
+                self.Name_Title: '结束时间',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_datetime
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/ImageGSD',
+                self.Name_ID: 'ImageGSD',
+                self.Name_Title: '分辨率',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/CenterTime',
+                self.Name_ID: 'CenterTime',
+                self.Name_Title: '影像获取时间',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_datetime
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/RollViewingAngle',
+                self.Name_ID: 'RollViewingAngle',
+                self.Name_Title: '侧摆角',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max:90
+                    }
+
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/CloudPercent',
+                self.Name_ID: 'CloudPercent',
+                self.Name_Title: '云量',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType:self.value_type_decimal_or_integer
+
             }
         ]
 
