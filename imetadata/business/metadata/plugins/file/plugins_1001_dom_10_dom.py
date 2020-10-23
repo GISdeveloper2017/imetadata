@@ -124,6 +124,11 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
                 self.Name_Width: 8,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
                 self.Name_XPath: 'boundingbox.top',
                 self.Name_ID: 'top',
                 self.Name_Title: '经纬度坐标',
@@ -136,6 +141,11 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
                 self.Name_Width: 8,
+                self.Name_Range:
+                    {
+                      self.Name_Min: -180,
+                      self.Name_Max: 180
+                    },
                 self.Name_XPath: 'boundingbox.left',
                 self.Name_ID: 'left',
                 self.Name_Title: '经纬度坐标',
@@ -147,6 +157,11 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
                 self.Name_Width: 8,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
                 self.Name_XPath: 'boundingbox.right',
                 self.Name_ID: 'right',
                 self.Name_Title: '经纬度坐标',
@@ -158,6 +173,11 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
                 self.Name_Width: 8,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
                 self.Name_XPath: 'boundingbox.bottom',
                 self.Name_ID: 'bottom',
                 self.Name_Title: '经纬度坐标',

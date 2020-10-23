@@ -349,7 +349,7 @@ class CAudit(CResource):
 
         result_dict = result_template
 
-        value_real = CUtils.to_decimal(value)
+        value_real = CUtils.to_decimal(value, -1)
 
         if range_max != default_value and range_min != default_value:
             if range_min <= value_real <= range_max:

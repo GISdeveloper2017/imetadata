@@ -288,7 +288,7 @@ class CUtils(CResource):
         return len_text
 
     @classmethod
-    def to_decimal(cls, obj, default_value):
+    def to_decimal(cls, obj, default_value=-1):
         """
         文本转小数
         @param obj:

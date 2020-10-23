@@ -128,7 +128,7 @@ class CSatFilePlugins_gf1_pms1(CSatPlugins):
                 self.Name_Title: '左上角维度',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType:
+                self.Name_Range:
                     {
                         self.Name_Min: -90,
                         self.Name_Max:90
@@ -141,7 +141,7 @@ class CSatFilePlugins_gf1_pms1(CSatPlugins):
                 self.Name_Title: '左上角经度',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType:
+                self.Name_Range:
                     {
                         self.Name_Min: -180,
                         self.Name_Max:180
@@ -154,7 +154,7 @@ class CSatFilePlugins_gf1_pms1(CSatPlugins):
                 self.Name_Title: '右上角维度',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType:
+                self.Name_Range:
                     {
                         self.Name_Min: -90,
                         self.Name_Max:90
@@ -167,7 +167,7 @@ class CSatFilePlugins_gf1_pms1(CSatPlugins):
                 self.Name_Title: '右上角经度',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType:
+                self.Name_Range:
                     {
                         self.Name_Min: -180,
                         self.Name_Max:180
@@ -180,7 +180,7 @@ class CSatFilePlugins_gf1_pms1(CSatPlugins):
                 self.Name_Title: '右下角维度',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType:
+                self.Name_Range:
                     {
                         self.Name_Min: -90,
                         self.Name_Max:90
@@ -193,7 +193,7 @@ class CSatFilePlugins_gf1_pms1(CSatPlugins):
                 self.Name_Title: '右下角经度',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType:
+                self.Name_Range:
                     {
                         self.Name_Min: -180,
                         self.Name_Max:180
@@ -206,7 +206,7 @@ class CSatFilePlugins_gf1_pms1(CSatPlugins):
                 self.Name_Title: '左下角维度',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType:
+                self.Name_Range:
                     {
                         self.Name_Min: -90,
                         self.Name_Max:90
@@ -219,7 +219,7 @@ class CSatFilePlugins_gf1_pms1(CSatPlugins):
                 self.Name_Title: '左下角经度',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType:
+                self.Name_Range:
                     {
                         self.Name_Min: -180,
                         self.Name_Max:180
@@ -277,7 +277,7 @@ class CSatFilePlugins_gf1_pms1(CSatPlugins):
                 self.Name_Title: '侧摆角',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType:
+                self.Name_Range:
                     {
                         self.Name_Min: -90,
                         self.Name_Max:90
