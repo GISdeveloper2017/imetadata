@@ -61,26 +61,26 @@ class CAudit(CResource):
         if value_not_null is not None:
             result_list.append(cls.__a_check_value_not_null__(result_template, value, title_prefix, value_not_null))
 
-            if not CUtils.equal_ignore_case(value, ''):
-                value_type = CUtils.dict_value_by_name(qa_items, cls.Name_DataType, None)
-                if value_type is not None:
-                    result_list.append(cls.__a_check_value_datatype__(result_template, value, title_prefix, value_type))
+        if not CUtils.equal_ignore_case(value, ''):
+            value_type = CUtils.dict_value_by_name(qa_items, cls.Name_DataType, None)
+            if value_type is not None:
+                result_list.append(cls.__a_check_value_datatype__(result_template, value, title_prefix, value_type))
 
-                value_width = CUtils.dict_value_by_name(qa_items, cls.Name_Width, None)
-                if value_width is not None:
-                    result_list.append(cls.__a_check_value_width__(result_template, value, title_prefix, value_width))
+            value_width = CUtils.dict_value_by_name(qa_items, cls.Name_Width, None)
+            if value_width is not None:
+                result_list.append(cls.__a_check_value_width__(result_template, value, title_prefix, value_width))
 
-                value_list = CUtils.dict_value_by_name(qa_items, cls.Name_List, None)
-                if value_list is not None:
-                    result_list.append(cls.__a_check_value_in_list__(result_template, value, title_prefix, value_list))
+            value_list = CUtils.dict_value_by_name(qa_items, cls.Name_List, None)
+            if value_list is not None:
+                result_list.append(cls.__a_check_value_in_list__(result_template, value, title_prefix, value_list))
 
-                value_sql = CUtils.dict_value_by_name(qa_items, cls.Name_SQL, None)
-                if value_sql is not None:
-                    value_sql_db_server_id = CUtils.dict_value_by_name(qa_items, cls.Name_DataBase,
-                                                                       cls.DB_Server_ID_Default)
-                    result_list.append(
-                        cls.__a_check_value_in_sql__(result_template, value, title_prefix, value_sql_db_server_id,
-                                                     value_sql))
+            value_sql = CUtils.dict_value_by_name(qa_items, cls.Name_SQL, None)
+            if value_sql is not None:
+                value_sql_db_server_id = CUtils.dict_value_by_name(qa_items, cls.Name_DataBase,
+                                                                   cls.DB_Server_ID_Default)
+                result_list.append(
+                    cls.__a_check_value_in_sql__(result_template, value, title_prefix, value_sql_db_server_id,
+                                                 value_sql))
 
         return result_list
 
