@@ -83,7 +83,7 @@ class CVectorMDReader(CMDReader):
             json_datasource = CJson()
             json_datasource.set_value_of_name('name', self.__file_name_with_path__)
             json_datasource.set_value_of_name('description', driver.name)
-            json_vector.set_value_of_name('datasource', json_datasource.__json_obj__)
+            json_vector.set_value_of_name('datasource', json_datasource.json_obj)
             # print(driver.name)
 
             layer_count_real, layer_list = self.get_vector_layercount_and_layers(vector_ds)
@@ -102,30 +102,30 @@ class CVectorMDReader(CMDReader):
                 for layer_temp in layer_list:
                     layer_name = layer_temp.GetName()
                     json_layer = CJson()
-                    list_json_layers.append(json_layer.__json_obj__)
+                    list_json_layers.append(json_layer.json_obj)
                     # name节点
                     json_layer.set_value_of_name("name", layer_name)
                     # print(layer_name)
                     # projwkt 节点
                     json_proj_wkt = self.get_projwkt_by_layer(layer_temp)
-                    json_layer.set_value_of_name("wkt", json_proj_wkt.__json_obj__)
+                    json_layer.set_value_of_name("wkt", json_proj_wkt.json_obj)
                     # features节点
                     json_features = CJson()
                     feature_count = layer_temp.GetFeatureCount()
                     json_features.set_value_of_name("count", feature_count)
-                    json_layer.set_value_of_name("features", json_features.__json_obj__)
+                    json_layer.set_value_of_name("features", json_features.json_obj)
                     # geometry节点
                     json_geometry = self.get_geometry_by_vectorlayer(layer_temp)
-                    json_layer.set_value_of_name("geometry", json_geometry.__json_obj__)
+                    json_layer.set_value_of_name("geometry", json_geometry.json_obj)
                     # extent节点
                     json_extent = self.get_extent_by_vectorlayer(layer_temp)
-                    json_layer.set_value_of_name("extent", json_extent.__json_obj__)
+                    json_layer.set_value_of_name("extent", json_extent.json_obj)
                     # attributes节点
                     json_attributes = self.get_attributes_by_vectorlayer(layer_temp)
-                    json_layer.set_value_of_name("attributes", json_attributes.__json_obj__)
+                    json_layer.set_value_of_name("attributes", json_attributes.json_obj)
                     # wgs84节点
                     json_wgs84 = self.transform_to_WGS84(layer_temp)
-                    json_layer.set_value_of_name('wgs84', json_wgs84.__json_obj__)
+                    json_layer.set_value_of_name('wgs84', json_wgs84.json_obj)
                 json_vector.set_value_of_name('layers', list_json_layers)
             json_shp_str = json_vector.to_json()
             # print(json_shp_str)
@@ -166,7 +166,7 @@ class CVectorMDReader(CMDReader):
         json_wgs84_coordinate.set_value_of_name('wkt', wgs84_wkt)
         json_wgs84_coordinate.set_value_of_name('proj4', wgs84_proj4)
         json_wgs84_coordinate.set_value_of_name('esri', wgs84_esri)
-        json_wgs84.set_value_of_name('coordinate', json_wgs84_coordinate.__json_obj__)
+        json_wgs84.set_value_of_name('coordinate', json_wgs84_coordinate.json_obj)
 
         spatialRef = layer.GetSpatialRef()
         proj_wkt = spatialRef.ExportToWkt()
@@ -188,7 +188,7 @@ class CVectorMDReader(CMDReader):
                 json_bounding.set_value_of_name('maxy', lu[1])
                 json_bounding.set_value_of_name('maxx', rb[0])
                 json_bounding.set_value_of_name('miny', rb[1])
-                json_wgs84.set_value_of_name('extent', json_bounding.__json_obj__)
+                json_wgs84.set_value_of_name('extent', json_bounding.json_obj)
                 json_wgs84.set_value_of_name('msg', 'extent四至范围从{0}坐标系转wgs_84坐标系转换成功！'.format(source))
             else:
                 json_wgs84.set_value_of_name('msg', 'extent四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(source))
@@ -221,7 +221,7 @@ class CVectorMDReader(CMDReader):
                 json_column.set_value_of_name("width", width)
                 json_column.set_value_of_name("precision", precision)
                 json_column.set_value_of_name("type_name", type_name)
-                columns_list.append(json_column.__json_obj__)  # 添加到集合中
+                columns_list.append(json_column.json_obj)  # 添加到集合中
         json_attributes.set_value_of_name("columns", columns_list)
         layer_defn = None
         return json_attributes
@@ -324,11 +324,11 @@ class CVectorMDReader(CMDReader):
         json_datasource.set_value_of_name('description', 'ESRI Shapefile')
         json_datasource_str = json_datasource.to_json()
         print(json_datasource_str)
-        json_shp.set_value_of_name('datasource', json_datasource.__json_obj__)
+        json_shp.set_value_of_name('datasource', json_datasource.json_obj)
         json_shp.set_value_of_name('layer_count', '1')
 
         list_layers = []
-        list_layers.append(json_datasource.__json_obj__)
+        list_layers.append(json_datasource.json_obj)
         json_shp.set_value_of_name('layers', list_layers)
         json_shp.set_value_of_name('valid', True)
 

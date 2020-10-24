@@ -42,7 +42,7 @@ class CPluginsMng(CResource):
 
         rule_type = CXml.get_element_text(CXml.xml_xpath_one(file_info.rule_content, cls.Path_MD_Rule_Type))
         if not CUtils.equal_ignore_case(rule_type, ''):
-            plugins_json_array = CJson.dict_attr_by_path(settings.application, cls.Path_Setting_Plugins_Dir)
+            plugins_json_array = settings.application.xpath(cls.Path_Setting_Plugins_Dir)
             if plugins_json_array is not None:
                 for plugins_define in plugins_json_array:
                     key_word = CUtils.any_2_str(CUtils.dict_value_by_name(plugins_define, cls.Name_Keyword, None))
@@ -54,7 +54,7 @@ class CPluginsMng(CResource):
                         class_classified_obj = cls.__plugins_classified_by_plugin_list__(file_info, plugin_list)
         else:
             file_path = file_info.__file_path_with_rel_path__
-            plugins_json_array = CJson.dict_attr_by_path(settings.application, cls.Path_Setting_Plugins_Dir)
+            plugins_json_array = settings.application.xpath(cls.Path_Setting_Plugins_Dir)
             if plugins_json_array is not None:
                 for plugins_define in plugins_json_array:
                     key_word = CUtils.any_2_str(CUtils.dict_value_by_name(plugins_define, cls.Name_Keyword, None))

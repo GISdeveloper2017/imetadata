@@ -262,3 +262,9 @@ class CResource:
     value_type_integer = 'integer'  # 整数（包含负整数）
     value_type_decimal_or_integer ='decimal_or_integer'  # 小数或整数（包含负数）
     value_type_decimal_or_integer_positive ='positive_decimal_or_integer'  # 正小数或整数（不包含负数）
+
+    ProcStatus_Finished = 0
+    ProcStatus_InQueue = 1
+    ProcStatus_Processing = 2
+    ProcStatus_Error = 3
+    ProcStatus_WaitConfirm = 9

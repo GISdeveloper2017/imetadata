@@ -28,7 +28,7 @@ class CJson:
     Encoding_UTF8 = 'UTF-8'
     Encoding_GBK = 'GB2312'
 
-    __json_obj__ = None
+    # __json_obj__ = None
 
     def __init__(self):
         self.__json_obj__ = dict()
@@ -68,6 +68,10 @@ class CJson:
 
     def set_value_of_name(self, name, value):
         self.__json_obj__[name] = value
+
+    @property
+    def json_obj(self):
+        return self.__json_obj__
 
     def xpath_one(self, query, attr_value_default) -> any:
         """

@@ -66,7 +66,7 @@ class CRasterMDReader(CMDReader):
             json_driver = CJson()
             json_driver.set_value_of_name('longname', driver.LongName)
             json_driver.set_value_of_name('shortname', driver.ShortName)
-            json_raster.set_value_of_name('driver', json_driver.__json_obj__)
+            json_raster.set_value_of_name('driver', json_driver.json_obj)
 
             file_list = raster_ds.GetFileList()
             if file_list is None:
@@ -100,7 +100,7 @@ class CRasterMDReader(CMDReader):
             json_size = CJson()
             json_size.set_value_of_name('width', image_size_x)
             json_size.set_value_of_name('height', image_size_y)
-            json_raster.set_value_of_name('size', json_size.__json_obj__)
+            json_raster.set_value_of_name('size', json_size.json_obj)
 
             # 投影信息
             projection = raster_ds.GetProjection()
@@ -127,7 +127,7 @@ class CRasterMDReader(CMDReader):
             esri = spatial.ExportToWkt()
             json_coordinate.set_value_of_name('esri', esri)
             spatial = None
-            json_raster.set_value_of_name('coordinate', json_coordinate.__json_obj__)
+            json_raster.set_value_of_name('coordinate', json_coordinate.json_obj)
 
             # 仿射变换信息
             geo_transform = raster_ds.GetGeoTransform()
@@ -144,17 +144,17 @@ class CRasterMDReader(CMDReader):
             if geo_transform[2] == 0 and geo_transform[4] == 0:
                 (json_origin, json_pixel, json_bounding) = self.get_geotramsform_by_raster(geo_transform, image_size_x,
                                                                                            image_size_y)
-                json_raster.set_value_of_name('origin', json_origin.__json_obj__)
-                json_raster.set_value_of_name('pixelsize', json_pixel.__json_obj__)
-                json_raster.set_value_of_name('boundingbox', json_bounding.__json_obj__)
+                json_raster.set_value_of_name('origin', json_origin.json_obj)
+                json_raster.set_value_of_name('pixelsize', json_pixel.json_obj)
+                json_raster.set_value_of_name('boundingbox', json_bounding.json_obj)
             else:
                 (json_geo, json_bounding) = self.get_geotramsform_by_raster(geo_transform, image_size_x, image_size_y)
-                json_raster.set_value_of_name('geotransform', json_geo.__json_obj__)
-                json_raster.set_value_of_name('boundingbox', json_bounding.__json_obj__)
+                json_raster.set_value_of_name('geotransform', json_geo.json_obj)
+                json_raster.set_value_of_name('boundingbox', json_bounding.json_obj)
 
             # wgs84坐标系转换
             json_wgs84 = self.transform_to_WGS84(geo_transform, image_size_x, image_size_y, projection)
-            json_raster.set_value_of_name('wgs84', json_wgs84.__json_obj__)
+            json_raster.set_value_of_name('wgs84', json_wgs84.json_obj)
 
             # GCPs信息
             gcp_count = raster_ds.GetGCPCount()
@@ -171,7 +171,7 @@ class CRasterMDReader(CMDReader):
                                                 '文件[{0}]读取GCP信息失败!'.format(self.__file_name_with_path__))
                 # 定义gcp_projection、gcp子对象
                 json_gcp_projection, gcp_list = self.get_gcp_by_raster(gcp_count, gcp_projection, raster_ds)
-                json_raster.set_value_of_name('gcp_projection', json_gcp_projection.__json_obj__)
+                json_raster.set_value_of_name('gcp_projection', json_gcp_projection.json_obj)
                 json_raster.set_value_of_name('gcp', gcp_list)
 
             # metadata信息，定义metadata子节点
@@ -198,23 +198,23 @@ class CRasterMDReader(CMDReader):
             sub_metadata = raster_ds.GetMetadata('SUBDATASETS')
             if len(sub_metadata) > 0:
                 sub_data = self.get_other_metadata_by_raster(sub_metadata)
-                json_raster.set_value_of_name('subdatasets', sub_data.__json_obj__)
+                json_raster.set_value_of_name('subdatasets', sub_data.json_obj)
 
             # 定义geolocation子节点
             geo_metadata = raster_ds.GetMetadata('GEOLOCATION')
             if len(geo_metadata) > 0:
                 geo_data = self.get_other_metadata_by_raster(geo_metadata)
-                json_raster.set_value_of_name('geolocation', geo_data.__json_obj__)
+                json_raster.set_value_of_name('geolocation', geo_data.json_obj)
 
             # 定义rpc子节点
             rpc_metadata = raster_ds.GetMetadata('RPC')
             if len(rpc_metadata) > 0:
                 rpc_data = self.get_other_metadata_by_raster(rpc_metadata)
-                json_raster.set_value_of_name('rpc', rpc_data.__json_obj__)
+                json_raster.set_value_of_name('rpc', rpc_data.json_obj)
 
             # 角坐标信息，定义corner_coordinates子节点
             json_corner = self.get_corner_by_raster(image_size_x, image_size_y)
-            json_raster.set_value_of_name('corner_coordinates', json_corner.__json_obj__)
+            json_raster.set_value_of_name('corner_coordinates', json_corner.json_obj)
 
             # 波段信息
             band_count = raster_ds.RasterCount
@@ -287,7 +287,7 @@ class CRasterMDReader(CMDReader):
         json_wgs84_coordinate.set_value_of_name('wkt', wgs84_wkt)
         json_wgs84_coordinate.set_value_of_name('proj4', wgs84_proj4)
         json_wgs84_coordinate.set_value_of_name('esri', wgs84_esri)
-        json_wgs84.set_value_of_name('coordinate', json_wgs84_coordinate.__json_obj__)
+        json_wgs84.set_value_of_name('coordinate', json_wgs84_coordinate.json_obj)
 
         source_projection = osr.SpatialReference(wkt=projection)
         source = source_projection.GetAttrValue('DATUM', 0)
@@ -310,7 +310,7 @@ class CRasterMDReader(CMDReader):
                 json_bounding.set_value_of_name('top', lu[1])
                 json_bounding.set_value_of_name('right', rb[0])
                 json_bounding.set_value_of_name('bottom', rb[1])
-                json_wgs84.set_value_of_name('boundingbox', json_bounding.__json_obj__)
+                json_wgs84.set_value_of_name('boundingbox', json_bounding.json_obj)
                 json_wgs84.set_value_of_name('msg', 'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换成功！'.format(source))
             else:
                 json_wgs84.set_value_of_name('msg', 'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(source))
@@ -365,7 +365,7 @@ class CRasterMDReader(CMDReader):
             gcp_item.set_value_of_name('x', gcp.dfGCPX)
             gcp_item.set_value_of_name('y', gcp.dfGCPY)
             gcp_item.set_value_of_name('z', gcp.dfGCPZ)
-            gcp_list.append(gcp_item.__json_obj__)
+            gcp_list.append(gcp_item.json_obj)
         return json_gcp_projection, gcp_list
 
     def get_corner_by_raster(self, image_size_x: int, image_size_y: int) -> CJson:
@@ -379,23 +379,23 @@ class CRasterMDReader(CMDReader):
         json_point_ul = CJson()
         json_point_ul.set_value_of_name('x', 0)
         json_point_ul.set_value_of_name('y', 0)
-        json_corner.set_value_of_name('upper_left', json_point_ul.__json_obj__)
+        json_corner.set_value_of_name('upper_left', json_point_ul.json_obj)
         json_point_ll = CJson()
         json_point_ll.set_value_of_name('x', 0)
         json_point_ll.set_value_of_name('y', image_size_y)
-        json_corner.set_value_of_name('lower_left', json_point_ll.__json_obj__)
+        json_corner.set_value_of_name('lower_left', json_point_ll.json_obj)
         json_point_ur = CJson()
         json_point_ur.set_value_of_name('x', image_size_x)
         json_point_ur.set_value_of_name('y', 0)
-        json_corner.set_value_of_name('upper_right', json_point_ur.__json_obj__)
+        json_corner.set_value_of_name('upper_right', json_point_ur.json_obj)
         json_point_lr = CJson()
         json_point_lr.set_value_of_name('x', image_size_x)
         json_point_lr.set_value_of_name('y', image_size_y)
-        json_corner.set_value_of_name('lower_right', json_point_lr.__json_obj__)
+        json_corner.set_value_of_name('lower_right', json_point_lr.json_obj)
         json_point_center = CJson()
         json_point_center.set_value_of_name('x', image_size_x / 2)
         json_point_center.set_value_of_name('y', image_size_y / 2)
-        json_corner.set_value_of_name('center', json_point_center.__json_obj__)
+        json_corner.set_value_of_name('center', json_point_center.json_obj)
         return json_corner
 
     def get_geotramsform_by_raster(self, geo_transform: tuple, image_size_x: int, image_size_y: int):
@@ -460,7 +460,7 @@ class CRasterMDReader(CMDReader):
             block = CJson()
             block.set_value_of_name('width', x_block_size)
             block.set_value_of_name('height', y_block_size)
-            json_band.set_value_of_name('block', block.__json_obj__)
+            json_band.set_value_of_name('block', block.json_obj)
 
             band_type = gdal.GetDataTypeName(band.DataType)
             json_band.set_value_of_name('type', band_type)
@@ -495,11 +495,11 @@ class CRasterMDReader(CMDReader):
                         json_overview_size = CJson()
                         json_overview_size.set_value_of_name('width', overview.XSize)
                         json_overview_size.set_value_of_name('height', overview.YSize)
-                        json_overview.set_value_of_name('size', json_overview_size.__json_obj__)
+                        json_overview.set_value_of_name('size', json_overview_size.json_obj)
                         resampling = overview.GetMetadataItem('RESAMPLING')
                         if resampling is not None and resampling == 'AVERAGE_BIT2':
                             json_overview.set_value_of_name('resampling', '*')
-                        band_overviews.append(json_overview.__json_obj__)
+                        band_overviews.append(json_overview.json_obj)
                 json_band.set_value_of_name('overviews', band_overviews)
 
             if band.HasArbitraryOverviews():
@@ -518,15 +518,15 @@ class CRasterMDReader(CMDReader):
                             json_mask_overview_size = CJson()
                             json_mask_overview_size.set_value_of_name('width', mask_overview.XSize)
                             json_mask_overview_size.set_value_of_name('height', mask_overview.YSize)
-                            mask_overviews.append(json_mask_overview_size.__json_obj__)
+                            mask_overviews.append(json_mask_overview_size.json_obj)
                     json_mask.set_value_of_name('overviews', mask_overviews)
-            json_band.set_value_of_name('mask', json_mask.__json_obj__)
+            json_band.set_value_of_name('mask', json_mask.json_obj)
 
             unit = band.GetUnitType()
             if len(unit) > 0:
                 band_unit = CJson()
                 band_unit.set_value_of_name('type', unit)
-                json_band.set_value_of_name('unit', band_unit.__json_obj__)
+                json_band.set_value_of_name('unit', band_unit.json_obj)
 
             category = band.GetRasterCategoryNames()
             if category is not None:
@@ -575,11 +575,11 @@ class CRasterMDReader(CMDReader):
                     json_color_entry.set_value_of_name('color2', entry[1])
                     json_color_entry.set_value_of_name('color3', entry[2])
                     json_color_entry.set_value_of_name('color4', entry[3])
-                    color_entry.append(json_color_entry.__json_obj__)
+                    color_entry.append(json_color_entry.json_obj)
                 json_color_table.set_value_of_name('entrys', color_entry)
-                json_band.set_value_of_name('color_table', json_color_table.__json_obj__)
+                json_band.set_value_of_name('color_table', json_color_table.json_obj)
 
-            band_list.append(json_band.__json_obj__)
+            band_list.append(json_band.json_obj)
             band = None
         return band_list
 

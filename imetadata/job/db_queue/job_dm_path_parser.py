@@ -214,11 +214,11 @@ where dsdscanfilestatus = 2
         new_batch_no = database.seq_next_value(self.Seq_Type_Date_AutoInc)
         sql_register_2_inbound_list = '''
         insert into dm2_storage_inbound(dsistorageid, dsidirectory, dsibatchno, dsistatus) 
-        VALUES(:dsistorageid, :dsidirectory, :dsibatchno, 9) 
+        VALUES(:storageid, :directory, :batchno, :status) 
         '''
         database.execute(
             sql_register_2_inbound_list,
-            {'dsistorageid': storage_id, 'dsidirectory': directory, 'dsibatchno': new_batch_no}
+            {'storageid': storage_id, 'directory': directory, 'batchno': new_batch_no, 'status': self.ProcStatus_WaitConfirm}
         )
 
 

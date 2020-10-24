@@ -32,7 +32,7 @@ class CFactory(CResource):
         if CUtils.equal_ignore_case(rt_db_id, ''):
             rt_db_id = self.DB_Server_ID_Default
 
-        for database in CUtils.dict_value_by_name(settings.application, self.Name_DataBases, None):
+        for database in settings.application.xpath(self.Name_DataBases):
             if rt_db_id == CUtils.dict_value_by_name(database, self.Name_ID, self.DB_Server_ID_Default):
                 return self.create_db(database)
 
