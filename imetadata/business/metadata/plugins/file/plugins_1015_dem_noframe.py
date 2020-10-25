@@ -2,12 +2,12 @@
 # @Time : 2020/10/20 10:24
 # @Author : 赵宇飞
 # @File : plugins_1015_dem_noframe.py
-
-
+from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_21at import \
+    CFilePlugins_GUOTU_21AT
 from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_dem import CFilePlugins_GUOTU_DEM
 
 
-class plugins_1015_dem_noframe(CFilePlugins_GUOTU_DEM):
+class plugins_1015_dem_noframe(CFilePlugins_GUOTU_21AT):
 
 
     def classified(self):

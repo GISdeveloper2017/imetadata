@@ -3,9 +3,11 @@
 # @Author : 赵宇飞
 # @File : plugins_1030_mosaic.py
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
+from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_21at import \
+    CFilePlugins_GUOTU_21AT
 
 
-class plugins_1030_mosaic(CFilePlugins_GUOTU):
+class plugins_1030_mosaic(CFilePlugins_GUOTU_21AT):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = '镶嵌影像'

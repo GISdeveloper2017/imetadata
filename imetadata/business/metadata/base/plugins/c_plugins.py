@@ -473,15 +473,18 @@ class CPlugins(CResource):
                         self.Name_Native_Center,
                         None
                     )
-                    return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(self.file_info.__file_name_with_full_path__))
+                    return CResult.merge_result(self.Success,
+                                                '元数据文件[{0}]成功加载! '.format(self.file_info.__file_name_with_full_path__))
                 except Exception as error:
                     parser.metadata.set_metadata(
                         self.DB_False,
-                        '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(self.file_info.__file_name_with_full_path__, error.__str__()),
+                        '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(self.file_info.__file_name_with_full_path__,
+                                                                   error.__str__()),
                         self.MetaDataFormat_Text,
                         '')
                     return CResult.merge_result(self.Exception,
-                                                '元数据文件[{0}]格式不合法, 无法处理! '.format(self.file_info.__file_name_with_full_path__))
+                                                '元数据文件[{0}]格式不合法, 无法处理! '.format(
+                                                    self.file_info.__file_name_with_full_path__))
             else:
                 return result
         else:
@@ -592,7 +595,7 @@ class CPlugins(CResource):
     def init_qa_file_integrity_default_list(self, file_name_with_full_path: str):
         """
         todo 赵宇飞  常用的文件对象校验列表集合（img/tif/tiff/shp）,tiff暂无
-        @param file_name_with_path: img的全文件名
+        @param file_name_with_full_path: 文件的全文件名（img/tif/tiff/shp）
         @return: 返回常用文件完整性的质检列表，如果是主文件，会有一个格式的项，用于质检文件的打开可读性
         """
         file_ext = CFile.file_ext(file_name_with_full_path)
@@ -604,7 +607,6 @@ class CPlugins(CResource):
             return self.init_qa_file_integrity_shp_list(file_name_with_full_path)
         return []
 
-
     def init_qa_file_integrity_img_list(self, file_name_with_full_path: str):
         """
         todo 赵宇飞 对img数据进行完整性质检，并返回检查结果列表
@@ -612,7 +614,7 @@ class CPlugins(CResource):
             xxx.ige	文件	img小于1M时必须存在	警告
             xxx.rrd	文件	是否有金字塔，内置和外置金字塔文件	警告
             xxx.rde	文件	rrd大于2G时存在	警告
-        @param file_name_with_path: img的全文件名
+        @param file_name_with_full_path: img的全文件名
         @return: 返回img的质检列表,如果是主文件img，会有一个格式的项，用于质检文件的打开可读性
         """
         file_main_name = CFile.file_main_name(file_name_with_full_path)
@@ -667,13 +669,12 @@ class CPlugins(CResource):
                     ])
         return result_list
 
-
     def init_qa_file_integrity_tif_list(self, file_name_with_full_path: str):
         """
         todo 赵宇飞 对tif数据进行完整性质检，并返回检查结果列表
             可用性	xxx.tif	文件	栅格数据可读	错误
             完整性	xxx.tfw	文件	投影信息文件	警告
-        @param file_name_with_path: img的全文件名
+        @param file_name_with_full_path: tif的全文件名
         @return: 返回img的质检列表,如果是主文件tif，会有一个格式的项，用于质检文件的打开可读性
         """
         file_main_name = CFile.file_main_name(file_name_with_full_path)
@@ -703,7 +704,7 @@ class CPlugins(CResource):
     def init_qa_file_integrity_shp_list(self, file_name_with_full_path: str):
         """
         todo 赵宇飞 对shp数据进行完整性质检，并返回检查结果列表
-        @param file_name_with_path: img的全文件名
+        @param file_name_with_full_path: img的全文件名
         @return: 返回img的质检列表,如果是主文件shp，会有一个格式的项，用于质检文件的打开可读性
         """
         file_main_name = CFile.file_main_name(file_name_with_full_path)
@@ -717,13 +718,13 @@ class CPlugins(CResource):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Format: self.DataFormat_Vector_File,
                 self.Name_Result: self.QA_Result_Error
-            },{
+            }, {
                 self.Name_FileName: '{0}.dbf'.format(file_main_name),
                 self.Name_ID: 'dbf',
                 self.Name_Title: '属性数据文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error
-            },{
+            }, {
                 self.Name_FileName: '{0}.prj'.format(file_main_name),
                 self.Name_ID: 'prj',
                 self.Name_Title: '投影文件',
