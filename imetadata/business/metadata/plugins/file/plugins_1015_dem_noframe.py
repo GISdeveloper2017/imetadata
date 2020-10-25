@@ -13,7 +13,7 @@ class plugins_1015_dem_noframe(CFilePlugins_GUOTU_21AT):
     def classified(self):
         """
         设计国土行业数据的dem_noframe非分幅数据的验证规则
-        todo 负责人 邢凯凯 在这里检验dem_noframe的识别规则
+        todo 负责人 李宪 在这里检验dem_noframe的识别规则
         :return:
         """
         pass
