@@ -9,8 +9,12 @@ from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins
 
 class plugins_1060_custom(CFilePlugins_GUOTU_21AT):
     """
-      注意5.9 自定义影像包含2中模式（***_21at.xml/无xml文件）
      todo 李宪
+     注意5.9 自定义影像包含2中模式（***_21at.xml/无xml文件）
+    数据内容	    文件格式	是否有坐标系	内容样例	        说明
+    影像文件	    img/IMG
+                tif/TIF	    有	    XXXXXX.img	    以影像文件为单位
+    元数据文件 	xml/XML	    无	    XXXXXX_21at.xml	元数据生产工具生成
     """
     def get_information(self) -> dict:
         information = super().get_information()

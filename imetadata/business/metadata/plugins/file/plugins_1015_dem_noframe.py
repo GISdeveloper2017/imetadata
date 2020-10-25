@@ -8,7 +8,13 @@ from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins
 
 
 class plugins_1015_dem_noframe(CFilePlugins_GUOTU_21AT):
-
+    """
+    todo 负责人 李宪
+    数据内容	    文件格式	    是否有坐标系	内容样例	            说明
+    影像文件	    img/IMG
+                tif/TIF	    有	    XXXX区域5米DEM.img	    以影像文件为单位
+    元数据文件 	xml/XML	    无	    XXXX区域5米DEM_21at.xml	元数据生产工具生成
+    """
 
     def classified(self):
         """
