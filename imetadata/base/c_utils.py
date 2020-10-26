@@ -413,3 +413,9 @@ if __name__ == '__main__':
     print('integer: ' + CUtils.any_2_str(CUtils.text_is_integer(check_text)))
     print('date: ' + CUtils.any_2_str(CUtils.text_is_date(check_text)))
     print(CUtils.int_2_format_str(None, 2))
+
+    name = '中国'
+    str_show = f'{name} is my country'
+    print(str_show)
+    print(len(name))
+    print(len('12'))

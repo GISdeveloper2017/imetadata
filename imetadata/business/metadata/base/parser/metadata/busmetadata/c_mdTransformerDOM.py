@@ -92,7 +92,7 @@ class CMDTransformerDOM(CMDTransformer):
                 if row_type is bytearray:  # 跳过长二进制数组
                     continue
                 node_item = xml_obj.create_element(node_root, 'item')
-                xml_obj.set_attr(node_item, self.Name_Name, str(row_name).lower())
+                xml_obj.set_attr(node_item, self.Name_Name, CUtils.any_2_str(row_name).lower())
                 xml_obj.set_element_text(node_item, table_data[0][field_index])  # 设置item节点与属性与内容
         except:
             raise
@@ -110,7 +110,7 @@ class CMDTransformerDOM(CMDTransformer):
         :return xml_obj:将文件内容存储好的项目对象
         """
         text_list = CFile.file_2_list(file_metadata_name_with_path)  # 获取mat文件作为列表
-        if (text_list is None) or CUtils.equal_ignore_case(str(text_list), ''):
+        if (text_list is None) or CUtils.equal_ignore_case(CUtils.any_2_str(text_list), ''):
             raise  # 如果获取的文件内容为空，则抛出异常
         flag = False  # 设置标志
 
@@ -123,8 +123,8 @@ class CMDTransformerDOM(CMDTransformer):
             row_list = re.split('\t+', row_text)  # 利用正则表达式，根据一个或多个tab剪切字符
             if flag:
                 node_item = xml_obj.create_element(node_root, 'item')
-                xml_obj.set_attr(node_item, self.Name_Name, str(row_list[1]).lower())
-                xml_obj.set_element_text(node_item, row_list[2].strip())  # 设置item节点与属性与内容
+                xml_obj.set_attr(node_item, self.Name_Name, CUtils.any_2_str(row_list[1]).lower())
+                xml_obj.set_element_text(node_item, CUtils.any_2_str(row_list[2].strip()))  # 设置item节点与属性与内容
         if not flag:
             raise   # 如果未找到1+tab键开头，则抛出异常
         return xml_obj
@@ -141,9 +141,9 @@ class CMDTransformerDOM(CMDTransformer):
         cols_num = table_data.ncols  # 获取列数
         rows_num = table_data.nrows  # 获取行数
         cols_index = 0  # 预定义列的index
-        if CUtils.equal_ignore_case(str(cols_num), str(2)):
+        if CUtils.equal_ignore_case(CUtils.any_2_str(cols_num), CUtils.any_2_str(2)):
             pass  # 无序号列从1列开始
-        elif CUtils.equal_ignore_case(str(cols_num), str(3)):
+        elif CUtils.equal_ignore_case(CUtils.any_2_str(cols_num), CUtils.any_2_str(3)):
             cols_index = 1  # 有序号列从2列开始
         else:
             raise
@@ -153,7 +153,7 @@ class CMDTransformerDOM(CMDTransformer):
         xml_obj.set_attr(node_root, self.Name_Type, self.transformer_type)  # 设置root节点与属性
         for row in range(0, rows_num):
             node_item = xml_obj.create_element(node_root, 'item')
-            xml_obj.set_attr(node_item, self.Name_Name, str(table_data.cell(row, cols_index).value).lower())
+            xml_obj.set_attr(node_item, self.Name_Name, CUtils.any_2_str(table_data.cell(row, cols_index).value).lower())
             xml_obj.set_element_text(node_item, table_data.cell(row, cols_index + 1).value)  # 设置item节点与属性与内容
         return xml_obj
 

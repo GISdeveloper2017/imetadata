@@ -2,15 +2,14 @@
 # @Time : 2020/10/20 11:00
 # @Author : 赵宇飞
 # @File : plugins_1020_ortho.py
-from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
-from imetadata.base.c_result import CResult
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
-from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerCommon import CMDTransformerCommon
+from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_21at import \
+    CFilePlugins_GUOTU_21AT
 
 
-class plugins_1020_ortho(CFilePlugins_GUOTU):
+class plugins_1020_ortho(CFilePlugins_GUOTU_21AT):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = '单景正射'
@@ -51,55 +50,15 @@ class plugins_1020_ortho(CFilePlugins_GUOTU):
         初始化ortho文件的质检列表,调用默认的img方法，并拼接剩余附属文件
         todo 负责人 王学谦 在这里检验初始化ortho的质检列表
         """
-        file_main_name = self.classified_object_name()
-        file_ext = self.file_info.__file_ext__
-        file_main_name_with_path = '{0}.{1}'.format(
-            CFile.join_file(self.file_info.__file_path__, file_main_name), file_ext)  # 获取初始化需要的参数
+        # file_main_name = self.classified_object_name()
+        # file_ext = self.file_info.__file_ext__
+        # file_main_name_with_path = '{0}.{1}'.format(
+        #     CFile.join_file(self.file_info.__file_path__, file_main_name), file_ext)  # 获取初始化需要的参数
 
         list_qa = list()
-        list_qa.extend(self.init_qa_file_integrity_default_list(file_main_name_with_path))  # 调用默认的规则列表
+        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.__file_name_with_full_path__))  # 调用默认的规则列表
 
         return list_qa
-
-    def qa_file_custom(self, parser: CMetaDataParser):
-        """
-        自定义的文件存在性质检, 发生在元数据解析之前
-        todo 负责人 王学谦
-        :param parser:
-        :return:
-        """
-        super().qa_file_custom(parser)
-        file_metadata_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
-        check_file_metadata_name_exist = False
-        ext = self.Transformer_XML
-        temp_metadata_bus_file = '{0}_21at.xml'.format(file_metadata_name_with_path, ext)
-        if CFile.file_or_path_exist(temp_metadata_bus_file):
-            check_file_metadata_name_exist = True
-            self.metadata_bus_transformer_type = ext
-            self.metadata_bus_src_filename_with_path = temp_metadata_bus_file
-
-        if not check_file_metadata_name_exist:
-            parser.metadata.quality.append_total_quality(
-                {
-                    self.Name_FileName: '',
-                    self.Name_ID: 'metadata_file',
-                    self.Name_Title: '元数据文件',
-                    self.Name_Result: self.QA_Result_Error,
-                    self.Name_Group: self.QA_Group_Data_Integrity,
-                    self.Name_Message: '本文件缺少业务元数据'
-                }
-            )
-        else:
-            parser.metadata.quality.append_total_quality(
-                {
-                    self.Name_FileName: self.metadata_bus_src_filename_with_path,
-                    self.Name_ID: 'metadata_file',
-                    self.Name_Title: '元数据文件',
-                    self.Name_Result: self.QA_Result_Pass,
-                    self.Name_Group: self.QA_Group_Data_Integrity,
-                    self.Name_Message: '业务元数据[{0}]存在'.format(self.metadata_bus_src_filename_with_path)
-                }
-            )
 
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
@@ -185,27 +144,6 @@ class plugins_1020_ortho(CFilePlugins_GUOTU):
             }
         ]
 
-    def init_metadata_bus(self, parser: CMetaDataParser) -> str:
-        """
-        提取xml格式的业务元数据, 加载到parser的metadata对象中
-        todo 负责人 王学谦
-        :param parser:
-        :return:
-        """
-        if self.metadata_bus_src_filename_with_path is None:
-            parser.metadata.set_metadata_bus(self.DB_True, '', self.MetaDataFormat_Text, '')
-            return CResult.merge_result(self.Success, '本卫星数据无业务元数据, 无须解析!')
-
-        transformer = CMDTransformerCommon(
-            parser.object_id,
-            parser.object_name,
-            parser.file_info,
-            parser.file_content,
-            parser.metadata,
-            self.metadata_bus_transformer_type,
-            self.metadata_bus_src_filename_with_path
-        )
-        return transformer.process()
 
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """
