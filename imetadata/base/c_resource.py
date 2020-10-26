@@ -108,6 +108,8 @@ class CResource:
     Name_Start_Time = 'start_time'
     Name_End_Time = 'end_time'
 
+    Name_Default = 'default'
+
     Dir_Type_Directory = 1
     Dir_Type_VirtualDirectory = 2
     Dir_Type_Root = 3
@@ -182,7 +184,16 @@ class CResource:
     Path_MD_Rule_Type = '/root/type'
     Path_MD_Rule_Plugins_Dir = '/root/plugins/dir/plugin'
     Path_MD_Rule_Plugins_File = '/root/plugins/file/plugin'
-    Path_Setting_Plugins_Dir = 'metadata.plugins.dir'
+
+    Path_Setting_MetaData = 'metadata'
+    Path_Setting_MetaData_Plugins_Dir = '{0}.plugins.dir'.format(Path_Setting_MetaData)
+    Path_Setting_MetaData_Schema = '{0}.schema'.format(Path_Setting_MetaData)
+    Path_Setting_MetaData_Schema_Default = '{0}.default'.format(Path_Setting_MetaData_Schema)
+    Path_Setting_MetaData_Schema_Special = '{0}.special'.format(Path_Setting_MetaData_Schema)
+    Path_Setting_MetaData_InBound = '{0}.inbound'.format(Path_Setting_MetaData)
+    Path_Setting_MetaData_InBound_ignore = '{0}.ignore'.format(Path_Setting_MetaData_InBound)
+    Path_Setting_MetaData_InBound_ignore_file = '{0}.file'.format(Path_Setting_MetaData_InBound_ignore)
+    Path_Setting_MetaData_InBound_ignore_dir = '{0}.dir'.format(Path_Setting_MetaData_InBound_ignore)
 
     TextMatchType_Common = 'common'
     TextMatchType_Regex = 'regex'
@@ -268,3 +279,6 @@ class CResource:
     ProcStatus_Processing = 2
     ProcStatus_Error = 3
     ProcStatus_WaitConfirm = 9
+
+    InBound_Storage_Match_Mode_Auto = 'auto'
+    InBound_Storage_Match_Mode_Set = 'set'

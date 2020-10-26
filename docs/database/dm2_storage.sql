@@ -634,6 +634,7 @@ create table dm2_storage_inbound
     dsistorageid  varchar(100) not null,
     dsidirectory  varchar(2000),
     dsibatchno    varchar(20),
+    dsiOtherOption jsonb,
     dsiaddtime    timestamp(6) default now(),
     dsistatus     integer default 0,
     dsiProcTime   timestamp(6) default now(),
@@ -648,6 +649,7 @@ comment on column dm2_storage_inbound.dsiid is '标识';
 comment on column dm2_storage_inbound.dsistorageid is '存储标识';
 comment on column dm2_storage_inbound.dsidirectory is '目录名称';
 comment on column dm2_storage_inbound.dsibatchno is '批次编号';
+comment on column dm2_storage_inbound.dsiOtherOption is '其他属性';
 comment on column dm2_storage_inbound.dsistatus is '处理状态';
 comment on column dm2_storage_inbound.dsiProcTime is '最小处理时间';
 comment on column dm2_storage_inbound.dsiProcID is '处理标识';

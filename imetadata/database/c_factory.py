@@ -32,7 +32,11 @@ class CFactory(CResource):
         if CUtils.equal_ignore_case(rt_db_id, ''):
             rt_db_id = self.DB_Server_ID_Default
 
-        for database in settings.application.xpath(self.Name_DataBases):
+        databases = settings.application.xpath_one(self.Name_DataBases, None)
+        if databases is None:
+            raise Exception('系统未配置数据库定义, 请检查修正后重试！')
+
+        for database in databases:
             if rt_db_id == CUtils.dict_value_by_name(database, self.Name_ID, self.DB_Server_ID_Default):
                 return self.create_db(database)
 

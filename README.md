@@ -423,8 +423,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 
     **注意: 在这里设置识别的插件后, 系统将忽略全局设置中的插件!!!**
 
-# 2020-09-18
-## 数据管理并行处理算法
+## 数据管理并行处理算法设计
 ### 根目录扫描调度
 1. 名称: job_dm_root_parser
 1. 类型: db_queue
@@ -435,7 +434,6 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
         * dsdScanFileStatus=1
         * scanStatus=1
    1. 将处理成功的记录, dm2_storage表dstScanStatus设置为0
-
 ### 目录识别调度
 1. 名称: job_dm_path2object
 1. 类型: db_queue
@@ -545,7 +543,6 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
    1. 将处理成功的dm2_storage_directory记录
         1. dsdScanFileStatus=0
         1. dsdScanDirStatus=0
-
 ### 文件识别调度
 1. 名称: job_dm_file2object
 1. 类型: db_queue
@@ -571,7 +568,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
    1. 将处理成功的dm2_storage_file记录
         1. dsfScanStatus=0
 
-#### 对象标签处理调度
+### 对象标签处理调度
 1. 名称: job_dm_obj_tags
 1. 类型: db_queue
 1. 算法:
@@ -583,7 +580,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
    1. 将处理成功的dm2_storage_object记录
         1. dsoTagsParserStatus=0
 
-#### 对象详情处理调度
+### 对象详情处理调度
 1. 名称: job_dm_obj_detail
 1. 类型: db_queue
 1. 算法:
@@ -593,7 +590,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
    1. 将处理成功的dm2_storage_object记录
         1. dsoDetailParserStatus=0
 
-#### 对象元数据处理调度
+### 对象元数据处理调度
 1. 名称: job_dm_obj_metadata
 1. 类型: db_queue
 1. 算法:
@@ -609,6 +606,70 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
         1. 清理虚拟内容对象
    1. 将处理成功的dm2_storage_object记录
         1. dsoMetaDataParserStatus=0
+        
+### 数据入库调度
+1. 名称: job_dm_inbound
+1. 类型: db_queue
+1. 算法:
+    1. 抢占dm2_storage_inbound表中dsiStatus=1的记录, 状态更新为2
+    1. 预处理:
+        1. 计算目录所需要的空间
+            1. 空间大小 = 全部空间 - 不入库的对象的空间
+        1. 检查目录下是否有metadata.21at文件
+            1. 如果文件不存在:
+                * 标记当前目录的数据集类型为other
+            1. 如果文件存在:
+                * 读取文件中的数据集类型
+        1. 从全局配置中读取特定类型的配置, 如果不存在, 则读取默认的入库配置
+        1. 根据入库配置, 计算应该入库的目标存储
+            1. 如果是指定目标存储模式
+                1. 如果指定存储不存在
+                    1. 反馈并记录入库备注
+                    1. !!!
+                1. 如果指定存储存在
+                    1. 使用该存储
+            1. 如果自动匹配存储模式
+                1. 检索存储中, 可用存储为-1或者可用存储大于目录入库所需空间的那个
+                1. 默认使用第一个
+                1. 如果存储不存在
+                    1. 表明存储不足, 记录入库备注并结束
+                    1. !!!
+                1. 如果存储存在, 则使用该存储
+                
+        1. 按入库配置, 计算入库后的目标目录
+        
+        1. 检查待入库数据目录, 确定所有文件都可以移动
+            1. 如果有某一个文件无法移动, 则将该文件名称记入入库备注, 并结束
+            1. !!!
+    1. 实体数据迁移        
+        1. 在指定存储下, 创建入库目标目录
+        1. 将待入库数据移动至入库目标目录
+            1. 如果有文件移动异常, 则将所有已迁移的文件迁回
+            1. 将移动异常的文件名称, 记入入库备注中, 并结束
+            1. !!!
+    1. 编目更新
+        1. 根据目标目录, 从dm2_storage_directory表中搜索其id
+            1. 如果目标目录不存在, 则根据规则, 自动创建(这里可以折中, 直接挂接在根目录下)
+            1. 理论上, 目标目录一定可以创建成功, 并返回
+            1. 如果过程出现异常, 则将异常情况记入入库备注中, 并结束
+            1. !!!
+        1. 将已入库目录的记录, 批量更新至目标存储和目录下
+            1. dm2_storage_directory
+                1. 将源存储和目录下的所有记录的目录和相对目录, 批量更新至目标目录下
+                1. 将源存储, 更改为目标存储
+                1. 将源根目录的父目录标识, 改为新计算出的目标目录标识(这里可以折中, 可以直接改为存储标识, 这就表明直接挂接在存储的根目录下)
+            1. dm2_storage_file
+                1. 重算文件的相对文件名字段: dsffilerelationname
+    1. 入库后清理    
+        1. 根据已经入库的目录记录, 搜索dm2_storage_object表中不允许入库的object
+            1. 搜索object关联的dm2_storage_obj_detail表记录, 逐一将目录文件移动回源目录
+        1. 删除不允许入库的object在dm2_storage_obj_detail表记录
+        1. 删除不允许入库的object在dm2_storage_file表中的记录
+        1. 清空不允许入库的object在dm2_storage_directory表中的记录的object信息, 保留目录名称, 将object信息清空为null
+        1. 删除不允许入库的object在dm2_storage_object表中的记录
+    1. 最后
+        1. 将处理成功的dm2_storage_inbound记录
+            1. dsiStatus=0
 
 # 2020-09-05
 扩展trigger的类型为

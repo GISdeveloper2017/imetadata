@@ -9,4 +9,5 @@ from imetadata.schedule.job.c_dbQueueJob import CDBQueueJob
 
 
 class CDMBaseJob(CDBQueueJob):
-    pass
+    Path_MD_Bus_Root = '/root'
+    Path_MD_Bus_ProductType = '{0}/ProductType'.format(Path_MD_Bus_Root)

@@ -360,3 +360,21 @@ class CXml:
             return xml_obj.xpath_one(query)
         except:
             return None
+
+    @classmethod
+    def file_xpath(cls, file_name: str, query: str) -> list:
+        try:
+            xml_obj = CXml()
+            xml_obj.load_file(file_name)
+            return xml_obj.xpath(query)
+        except:
+            return []
+
+    @classmethod
+    def file_xpath_one(cls, file_name: str, query: str):
+        try:
+            xml_obj = CXml()
+            xml_obj.load_file(file_name)
+            return xml_obj.xpath_one(query)
+        except:
+            return None

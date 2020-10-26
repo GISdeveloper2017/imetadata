@@ -6,9 +6,9 @@ from __future__ import absolute_import
 import os
 import shutil
 import time
-import chardet
 from fnmatch import fnmatch
 
+import chardet
 from sortedcontainers import SortedList
 
 from imetadata.base.c_utils import CUtils
@@ -29,6 +29,10 @@ class CFile:
         file_main_name = CFile.file_main_name(file_name_with_path)
         file_ext = file_name_tmp.replace('{0}.'.format(file_main_name), '', 1)
         return file_ext
+
+    @classmethod
+    def sep(cls):
+        return os.sep
 
     @classmethod
     def file_name(cls, file_name_with_path: str) -> str:
@@ -273,9 +277,44 @@ class CFile:
                     src_file = os.path.join(root, file)
                     shutil.copy(src_file, target_path)
 
+    @classmethod
+    def move_file_to(cls, file_name_with_path: str, target_path: str, new_file_name=None) -> bool:
+        if not cls.file_or_path_exist(target_path):
+            if not cls.check_and_create_directory_itself(target_path):
+                return False
+
+        target_file_name = new_file_name
+        if target_file_name is None:
+            target_file_name = cls.file_name(file_name_with_path)
+
+        target_file_with_path = cls.join_file(target_path, target_file_name)
+
+        if cls.file_or_path_exist(file_name_with_path):
+            shutil.move(file_name_with_path, target_file_with_path)
+
+        return cls.file_or_path_exist(target_file_with_path)
+
+    @classmethod
+    def move_path_to(cls, file_path: str, target_path: str):
+        failure_list = []
+
+        if not cls.file_or_path_exist(target_path):
+            if not cls.check_and_create_directory_itself(target_path):
+                return False, failure_list
+
+        for parent_path, sub_paths, sub_files in os.walk(file_path):
+            relation_path = cls.file_relation_path(parent_path, file_path)
+            for sub_file in sub_files:
+                src_file = cls.join_file(parent_path, sub_file)
+                if not cls.move_file_to(src_file, cls.join_file(target_path, relation_path)):
+                    failure_list.append(cls.join_file(relation_path, sub_file))
+
+        return len(failure_list) == 0, failure_list
+
 
 if __name__ == '__main__':
-    pass
+    # CFile.move_path_to('/Users/wangxiya/Downloads/axios', '/Users/wangxiya/Downloads/axios1')
+    shutil.move('/Users/wangxiya/Downloads/axios', '/Users/wangxiya/Downloads/axios1')
     # for file_or_path in CFile.file_or_subpath_of_path('/Users/wangxiya/Documents/交换'):
     #     print(file_or_path)
     # print('*'*10)

@@ -57,18 +57,26 @@ application = CSettings(
                     },
                     {'plugin': ['plugins_1020_ortho'], 'keyword': '单景正射'},
                     {'plugin': ['plugins_1030_mosaic'], 'keyword': '镶嵌影像'},
-                    {'plugin': ['plugins_1040_third_survey_block', 'plugins_1041_third_survey_noblock'],
-                     'keyword': '三调影像'}
+                    {
+                        'plugin': ['plugins_1040_third_survey_block', 'plugins_1041_third_survey_noblock'],
+                        'keyword': '三调影像'
+                    }
                 ]
             },
             'inbound': {
                 'title': '入库配置',
-                'dataset': [
-                    {'id': 'dom', 'title': 'DOM数据集', 'storage': {'type': 'auto'}, 'path': '{batch_id}'},
-                    {'id': 'l1', 'title': '散列卫星数据', 'storage': {'type': 'set', 'id': 'a'}, 'path': '{batch_id}'}
-                ],
+                'schema': {
+                    'special': [
+                        {'id': 'dom', 'title': 'DOM数据集', 'storage': {'type': 'set', 'id': 'a'}, 'path': '{batch_id}'}
+                    ],
+                    'default': {
+                        'id': 'other', 'title': '零散数据', 'storage': {'type': 'auto'}, 'path': '{batch_id}'
+                    }
+                },
                 'ignore': {
-                    'file': ['.DS_Store', 'ready.21at', 'metadata.21at']
+                    'title': '入库需要忽略的文件或目录',
+                    'file': ['.DS_Store', 'ready.21at', 'metadata.21at'],
+                    'dir': ['.git']
                 }
             },
             'outbound': {

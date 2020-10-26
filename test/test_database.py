@@ -41,7 +41,22 @@ class Test_DataBase:
 
 
 if __name__ == '__main__':
-    engine = CFactory().give_me_db()
+    sql_available_storage = '''
+    select dm2_storage.dstid, dm2_storage.dsttitle, dm2_storage.dst_volumn_max, dm2_storage.dst_volumn_max - coalesce(stat.file_size_sum, 0) as free_space
+    from dm2_storage left join (
+        select dsfstorageid, sum(dsffilesize) as file_size_sum
+        from dm2_storage_file left join dm2_storage
+            on dm2_storage_file.dsfstorageid = dm2_storage.dstid
+        where dm2_storage.dsttype = 'core'
+        group by dsfstorageid
+        ) stat on dm2_storage.dstid = stat.dsfstorageid
+    where dm2_storage.dsttype = 'core'
+    order by dm2_storage.dst_volumn_max desc        
+    '''
+    ds_available_storage = CFactory().give_me_db().all_row(sql_available_storage)
+
+    for storage_index in range(0, ds_available_storage.size()):
+        print(ds_available_storage.value_by_name(storage_index, 'dsttitle', ''))
     # sql = '''
     # insert into test(id, string, clob, blob) values(:id, :string, :clob, :blob)
     # '''
@@ -63,4 +78,3 @@ if __name__ == '__main__':
     # dataset = engine.one_row('select blob from test where id = 1')
     # dataset.blob2file(0, 'blob', '/Users/wangxiya/Downloads/output.jpg')
 
-    print(engine.seq_next_value(engine.Seq_Type_Date_AutoInc))

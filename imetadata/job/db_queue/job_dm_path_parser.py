@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import
 
+from imetadata import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
@@ -93,14 +94,15 @@ where dsdscanfilestatus = 2
 
         CLogger().debug('处理的目录为: {0}'.format(ds_subpath))
         try:
-            self.parser_path(dataset, ds_id, ds_subpath, ds_rule_content, check_inbound_subpath_enabled)
+            self.parser_file_or_subpath_of_path(dataset, ds_id, ds_subpath, ds_rule_content,
+                                                check_inbound_subpath_enabled)
             return CResult.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_subpath))
         except:
             return CResult.merge_result(self.Failure, '目录为[{0}]下的文件和子目录扫描处理出现错误!'.format(ds_subpath))
         finally:
             self.exchange_file_or_subpath_valid_unknown2invalid(ds_id)
 
-    def parser_path(self, dataset, ds_id, ds_path, ds_rule_content, check_inbound_subpath):
+    def parser_file_or_subpath_of_path(self, dataset, ds_id, ds_path, ds_rule_content, check_inbound_subpath):
         """
         处理目录(完整路径)下的子目录和文件
         :param check_inbound_subpath: 是否检查入库子目录
@@ -111,6 +113,8 @@ where dsdscanfilestatus = 2
         :return:
         """
         ds_storage_id = dataset.value_by_name(0, 'query_storage_id', '')
+        ignore_file_array = settings.application.xpath_one(self.Path_Setting_MetaData_InBound_ignore_file, None)
+        ignore_dir_array = settings.application.xpath_one(self.Path_Setting_MetaData_InBound_ignore_dir, None)
 
         file_list = CFile.file_or_subpath_of_path(ds_path)
         for file_name in file_list:
@@ -119,12 +123,16 @@ where dsdscanfilestatus = 2
             if CFile.is_dir(file_name_with_full_path):
                 CLogger().debug('在目录{0}下发现子目录: {1}'.format(ds_path, file_name))
 
+                if CUtils.list_count(ignore_dir_array, file_name) > 0:
+                    CLogger().debug('子目录: {0}在指定的忽略入库名单中, 将不入库! '.format(file_name))
+                    continue
+
                 inbound_subpath = True
                 if check_inbound_subpath:
                     inbound_subpath = self.check_inbound_subpath_ready(file_name_with_full_path)
                     if inbound_subpath:
                         # 注册到待入库请单中
-                        self.register_2_inbound_list(ds_storage_id, file_name)
+                        self.register_2_inbound_list(ds_storage_id, CFile.file_relation_path(file_name_with_full_path, ds_path))
 
                 if inbound_subpath:
                     path_obj = CDMPathInfo(
@@ -143,14 +151,20 @@ where dsdscanfilestatus = 2
                     else:
                         CLogger().info('目录[{0}]未通过黑白名单检验, 不允许入库! '.format(file_name_with_full_path))
             elif CFile.is_file(file_name_with_full_path):
+                if CUtils.list_count(ignore_file_array, file_name) > 0:
+                    CLogger().debug('子目录: {0}在指定的忽略入库名单中, 将不入库! '.format(file_name))
+                    continue
+
                 CLogger().debug('在目录{0}下发现文件: {1}'.format(ds_path, file_name))
-                file_obj = CDMFileInfo(self.FileType_File, file_name_with_full_path,
-                                       dataset.value_by_name(0, 'query_storage_id', ''),
-                                       None,
-                                       ds_id,
-                                       dataset.value_by_name(0, 'query_dir_parent_objid', None),
-                                       self.get_mission_db_id(),
-                                       ds_rule_content)
+                file_obj = CDMFileInfo(
+                    self.FileType_File, file_name_with_full_path,
+                    dataset.value_by_name(0, 'query_storage_id', ''),
+                    None,
+                    ds_id,
+                    dataset.value_by_name(0, 'query_dir_parent_objid', None),
+                    self.get_mission_db_id(),
+                    ds_rule_content
+                )
                 if file_obj.white_black_valid():
                     file_obj.db_check_and_update()
                 else:
@@ -159,7 +173,7 @@ where dsdscanfilestatus = 2
         CFactory().give_me_db(self.get_mission_db_id()).execute(
             '''
             update dm2_storage_directory
-            set dsdscanfilestatus = 0, dsddirscanpriority = 0
+            set dsdscandirstatus = 0, dsdscanfilestatus = 0, dsddirscanpriority = 0
             where dsdid = :dsdid
             ''', {'dsdid': ds_id}
         )
@@ -218,7 +232,8 @@ where dsdscanfilestatus = 2
         '''
         database.execute(
             sql_register_2_inbound_list,
-            {'storageid': storage_id, 'directory': directory, 'batchno': new_batch_no, 'status': self.ProcStatus_WaitConfirm}
+            {'storageid': storage_id, 'directory': directory, 'batchno': new_batch_no,
+             'status': self.ProcStatus_WaitConfirm}
         )
 
 

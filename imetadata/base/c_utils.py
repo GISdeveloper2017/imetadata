@@ -8,6 +8,7 @@ import pinyin
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_time import CTime
 from osgeo import gdal, ogr, osr
+from string import Template
 
 
 class CUtils(CResource):
@@ -28,6 +29,13 @@ class CUtils(CResource):
             return super_id
 
     @classmethod
+    def replace_placeholder(cls, text: str, dict_obj: dict, safe: bool = True, **kwargs) -> str:
+        if safe:
+            return Template(text).safe_substitute(dict_obj, kwargs)
+        else:
+            return Template(text).substitute(dict_obj, kwargs)
+
+    @classmethod
     def equal_ignore_case(cls, str1: str, str2: str) -> bool:
         return cls.any_2_str(str1).strip().lower() == cls.any_2_str(str2).strip().lower()
 
@@ -37,6 +45,9 @@ class CUtils(CResource):
 
     @classmethod
     def dict_value_by_name(cls, dict_obj: dict, name: str, default_value, ignore_case=True) -> any:
+        if dict_obj is None:
+            return default_value
+
         keys = dict_obj.keys()
         for key in keys:
             if ignore_case:
@@ -50,7 +61,9 @@ class CUtils(CResource):
 
     @classmethod
     def list_count(cls, list_obj: list, name: str, ignore_case=True) -> int:
-        if not ignore_case:
+        if list_obj is None:
+            return 0
+        elif not ignore_case:
             return list_obj.count(name)
         else:
             result_int = 0
