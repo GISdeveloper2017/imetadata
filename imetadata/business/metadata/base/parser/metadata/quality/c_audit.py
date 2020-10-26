@@ -3,6 +3,7 @@
 # @Author : 王西亚 
 # @File : c_audit.py
 from imetadata.base.c_file import CFile
+from imetadata.base.c_gdalUtils import CGdalUtils
 from imetadata.base.c_json import CJson
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
@@ -436,7 +437,7 @@ class CAudit(CResource):
                     CFile.file_name(file_name_with_path))
         elif CUtils.equal_ignore_case(file_format, cls.DataFormat_Vector_File):
             # 判断是否能正常打开矢量数据文件 file_name_with_path
-            is_file_can_read = CUtils.is_vector_file_can_read(file_name_with_path)
+            is_file_can_read = CGdalUtils.is_vector_file_can_read(file_name_with_path)
             if is_file_can_read:
                 result_dict[cls.Name_Message] = '文件[{0}]为合法的矢量数据, 符合要求!'.format(
                     CFile.file_name(file_name_with_path))
@@ -448,7 +449,7 @@ class CAudit(CResource):
             """
             todo 判断是否能正常打开矢量数据集 file_name_with_path
             """
-            is_can_read = CUtils.is_vector_dataset_can_read(file_name_with_path)
+            is_can_read = CGdalUtils.is_vector_dataset_can_read(file_name_with_path)
             if is_can_read:
                 result_dict[cls.Name_Message] = '文件[{0}]为合法的矢量数据集, 符合要求!'.format(
                     CFile.file_name(file_name_with_path))
@@ -458,7 +459,7 @@ class CAudit(CResource):
                     CFile.file_name(file_name_with_path))
         elif CUtils.equal_ignore_case(file_format, cls.DataFormat_Raster_File):
             # 判断是否能正常打开影像数据文件 file_name_with_path
-            is_file_can_read = CUtils.is_raster_file_can_read(file_name_with_path)
+            is_file_can_read = CGdalUtils.is_raster_file_can_read(file_name_with_path)
             if is_file_can_read:
                 result_dict[cls.Name_Message] = '文件[{0}]为合法的影像数据, 符合要求!'.format(
                     CFile.file_name(file_name_with_path))
