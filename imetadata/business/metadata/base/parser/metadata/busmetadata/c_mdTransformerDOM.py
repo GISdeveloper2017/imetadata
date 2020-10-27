@@ -20,10 +20,7 @@ class CMDTransformerDOM(CMDTransformer):
         """
         super().process()
 
-        file_metadata_name_with_path = '{0}.{1}'.format(
-            CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__),
-            self.transformer_type
-        )
+        file_metadata_name_with_path = self.transformer_src_filename
 
         try:
             xml_obj = None
