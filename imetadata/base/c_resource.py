@@ -179,6 +179,7 @@ class CResource:
     Name_rde = 'rde'
     Name_Tif = 'tif'
     Name_Tiff = 'tiff'
+    Name_Bil = 'bil'
     Name_Shp = 'shp'
 
     Path_MD_Rule_Type = '/root/type'

@@ -594,7 +594,7 @@ class CPlugins(CResource):
 
     def init_qa_file_integrity_default_list(self, file_name_with_full_path: str):
         """
-        todo 赵宇飞  常用的文件对象校验列表集合（img/tif/tiff/shp）,tiff暂无
+        todo 赵宇飞  常用的文件对象校验列表集合（img/tif/bil/tiff/shp）,tiff暂无
         @param file_name_with_full_path: 文件的全文件名（img/tif/tiff/shp）
         @return: 返回常用文件完整性的质检列表，如果是主文件，会有一个格式的项，用于质检文件的打开可读性
         """
@@ -603,6 +603,8 @@ class CPlugins(CResource):
             return self.init_qa_file_integrity_img_list(file_name_with_full_path)
         elif CUtils.equal_ignore_case(file_ext, self.Name_Tif):
             return self.init_qa_file_integrity_tif_list(file_name_with_full_path)
+        elif CUtils.equal_ignore_case(file_ext, self.Name_Bil):
+            return self.init_qa_file_integrity_bil_list(file_name_with_full_path)
         elif CUtils.equal_ignore_case(file_ext, self.Name_Shp):
             return self.init_qa_file_integrity_shp_list(file_name_with_full_path)
         return []
@@ -694,7 +696,39 @@ class CPlugins(CResource):
                 }, {
                     self.Name_FileName: '{0}.tfw'.format(file_main_name),
                     self.Name_ID: 'tfw',
-                    self.Name_Title: 'TFW文件',
+                    self.Name_Title: 'TFW投影文件',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Warn
+                }
+            ])
+        return result_list
+
+    def init_qa_file_integrity_bil_list(self, file_name_with_full_path: str):
+        """
+        todo 赵宇飞 对bil数据进行完整性质检，并返回检查结果列表
+            可用性	xxx.bil	文件	栅格数据可读	错误
+            完整性	xxx.blw	文件	投影信息文件	警告
+        @param file_name_with_full_path: bil的全文件名
+        @return: 返回img的质检列表,如果是主文件bil，会有一个格式的项，用于质检文件的打开可读性
+        """
+        file_main_name = CFile.file_main_name(file_name_with_full_path)
+        file_ext = CFile.file_ext(file_name_with_full_path)
+        # file_path = CFile.file_path(file_name_with_full_path)
+
+        result_list = list()
+        if CUtils.equal_ignore_case(file_ext, self.Name_Bil):
+            result_list.extend([
+                {
+                    self.Name_FileName: '{0}.bil'.format(file_main_name),
+                    self.Name_ID: 'bil',
+                    self.Name_Title: 'bil影像',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error,
+                    self.Name_Format: self.DataFormat_Raster_File
+                }, {
+                    self.Name_FileName: '{0}.blw'.format(file_main_name),
+                    self.Name_ID: 'blw',
+                    self.Name_Title: 'blw投影文件',
                     self.Name_Group: self.QA_Group_Data_Integrity,
                     self.Name_Result: self.QA_Result_Warn
                 }

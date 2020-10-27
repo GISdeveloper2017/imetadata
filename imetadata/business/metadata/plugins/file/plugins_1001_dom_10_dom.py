@@ -58,7 +58,7 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
                 or CUtils.text_is_alpha(char_4) is False \
                 or CUtils.text_is_numeric(char_5_to_7) is False \
                 or CUtils.text_is_numeric(char_8_to_10) is False \
-                or CUtils.equal_ignore_case(char_11_to_13,"DOM") is False:
+                or CUtils.equal_ignore_case(char_11_to_13, "DOM") is False:
             return self.Object_Confirm_IUnKnown, self.__object_name__
         if CUtils.equal_ignore_case(file_ext, 'tif'):
             self.__object_confirm__ = self.Object_Confirm_IKnown
@@ -123,7 +123,6 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Width: 8,
                 self.Name_Range:
                     {
                         self.Name_Min: -90,
@@ -140,11 +139,10 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Width: 8,
                 self.Name_Range:
                     {
-                      self.Name_Min: -180,
-                      self.Name_Max: 180
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
                     },
                 self.Name_XPath: 'boundingbox.left',
                 self.Name_ID: 'left',
@@ -156,7 +154,6 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Width: 8,
                 self.Name_Range:
                     {
                         self.Name_Min: -180,
@@ -172,7 +169,6 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Width: 8,
                 self.Name_Range:
                     {
                         self.Name_Min: -90,
@@ -185,6 +181,7 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
                 self.Name_Result: self.QA_Result_Error
             }
         ]
+
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 业务元数据xml文件的检验列表
@@ -435,148 +432,520 @@ class plugins_1001_dom_10_dom(CFilePlugins_GUOTU_DOM):
                 }
             ]
 
-        else: #mat、xls、xlsx业务元数据
+        elif self.metadata_bus_transformer_type == 'mat':  # mat业务元数据
 
             return [
                 {
+
                     self.Name_Type: self.QA_Type_XML_Node_Exist,
+
                     self.Name_NotNull: True,
+
                     self.Name_DataType: self.value_type_string,
+
                     self.Name_Width: 100,
+
                     self.Name_XPath: "//item[@name='数据名称']",
+
                     self.Name_ID: '数据名称',
+
                     self.Name_Title: '元数据文件名',
+
                     self.Name_Group: self.QA_Group_Data_Integrity,
+
                     self.Name_Result: self.QA_Result_Error
+
                 },
                 {
+
                     self.Name_Type: self.QA_Type_XML_Node_Exist,
+
                     self.Name_NotNull: True,
+
                     self.Name_DataType: self.value_type_date,
+
                     self.Name_XPath: "//item[@name='数据生产时间']",
+
                     self.Name_ID: '数据生产时间',
+
                     self.Name_Title: '数据生产时间',
+
                     self.Name_Group: self.QA_Group_Data_Integrity,
+
                     self.Name_Result: self.QA_Result_Error
+
                 },
                 {
+
                     self.Name_Type: self.QA_Type_XML_Node_Exist,
+
                     self.Name_NotNull: True,
+
                     self.Name_DataType: self.value_type_date,
+
                     self.Name_XPath: "//item[@name='航摄时间']",
+
                     self.Name_ID: '航摄时间',
+
                     self.Name_Title: '航摄时间',
+
                     self.Name_Group: self.QA_Group_Data_Integrity,
+
                     self.Name_Result: self.QA_Result_Error
+
                 },
                 {
+
                     self.Name_Type: self.QA_Type_XML_Node_Exist,
+
                     self.Name_NotNull: True,
+
                     self.Name_DataType: self.value_type_string,
+
                     self.Name_Width: 20,
+
                     self.Name_XPath: "//item[@name='密级']",
+
                     self.Name_ID: '密级',
+
                     self.Name_Title: '密级',
+
                     self.Name_Group: self.QA_Group_Data_Integrity,
+
                     self.Name_Result: self.QA_Result_Error
+
                 },
                 {
+
                     self.Name_Type: self.QA_Type_XML_Node_Exist,
+
                     self.Name_NotNull: True,
+
                     self.Name_DataType: self.value_type_string,
+
                     self.Name_Width: 10,
+
                     self.Name_XPath: "//item[@name='地面分辨率']",
+
                     self.Name_ID: '地面分辨率',
+
                     self.Name_Title: '地面分辨率',
+
                     self.Name_Group: self.QA_Group_Data_Integrity,
+
                     self.Name_Result: self.QA_Result_Error
+
                 },
                 {
+
                     self.Name_Type: self.QA_Type_XML_Node_Exist,
+
                     self.Name_NotNull: False,
+
                     self.Name_DataType: self.value_type_string,
+
                     self.Name_Width: 50,
+
                     self.Name_XPath: "//item[@name='像素位数']",
+
                     self.Name_ID: '像素位数',
+
                     self.Name_Title: '像素位数',
+
                     self.Name_Group: self.QA_Group_Data_Integrity,
+
                     self.Name_Result: self.QA_Result_Warn
+
                 },
                 {
+
                     self.Name_Type: self.QA_Type_XML_Node_Exist,
+
                     self.Name_NotNull: False,
+
                     self.Name_DataType: self.value_type_string,
+
                     self.Name_Width: 100,
+
                     self.Name_XPath: "//item[@name='地图投影']",
+
                     self.Name_ID: '地图投影',
+
                     self.Name_Title: '地图投影',
+
                     self.Name_Group: self.QA_Group_Data_Integrity,
+
                     self.Name_Result: self.QA_Result_Warn
+
                 },
                 {
+
                     self.Name_Type: self.QA_Type_XML_Node_Exist,
+
                     self.Name_NotNull: False,
+
                     self.Name_DataType: self.value_type_string,
+
                     self.Name_Width: 38,
+
                     self.Name_XPath: "//item[@name='卫星名称']",
+
                     self.Name_ID: '卫星名称',
+
                     self.Name_Title: '卫星名称',
+
                     self.Name_Group: self.QA_Group_Data_Integrity,
+
                     self.Name_Result: self.QA_Result_Warn
+
                 },
                 {
+
                     self.Name_Type: self.QA_Type_XML_Node_Exist,
+
                     self.Name_NotNull: False,
+
                     self.Name_DataType: self.value_type_string,
+
                     self.Name_Width: 25,
+
                     self.Name_XPath: "//item[@name='数据格式']",
+
                     self.Name_ID: '数据格式',
+
                     self.Name_Title: '数据格式',
+
                     self.Name_Group: self.QA_Group_Data_Integrity,
+
                     self.Name_Result: self.QA_Result_Warn
+
                 },
                 {
+
                     self.Name_Type: self.QA_Type_XML_Node_Exist,
+
                     self.Name_NotNull: False,
+
                     self.Name_DataType: self.value_type_string,
+
                     self.Name_Width: 100,
+
                     self.Name_XPath: "//item[@name='数据生产单位名']",
+
                     self.Name_ID: '数据生产单位名',
+
                     self.Name_Title: '数据生产单位名',
+
                     self.Name_Group: self.QA_Group_Data_Integrity,
+
                     self.Name_Result: self.QA_Result_Warn
+
                 },
                 {
+
                     self.Name_Type: self.QA_Type_XML_Node_Exist,
+
                     self.Name_NotNull: False,
+
                     self.Name_DataType: self.value_type_string,
+
                     self.Name_Width: 100,
+
                     self.Name_XPath: "//item[@name='数据版权单位名']",
+
                     self.Name_ID: '数据版权单位名',
+
                     self.Name_Title: '数据版权单位名',
+
                     self.Name_Group: self.QA_Group_Data_Integrity,
+
                     self.Name_Result: self.QA_Result_Warn
+
                 },
                 {
+
                     self.Name_Type: self.QA_Type_XML_Node_Exist,
+
                     self.Name_NotNull: True,
+
                     self.Name_DataType: self.value_type_string,
+
                     self.Name_Width: 100,
+
                     self.Name_XPath: "//item[@name='数据出版单位名']",
+
                     self.Name_ID: '数据出版单位名',
+
                     self.Name_Title: '数据出版单位名',
+
                     self.Name_Group: self.QA_Group_Data_Integrity,
+
                     self.Name_Result: self.QA_Result_Warn
+
                 }
             ]
+
+        else:  # xls、xlsx业务元数据
+
+            return [
+                {
+
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+
+                    self.Name_NotNull: True,
+
+                    self.Name_DataType: self.value_type_string,
+
+                    self.Name_Width: 100,
+
+                    self.Name_XPath: "//item[@name='产品名称']",
+
+                    self.Name_ID: '产品名称',
+
+                    self.Name_Title: '产品名称',
+
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+
+                    self.Name_Result: self.QA_Result_Error
+
+                },
+                {
+
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+
+                    self.Name_NotNull: True,
+
+                    self.Name_DataType: self.value_type_date,
+
+                    self.Name_XPath: "//item[@name='产品生产日期']",
+
+                    self.Name_ID: '产品生产日期',
+
+                    self.Name_Title: '产品生产日期',
+
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+
+                    self.Name_Result: self.QA_Result_Error
+
+                },
+                {
+
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+
+                    self.Name_NotNull: True,
+
+                    self.Name_DataType: self.value_type_date,
+
+                    self.Name_XPath: "//item[@name='航摄日期']",
+
+                    self.Name_ID: '航摄日期',
+
+                    self.Name_Title: '航摄日期',
+
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+
+                    self.Name_Result: self.QA_Result_Error
+
+                },
+                {
+
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+
+                    self.Name_NotNull: True,
+
+                    self.Name_DataType: self.value_type_string,
+
+                    self.Name_Width: 20,
+
+                    self.Name_XPath: "//item[@name='密级']",
+
+                    self.Name_ID: '密级',
+
+                    self.Name_Title: '密级',
+
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+
+                    self.Name_Result: self.QA_Result_Error
+
+                },
+                {
+
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+
+                    self.Name_NotNull: True,
+
+                    self.Name_DataType: self.value_type_string,
+
+                    self.Name_Width: 10,
+
+                    self.Name_XPath: "//item[@name='影像地面分辨率']",
+
+                    self.Name_ID: '影像地面分辨率',
+
+                    self.Name_Title: '影像地面分辨率',
+
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+
+                    self.Name_Result: self.QA_Result_Error
+
+                },
+                {
+
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+
+                    self.Name_NotNull: False,
+
+                    self.Name_DataType: self.value_type_string,
+
+                    self.Name_Width: 50,
+
+                    self.Name_XPath: "//item[@name='像素位数']",
+
+                    self.Name_ID: '像素位数',
+
+                    self.Name_Title: '像素位数',
+
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+
+                    self.Name_Result: self.QA_Result_Warn
+
+                },
+                {
+
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+
+                    self.Name_NotNull: False,
+
+                    self.Name_DataType: self.value_type_string,
+
+                    self.Name_Width: 100,
+
+                    self.Name_XPath: "//item[@name='地图投影名称']",
+
+                    self.Name_ID: '地图投影名称',
+
+                    self.Name_Title: '地图投影名称',
+
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+
+                    self.Name_Result: self.QA_Result_Warn
+
+                },
+                {
+
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+
+                    self.Name_NotNull: False,
+
+                    self.Name_DataType: self.value_type_string,
+
+                    self.Name_Width: 38,
+
+                    self.Name_XPath: "//item[@name='卫星名称']",
+
+                    self.Name_ID: '卫星名称',
+
+                    self.Name_Title: '卫星名称',
+
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+
+                    self.Name_Result: self.QA_Result_Warn
+
+                },
+                {
+
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+
+                    self.Name_NotNull: False,
+
+                    self.Name_DataType: self.value_type_string,
+
+                    self.Name_Width: 25,
+
+                    self.Name_XPath: "//item[@name='数据格式']",
+
+                    self.Name_ID: '数据格式',
+
+                    self.Name_Title: '数据格式',
+
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+
+                    self.Name_Result: self.QA_Result_Warn
+
+                },
+                {
+
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+
+                    self.Name_NotNull: False,
+
+                    self.Name_DataType: self.value_type_string,
+
+                    self.Name_Width: 100,
+
+                    self.Name_XPath: "//item[@name='产品生产单位名称']",
+
+                    self.Name_ID: '产品生产单位名称',
+
+                    self.Name_Title: '产品生产单位名称',
+
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+
+                    self.Name_Result: self.QA_Result_Warn
+
+                },
+                {
+
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+
+                    self.Name_NotNull: False,
+
+                    self.Name_DataType: self.value_type_string,
+
+                    self.Name_Width: 100,
+
+                    self.Name_XPath: "//item[@name='产品所有权单位名称']",
+
+                    self.Name_ID: '产品所有权单位名称',
+
+                    self.Name_Title: '产品所有权单位名称',
+
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+
+                    self.Name_Result: self.QA_Result_Warn
+
+                },
+                {
+
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+
+                    self.Name_NotNull: True,
+
+                    self.Name_DataType: self.value_type_string,
+
+                    self.Name_Width: 100,
+
+                    self.Name_XPath: "//item[@name='产品出版单位名称']",
+
+                    self.Name_ID: '产品出版单位名称',
+
+                    self.Name_Title: '产品出版单位名称',
+
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+
+                    self.Name_Result: self.QA_Result_Warn
+
+                }
+            ]
+
 
 if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
     #                        '/Users/wangxiya/Documents/交换/1.给我的/即时服务产品/业务数据集/DOM/湖北单个成果数据/H49G001026/H49G001026.tif',
     #                        '/Users/wangxiya/Documents/交换', '<root><type>dom</type></root>')
     file_info = CFileInfoEx(plugins_1001_dom_10_dom.FileType_File,
-                            r'D:\迅雷下载\数据入库3\DOM\造的数据\dom-10\G49G001030\G49G001030DOM.tif',
-                            r'D:\迅雷下载\数据入库3\DOM\造的数据\dom-10\G49G001030\tif', '<root><type>dom</type></root>')
+                            r'D:\迅雷下载\数据入库3\DOM\造的数据\dom-10\G49G001030DOM\G49G001030DOM.tif',
+                            r'D:\迅雷下载\数据入库3\DOM\造的数据\dom-10\G49G001030DOM\tif', '<root><type>dom</type></root>')
     plugins = plugins_1001_dom_10_dom(file_info)
     object_confirm, object_name = plugins.classified()
     plugins.init_qa_file_list(file_info)
