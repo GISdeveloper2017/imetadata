@@ -404,6 +404,8 @@ class CAudit(CResource):
         """
         result_dict = copy.deepcopy(result_template)
         if value_not_null is None or value_not_null is False:
+            result_dict[cls.Name_Message] = '{0}的值可以为空, 符合要求!'.format(title_prefix)
+            result_dict[cls.Name_Result] = cls.QA_Result_Pass
             return result_dict
 
         if value_not_null is True:

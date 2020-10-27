@@ -15,6 +15,8 @@ class plugins_1004_dom_part_2(CFilePlugins_GUOTU_DOM):
         information[self.Plugins_Info_Title] = 'DOM数据'
         information[self.Plugins_Info_Name] = 'dom_part_2'
 
+        return information
+
     def classified(self):
         """
         设计国土行业数据的dom_part_2验证规则
@@ -22,6 +24,8 @@ class plugins_1004_dom_part_2(CFilePlugins_GUOTU_DOM):
         :return:
         """
         super().classified()
+        if not self.file_info.__file_main_name__.count('-') == 1:
+            return self.Object_Confirm_IUnKnown, self.__object_name__
         char_1 = self.file_info.__file_main_name__.split('-')[0]
         char_2 = self.file_info.__file_main_name__.split('-')[1]
         if CUtils.text_is_decimal(char_1) is False \
