@@ -3,11 +3,13 @@
 # @Author : 王西亚 
 # @File : c_audit.py
 from imetadata.base.c_file import CFile
+from imetadata.base.c_gdalUtils import CGdalUtils
 from imetadata.base.c_json import CJson
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.database.c_factory import CFactory
+import copy
 
 
 class CAudit(CResource):
@@ -196,7 +198,7 @@ class CAudit(CResource):
         :param value_width: 检查value的宽度
         :return:
         """
-        result_dict = result_template
+        result_dict = copy.deepcopy(result_template)
         value_lenth = CUtils.len_of_text(value)
         if value_lenth <= value_width:
             result_dict[cls.Name_Message] = '{0}的值的宽度不超过{1}, 符合要求!'.format(title_prefix, value_width)
@@ -220,7 +222,7 @@ class CAudit(CResource):
         :param value_list: 检查value的必须存在于指定的列表
         :return:
         """
-        result_dict = result_template
+        result_dict = copy.deepcopy(result_template)
         if CUtils.list_count(value_list, value) > 0:
             result_dict[cls.Name_Message] = '{0}的值在指定列表中, 符合要求!'.format(title_prefix)
             result_dict[cls.Name_Result] = cls.QA_Result_Pass
@@ -242,7 +244,7 @@ class CAudit(CResource):
         :param sql: 检查value的必须存在于指定的sql中, sql中只有一个参数, 注意
         :return:
         """
-        result_dict = result_template
+        result_dict = copy.deepcopy(result_template)
         is_exist_in_sql = False
         ds = CFactory().give_me_db(db_server_id).one_row(sql)
         if not ds.is_empty():
@@ -265,14 +267,14 @@ class CAudit(CResource):
     @classmethod
     def __a_check_value_datatype__(cls, result_template: dict, value, title_prefix, value_type):
         """
-        TODO 赵宇飞 对字段值根据字段类型进行检验（正整数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
+        TODO 赵宇飞 对字段值根据字段类型进行检验（正整数或正小数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
         :param result_template: 检查结果的模板
         :param value: 待检验的值, 可能为None
         :param title_prefix:
         :param value_type: 类型（正整数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
         :return:
         """
-        result_dict = result_template
+        result_dict = copy.deepcopy(result_template)
         if CUtils.equal_ignore_case(value_type, cls.value_type_string):
             if CUtils.text_is_string(value):
                 result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
@@ -347,7 +349,7 @@ class CAudit(CResource):
         range_min = CUtils.to_decimal(
             CJson.dict_attr_by_path(qa_items, '{0}.{1}'.format(cls.Name_Range, cls.Name_Min), default_value))
 
-        result_dict = result_template
+        result_dict = copy.deepcopy(result_template)
 
         value_real = CUtils.to_decimal(value, -1)
 
@@ -400,7 +402,7 @@ class CAudit(CResource):
         @param title_prefix:
         @return:
         """
-        result_dict = result_template
+        result_dict = copy.deepcopy(result_template)
         if value_not_null is None or value_not_null is False:
             return result_dict
 
@@ -414,7 +416,7 @@ class CAudit(CResource):
 
     @classmethod
     def __a_check_file_format__(cls, result_template: dict, file_name_with_path: str, file_format: str):
-        result_dict = result_template
+        result_dict = copy.deepcopy(result_template)
 
         if CUtils.equal_ignore_case(file_format, cls.MetaDataFormat_XML):
             try:
@@ -436,7 +438,7 @@ class CAudit(CResource):
                     CFile.file_name(file_name_with_path))
         elif CUtils.equal_ignore_case(file_format, cls.DataFormat_Vector_File):
             # 判断是否能正常打开矢量数据文件 file_name_with_path
-            is_file_can_read = CUtils.is_vector_file_can_read(file_name_with_path)
+            is_file_can_read = CGdalUtils.is_vector_file_can_read(file_name_with_path)
             if is_file_can_read:
                 result_dict[cls.Name_Message] = '文件[{0}]为合法的矢量数据, 符合要求!'.format(
                     CFile.file_name(file_name_with_path))
@@ -448,7 +450,7 @@ class CAudit(CResource):
             """
             todo 判断是否能正常打开矢量数据集 file_name_with_path
             """
-            is_can_read = CUtils.is_vector_dataset_can_read(file_name_with_path)
+            is_can_read = CGdalUtils.is_vector_dataset_can_read(file_name_with_path)
             if is_can_read:
                 result_dict[cls.Name_Message] = '文件[{0}]为合法的矢量数据集, 符合要求!'.format(
                     CFile.file_name(file_name_with_path))
@@ -458,7 +460,7 @@ class CAudit(CResource):
                     CFile.file_name(file_name_with_path))
         elif CUtils.equal_ignore_case(file_format, cls.DataFormat_Raster_File):
             # 判断是否能正常打开影像数据文件 file_name_with_path
-            is_file_can_read = CUtils.is_raster_file_can_read(file_name_with_path)
+            is_file_can_read = CGdalUtils.is_raster_file_can_read(file_name_with_path)
             if is_file_can_read:
                 result_dict[cls.Name_Message] = '文件[{0}]为合法的影像数据, 符合要求!'.format(
                     CFile.file_name(file_name_with_path))
@@ -484,7 +486,7 @@ class CAudit(CResource):
         :param size_max: 最大要求, -1表示忽略比较
         :return:
         """
-        result_dict = result_template
+        result_dict = copy.deepcopy(result_template)
 
         file_size = CFile.file_size(file_name_with_path)
 

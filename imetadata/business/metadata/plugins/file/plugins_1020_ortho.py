@@ -26,8 +26,11 @@ class plugins_1020_ortho(CFilePlugins_GUOTU_21AT):
         super().classified()
         file_main_name = self.file_info.__file_main_name__
         file_ext = self.file_info.__file_ext__  # 初始化需要的参数
-
+        file_name_with_full_path = self.file_info.__file_name_with_full_path__
+        if file_name_with_full_path.endswith('_21at.xml'):
+            file_main_name = file_main_name[:-5]
         file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
+
         check_file_main_name_exist = \
             CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif)) or \
             CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Img))
@@ -56,7 +59,8 @@ class plugins_1020_ortho(CFilePlugins_GUOTU_21AT):
         #     CFile.join_file(self.file_info.__file_path__, file_main_name), file_ext)  # 获取初始化需要的参数
 
         list_qa = list()
-        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.__file_name_with_full_path__))  # 调用默认的规则列表
+        list_qa.extend(
+            self.init_qa_file_integrity_default_list(self.file_info.__file_name_with_full_path__))  # 调用默认的规则列表
 
         return list_qa
 
@@ -93,7 +97,6 @@ class plugins_1020_ortho(CFilePlugins_GUOTU_21AT):
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Width: 8,
                 self.Name_Range:
                     {
                         self.Name_Min: -90,
@@ -107,7 +110,6 @@ class plugins_1020_ortho(CFilePlugins_GUOTU_21AT):
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Width: 8,
                 self.Name_Range:
                     {
                         self.Name_Min: -180,
@@ -121,7 +123,6 @@ class plugins_1020_ortho(CFilePlugins_GUOTU_21AT):
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Width: 8,
                 self.Name_Range:
                     {
                         self.Name_Min: -180,
@@ -135,7 +136,6 @@ class plugins_1020_ortho(CFilePlugins_GUOTU_21AT):
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Width: 8,
                 self.Name_Range:
                     {
                         self.Name_Min: -90,
@@ -143,7 +143,6 @@ class plugins_1020_ortho(CFilePlugins_GUOTU_21AT):
                     }
             }
         ]
-
 
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """

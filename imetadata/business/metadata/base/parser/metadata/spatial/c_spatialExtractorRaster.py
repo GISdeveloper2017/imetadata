@@ -14,6 +14,10 @@ class CSpatialExtractorRaster(CMDExtractor):
         注意: 如果出现内存泄漏现象, 则使用新建进程提取元数据, 放置到文件中, 在本进程中解析元数据!!!
         :return:
         """
+        file_name_with_full_path = self.file_info.__file_name_with_full_path__
+        file_main_name = self.file_info.__file_main_name__
+
+
         result = CResult.merge_result(self.Success, '处理完毕!')
         result = CResult.merge_result_info(result, self.Name_Native_Center, '/aa/bb_native_center.wkt')
         result = CResult.merge_result_info(result, self.Name_Native_BBox, '/aa/bb_native_bbox.wkt')
