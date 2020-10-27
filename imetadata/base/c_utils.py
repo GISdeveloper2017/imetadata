@@ -119,13 +119,15 @@ class CUtils(CResource):
     @classmethod
     def text_is_date(cls, check_text: str) -> bool:
         """
-        TODO 赵宇飞 判断是否为年月日,或年月（不包含时间），如202010,2020/10,2020-10 或20201022,2020/10/22,2020-10-22
+        TODO 赵宇飞 判断是否为年月日,或年月,或年（不包含时间），如2020,202010,2020/10,2020-10 或20201022,2020/10/22,2020-10-22
         @param check_text:
         @return:
         """
         if cls.text_is_date_day(check_text):
             return True
         elif cls.text_is_date_month(check_text):
+            return True
+        elif cls.text_is_date_year(check_text):
             return True
         return False
 
@@ -167,6 +169,20 @@ class CUtils(CResource):
         time_format_real = time_format.format(sep_real)
         default_date = CTime.now()
         date_value = CTime.from_datetime_str(check_text, default_date, time_format_real)
+        if CUtils.equal_ignore_case(date_value, default_date):
+            return False
+        return True
+
+    @classmethod
+    def text_is_date_year(cls, check_text: str) -> bool:
+        """
+        TODO 赵宇飞 判断是否为年（不包含月日），如2020
+        @param check_text:
+        @return:
+        """
+        time_format = "%Y"
+        default_date = CTime.now()
+        date_value = CTime.from_datetime_str(check_text, default_date, time_format)
         if CUtils.equal_ignore_case(date_value, default_date):
             return False
         return True
