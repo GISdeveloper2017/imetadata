@@ -116,6 +116,7 @@ class CResource:
 
     FileName_MetaData_Rule = 'metadata.rule'
     FileName_Ready_21AT = 'ready.21at'
+    FileName_MetaData_Bus_21AT = 'metadata.21at'
     FileName_MetaData = 'metadata.json'
     FileName_MetaData_Bus = 'metadata_bus.xml'
 
@@ -187,13 +188,13 @@ class CResource:
 
     Path_Setting_MetaData = 'metadata'
     Path_Setting_MetaData_Plugins_Dir = '{0}.plugins.dir'.format(Path_Setting_MetaData)
-    Path_Setting_MetaData_Schema = '{0}.schema'.format(Path_Setting_MetaData)
-    Path_Setting_MetaData_Schema_Default = '{0}.default'.format(Path_Setting_MetaData_Schema)
-    Path_Setting_MetaData_Schema_Special = '{0}.special'.format(Path_Setting_MetaData_Schema)
     Path_Setting_MetaData_InBound = '{0}.inbound'.format(Path_Setting_MetaData)
     Path_Setting_MetaData_InBound_ignore = '{0}.ignore'.format(Path_Setting_MetaData_InBound)
     Path_Setting_MetaData_InBound_ignore_file = '{0}.file'.format(Path_Setting_MetaData_InBound_ignore)
     Path_Setting_MetaData_InBound_ignore_dir = '{0}.dir'.format(Path_Setting_MetaData_InBound_ignore)
+    Path_Setting_MetaData_InBound_Schema = '{0}.schema'.format(Path_Setting_MetaData_InBound)
+    Path_Setting_MetaData_InBound_Schema_Default = '{0}.default'.format(Path_Setting_MetaData_InBound_Schema)
+    Path_Setting_MetaData_InBound_Schema_Special = '{0}.special'.format(Path_Setting_MetaData_InBound_Schema)
 
     TextMatchType_Common = 'common'
     TextMatchType_Regex = 'regex'

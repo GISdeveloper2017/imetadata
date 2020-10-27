@@ -67,10 +67,10 @@ application = CSettings(
                 'title': '入库配置',
                 'schema': {
                     'special': [
-                        {'id': 'dom', 'title': 'DOM数据集', 'storage': {'type': 'set', 'id': 'a'}, 'path': '{batch_id}'}
+                        {'id': 'dem', 'title': 'DOM数据集', 'storage': {'type': 'set', 'id': '01'}, 'path': '/${batch_id}'}
                     ],
                     'default': {
-                        'id': 'other', 'title': '零散数据', 'storage': {'type': 'auto'}, 'path': '{batch_id}'
+                        'id': 'other', 'title': '零散数据', 'storage': {'type': 'auto'}, 'path': '/${batch_id}'
                     }
                 },
                 'ignore': {

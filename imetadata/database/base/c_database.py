@@ -161,7 +161,8 @@ class CDataBase(CResource):
                 return True
             except Exception as ee:
                 session.rollback()
-                raise DBSQLExecuteException(self.__db_conn_id__, sql)
+                raise
+                # raise DBSQLExecuteException(self.__db_conn_id__, sql)
                 # print(cursor.lastrowid)
             finally:
                 session.close()
@@ -255,7 +256,7 @@ class CDataBase(CResource):
         except Exception as error:
             CLogger().warning('数据库处理出现异常, 错误信息为: {0}'.format(error.__str__()))
             self.session_rollback(session)
-            return False
+            raise
         finally:
             self.session_close(session)
 

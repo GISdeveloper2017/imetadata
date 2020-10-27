@@ -13,6 +13,17 @@ from string import Template
 
 class CUtils(CResource):
     @classmethod
+    def str_append(cls, src_str: str, second_str: str, seperator_str: str = '\n') -> str:
+        result = src_str
+        if second_str == '':
+            return result
+
+        if result != '':
+            result = '{0}{1}'.format(result, seperator_str)
+
+        return '{0}{1}'.format(result, second_str)
+
+    @classmethod
     def one_id(cls) -> str:
         name = 'metadata.org'
         uuid_text = str(uuid.uuid3(uuid.NAMESPACE_DNS, str(uuid.uuid4())))
@@ -29,11 +40,11 @@ class CUtils(CResource):
             return super_id
 
     @classmethod
-    def replace_placeholder(cls, text: str, dict_obj: dict, safe: bool = True, **kwargs) -> str:
+    def replace_placeholder(cls, text: str, dict_obj: dict, safe: bool = True) -> str:
         if safe:
-            return Template(text).safe_substitute(dict_obj, kwargs)
+            return Template(text).safe_substitute(dict_obj)
         else:
-            return Template(text).substitute(dict_obj, kwargs)
+            return Template(text).substitute(dict_obj)
 
     @classmethod
     def equal_ignore_case(cls, str1: str, str2: str) -> bool:
@@ -402,20 +413,4 @@ class CUtils(CResource):
 
 
 if __name__ == '__main__':
-    # text_alpha = r'你/好 A\B\B C/中_国'
-    # print(CUtils.split(text_alpha, ['/', '\\', ' ', '_', '-']))
-    check_text = '-125.02'
-    check_text = '12'
-    check_text = '2001-01'
-    print('check_text: ' + CUtils.any_2_str(check_text))
-    print('numeric: ' + CUtils.any_2_str(CUtils.text_is_numeric(check_text)))
-    print('decimal: ' + CUtils.any_2_str(CUtils.text_is_decimal(check_text)))
-    print('integer: ' + CUtils.any_2_str(CUtils.text_is_integer(check_text)))
-    print('date: ' + CUtils.any_2_str(CUtils.text_is_date(check_text)))
-    print(CUtils.int_2_format_str(None, 2))
-
-    name = '中国'
-    str_show = f'{name} is my country'
-    print(str_show)
-    print(len(name))
-    print(len('12'))
+    pass

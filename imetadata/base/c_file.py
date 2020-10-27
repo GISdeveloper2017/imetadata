@@ -290,12 +290,22 @@ class CFile:
         target_file_with_path = cls.join_file(target_path, target_file_name)
 
         if cls.file_or_path_exist(file_name_with_path):
-            shutil.move(file_name_with_path, target_file_with_path)
+            try:
+                shutil.move(file_name_with_path, target_file_with_path)
 
-        return cls.file_or_path_exist(target_file_with_path)
+                return cls.file_or_path_exist(target_file_with_path)
+            except:
+                return False
 
     @classmethod
     def move_path_to(cls, file_path: str, target_path: str):
+        """
+        移动源目录至目标目录
+        注意: 是将源目录下的所有内容, 直接移动至目标目录下; 而不是将源目录作为子目录, 移动至目标目录下!!!
+        :param file_path:
+        :param target_path:
+        :return:
+        """
         failure_list = []
 
         if not cls.file_or_path_exist(target_path):
@@ -309,12 +319,43 @@ class CFile:
                 if not cls.move_file_to(src_file, cls.join_file(target_path, relation_path)):
                     failure_list.append(cls.join_file(relation_path, sub_file))
 
+        if len(failure_list) == 0:
+            shutil.rmtree(file_path)
+
         return len(failure_list) == 0, failure_list
+
+    @classmethod
+    def file_locked(cls, file_name_with_path) -> bool:
+        """
+        检查文件是否被其他应用打开和锁定
+        todo(全体) 这里放在最后实现, 目前暂时不判定文件是否被锁定, 而且一定要在windows和linux操作系统中调试
+        :param file_name_with_path:
+        :return:
+        """
+        return False
+
+    @classmethod
+    def find_locked_file_in_path(cls, file_path) -> list:
+        """
+        检查文件是否被其他应用打开和锁定
+        :param file_path:
+        :return:
+        """
+        locked_file_list = []
+
+        for parent_path, sub_paths, sub_files in os.walk(file_path):
+            relation_path = cls.file_relation_path(parent_path, file_path)
+            for sub_file in sub_files:
+                src_file = cls.join_file(parent_path, sub_file)
+                if cls.file_locked(src_file):
+                    locked_file_list.append(cls.join_file(relation_path, sub_file))
+
+        return len(locked_file_list) == 0, locked_file_list
 
 
 if __name__ == '__main__':
-    # CFile.move_path_to('/Users/wangxiya/Downloads/axios', '/Users/wangxiya/Downloads/axios1')
-    shutil.move('/Users/wangxiya/Downloads/axios', '/Users/wangxiya/Downloads/axios1')
+    CFile.move_path_to('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios/aa/bb')
+    # shutil.move('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios')
     # for file_or_path in CFile.file_or_subpath_of_path('/Users/wangxiya/Documents/交换'):
     #     print(file_or_path)
     # print('*'*10)
