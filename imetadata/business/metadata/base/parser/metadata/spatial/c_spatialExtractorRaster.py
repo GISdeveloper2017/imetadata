@@ -3,10 +3,10 @@
 # @Author : 王西亚 
 # @File : c_mdExtractorRaster.py
 from imetadata.base.c_result import CResult
-from imetadata.business.metadata.base.parser.metadata.metadata.c_mdExtractor import CMDExtractor
+from imetadata.business.metadata.base.parser.metadata.spatial.c_spatialExtractor import CSpatialExtractor
 
 
-class CSpatialExtractorRaster(CMDExtractor):
+class CSpatialExtractorRaster(CSpatialExtractor):
     def process(self) -> str:
         """
         todo 负责人 赵宇飞 在这里提取影像数据的空间信息, 以文件形式存储在self.file_content.work_root_dir下
@@ -16,7 +16,7 @@ class CSpatialExtractorRaster(CMDExtractor):
         """
         file_name_with_full_path = self.file_info.__file_name_with_full_path__
         file_main_name = self.file_info.__file_main_name__
-
+        self.metadata.metadata_json().json_attr_value()
 
         result = CResult.merge_result(self.Success, '处理完毕!')
         result = CResult.merge_result_info(result, self.Name_Native_Center, '/aa/bb_native_center.wkt')

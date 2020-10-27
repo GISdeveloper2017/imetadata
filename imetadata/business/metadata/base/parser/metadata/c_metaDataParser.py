@@ -197,11 +197,12 @@ class CMetaDataParser(CParser):
     def process_default_spatial(self, engine_type):
         """
         内置的可视化元数据提取
+        :param parser:
         :param engine_type:
         :return:
         """
         md_spatial_extractor = CSpatialExtractorMng.give_me_extractor(engine_type, self.object_id, self.object_name,
-                                                                      self.file_info, self.file_content)
+                                                                      self.file_info, self.file_content, self.metadata)
         return md_spatial_extractor.process()
 
     def save_metadata_data_and_bus(self) -> str:

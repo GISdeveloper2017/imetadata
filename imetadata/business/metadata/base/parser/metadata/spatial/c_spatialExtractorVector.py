@@ -3,10 +3,10 @@
 # @Author : 王西亚 
 # @File : c_mdExtractorVector.py
 from imetadata.base.c_result import CResult
-from imetadata.business.metadata.base.parser.metadata.metadata.c_mdExtractor import CMDExtractor
+from imetadata.business.metadata.base.parser.metadata.spatial.c_spatialExtractor import CSpatialExtractor
 
 
-class CSpatialExtractorVector(CMDExtractor):
+class CSpatialExtractorVector(CSpatialExtractor):
     def process(self) -> str:
         """
         todo 负责人 赵宇飞 在这里提取矢量数据的元数据, 将元数据文件存储在self.file_content.work_root_dir下, 固定名称为self.FileName_MetaData, 注意返回的串中有元数据的格式
