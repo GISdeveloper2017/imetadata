@@ -142,13 +142,13 @@ class CQuality(CResource):
             self.Name_Total,
             self.__quality_result_of_level(self.__XPath_Total)
         )
+        metadata_qa_s = {
+            self.Name_Data: self.__quality_result_of_level(self.__XPath_MetaData_Data),
+            self.Name_Business: self.__quality_result_of_level(self.__XPath_MetaData_Bus)
+        }
         json_obj.set_value_of_name(
             self.Name_MetaData,
-            {self.Name_Data: self.__quality_result_of_level(self.__XPath_MetaData_Data)}
-        )
-        json_obj.set_value_of_name(
-            self.Name_MetaData,
-            {self.Name_Business: self.__quality_result_of_level(self.__XPath_MetaData_Bus)}
+            metadata_qa_s
         )
         json_obj.set_value_of_name(
             self.Name_Data,

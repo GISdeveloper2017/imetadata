@@ -98,12 +98,22 @@ class CSys(CResource):
 
         return rt_path
 
+    @classmethod
+    def get_metadata_data_access_modules_root_dir(cls):
+        return os.path.join(cls.get_metadata_root_dir(), cls.Name_DataAccess, cls.Name_Modules)
+
+    @classmethod
+    def get_metadata_data_access_modules_root_name(cls):
+        return '{0}.{1}.{2}'.format(cls.get_metadata_package_root_name(), cls.Name_DataAccess, cls.Name_Modules)
+
 
 if __name__ == '__main__':
     print(CSys.get_project_dir())
     print(CSys.get_application_dir())
     print(CSys.get_plugins_package_root_name())
     print(CSys.get_plugins_root_dir())
+    print(CSys.get_metadata_data_access_modules_root_name())
+    print(CSys.get_metadata_data_access_modules_root_dir())
     print(CSys.get_job_package_root_name())
     print(CSys.get_job_root_dir())
     print(CSys.get_work_root_dir())
