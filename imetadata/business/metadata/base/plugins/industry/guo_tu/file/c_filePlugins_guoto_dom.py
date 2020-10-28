@@ -36,6 +36,7 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 文件的质检列表
+        todo 负责人 李宪
         质检项目应包括并不限于如下内容:
         1. 实体数据的附属文件是否完整, 实体数据是否可以正常打开和读取
         1. 元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
@@ -51,12 +52,13 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
         :return:
         """
         list_qa = list()
-        list_qa.extend(self.init_qa_file_integrity_tif_list(self.file_info.__file_name_with_full_path__))
+        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.__file_name_with_full_path__))
         return list_qa
 
     def qa_file_custom(self, parser: CMetaDataParser):
         """
         自定义的文件存在性质检, 发生在元数据解析之前
+        todo 负责人 李宪
         :param parser:
         :return:
         """
@@ -98,6 +100,7 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
         设置解析json格式元数据的检验规则列表, 为空表示无检查规则
+        todo 负责人 李宪
         :param parser:
         :return:
         """
@@ -190,6 +193,7 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 业务元数据xml文件的检验列表
+        todo 负责人 李宪
         :param parser:
         :return:
         """

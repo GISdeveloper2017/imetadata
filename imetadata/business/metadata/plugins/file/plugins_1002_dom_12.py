@@ -30,8 +30,8 @@ class plugins_1002_dom_12(CFilePlugins_GUOTU_DOM):
         if not check_file_main_name_length:
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
-        file_metadata_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
-        check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'tif'))
+        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
+        check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, 'tif'))
 
         if not check_file_main_name_exist:
             return self.Object_Confirm_IUnKnown, self.__object_name__
