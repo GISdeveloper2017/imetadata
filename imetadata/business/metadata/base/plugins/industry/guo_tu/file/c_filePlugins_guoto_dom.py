@@ -51,7 +51,7 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
         :return:
         """
         list_qa = list()
-        list_qa.extend(self.init_qa_file_integrity_tif_list(self.file_info.__file_main_name_with_full_path__))
+        list_qa.extend(self.init_qa_file_integrity_tif_list(self.file_info.__file_name_with_full_path__))
         return list_qa
 
     def qa_file_custom(self, parser: CMetaDataParser):
