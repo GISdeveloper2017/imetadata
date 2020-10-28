@@ -138,10 +138,22 @@ class CQuality(CResource):
 
     def summary(self) -> str:
         json_obj = CJson()
-        json_obj.set_value_of_name(self.Name_Total, self.__quality_result_of_level(self.__XPath_Total))
-        json_obj.set_value_of_name('{0}.{1}'.format(self.Name_MetaData, self.Name_Data), self.__quality_result_of_level(self.__XPath_MetaData_Data))
-        json_obj.set_value_of_name('{0}.{1}'.format(self.Name_MetaData, self.Name_Business), self.__quality_result_of_level(self.__XPath_MetaData_Bus))
-        json_obj.set_value_of_name('{0}.{1}'.format(self.Name_Data, self.Name_Items), self.__quality_result_of_level(self.__XPath_Data_Items))
+        json_obj.set_value_of_name(
+            self.Name_Total,
+            self.__quality_result_of_level(self.__XPath_Total)
+        )
+        json_obj.set_value_of_name(
+            self.Name_MetaData,
+            {self.Name_Data: self.__quality_result_of_level(self.__XPath_MetaData_Data)}
+        )
+        json_obj.set_value_of_name(
+            self.Name_MetaData,
+            {self.Name_Business: self.__quality_result_of_level(self.__XPath_MetaData_Bus)}
+        )
+        json_obj.set_value_of_name(
+            self.Name_Data,
+            {self.Name_Items: self.__quality_result_of_level(self.__XPath_Data_Items)}
+        )
         return json_obj.to_json()
 
     def __quality_result_of_level(self, xpath: str):

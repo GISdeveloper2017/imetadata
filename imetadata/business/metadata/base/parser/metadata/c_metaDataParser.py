@@ -226,40 +226,53 @@ class CMetaDataParser(CParser):
         elif metadata_bus_type == self.MetaDataFormat_Json:
             metadata_bus_json = metadata_bus_text
 
-        commands = [
-            (
-                '''
-                update dm2_storage_object
-                set dso_quality = :dso_quality
-                    , dso_quality_summary = to_jsonb(:dso_quality_summary)
-                    , dso_metadata_result = :dso_metadata_result
-                    , dsometadataparsememo = :dsometadataparsememo
-                    , dsometadatatype = :dsometadatatype
-                    , dsometadatatext = :dsometadatatext
-                    , dsometadatajson = null
-                    , dsometadataxml = null
-                    , dso_metadata_bus_result = :dso_metadata_bus_result
-                    , dsometadata_bus_parsememo = :dsometadata_bus_parsememo
-                    , dsometadatatype_bus = :dsometadatatype_bus
-                    , dsometadatatext_bus = :dsometadatatext_bus
-                    , dsometadatajson_bus = null
-                    , dsometadataxml_bus = null
-                where dsoid = :dsoid
-                ''', {
-                    'dso_quality': file_quality_text,
-                    'dso_quality_summary': file_quality_summary_text,
-                    'dsoid': self.object_id,
-                    'dso_metadata_result': metadata_extract_result,
-                    'dsometadataparsememo': metadata_extract_memo,
-                    'dsometadatatype': metadata_type,
-                    'dsometadatatext': metadata_text,
-                    'dso_metadata_bus_result': metadata_extract_result,
-                    'dsometadata_bus_parsememo': metadata_bus_extract_memo,
-                    'dsometadatatype_bus': metadata_bus_type,
-                    'dsometadatatext_bus': metadata_bus_text
-                }
-            )
-        ]
+        commands = [(
+            '''
+            update dm2_storage_object
+            set dso_quality = :dso_quality
+                , dso_quality_summary = :dso_quality_summary
+            where dsoid = :dsoid
+            ''', {
+                'dso_quality': file_quality_text,
+                'dso_quality_summary': file_quality_summary_text,
+                'dsoid': self.object_id,
+            }
+        ), (
+            '''
+            update dm2_storage_object
+            set dso_metadata_result = :dso_metadata_result
+                , dsometadataparsememo = :dsometadataparsememo
+                , dsometadatatype = :dsometadatatype
+                , dsometadatatext = :dsometadatatext
+                , dsometadatajson = null
+                , dsometadataxml = null
+            where dsoid = :dsoid
+            ''', {
+                'dsoid': self.object_id,
+                'dso_metadata_result': metadata_extract_result,
+                'dsometadataparsememo': metadata_extract_memo,
+                'dsometadatatype': metadata_type,
+                'dsometadatatext': metadata_text
+            }
+        ), (
+            '''
+            update dm2_storage_object
+            set dso_metadata_bus_result = :dso_metadata_bus_result
+                , dsometadata_bus_parsememo = :dsometadata_bus_parsememo
+                , dsometadatatype_bus = :dsometadatatype_bus
+                , dsometadatatext_bus = :dsometadatatext_bus
+                , dsometadatajson_bus = null
+                , dsometadataxml_bus = null
+            where dsoid = :dsoid
+            ''', {
+                'dsoid': self.object_id,
+                'dso_metadata_bus_result': metadata_extract_result,
+                'dsometadata_bus_parsememo': metadata_bus_extract_memo,
+                'dsometadatatype_bus': metadata_bus_type,
+                'dsometadatatext_bus': metadata_bus_text
+            }
+        )]
+
         if metadata_type == self.MetaDataFormat_XML:
             commands.append(
                 (
