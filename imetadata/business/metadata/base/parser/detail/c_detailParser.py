@@ -29,30 +29,41 @@ class CDetailParser(CParser):
             delete from dm2_storage_obj_detail where dodobjectid = '{0}'
         '''.format(self.__object_id__)
 
+        # sql_detail_insert = '''
+        # INSERT INTO dm2_storage_obj_detail(
+        #     dodid, dodobjectid, dodfilename, dodfileext, dodfilesize,
+        #     dodfilecreatetime, dodfilemodifytime,
+        #     dodlastmodifytime, dodstorageid, dodfilerelationname, dodfiletype)
+        # VALUES (
+        #     :dodid, :dodobjectid, :dodfilename, :dodfileext, :dodfilesize,
+        #     :dodfilecreatetime, :dodfilemodifytime, now(),
+        #     :dodstorageid, :dodfilerelationname, :dodfiletype)
+        # '''
         sql_detail_insert = '''
         INSERT INTO dm2_storage_obj_detail(
             dodid, dodobjectid, dodfilename, dodfileext, dodfilesize, 
             dodfilecreatetime, dodfilemodifytime, 
-            dodlastmodifytime, dodstorageid, dodfilerelationname, dodfiletype)
+            dodlastmodifytime, dodfiletype)
         VALUES (
             :dodid, :dodobjectid, :dodfilename, :dodfileext, :dodfilesize, 
             :dodfilecreatetime, :dodfilemodifytime, now(), 
-            :dodstorageid, :dodfilerelationname, :dodfiletype)
+            :dodfiletype)
         '''
 
         sql_detail_insert_params_list = []
-        list_file_fullname = CFile.file_or_dir_fullname_of_path(self.__detail_file_path__,
-                                                                self.__detail_file_recurse__,
-                                                                self.__detail_file_match_text__,
-                                                                self.__detail_file_match_type__)
+        list_file_fullname = CFile.file_or_dir_fullname_of_path(
+            self.__detail_file_path__,
+            self.__detail_file_recurse__,
+            self.__detail_file_match_text__,
+            self.__detail_file_match_type__)
 
         query_storage_id = self.file_info.__storage_id__
-        query_filerelationname = self.file_info.__file_name_with_rel_path__
+        query_file_relation_name = self.file_info.__file_name_with_rel_path__
         for item_file_name_with_path in list_file_fullname:
             CLogger().debug(item_file_name_with_path)
             params = dict()
             file_relation_name = CFile.file_relation_path(item_file_name_with_path, self.file_info.__root_path__)
-            if CUtils.equal_ignore_case(query_filerelationname, file_relation_name):
+            if CUtils.equal_ignore_case(query_file_relation_name, file_relation_name):
                 params['dodid'] = self.__object_id__
             else:
                 params['dodid'] = CUtils.one_id()
@@ -61,16 +72,20 @@ class CDetailParser(CParser):
             if CFile.is_dir(item_file_name_with_path):
                 params['dodfiletype'] = self.FileType_Dir
             params['dodobjectid'] = self.__object_id__
-            params['dodfilename'] = CFile.file_name(item_file_name_with_path)
+            params['dodfilename'] = CFile.file_relation_path(
+                item_file_name_with_path,
+                self.file_info.__file_path__)
             params['dodfileext'] = CFile.file_ext(item_file_name_with_path)
             params['dodfilesize'] = CFile.file_size(item_file_name_with_path)
             params['dodfilecreatetime'] = CFile.file_create_time(item_file_name_with_path)
             params['dodfilemodifytime'] = CFile.file_modify_time(item_file_name_with_path)
-            params['dodstorageid'] = query_storage_id
-            params['dodfilerelationname'] = CFile.file_relation_path(item_file_name_with_path,
-                                                                     self.file_info.__root_path__)
+            # params['dodstorageid'] = query_storage_id
+            # params['dodfilerelationname'] = CFile.file_relation_path(
+            #     item_file_name_with_path,
+            #     self.file_info.__root_path__)
             sql_params_tuple = (sql_detail_insert, params)
             sql_detail_insert_params_list.append(sql_params_tuple)
+
         if len(sql_detail_insert_params_list) > 0:
             CFactory().give_me_db(self.file_info.db_server_id).execute(sql_detail_delete)  # 先删除detail表中对应的记录
             if not CFactory().give_me_db(self.file_info.db_server_id).execute_batch(sql_detail_insert_params_list):

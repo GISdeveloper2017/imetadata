@@ -683,3 +683,25 @@ comment on column dm2_storage_inbound_log.dsilobjecttype is '对象类型';
 comment on column dm2_storage_inbound_log.dsiladdtime is '添加时间';
 comment on column dm2_storage_inbound_log.dsilinbound is '是否允许入库';
 alter table dm2_storage_inbound_log owner to postgres;
+
+
+
+/*
+    2020-10-28
+    . 取消dm2_storage_obj_detail中的两个字段
+*/
+
+alter table dm2_storage_obj_detail drop column dodstorageid ;
+alter table dm2_storage_obj_detail drop column dodfilerelationname ;
+
+drop index idx_dm2_storage_object_json;
+create index idx_dm2_storage_object_json
+	on dm2_storage_object USING gin (dsometadatajson);
+
+drop index idx_dm2_storage_object_json_bus;
+create index idx_dm2_storage_object_json_bus
+	on dm2_storage_object USING gin (dsometadatajson_bus);
+
+
+
+

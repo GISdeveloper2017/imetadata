@@ -6,6 +6,7 @@
 
 from __future__ import absolute_import
 
+from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
@@ -101,31 +102,39 @@ where dsodetailparsestatus = 2
         sql_get_rule = '''
             select dsdScanRule
             from dm2_storage_directory
-            where dsdStorageid = :dsdStorageID and Position(dsddirectory || '/' in :dsdDirectory) = 1
+            where dsdStorageid = :dsdStorageID and Position(dsddirectory || '{0}' in :dsdDirectory) = 1
                 and dsdScanRule is not null
             order by dsddirectory desc
             limit 1
-            '''
-        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {
-            'dsdStorageID': ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
-            'dsdDirectory': ds_file_info.value_by_name(0, 'query_object_relation_path', '')})
+            '''.format(CFile.sep())
+        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(
+            sql_get_rule,
+            {
+                'dsdStorageID': ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
+                'dsdDirectory': ds_file_info.value_by_name(0, 'query_object_relation_path', '')
+            }
+        )
         ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
-        file_info_obj = CDMFilePathInfoEx(dso_data_type,
-                                          ds_file_info.value_by_name(0, 'query_object_fullname', ''),
-                                          ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
-                                          ds_file_info.value_by_name(0, 'query_object_file_id', ''),
-                                          ds_file_info.value_by_name(0, 'query_object_file_parent_id', ''),
-                                          ds_file_info.value_by_name(0, 'query_object_owner_id', ''),
-                                          self.get_mission_db_id(),
-                                          ds_rule_content
-                                          )
+        file_info_obj = CDMFilePathInfoEx(
+            dso_data_type,
+            ds_file_info.value_by_name(0, 'query_object_fullname', ''),
+            ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
+            ds_file_info.value_by_name(0, 'query_object_file_id', ''),
+            ds_file_info.value_by_name(0, 'query_object_file_parent_id', ''),
+            ds_file_info.value_by_name(0, 'query_object_owner_id', ''),
+            self.get_mission_db_id(),
+            ds_rule_content
+        )
 
         plugins_obj = CPluginsMng.plugins(file_info_obj, dso_object_type)
         if plugins_obj is None:
-            return CResult.merge_result(self.Failure, '文件或目录[{0}]的类型插件[{1}]不存在，对象详情无法解析, 处理结束!'.format(
-                ds_file_info.value_by_name(0, 'query_object_fullname', ''),
-                dso_object_type)
-                                        )
+            return CResult.merge_result(
+                self.Failure,
+                '文件或目录[{0}]的类型插件[{1}]不存在，对象详情无法解析, 处理结束!'.format(
+                    ds_file_info.value_by_name(0, 'query_object_fullname', ''),
+                    dso_object_type
+                )
+            )
 
         try:
             plugins_obj.classified()
@@ -135,35 +144,33 @@ where dsodetailparsestatus = 2
                 dso_id, dso_object_name, file_info_obj)
             process_result = plugins_obj.parser_detail(detail_parser)
             if CResult.result_success(process_result):
-                CFactory().give_me_db(self.get_mission_db_id()).execute('''
-                    update dm2_storage_object
-                    set dsodetailparsestatus = 0
-                      , dsolastmodifytime = now()
-                      , dsodetailparsememo = :dsodetailparsememo
-                    where dsoid = :dsoid
-                    ''', {'dsoid': dso_id, 'dsodetailparsememo': '文件或目录[{0}]对象详情解析成功结束!'.format(
-                    ds_file_info.value_by_name(0, 'query_object_fullname', ''))})
+                self.db_update_object_status(
+                    dso_id,
+                    self.ProcStatus_Finished,
+                    '文件或目录[{0}]对象详情解析成功结束!'.format(
+                        ds_file_info.value_by_name(0, 'query_object_fullname', '')
+                    )
+                )
                 return CResult.merge_result(self.Success, '文件或目录[{0}]对象详情解析成功结束!'.format(
                     ds_file_info.value_by_name(0, 'query_object_fullname', '')))
             else:
-                self.db_update_object_status(dso_id, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
+                self.db_update_object_status(dso_id, self.ProcStatus_Error, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
                     ds_file_info.value_by_name(0, 'query_object_fullname', ''), CResult.result_message(process_result)))
                 return process_result
         except Exception as error:
-            self.db_update_object_status(dso_id, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
+            self.db_update_object_status(dso_id, self.ProcStatus_Error, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
                 ds_file_info.value_by_name(0, 'query_object_fullname', ''), error.__str__()))
-
             return CResult.merge_result(self.Failure, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
                 ds_file_info.value_by_name(0, 'query_object_fullname', ''), error.__str__()))
 
-    def db_update_object_status(self, dso_id, memo):
+    def db_update_object_status(self, dso_id, dso_status, memo):
         CFactory().give_me_db(self.get_mission_db_id()).execute('''
             update dm2_storage_object
-            set dsodetailparsestatus = 3
+            set dsodetailparsestatus = :status
               , dsolastmodifytime = now()
               , dsodetailparsememo = :dsodetailparsememo
             where dsoid = :dsoid
-            ''', {'dsoid': dso_id, 'dsodetailparsememo': memo})
+            ''', {'dsoid': dso_id, 'dsodetailparsememo': memo, 'status': dso_status})
 
 
 if __name__ == '__main__':

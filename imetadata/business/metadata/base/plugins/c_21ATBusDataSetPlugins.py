@@ -14,7 +14,7 @@ from imetadata.business.metadata.base.plugins.c_dirPlugins import CDirPlugins
 
 
 class C21ATBusDataSetPlugins(CDirPlugins):
-    __classified_object_type__ = None
+    __classified_object_type = None
     __metadata_xml_obj__ = None
     __bus_metadata_xml_file_name__ = None
 
@@ -39,28 +39,34 @@ class C21ATBusDataSetPlugins(CDirPlugins):
 
         return information
 
-    def get_id(self) -> str:
-        if self.__classified_object_type__ is not None:
-            return CUtils.any_2_str(self.__classified_object_type__)
-        else:
-            return super().get_id()
+    # def get_id(self) -> str:
+    #     if self.__classified_object_type__ is not None:
+    #         return CUtils.any_2_str(self.__classified_object_type__)
+    #     else:
+    #         return super().get_id()
 
     def classified(self):
         self.__object_confirm__ = self.Object_Confirm_IUnKnown
         self.__object_name__ = None
 
         current_path = self.file_info.__file_name_with_full_path__
-        metadata_file_name = CFile.join_file(current_path, 'metadata.21at')
+        metadata_file_name = CFile.join_file(current_path, self.FileName_MetaData_Bus_21AT)
         if CFile.file_or_path_exist(metadata_file_name):
             self.__bus_metadata_xml_file_name__ = metadata_file_name
             self.__metadata_xml_obj__ = CXml()
             try:
                 self.__metadata_xml_obj__.load_file(metadata_file_name)
-                self.__classified_object_type__ = CXml.get_element_text(
+                self.__classified_object_type = CXml.get_element_text(
                     self.__metadata_xml_obj__.xpath_one(self.Path_21AT_MD_Content_ProductType))
-                self.__object_confirm__ = self.Object_Confirm_IKnown
-                self.__object_name__ = CXml.get_element_text(
-                    self.__metadata_xml_obj__.xpath_one(self.Path_21AT_MD_Content_ProductName))
+
+                if CUtils.equal_ignore_case(
+                        self.__classified_object_type,
+                        CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Name, None)
+                ):
+                    self.__object_confirm__ = self.Object_Confirm_IKnown
+                    self.__object_name__ = CXml.get_element_text(
+                        self.__metadata_xml_obj__.xpath_one(self.Path_21AT_MD_Content_ProductName)
+                    )
             except:
                 self.__metadata_xml_obj__ = None
                 CLogger().warning('发现文件{0}符合二十一世纪业务数据集标准, 但该文件格式有误, 无法打开! ')
