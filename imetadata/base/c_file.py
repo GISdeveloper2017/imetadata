@@ -198,6 +198,18 @@ class CFile:
             f.close()
 
     @classmethod
+    def str_2_file(cls, str_info: str, file_name_with_path: str, encoding_type='utf-8'):
+        if CUtils.equal_ignore_case(str_info, "") \
+                or CUtils.equal_ignore_case(file_name_with_path, ""):
+            return
+        try:
+            if CFile.check_and_create_directory(file_name_with_path):
+                with open(file_name_with_path, "w", encoding=encoding_type) as f:
+                    f.write(str_info)
+        except Exception as error:
+            print(error.__str__())
+
+    @classmethod
     def file_2_list(cls, file_name_with_path: str):
         if not cls.file_or_path_exist(file_name_with_path):
             return ''
@@ -354,7 +366,7 @@ class CFile:
 
 
 if __name__ == '__main__':
-    CFile.move_path_to('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios/aa/bb')
+    # CFile.move_path_to('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios/aa/bb')
     # shutil.move('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios')
     # for file_or_path in CFile.file_or_subpath_of_path('/Users/wangxiya/Documents/交换'):
     #     print(file_or_path)
@@ -396,3 +408,4 @@ if __name__ == '__main__':
     #     print('in')
     # else:
     #     print('not in')
+    CFile.str_2_file('1111我们', r'D:\data\wkt\11.wkt')

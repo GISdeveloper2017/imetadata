@@ -2,6 +2,7 @@
 # @Time : 2020/10/20 10:11
 # @Author : 赵宇飞
 # @File : plugins_1004_dom_part_2.py
+from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
@@ -24,13 +25,20 @@ class plugins_1004_dom_part_2(CFilePlugins_GUOTU_DOM):
         :return:
         """
         super().classified()
+        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
+        check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, 'tif'))
+        if not check_file_main_name_exist:
+            return self.Object_Confirm_IUnKnown, self.__object_name__
+
         if not self.file_info.__file_main_name__.count('-') == 1:
             return self.Object_Confirm_IUnKnown, self.__object_name__
+
         char_1 = self.file_info.__file_main_name__.split('-')[0]
         char_2 = self.file_info.__file_main_name__.split('-')[1]
         if CUtils.text_is_decimal(char_1) is False \
                 or CUtils.text_is_decimal(char_2) is False:
             return self.Object_Confirm_IUnKnown, self.__object_name__
+
         if CUtils.equal_ignore_case(self.file_info.__file_ext__, 'tif'):
             self.__object_confirm__ = self.Object_Confirm_IKnown
             self.__object_name__ = self.file_info.__file_main_name__

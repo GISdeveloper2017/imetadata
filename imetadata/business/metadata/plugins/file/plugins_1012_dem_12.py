@@ -9,6 +9,7 @@ from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins
 
 
 class plugins_1012_dem_12(CFilePlugins_GUOTU_DEM):
+
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = 'DEM数据'
@@ -30,32 +31,32 @@ class plugins_1012_dem_12(CFilePlugins_GUOTU_DEM):
         if not check_file_main_name_length:
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
-        file_metadata_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
-        check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_metadata_name_with_path, 'tif'))
-
-        if not check_file_main_name_exist:
+        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
+        check_file_main_name_exist_tif = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, 'tif'))
+        check_file_main_name_exist_bil = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, 'bil'))
+        if (not check_file_main_name_exist_tif) and (not check_file_main_name_exist_bil):
             return self.Object_Confirm_IUnKnown, self.__object_name__
-
         """
         下面判别第1位是字母
         下面判别第4位是字母
-        下面判别第2、3位是数字
-        下面判别第5-8位是数字
-        下面判别第9-12位是数字
+        下面判别第23位是数字
+        下面判别第567位是数字
+        下面判别第89101112位是数字
         """
         char_1 = file_main_name[0:1]
         char_2_3 = file_main_name[1:3]
         char_4 = file_main_name[3:4]
-        char_5_to_8 = file_main_name[4:8]
-        char_9_to_12 = file_main_name[8:12]
+        char_5_to_7 = file_main_name[4:7]
+        char_8_to_12 = file_main_name[7:12]
         if CUtils.text_is_alpha(char_1) is False \
                 or CUtils.text_is_numeric(char_2_3) is False \
                 or CUtils.text_is_alpha(char_4) is False \
-                or CUtils.text_is_numeric(char_5_to_8) is False \
-                or CUtils.text_is_numeric(char_9_to_12) is False:
+                or CUtils.text_is_numeric(char_5_to_7) is False \
+                or CUtils.text_is_numeric(char_8_to_12) is False:
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
-        if CUtils.equal_ignore_case(file_ext, 'tif'):
+        if CUtils.equal_ignore_case(file_ext, 'tif') \
+                or CUtils.equal_ignore_case(file_ext, 'bil'):
             self.__object_confirm__ = self.Object_Confirm_IKnown
             self.__object_name__ = file_main_name
         else:
@@ -67,8 +68,8 @@ class plugins_1012_dem_12(CFilePlugins_GUOTU_DEM):
 
 if __name__ == '__main__':
     file_info = CFileInfoEx(plugins_1012_dem_12.FileType_File,
-                            r'E:\python数管\数据入库3\dem\G49G00103016\G49G00103016.tif',
-                            r'E:\python数管\数据入库3\dem', '<root><type>dem</type></root>')
+                            r'D:\迅雷下载\数据入库3\DEM\造的数据TIF\G49G00103121\G49G00103121.tif',
+                            r'D:\迅雷下载\数据入库3\DEM\造的数据TIF\G49G00103121\tif', '<root><type>dem</type></root>')
     plugins = plugins_1012_dem_12(file_info)
     object_confirm, object_name = plugins.classified()
     if object_confirm == plugins_1012_dem_12.Object_Confirm_IUnKnown:
