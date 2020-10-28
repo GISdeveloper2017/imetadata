@@ -59,22 +59,34 @@ class plugins_1040_third_survey_block(CFilePlugins_GUOTU_Third_Survey):
         # check_file_mdb_exist = CFile.file_or_path_exist('{0}.mdb'.format(file_metadata_name_with_path))
         # if not check_file_mdb_exist:  # 检查mdb文件存在性
         #     return self.Object_Confirm_IUnKnown, self.__object_name__
-
-        name_sub_7_to_8 = file_main_name[6:8]
-        name_sub_backwards_6_to_3 = file_main_name[-5:-2]
-        name_sub_backwards_2_to_1 = file_main_name[-2:]
-        if len(file_main_name) >= 14 and \
-                CUtils.text_is_alpha(name_sub_7_to_8) and \
-                CUtils.equal_ignore_case(
-                    CUtils.any_2_str(name_sub_backwards_6_to_3).lower(), 'dom'
-                ) and \
-                CUtils.text_is_numeric(CUtils.any_2_str(name_sub_backwards_2_to_1)) and \
-                CUtils.equal_ignore_case(file_ext, 'img'):
-            self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = file_main_name
+        if len(file_main_name) >= 14:
+            name_sub_7_to_8 = file_main_name[6:8]
+            name_sub_backwards_6_to_3 = file_main_name[-5:-2]
+            name_sub_backwards_2_to_1 = file_main_name[-2:]
+            if CUtils.text_is_alpha(name_sub_7_to_8) \
+                    and CUtils.equal_ignore_case(CUtils.any_2_str(name_sub_backwards_6_to_3).lower(),
+                                                 'dom') \
+                    and CUtils.text_is_numeric(CUtils.any_2_str(name_sub_backwards_2_to_1)):
+                if CUtils.equal_ignore_case(file_ext, 'img'):
+                    self.__object_confirm__ = self.Object_Confirm_IKnown
+                    self.__object_name__ = file_main_name
+                else:
+                    self.__object_confirm__ = self.Object_Confirm_IKnown_Not
+                    self.__object_name__ = None
+            else:
+                affiliated_ext_list = ['mdb', 'shp', 'shx', 'dbf', 'sbx', 'prj']
+                if file_ext in affiliated_ext_list:
+                    self.__object_confirm__ = self.Object_Confirm_IKnown_Not
+                    self.__object_name__ = None
+                else:
+                    return self.Object_Confirm_IUnKnown, self.__object_name__
         else:
-            self.__object_confirm__ = self.Object_Confirm_IKnown_Not
-            self.__object_name__ = None
+            affiliated_ext_list = ['mdb', 'shp', 'shx', 'dbf', 'sbx', 'prj']
+            if file_ext in affiliated_ext_list:
+                self.__object_confirm__ = self.Object_Confirm_IKnown_Not
+                self.__object_name__ = None
+            else:
+                return self.Object_Confirm_IUnKnown, self.__object_name__
 
         return self.__object_confirm__, self.__object_name__
 

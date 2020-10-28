@@ -27,9 +27,10 @@ class plugins_1030_mosaic(CFilePlugins_GUOTU_21AT):
         file_main_name = self.file_info.__file_main_name__
         file_ext = self.file_info.__file_ext__  # 初始化需要的参数
         file_name_with_full_path = self.file_info.__file_name_with_full_path__
+        file_object_name = file_main_name[:]
         if file_name_with_full_path.endswith('_21at.xml'):
             if len(file_main_name) > 5:
-                file_main_name = file_main_name[:-5]
+                file_object_name = file_main_name[:-5]
             else:
                 return self.Object_Confirm_IUnKnown, self.__object_name__
         else:
@@ -37,11 +38,11 @@ class plugins_1030_mosaic(CFilePlugins_GUOTU_21AT):
             for xq_end in xq_list:
                 if file_name_with_full_path.lower().endswith(xq_end):
                     if len(file_main_name) > 2:
-                        file_main_name = file_main_name[:-2]
+                        file_object_name = file_main_name[:-2]
+                        break
                     else:
                         return self.Object_Confirm_IUnKnown, self.__object_name__
-                    break
-        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
+        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_object_name)
 
         check_file_main_name_exist = \
             CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif)) or \
