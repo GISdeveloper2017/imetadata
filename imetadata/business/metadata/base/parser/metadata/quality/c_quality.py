@@ -9,42 +9,50 @@ from imetadata.base.c_xml import CXml
 
 
 class CQuality(CResource):
-    __xml_obj__: CXml
+    __xml_obj: CXml
     # 根节点
-    __xml_root_node__ = None
+    __xml_root_node = None
 
     # 整体质量节点
-    __node_total__ = None
+    __node_total = None
     # 数据质量节点
-    __node_data__ = None
+    __node_data = None
     # 数据的总体质量节点
-    __node_data_items__ = None
+    __node_data_items = None
     # 数据的每一个记录的质量节点, 用于矢量数据检验
-    __node_data_records__ = None
+    __node_data_records = None
 
     # 元数据质量节点
-    __node_metadata__ = None
+    __node_metadata = None
     # 业务元数据质量节点
-    __node_metadata_bus__ = None
+    __node_metadata_bus = None
     # 数据本身的元数据质量节点
-    __node_metadata_data__ = None
+    __node_metadata_data = None
+
+    __XPath_Root = '/root'
+    __XPath_Total = '{0}/total'.format(__XPath_Root)
+    __XPath_MetaData = '{0}/metadata'.format(__XPath_Root)
+    __XPath_MetaData_Data = '{0}/data'.format(__XPath_MetaData)
+    __XPath_MetaData_Bus = '{0}/business'.format(__XPath_MetaData)
+    __XPath_Data = '{0}/data'.format(__XPath_Root)
+    __XPath_Data_Items = '{0}/items'.format(__XPath_Data)
 
     def __init__(self):
-        self.__xml_obj__ = CXml()
-        self.__xml_obj__.new_xml(self.Name_Root)
-        self.__xml_root_node__ = self.__xml_obj__.__xml_root_node__
+        self.__xml_obj = CXml()
+        self.__xml_obj.new_xml(self.Name_Root)
+        self.__xml_root_node = self.__xml_obj.__xml_root_node__
 
-        self.__node_total__ = CXml.create_element(self.__xml_root_node__, self.Name_Total)
+        self.__node_total = CXml.create_element(self.__xml_root_node, self.Name_Total)
 
-        self.__node_data__ = CXml.create_element(self.__xml_root_node__, self.Name_Data)
-        self.__node_data_items__ = CXml.create_element(self.__node_data__, self.Name_Items)
-        self.__node_data_records__ = CXml.create_element(self.__node_data__, self.Name_Records)
+        self.__node_data = CXml.create_element(self.__xml_root_node, self.Name_Data)
+        self.__node_data_items = CXml.create_element(self.__node_data, self.Name_Items)
+        self.__node_data_records = CXml.create_element(self.__node_data, self.Name_Records)
 
-        self.__node_metadata__ = CXml.create_element(self.__xml_root_node__, self.Name_MetaData)
-        self.__node_metadata_bus__ = CXml.create_element(self.__node_metadata__, self.Name_Business)
-        self.__node_metadata_data__ = CXml.create_element(self.__node_metadata__, self.Name_Data)
+        self.__node_metadata = CXml.create_element(self.__xml_root_node, self.Name_MetaData)
+        self.__node_metadata_bus = CXml.create_element(self.__node_metadata, self.Name_Business)
+        self.__node_metadata_data = CXml.create_element(self.__node_metadata, self.Name_Data)
 
-    def __append_quality_info__(self, xml_node, audit_result: dict):
+    def __append_quality_info(self, xml_node, audit_result: dict):
         quality_id = CUtils.dict_value_by_name(audit_result, self.Name_ID, '')
         quality_title = CUtils.dict_value_by_name(audit_result, self.Name_Title, '')
         quality_group = CUtils.dict_value_by_name(audit_result, self.Name_Group, self.QA_Group_Data_Integrity)
@@ -72,7 +80,7 @@ class CQuality(CResource):
         :param audit_result:
         :return:
         """
-        self.__append_quality_info__(self.__node_total__, audit_result)
+        self.__append_quality_info(self.__node_total, audit_result)
 
     def append_data_quality(self, audit_result: dict):
         """
@@ -80,7 +88,7 @@ class CQuality(CResource):
         :param audit_result:
         :return:
         """
-        self.__append_quality_info__(self.__node_data_items__, audit_result)
+        self.__append_quality_info(self.__node_data_items, audit_result)
 
     def append_data_records_quality(self, record_index, audit_result: dict):
         """
@@ -90,12 +98,12 @@ class CQuality(CResource):
         :return:
         """
         temp_node = CXml.node_xpath_one(
-            self.__node_data_records__,
+            self.__node_data_records,
             './{0}[@index="{1}"]'.format(self.Name_Record, record_index)
         )
         if temp_node is None:
-            temp_node = CXml.create_element(self.__node_data_records__, self.Name_Record)
-        self.__append_quality_info__(temp_node, audit_result)
+            temp_node = CXml.create_element(self.__node_data_records, self.Name_Record)
+        self.__append_quality_info(temp_node, audit_result)
 
     def append_metadata_data_quality(self, audit_result: dict):
         """
@@ -103,7 +111,7 @@ class CQuality(CResource):
         :param audit_result:
         :return:
         """
-        self.__append_quality_info__(self.__node_metadata_data__, audit_result)
+        self.__append_quality_info(self.__node_metadata_data, audit_result)
 
     def append_metadata_bus_quality(self, audit_result: dict):
         """
@@ -111,7 +119,7 @@ class CQuality(CResource):
         :param audit_result:
         :return:
         """
-        self.__append_quality_info__(self.__node_metadata_bus__, audit_result)
+        self.__append_quality_info(self.__node_metadata_bus, audit_result)
 
     def save_as(self, file_name_with_path):
         """
@@ -119,11 +127,29 @@ class CQuality(CResource):
         :param file_name_with_path:
         :return:
         """
-        self.__xml_obj__.save_file(file_name_with_path)
+        self.__xml_obj.save_file(file_name_with_path)
 
     def to_xml(self) -> str:
         """
         将质检结果导出为xml文本
         :return:
         """
-        return self.__xml_obj__.to_xml()
+        return self.__xml_obj.to_xml()
+
+    def summary(self) -> str:
+        json_obj = CJson()
+        json_obj.set_value_of_name(self.Name_Total, self.__quality_result_of_level(self.__XPath_Total))
+        json_obj.set_value_of_name('{0}.{1}'.format(self.Name_MetaData, self.Name_Data), self.__quality_result_of_level(self.__XPath_MetaData_Data))
+        json_obj.set_value_of_name('{0}.{1}'.format(self.Name_MetaData, self.Name_Business), self.__quality_result_of_level(self.__XPath_MetaData_Bus))
+        json_obj.set_value_of_name('{0}.{1}'.format(self.Name_Data, self.Name_Items), self.__quality_result_of_level(self.__XPath_Data_Items))
+        return json_obj.to_json()
+
+    def __quality_result_of_level(self, xpath: str):
+        if self.__xml_obj.xpath_one(
+                '{0}/*[@{1}="{2}"]'.format(xpath, self.Name_Result, self.QA_Result_Error)) is not None:
+            return self.QA_Result_Error
+        elif self.__xml_obj.xpath_one(
+                '{0}/*[@{1}="{2}"]'.format(xpath, self.Name_Result, self.QA_Result_Warn)) is not None:
+            return self.QA_Result_Warn
+        else:
+            return self.QA_Result_Pass

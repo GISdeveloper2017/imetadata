@@ -207,6 +207,7 @@ class CMetaDataParser(CParser):
 
     def save_metadata_data_and_bus(self) -> str:
         file_quality_text = self.metadata.quality.to_xml()
+        file_quality_summary_text = self.metadata.quality.summary()
 
         metadata_extract_result, metadata_extract_memo, metadata_type, metadata_text = self.metadata.metadata()
         metadata_json = None
@@ -226,72 +227,79 @@ class CMetaDataParser(CParser):
             metadata_bus_json = metadata_bus_text
 
         commands = [
-            ('''
-            update dm2_storage_object
-            set dso_quality = :dso_quality
-                , dso_metadata_result = :dso_metadata_result
-                , dsometadataparsememo = :dsometadataparsememo
-                , dsometadatatype = :dsometadatatype
-                , dsometadatatext = :dsometadatatext
-                , dsometadatajson = null
-                , dsometadataxml = null
-                , dso_metadata_bus_result = :dso_metadata_bus_result
-                , dsometadata_bus_parsememo = :dsometadata_bus_parsememo
-                , dsometadatatype_bus = :dsometadatatype_bus
-                , dsometadatatext_bus = :dsometadatatext_bus
-                , dsometadatajson_bus = null
-                , dsometadataxml_bus = null
-            where dsoid = :dsoid
-            ''', {
-                'dso_quality': file_quality_text,
-                'dsoid': self.object_id,
-                'dso_metadata_result': metadata_extract_result,
-                'dsometadataparsememo': metadata_extract_memo,
-                'dsometadatatype': metadata_type,
-                'dsometadatatext': metadata_text,
-                'dso_metadata_bus_result': metadata_extract_result,
-                'dsometadata_bus_parsememo': metadata_bus_extract_memo,
-                'dsometadatatype_bus': metadata_bus_type,
-                'dsometadatatext_bus': metadata_bus_text
-            }
-             )
+            (
+                '''
+                update dm2_storage_object
+                set dso_quality = :dso_quality
+                    , dso_quality_summary = to_jsonb(:dso_quality_summary)
+                    , dso_metadata_result = :dso_metadata_result
+                    , dsometadataparsememo = :dsometadataparsememo
+                    , dsometadatatype = :dsometadatatype
+                    , dsometadatatext = :dsometadatatext
+                    , dsometadatajson = null
+                    , dsometadataxml = null
+                    , dso_metadata_bus_result = :dso_metadata_bus_result
+                    , dsometadata_bus_parsememo = :dsometadata_bus_parsememo
+                    , dsometadatatype_bus = :dsometadatatype_bus
+                    , dsometadatatext_bus = :dsometadatatext_bus
+                    , dsometadatajson_bus = null
+                    , dsometadataxml_bus = null
+                where dsoid = :dsoid
+                ''', {
+                    'dso_quality': file_quality_text,
+                    'dso_quality_summary': file_quality_summary_text,
+                    'dsoid': self.object_id,
+                    'dso_metadata_result': metadata_extract_result,
+                    'dsometadataparsememo': metadata_extract_memo,
+                    'dsometadatatype': metadata_type,
+                    'dsometadatatext': metadata_text,
+                    'dso_metadata_bus_result': metadata_extract_result,
+                    'dsometadata_bus_parsememo': metadata_bus_extract_memo,
+                    'dsometadatatype_bus': metadata_bus_type,
+                    'dsometadatatext_bus': metadata_bus_text
+                }
+            )
         ]
         if metadata_type == self.MetaDataFormat_XML:
             commands.append(
-                ('''
-            update dm2_storage_object
-            set dsometadataxml = dsometadatatext::xml
-            where dsoid = :dsoid
-            ''', {'dsoid': self.object_id}
-                 )
+                (
+                    '''
+                    update dm2_storage_object
+                    set dsometadataxml = dsometadatatext::xml
+                    where dsoid = :dsoid
+                    ''', {'dsoid': self.object_id}
+                )
             )
         elif metadata_type == self.MetaDataFormat_Json:
             commands.append(
-                ('''
-                update dm2_storage_object
-                set dsometadatajson = dsometadatatext::json
-                where dsoid = :dsoid
-                ''', {'dsoid': self.object_id}
-                 )
+                (
+                    '''
+                    update dm2_storage_object
+                    set dsometadatajson = dsometadatatext::json
+                    where dsoid = :dsoid
+                    ''', {'dsoid': self.object_id}
+                )
             )
 
         if metadata_bus_type == self.MetaDataFormat_XML:
             commands.append(
-                ('''
-                update dm2_storage_object
-                set dsometadataxml_bus = dsometadatatext_bus::xml
-                where dsoid = :dsoid
-                ''', {'dsoid': self.object_id}
-                 )
+                (
+                    '''
+                    update dm2_storage_object
+                    set dsometadataxml_bus = dsometadatatext_bus::xml
+                    where dsoid = :dsoid
+                    ''', {'dsoid': self.object_id}
+                )
             )
         elif metadata_bus_type == self.MetaDataFormat_Json:
             commands.append(
-                ('''
-                update dm2_storage_object
-                set dsometadatajson_bus = dsometadatatext_bus::json
-                where dsoid = :dsoid
-                ''', {'dsoid': self.object_id}
-                 )
+                (
+                    '''
+                    update dm2_storage_object
+                    set dsometadatajson_bus = dsometadatatext_bus::json
+                    where dsoid = :dsoid
+                    ''', {'dsoid': self.object_id}
+                )
             )
         # 所有元数据入库
         CFactory().give_me_db(self.file_info.__db_server_id__).execute_batch(commands)

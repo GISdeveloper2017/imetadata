@@ -110,15 +110,16 @@ where dsometadataparsestatus = 2
             'dsdStorageID': ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
             'dsdDirectory': ds_file_info.value_by_name(0, 'query_object_relation_path', '')})
         ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
-        file_info_obj = CDMFilePathInfoEx(dso_data_type,
-                                          ds_file_info.value_by_name(0, 'query_object_fullname', ''),
-                                          ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
-                                          ds_file_info.value_by_name(0, 'query_object_file_id', ''),
-                                          ds_file_info.value_by_name(0, 'query_object_file_parent_id', ''),
-                                          ds_file_info.value_by_name(0, 'query_object_owner_id', ''),
-                                          self.get_mission_db_id(),
-                                          ds_rule_content
-                                          )
+        file_info_obj = CDMFilePathInfoEx(
+            dso_data_type,
+            ds_file_info.value_by_name(0, 'query_object_fullname', ''),
+            ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
+            ds_file_info.value_by_name(0, 'query_object_file_id', ''),
+            ds_file_info.value_by_name(0, 'query_object_file_parent_id', ''),
+            ds_file_info.value_by_name(0, 'query_object_owner_id', ''),
+            self.get_mission_db_id(),
+            ds_rule_content
+        )
         plugins_obj = CPluginsMng.plugins(file_info_obj, dso_object_type)
         if plugins_obj is None:
             return CResult.merge_result(
@@ -134,8 +135,10 @@ where dsometadataparsestatus = 2
             self.db_update_object_status(dso_id, '文件或目录[{0}]的内容解析失败, 元数据无法提取!'.format(
                 ds_file_info.value_by_name(0, 'query_object_fullname', '')))
         try:
-            metadata_parser = CMetaDataParser(dso_id, dso_object_name, file_info_obj, plugins_obj.file_content,
-                                              plugins_obj.get_information())
+            metadata_parser = CMetaDataParser(
+                dso_id, dso_object_name, file_info_obj, plugins_obj.file_content,
+                plugins_obj.get_information()
+            )
             process_result = plugins_obj.parser_metadata(metadata_parser)
 
             if CResult.result_success(process_result):
