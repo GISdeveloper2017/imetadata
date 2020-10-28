@@ -694,14 +694,25 @@ alter table dm2_storage_inbound_log owner to postgres;
 alter table dm2_storage_obj_detail drop column dodstorageid ;
 alter table dm2_storage_obj_detail drop column dodfilerelationname ;
 
-drop index idx_dm2_storage_object_json;
-create index idx_dm2_storage_object_json
+drop index if exists idx_dm2_storage_object_json CASCADE;
+create index if not exists idx_dm2_storage_object_json
 	on dm2_storage_object USING gin (dsometadatajson);
 
-drop index idx_dm2_storage_object_json_bus;
-create index idx_dm2_storage_object_json_bus
+drop index if exists idx_dm2_storage_object_json_bus CASCADE;
+create index if not exists idx_dm2_storage_object_json_bus
 	on dm2_storage_object USING gin (dsometadatajson_bus);
 
+drop index if exists idx_dm2_storage_object_time CASCADE;
+create index if not exists idx_dm2_storage_object_time on dm2_storage_object USING gin (dso_time);
+
+drop index if exists idx_dm2_storage_object_da_result CASCADE;
+create index if not exists idx_dm2_storage_object_da_result on dm2_storage_object USING gin (dso_da_result);
+
+drop index if exists idx_dm2_storage_object_option CASCADE;
+create index if not exists idx_dm2_storage_object_option on dm2_storage_object USING gin (dsoOtherOption);
+
+alter table dm2_storage_object add column dso_da_proc_memo text;
+comment on column dm2_storage_object.dso_da_proc_memo is '发布规则审核-备注';
 
 
 

@@ -138,6 +138,12 @@ class CResource:
     Name_Work = 'work'
     Name_Business = 'business'
     Name_View = 'view'
+    Name_DataAccess = 'dataaccess'
+    Name_Modules = 'modules'
+    Name_Module = 'module'
+    Name_Audit = 'audit'
+    Name_System = 'system'
+    Name_User = 'user'
 
     FileExt_Py = 'py'
 
@@ -160,6 +166,8 @@ class CResource:
     Name_Level = 'level'
     Name_Group = 'group'
     Name_Type = 'type'
+    Name_Access = 'access'
+    Name_Quality = 'quality'
 
     Name_DataType = 'datatype'
     Name_Width = 'width'
@@ -284,3 +292,8 @@ class CResource:
 
     InBound_Storage_Match_Mode_Auto = 'auto'
     InBound_Storage_Match_Mode_Set = 'set'
+
+    DataAccess_Pass = 'pass'
+    DataAccess_Wait = 'wait'
+    DataAccess_Forbid = 'forbid'
+

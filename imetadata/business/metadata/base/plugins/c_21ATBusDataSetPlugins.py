@@ -84,9 +84,17 @@ class C21ATBusDataSetPlugins(CDirPlugins):
                                         '元数据文件[{0}]不存在, 无法解析! '.format(self.__bus_metadata_xml_file_name__))
 
         try:
-            parser.metadata.set_metadata_bus_file(self.MetaDataFormat_XML, self.__bus_metadata_xml_file_name__)
+            parser.metadata.set_metadata_bus_file(
+                self.Success,
+                '元数据文件[{0}]成功加载! '.format(self.__bus_metadata_xml_file_name__),
+                self.MetaDataFormat_XML,
+                self.__bus_metadata_xml_file_name__)
             return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(self.__bus_metadata_xml_file_name__))
         except:
-            parser.metadata.set_metadata_bus(self.MetaDataFormat_Text, '')
+            parser.metadata.set_metadata_bus(
+                self.Failure,
+                '元数据文件[{0}]格式不合法, 无法处理! '.format(self.__bus_metadata_xml_file_name__),
+                self.MetaDataFormat_Text,
+                '')
             return CResult.merge_result(self.Exception,
                                         '元数据文件[{0}]格式不合法, 无法处理! '.format(self.__bus_metadata_xml_file_name__))

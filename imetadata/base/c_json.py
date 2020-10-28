@@ -49,7 +49,13 @@ class CJson:
         :param json_content:
         :return:
         """
-        self.__json_obj__ = demjson.decode(json_content)
+        rt_json_content = json_content
+        if rt_json_content is None:
+            rt_json_content = '{}'
+        elif rt_json_content == '':
+            rt_json_content = '{}'
+
+        self.__json_obj__ = demjson.decode(rt_json_content)
 
     def load_obj(self, obj):
         """
