@@ -7,6 +7,7 @@ from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.base.c_file import CFile
+from imetadata.base.c_sys import CSys
 from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformer import CMDTransformer
 import pypyodbc
 import xlrd
@@ -69,10 +70,15 @@ class CMDTransformerDOM(CMDTransformer):
         conn = None  # 预定义连接与游标，方便释放
         cur = None
         try:
-            # conn = pypyodbc.connect('DSN=mymdb'); #linux配置，需要配置mdbtools, unixODBC, libmdbodbc
-            mdb = 'Driver={Microsoft Access Driver (*.mdb,*.accdb)};' + 'DBQ={0}'.format(
-                file_metadata_name_with_path)  # win驱动，安装AccessDatabaseEngine_X64.exe驱动
-            conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
+            if CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Windows):
+                mdb = 'Driver={Microsoft Access Driver (*.mdb,*.accdb)};' + 'DBQ={0}'.format(
+                    file_metadata_name_with_path)  # win驱动，安装AccessDatabaseEngine_X64.exe驱动
+                conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
+            elif CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Linux):
+                conn = pypyodbc.connect('DSN=mymdb')  # linux配置，需要配置mdbtools, unixODBC, libmdbodbc
+            else:
+                raise
+
             cur = conn.cursor()  # 游标
 
             sql = "SELECT * FROM " + self.object_name
