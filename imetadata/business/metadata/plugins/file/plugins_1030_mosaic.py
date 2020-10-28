@@ -28,12 +28,18 @@ class plugins_1030_mosaic(CFilePlugins_GUOTU_21AT):
         file_ext = self.file_info.__file_ext__  # 初始化需要的参数
         file_name_with_full_path = self.file_info.__file_name_with_full_path__
         if file_name_with_full_path.endswith('_21at.xml'):
-            file_main_name = file_main_name[:-5]
+            if len(file_main_name) > 5:
+                file_main_name = file_main_name[:-5]
+            else:
+                return self.Object_Confirm_IUnKnown, self.__object_name__
         else:
             xq_list = ['xq.shp', 'xq.shx', 'xq.dbf', 'xq.sbx', 'xq.prj']
             for xq_end in xq_list:
                 if file_name_with_full_path.lower().endswith(xq_end):
-                    file_main_name = file_main_name[:-2]
+                    if len(file_main_name) > 2:
+                        file_main_name = file_main_name[:-2]
+                    else:
+                        return self.Object_Confirm_IUnKnown, self.__object_name__
                     break
         file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
 
