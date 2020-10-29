@@ -239,8 +239,8 @@ class CSatPlugins(CPlugins):
         """
         parser.metadata.metadata_spatial_obj().native_geom = parser.metadata.metadata_spatial_obj().native_box
         parser.metadata.metadata_spatial_obj().wgs84_bbox = parser.metadata.metadata_spatial_obj().native_box
-        parser.metadata.metadata_spatial_obj().wgs84_geom = parser.metadata.metadata_spatial_obj().native_box
-        parser.metadata.metadata_spatial_obj().wgs84_geom = parser.metadata.metadata_spatial_obj().native_box
+        parser.metadata.metadata_spatial_obj().wgs84_geom = parser.metadata.metadata_spatial_obj().native_geom
+        parser.metadata.metadata_spatial_obj().wgs84_center = parser.metadata.metadata_spatial_obj().native_center
 
         parser.metadata.metadata_spatial_obj().prj_wkt = '''
         GEOGCS["WGS 84",
