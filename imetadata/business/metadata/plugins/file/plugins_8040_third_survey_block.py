@@ -45,11 +45,11 @@ class plugins_8040_third_survey_block(CFilePlugins_GUOTU_Third_Survey):
         else:
             return self.Object_Confirm_IUnKnown, self.__object_name__  # 主名必然大于6
 
-        if CUtils.text_is_numeric(CUtils.any_2_str(file_name_before_six)):
+        if not CUtils.text_is_numeric(CUtils.any_2_str(file_name_before_six)):
             return self.Object_Confirm_IUnKnown, self.__object_name__  # 前六位必然为数字
 
-        match_str = '{0}*dom??.img'.format(file_name_before_six)
-        check_file_main_name_exist = CFile.find_file_or_subpath_of_path(file_path, match_str)
+        match_str = '(?i)^'+file_name_before_six+r'\S+dom\d+.img'
+        check_file_main_name_exist = CFile.find_file_or_subpath_of_path(file_path, match_str, 2)
         if not check_file_main_name_exist:  # 检查主文件存在性
             return self.Object_Confirm_IUnKnown, self.__object_name__
 

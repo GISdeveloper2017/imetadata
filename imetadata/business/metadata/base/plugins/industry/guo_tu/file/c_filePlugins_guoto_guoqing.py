@@ -118,7 +118,7 @@ class CFilePlugins_GUOTU_GuoQing(CFilePlugins_GUOTU):
         """
         if self.metadata_bus_src_filename_with_path is None:
             parser.metadata.set_metadata_bus(self.DB_True, '', self.MetaDataFormat_Text, '')
-            return CResult.merge_result(self.Success, '本卫星数据无业务元数据, 无须解析!')
+            return CResult.merge_result(self.Success, '本数据无业务元数据, 无须解析!')
 
         transformer = CMDTransformerCommon(
             parser.object_id,

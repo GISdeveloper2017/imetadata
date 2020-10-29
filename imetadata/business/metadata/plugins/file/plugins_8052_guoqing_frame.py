@@ -16,6 +16,7 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         影像文件	    tif/TIF	有	H50E003006AP005P2011A.TIF	融合影像文件
         元数据文件	xml/XML	无	H50E003006AP005P2011M.XML	整体元数据文件
     """
+
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = '国情影像-分幅影像'
@@ -49,9 +50,7 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         if not check_file_main_name_exist:  # 检查主文件存在性
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
-        '''
-        文件名第1，4，11，12，16，21位为字母，第2，3，5-10，14，15，17-20位是数字
-        '''
+        # 文件名第1，4，11，12，16，21位为字母，第2，3，5-10，14，15，17-20位是数字
         name_sub_1 = file_main_name[0:1]
         name_sub_2_to_3 = file_main_name[1:3]
         name_sub_4 = file_main_name[3:4]
@@ -98,9 +97,9 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         metadata_main_name_with_path = metadata_main_name_with_path[:-1]
         check_file_metadata_bus_exist = False
         ext = self.Transformer_XML
-        temp_metadata_bus_file_Y = f'{metadata_main_name_with_path}Y.xml'
-        temp_metadata_bus_file_M = f'{metadata_main_name_with_path}M.xml'
-        temp_metadata_bus_file_P = f'{metadata_main_name_with_path}P.xml'
+        temp_metadata_bus_file_Y = '{0}Y.xml'.format(metadata_main_name_with_path)
+        temp_metadata_bus_file_M = '{0}M.xml'.format(metadata_main_name_with_path)
+        temp_metadata_bus_file_P = '{0}P.xml'.format(metadata_main_name_with_path)
         if CFile.file_or_path_exist(temp_metadata_bus_file_Y):
             check_file_metadata_bus_exist = True
             self.metadata_bus_transformer_type = ext

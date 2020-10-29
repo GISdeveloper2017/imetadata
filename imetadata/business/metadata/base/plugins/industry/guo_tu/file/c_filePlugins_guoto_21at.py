@@ -28,7 +28,7 @@ class CFilePlugins_GUOTU_21AT(CFilePlugins_GUOTU):
         """
         if self.metadata_bus_src_filename_with_path is None:
             parser.metadata.set_metadata_bus(self.DB_True, '', self.MetaDataFormat_Text, '')
-            return CResult.merge_result(self.Success, '本卫星数据无业务元数据, 无须解析!')
+            return CResult.merge_result(self.Success, '本数据无业务元数据, 无须解析!')
 
         transformer = CMDTransformerCommon(
             parser.object_id,
@@ -52,7 +52,7 @@ class CFilePlugins_GUOTU_21AT(CFilePlugins_GUOTU):
         metadata_main_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
         check_file_metadata_bus_exist = False
         ext = self.Transformer_XML
-        temp_metadata_bus_file = f'{metadata_main_name_with_path}_21at.xml'
+        temp_metadata_bus_file = '{0}_21at.xml'.format(metadata_main_name_with_path)
         if CFile.file_or_path_exist(temp_metadata_bus_file):
             check_file_metadata_bus_exist = True
             self.metadata_bus_transformer_type = ext
