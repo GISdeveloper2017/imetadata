@@ -26,7 +26,7 @@ class plugins_8004_dom_part_2(CFilePlugins_GUOTU_DOM):
         """
         super().classified()
         file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
-        check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, 'tif'))
+        check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
         if not check_file_main_name_exist:
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
@@ -39,7 +39,7 @@ class plugins_8004_dom_part_2(CFilePlugins_GUOTU_DOM):
                 or CUtils.text_is_decimal(char_2) is False:
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
-        if CUtils.equal_ignore_case(self.file_info.__file_ext__, 'tif'):
+        if CUtils.equal_ignore_case(self.file_info.__file_ext__, self.Name_Tif):
             self.__object_confirm__ = self.Object_Confirm_IKnown
             self.__object_name__ = self.file_info.__file_main_name__
         else:
@@ -51,17 +51,17 @@ if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
     #                        '/Users/wangxiya/Documents/交换/1.给我的/即时服务产品/业务数据集/DOM/湖北单个成果数据/H49G001026/H49G001026.tif',
     #                        '/Users/wangxiya/Documents/交换', '<root><type>dom</type></root>')
-    file_info = CFileInfoEx(plugins_1004_dom_part_2.FileType_File,
+    file_info = CFileInfoEx(plugins_8004_dom_part_2.FileType_File,
                             r'D:\迅雷下载\数据入库1\DOM\广西影像数据\2772.0-509.0\2772.0-509.0.tif',
                             r'D:\迅雷下载\数据入库1\DOM\广西影像数据\2772.0-509.0\tif', '<root><type>dom</type></root>')
-    plugins = plugins_1004_dom_part_2(file_info)
+    plugins = plugins_8004_dom_part_2(file_info)
     object_confirm, object_name = plugins.classified()
     plugins.init_qa_file_list(file_info)
-    if object_confirm == plugins_1004_dom_part_2.Object_Confirm_IUnKnown:
+    if object_confirm == plugins_8004_dom_part_2.Object_Confirm_IUnKnown:
         print('对不起, 您给你的文件, 我不认识')
-    elif object_confirm == plugins_1004_dom_part_2.Object_Confirm_IKnown_Not:
+    elif object_confirm == plugins_8004_dom_part_2.Object_Confirm_IKnown_Not:
         print('您给你的文件, 我确认它不是对象')
-    elif object_confirm == plugins_1004_dom_part_2.Object_Confirm_IKnown:
+    elif object_confirm == plugins_8004_dom_part_2.Object_Confirm_IKnown:
         print('您给你的文件, 我确认它的类型是[{0}], 对象名称为[{1}]'.format(plugins.get_id(), object_name))
-    elif object_confirm == plugins_1004_dom_part_2.Object_Confirm_Maybe:
+    elif object_confirm == plugins_8004_dom_part_2.Object_Confirm_Maybe:
         print('您给你的文件, 我确认它的类型是[{0}], 对象名称为[{1}]'.format(plugins.get_id(), object_name))

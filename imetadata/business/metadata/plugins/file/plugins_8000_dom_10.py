@@ -35,7 +35,7 @@ class plugins_8000_dom_10(CFilePlugins_GUOTU_DOM):
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
         file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
-        check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, 'tif'))
+        check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
 
         if not check_file_main_name_exist:
             return self.Object_Confirm_IUnKnown, self.__object_name__
@@ -59,7 +59,7 @@ class plugins_8000_dom_10(CFilePlugins_GUOTU_DOM):
                 or CUtils.text_is_numeric(char_8_to_10) is False:
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
-        if CUtils.equal_ignore_case(file_ext, 'tif'):
+        if CUtils.equal_ignore_case(file_ext, self.Name_Tif):
             self.__object_confirm__ = self.Object_Confirm_IKnown
             self.__object_name__ = file_main_name
         else:
@@ -73,10 +73,10 @@ if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
     #                        '/Users/wangxiya/Documents/交换/1.给我的/即时服务产品/业务数据集/DOM/湖北单个成果数据/H49G001026/H49G001026.tif',
     #                        '/Users/wangxiya/Documents/交换', '<root><type>dom</type></root>')
-    file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
+    file_info = CFileInfoEx(plugins_8000_dom_10.FileType_File,
                             r'D:\data\tif\wsiearth_H49G001026\H49G001026.tif',
                             r'D:\data\tif', '<root><type>dom</type></root>')
-    plugins = plugins_1000_dom_10(file_info)
+    plugins = plugins_8000_dom_10(file_info)
     # object_confirm, object_name = plugins.classified()
     # if object_confirm == plugins_1000_dom_10.Object_Confirm_IUnKnown:
     #     print('对不起, 您给你的文件, 我不认识')

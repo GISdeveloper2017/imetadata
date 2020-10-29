@@ -31,7 +31,7 @@ class plugins_8002_dom_12(CFilePlugins_GUOTU_DOM):
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
         file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
-        check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, 'tif'))
+        check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
 
         if not check_file_main_name_exist:
             return self.Object_Confirm_IUnKnown, self.__object_name__
@@ -55,7 +55,7 @@ class plugins_8002_dom_12(CFilePlugins_GUOTU_DOM):
                 or CUtils.text_is_numeric(char_8_to_12) is False:
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
-        if CUtils.equal_ignore_case(file_ext, 'tif'):
+        if CUtils.equal_ignore_case(file_ext, self.Name_Tif):
             self.__object_confirm__ = self.Object_Confirm_IKnown
             self.__object_name__ = file_main_name
         else:
