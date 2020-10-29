@@ -23,7 +23,7 @@ from imetadata.database.types.sql.c_sqlPostgresql import CSqlPostgresql
 
 
 class CPostgreSQL(CDataBase):
-    def create_default_sql(self) -> CSql:
+    def _create_default_sql(self) -> CSql:
         return CSqlPostgresql(self.DATABASE_POSTGRESQL, 0)
 
     def db_connection(self):

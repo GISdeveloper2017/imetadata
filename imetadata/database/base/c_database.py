@@ -50,7 +50,7 @@ class CDataBase(CResource):
         todo(王西亚) 这里需要考虑数据库访问密码的明文存储和解密事宜
         :param database_option:
         """
-        self.__sql__ = self.create_default_sql()
+        self.__sql = self._create_default_sql()
 
         self.__db_conn_id__ = CUtils.dict_value_by_name(database_option, self.Name_ID, self.DB_Server_ID_Default)
         self.__db_conn_type__ = CUtils.dict_value_by_name(database_option, self.Name_Type, self.DB_Type_Postgresql)
@@ -69,8 +69,9 @@ class CDataBase(CResource):
     def db_connection(self):
         return ''
 
-    def sql(self):
-        return self.__sql__
+    @property
+    def sql(self) -> CSql:
+        return self.__sql
 
     def __prepare_params_of_execute_sql__(self, engine, sql, params):
         """
@@ -261,7 +262,7 @@ class CDataBase(CResource):
             self.session_close(session)
 
     @abstractmethod
-    def create_default_sql(self) -> CSql:
+    def _create_default_sql(self) -> CSql:
         pass
 
     @abstractmethod
