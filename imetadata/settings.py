@@ -60,7 +60,8 @@ application = CSettings(
                     {
                         'plugin': ['plugins_8040_third_survey_block', 'plugins_8041_third_survey_noblock'],
                         'keyword': '三调影像'
-                    }
+                    },
+                    {'plugin': ['plugins_8060_custom'], 'keyword': '自定义影像'}
                 ]
             },
             'inbound': {

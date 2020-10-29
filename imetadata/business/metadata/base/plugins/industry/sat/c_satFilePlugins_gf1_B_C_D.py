@@ -104,10 +104,10 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_XPath: '/ProductMetaData/OrbitID',
                 self.Name_ID: 'OrbitID',
                 self.Name_Title: '轨道编号',
-                self.Name_Width:1000,
+                self.Name_Width: 1000,
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType:self.value_type_string
+                self.Name_DataType: self.value_type_string
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -119,7 +119,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_Range:
                     {
                         self.Name_Min: -90,
-                        self.Name_Max:90
+                        self.Name_Max: 90
                     }
             },
             {
@@ -132,7 +132,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_Range:
                     {
                         self.Name_Min: -180,
-                        self.Name_Max:180
+                        self.Name_Max: 180
                     }
             },
             {
@@ -145,7 +145,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_Range:
                     {
                         self.Name_Min: -90,
-                        self.Name_Max:90
+                        self.Name_Max: 90
                     }
             },
             {
@@ -158,7 +158,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_Range:
                     {
                         self.Name_Min: -180,
-                        self.Name_Max:180
+                        self.Name_Max: 180
                     }
             },
             {
@@ -171,7 +171,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_Range:
                     {
                         self.Name_Min: -90,
-                        self.Name_Max:90
+                        self.Name_Max: 90
                     }
             },
             {
@@ -184,7 +184,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_Range:
                     {
                         self.Name_Min: -180,
-                        self.Name_Max:180
+                        self.Name_Max: 180
                     }
             },
             {
@@ -197,7 +197,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_Range:
                     {
                         self.Name_Min: -90,
-                        self.Name_Max:90
+                        self.Name_Max: 90
                     }
             },
             {
@@ -210,7 +210,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_Range:
                     {
                         self.Name_Min: -180,
-                        self.Name_Max:180
+                        self.Name_Max: 180
                     }
             },
             {
@@ -220,7 +220,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_Title: '发布时间',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType:self.value_type_datetime
+                self.Name_DataType: self.value_type_datetime
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -268,7 +268,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_Range:
                     {
                         self.Name_Min: -90,
-                        self.Name_Max:90
+                        self.Name_Max: 90
                     }
             },
             {
@@ -278,7 +278,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_Title: '云量',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType:self.value_type_decimal_or_integer
+                self.Name_DataType: self.value_type_decimal_or_integer
             }
         ]
 
@@ -315,15 +315,49 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
         :param parser:
         :return:
         """
-        native_center_filename_with_path = CFile.join_file(self.file_content.work_root_dir,
-                                                 '{0}_native_center.wkt'.format(CUtils.one_id()))
-        native_bbox_filename_with_path=CFile.join_file(self.file_content.work_root_dir,
-                                                 '{0}_native_bbox.wkt'.format(CUtils.one_id()))
-        CFile.str_2_file('point(0 0)',native_center_filename_with_path)
-        CFile.str_2_file('Polygon(0 0, 0 1, 1 1, 1 0, 0 0)', native_bbox_filename_with_path)
+        xml = parser.metadata.metadata_bus_xml()
+        TopLeftLatitude = xml.xpath_one('/ProductMetaData/TopLeftLatitude')
+        TopLeftLongitude = xml.xpath_one('/ProductMetaData/TopLeftLongitude')
+        BottomLeftLatitude = xml.xpath_one('/ProductMetaData/BottomLeftLatitude')
+        BottomLeftLongitude = xml.xpath_one('/ProductMetaData/BottomLeftLongitude')
+        TopRightLatitude = xml.xpath_one('/ProductMetaData/TopRightLatitude')
+        TopRightLongitude = xml.xpath_one('/ProductMetaData/TopRightLongitude')
+        BottomRightLatitude = xml.xpath_one('/ProductMetaData/TopLeftLatitude')
+        BottomRightLongitude = xml.xpath_one('/ProductMetaData/TopLeftLongitude')
 
-        parser.metadata.set_metadata_spatial(self.Success, '', self.Spatial_MetaData_Type_Native_Center, native_center_filename_with_path)
-        parser.metadata.set_metadata_spatial(self.Success, '', self.Spatial_MetaData_Type_Native_BBox, native_bbox_filename_with_path)
+        center_latitude = (float(xml.get_element_text(TopLeftLatitude)) + float(
+            xml.get_element_text(BottomRightLatitude))) / 2
+        center_longitude = (float(xml.get_element_text(TopLeftLongitude)) + float(
+            xml.get_element_text(BottomRightLongitude))) / 2
+
+        TopLeftLatitude_text = xml.get_element_text(TopLeftLatitude)
+        TopLeftLongitude_text = xml.get_element_text(TopLeftLongitude)
+        BottomLeftLatitude_text = xml.get_element_text(BottomLeftLatitude)
+        BottomLeftLongitude_text = xml.get_element_text(BottomLeftLongitude)
+        TopRightLatitude_text = xml.get_element_text(TopRightLatitude)
+        TopRightLongitude_text = xml.get_element_text(TopRightLongitude)
+        BottomRightLatitude_text = xml.get_element_text(BottomRightLatitude)
+        BottomRightLongitude_text = xml.get_element_text(BottomRightLongitude)
+
+        native_center_filename_with_path = CFile.join_file(self.file_content.work_root_dir,
+                                                           '{0}_native_center.wkt'.format(CUtils.one_id()))
+        native_bbox_filename_with_path = CFile.join_file(self.file_content.work_root_dir,
+                                                         '{0}_native_bbox.wkt'.format(CUtils.one_id()))
+        CFile.str_2_file('point({0} {1})'.format(center_latitude, center_longitude), native_center_filename_with_path)
+        CFile.str_2_file(
+            'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) , ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
+                BottomLeftLatitude_text, BottomLeftLongitude_text,
+                TopLeftLatitude_text, TopLeftLongitude_text,
+                TopRightLatitude_text, TopRightLongitude_text,
+                BottomRightLatitude_text, BottomRightLongitude_text
+            )
+            ,
+            native_bbox_filename_with_path)
+
+        parser.metadata.set_metadata_spatial(self.Success, '', self.Spatial_MetaData_Type_Native_Center,
+                                             native_center_filename_with_path)
+        parser.metadata.set_metadata_spatial(self.Success, '', self.Spatial_MetaData_Type_Native_BBox,
+                                             native_bbox_filename_with_path)
 
         super().parser_metadata_spatial_after_qa(parser)
 

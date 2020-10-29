@@ -383,22 +383,27 @@ class CMetaDataParser(CParser):
         }
         database = CFactory().give_me_db(self.file_info.__db_server_id__)
 
-        CDataSet.file2param(params, 'dso_center_native', mdt_spatial.native_center)
-        CDataSet.file2param(params, 'dso_geo_bb_native', mdt_spatial.native_box)
-        CDataSet.file2param(params, 'dso_geo_native', mdt_spatial.native_geom)
+        params['dso_center_native'] = CFile.file_2_str(mdt_spatial.native_center)
+        params['dso_geo_bb_native'] = CFile.file_2_str(mdt_spatial.native_box)
+        params['dso_geo_native'] = CFile.file_2_str(mdt_spatial.native_geom)
 
         if CFile.file_or_path_exist(mdt_spatial.wgs84_center):
-            dso_center_wgs84 = database.sql.func_wkt2geometry(CFile.file_2_str(mdt_spatial.wgs84_center), self.SRID_WGS84)
+            dso_center_wgs84 = database.sql.func_wkt2geometry(
+                CUtils.quote(CFile.file_2_str(mdt_spatial.wgs84_center)), self.SRID_WGS84)
         else:
             dso_center_wgs84 = 'null'
 
         if CFile.file_or_path_exist(mdt_spatial.wgs84_bbox):
-            dso_geo_bb_wgs84 = database.sql.func_wkt2geometry(CFile.file_2_str(mdt_spatial.wgs84_bbox), self.SRID_WGS84)
+            dso_geo_bb_wgs84 = database.sql.func_wkt2geometry(
+                CUtils.quote(
+                    CFile.file_2_str(mdt_spatial.wgs84_bbox)), self.SRID_WGS84)
         else:
             dso_geo_bb_wgs84 = 'null'
 
         if CFile.file_or_path_exist(mdt_spatial.wgs84_geom):
-            dso_geo_wgs84 = database.sql.func_wkt2geometry(CFile.file_2_str(mdt_spatial.wgs84_geom), self.SRID_WGS84)
+            dso_geo_wgs84 = database.sql.func_wkt2geometry(
+                CUtils.quote(
+                    CFile.file_2_str(mdt_spatial.wgs84_geom)), self.SRID_WGS84)
         else:
             dso_geo_wgs84 = 'null'
             # 所有元数据入库

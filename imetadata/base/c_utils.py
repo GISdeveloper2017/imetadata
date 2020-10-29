@@ -52,7 +52,7 @@ class CUtils(CResource):
 
     @classmethod
     def quote(cls, str1: str) -> str:
-        return "'{0}'".format(str1.strip())
+        return "'{0}'".format(str1)
 
     @classmethod
     def dict_value_by_name(cls, dict_obj: dict, name: str, default_value, ignore_case=True) -> any:

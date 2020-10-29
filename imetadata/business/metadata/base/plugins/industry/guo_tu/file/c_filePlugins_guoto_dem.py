@@ -96,6 +96,7 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
                     self.Name_Message: '业务元数据[{0}]存在'.format(self.metadata_bus_src_filename_with_path)
                 }
             )
+
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
         设置解析json格式元数据的检验规则列表, 为空表示无检查规则
@@ -206,7 +207,7 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
         else:
             return []
 
-    def __metadata_bus_mdb_list__(self)-> list:
+    def __metadata_bus_mdb_list__(self) -> list:
         """
         mdb的质检字段列表
         @return:
@@ -453,7 +454,7 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
             }
         ]
 
-    def __metadata_bus_mat_list__(self)-> list:
+    def __metadata_bus_mat_list__(self) -> list:
         """
         mat的质检字段列表
         @return:
@@ -591,7 +592,7 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
             }
         ]
 
-    def __metadata_bus_xls_list__(self)-> list:
+    def __metadata_bus_xls_list__(self) -> list:
         """
         xls/xlsx的质检字段列表
         @return:
@@ -728,6 +729,7 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
                 self.Name_Result: self.QA_Result_Error
             }
         ]
+
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
         设置解析json格式元数据的检验规则列表, 为空表示无检查规则
@@ -838,7 +840,7 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
         else:
             return []
 
-    def __metadata_bus_mdb_list__(self)-> list:
+    def __metadata_bus_mdb_list__(self) -> list:
         """
         mdb的质检字段列表
         @return:
@@ -1085,7 +1087,7 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
             }
         ]
 
-    def __metadata_bus_mat_list__(self)-> list:
+    def __metadata_bus_mat_list__(self) -> list:
         """
         mat的质检字段列表
         @return:
@@ -1223,7 +1225,7 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
             }
         ]
 
-    def __metadata_bus_xls_list__(self)-> list:
+    def __metadata_bus_xls_list__(self) -> list:
         """
         xls/xlsx的质检字段列表
         @return:

@@ -207,7 +207,7 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
         else:
             return []
 
-    def __metadata_bus_mdb_list__(self)-> list:
+    def __metadata_bus_mdb_list__(self) -> list:
         """
         mdb的质检字段列表
         @return:
@@ -454,7 +454,7 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
             }
         ]
 
-    def __metadata_bus_mat_list__(self)-> list:
+    def __metadata_bus_mat_list__(self) -> list:
         """
         mat的质检字段列表
         @return:
@@ -592,7 +592,7 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
             }
         ]
 
-    def __metadata_bus_xls_list__(self)-> list:
+    def __metadata_bus_xls_list__(self) -> list:
         """
         xls/xlsx的质检字段列表
         @return:
