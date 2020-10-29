@@ -34,7 +34,7 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
             else:
                 return self.Object_Confirm_IUnKnown, self.__object_name__
         else:
-            xq_list = ['xq.shp', 'xq.shx', 'xq.dbf', 'xq.sbx', 'xq.prj']
+            xq_list = ['xq.shp', 'xq.shx', 'xq.dbf', 'xq.sbx', 'xq.prj', 'xq.sbn']
             for xq_end in xq_list:
                 if file_name_with_full_path.lower().endswith(xq_end):
                     if len(file_main_name) > 2:

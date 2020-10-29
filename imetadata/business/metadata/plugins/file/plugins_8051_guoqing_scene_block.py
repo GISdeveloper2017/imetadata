@@ -67,7 +67,7 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
 
         match_str = '(?i)^' + file_object_name + r'[FMP][-]\d+.img$'
         check_file_main_name_exist = \
-            CFile.find_file_or_subpath_of_path(file_path, match_str, 2)
+            CFile.find_file_or_subpath_of_path(file_path, match_str, CFile.MatchType_Regex)
         if not check_file_main_name_exist:  # 检查主文件存在性
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
@@ -93,12 +93,12 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
                 self.__object_name__ = file_main_name
             elif CUtils.equal_ignore_case(name_sub_backwards_fmp.lower(), 'm') \
                     and CUtils.equal_ignore_case(file_ext, 'img') \
-                    and not CFile.find_file_or_subpath_of_path(file_path, match_str_f, 2):
+                    and not CFile.find_file_or_subpath_of_path(file_path, match_str_f, CFile.MatchType_Regex):
                 self.__object_confirm__ = self.Object_Confirm_IKnown
                 self.__object_name__ = file_main_name
             elif CUtils.equal_ignore_case(name_sub_backwards_fmp.lower(), 'p') \
                     and CUtils.equal_ignore_case(file_ext, 'img') \
-                    and not CFile.find_file_or_subpath_of_path(file_path, match_str_fm, 2):
+                    and not CFile.find_file_or_subpath_of_path(file_path, match_str_fm, CFile.MatchType_Regex):
                 self.__object_confirm__ = self.Object_Confirm_IKnown
                 self.__object_name__ = file_main_name
             else:

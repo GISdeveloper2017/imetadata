@@ -48,8 +48,8 @@ class plugins_8040_third_survey_block(CFilePlugins_GUOTU_Third_Survey):
         if not CUtils.text_is_numeric(CUtils.any_2_str(file_name_before_six)):
             return self.Object_Confirm_IUnKnown, self.__object_name__  # 前六位必然为数字
 
-        match_str = '(?i)^'+file_name_before_six+r'\S+dom\d+.img'
-        check_file_main_name_exist = CFile.find_file_or_subpath_of_path(file_path, match_str, 2)
+        match_str = '(?i)^'+file_name_before_six+r'\S+dom\d+.img$'
+        check_file_main_name_exist = CFile.find_file_or_subpath_of_path(file_path, match_str, CFile.MatchType_Regex)
         if not check_file_main_name_exist:  # 检查主文件存在性
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
@@ -74,15 +74,15 @@ class plugins_8040_third_survey_block(CFilePlugins_GUOTU_Third_Survey):
                     self.__object_confirm__ = self.Object_Confirm_IKnown_Not
                     self.__object_name__ = None
             else:
-                affiliated_ext_list = ['mdb', 'shp', 'shx', 'dbf', 'sbx', 'prj']
-                if file_ext in affiliated_ext_list:
+                affiliated_ext_list = ['mdb', 'shp', 'shx', 'dbf', 'sbx', 'prj', 'sbn']
+                if file_ext.lower() in affiliated_ext_list:
                     self.__object_confirm__ = self.Object_Confirm_IKnown_Not
                     self.__object_name__ = None
                 else:
                     return self.Object_Confirm_IUnKnown, self.__object_name__
         else:
-            affiliated_ext_list = ['mdb', 'shp', 'shx', 'dbf', 'sbx', 'prj']
-            if file_ext in affiliated_ext_list:
+            affiliated_ext_list = ['mdb', 'shp', 'shx', 'dbf', 'sbx', 'prj', 'sbn']
+            if file_ext.lower() in affiliated_ext_list:
                 self.__object_confirm__ = self.Object_Confirm_IKnown_Not
                 self.__object_name__ = None
             else:

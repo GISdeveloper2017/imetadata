@@ -8,6 +8,7 @@ from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CM
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
 from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
+from imetadata.database.c_factory import CFactory
 
 
 class CFilePlugins_GUOTU_Third_Survey(CFilePlugins_GUOTU):
@@ -23,7 +24,13 @@ class CFilePlugins_GUOTU_Third_Survey(CFilePlugins_GUOTU):
         file_main_name = self.file_info.__file_main_name__
         file_name_before_six = file_main_name[0:6]  # 截取前六位行政区划代码
         # 查询行政区划代码对应的名称并拼接
-        file_name_before_six_name = ''
+        try:
+            db = CFactory().give_me_db(self.file_info.__db_server_id__)
+            file_name_before_six_name = db.one_row("select gdstitle from ro_global_dim_space "
+                                                   "where gdsid = '{0}'".format(file_name_before_six))\
+                .value_by_name(0, 'gdstitle', None)
+        except:
+            file_name_before_six_name = ''
         file_metadata_name = '{0}{1}'.format(file_name_before_six, file_name_before_six_name)
         check_file_metadata_bus_exist = False
         ext = self.Transformer_DOM_MDB  # 后缀名
