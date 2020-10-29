@@ -92,8 +92,8 @@ class CFile:
         return SortedList(list_match_file)
 
     @classmethod
-    def find_file_or_subpath_of_path(cls, path: str, match_str: str) -> bool:
-        list_files = cls.file_or_subpath_of_path(path, match_str)
+    def find_file_or_subpath_of_path(cls, path: str, match_str: str, match_type: int = MatchType_Common) -> bool:
+        list_files = cls.file_or_subpath_of_path(path, match_str, match_type)
         return len(list_files) > 0
 
     @classmethod

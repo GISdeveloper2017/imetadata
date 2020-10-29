@@ -10,6 +10,7 @@ from imetadata.base.c_time import CTime
 
 from string import Template
 
+
 class CUtils(CResource):
     @classmethod
     def str_append(cls, src_str: str, second_str: str, seperator_str: str = '\n') -> str:
