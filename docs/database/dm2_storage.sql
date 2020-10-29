@@ -714,5 +714,17 @@ create index if not exists idx_dm2_storage_object_option on dm2_storage_object U
 alter table dm2_storage_object add column dso_da_proc_memo text;
 comment on column dm2_storage_object.dso_da_proc_memo is '发布规则审核-备注';
 
+/*
+    2020-10-29
+    . 发现由于成果数据的坐标系不统一, 原生的成果数据外边框和中心点坐标等内容, 均无法直接存储到geometry字段中, 只能按照text类型存储了
+*/
+alter table dm2_storage_object drop column dso_center_native ;
+alter table dm2_storage_object drop column dso_geo_native ;
+alter table dm2_storage_object drop column dso_geo_bb_native ;
 
-
+alter table dm2_storage_object add column dso_center_native text;
+alter table dm2_storage_object add column dso_geo_native text;
+alter table dm2_storage_object add column dso_geo_bb_native text;
+comment on column dm2_storage_object.dso_geo_bb_native is '对象-原始-外包框';
+comment on column dm2_storage_object.dso_geo_native is '对象-原始-外边框';
+comment on column dm2_storage_object.dso_center_native is '对象-原始-中心点';

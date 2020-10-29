@@ -88,7 +88,8 @@ where dso_da_status = 2
                     result = CUtils.any_2_str(module_obj.access())
                     if CResult.result_success(result):
                         module_access = CResult.result_info(result, self.Name_Access, self.DataAccess_Forbid)
-                        module_obj = {self.Name_Audit: self.Name_System, self.Name_Result: module_access, self.Name_Title: module_title}
+                        module_obj = {self.Name_Audit: self.Name_System, self.Name_Result: module_access,
+                                      self.Name_Title: module_title}
                         dso_da_json.set_value_of_name(file_main_name, module_obj)
                     else:
                         CLogger().debug('模块[{0}]解析出现错误, 系统将忽略本模块, 继续处理下一个!'.format(file_main_name))

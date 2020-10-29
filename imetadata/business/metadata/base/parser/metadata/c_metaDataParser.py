@@ -210,21 +210,9 @@ class CMetaDataParser(CParser):
         file_quality_summary_text = self.metadata.quality.summary()
 
         metadata_extract_result, metadata_extract_memo, metadata_type, metadata_text = self.metadata.metadata()
-        metadata_json = None
-        metadata_xml = None
-        if metadata_type == self.MetaDataFormat_XML:
-            metadata_xml = metadata_text
-        elif metadata_type == self.MetaDataFormat_Json:
-            metadata_json = metadata_text
 
         # 处理业务元数据
         metadata_bus_extract_result, metadata_bus_extract_memo, metadata_bus_type, metadata_bus_text = self.metadata.metadata_bus()
-        metadata_bus_json = None
-        metadata_bus_xml = None
-        if metadata_bus_type == self.MetaDataFormat_XML:
-            metadata_bus_xml = metadata_bus_text
-        elif metadata_bus_type == self.MetaDataFormat_Json:
-            metadata_bus_json = metadata_bus_text
 
         commands = [(
             '''
@@ -393,13 +381,27 @@ class CMetaDataParser(CParser):
             'dso_prj_zone': mdt_spatial.prj_zone,
             'dso_prj_source': mdt_spatial.prj_source
         }
+        database = CFactory().give_me_db(self.file_info.__db_server_id__)
+
         CDataSet.file2param(params, 'dso_center_native', mdt_spatial.native_center)
         CDataSet.file2param(params, 'dso_geo_bb_native', mdt_spatial.native_box)
         CDataSet.file2param(params, 'dso_geo_native', mdt_spatial.native_geom)
-        CDataSet.file2param(params, 'dso_center_wgs84', mdt_spatial.wgs84_center)
-        CDataSet.file2param(params, 'dso_geo_bb_wgs84', mdt_spatial.wgs84_bbox)
-        CDataSet.file2param(params, 'dso_geo_wgs84', mdt_spatial.wgs84_geom)
-        # 所有元数据入库
+
+        if CFile.file_or_path_exist(mdt_spatial.wgs84_center):
+            dso_center_wgs84 = database.sql.func_wkt2geometry(CFile.file_2_str(mdt_spatial.wgs84_center), self.SRID_WGS84)
+        else:
+            dso_center_wgs84 = 'null'
+
+        if CFile.file_or_path_exist(mdt_spatial.wgs84_bbox):
+            dso_geo_bb_wgs84 = database.sql.func_wkt2geometry(CFile.file_2_str(mdt_spatial.wgs84_bbox), self.SRID_WGS84)
+        else:
+            dso_geo_bb_wgs84 = 'null'
+
+        if CFile.file_or_path_exist(mdt_spatial.wgs84_geom):
+            dso_geo_wgs84 = database.sql.func_wkt2geometry(CFile.file_2_str(mdt_spatial.wgs84_geom), self.SRID_WGS84)
+        else:
+            dso_geo_wgs84 = 'null'
+            # 所有元数据入库
         CFactory().give_me_db(self.file_info.__db_server_id__).execute(
             '''
             update dm2_storage_object
@@ -408,9 +410,9 @@ class CMetaDataParser(CParser):
                 , dso_center_native = :dso_center_native
                 , dso_geo_bb_native = :dso_geo_bb_native
                 , dso_geo_native = :dso_geo_native
-                , dso_center_wgs84 = :dso_center_wgs84
-                , dso_geo_bb_wgs84 = :dso_geo_bb_wgs84
-                , dso_geo_wgs84 = :dso_geo_wgs84
+                , dso_center_wgs84 = {0}
+                , dso_geo_bb_wgs84 = {1}
+                , dso_geo_wgs84 = {2}
                 , dso_prj_wkt = :dso_prj_wkt
                 , dso_prj_proj4 = :dso_prj_proj4
                 , dso_prj_project = :dso_prj_project
@@ -419,6 +421,7 @@ class CMetaDataParser(CParser):
                 , dso_prj_zone = :dso_prj_zone
                 , dso_prj_source = :dso_prj_source
             where dsoid = :dsoid
-            ''', params
+            '''.format(dso_center_wgs84, dso_geo_bb_wgs84, dso_geo_wgs84),
+            params
         )
         return CResult.merge_result(self.Success, '空间元数据处理完毕!')

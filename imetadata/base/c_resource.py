@@ -4,6 +4,8 @@
 # @File : c_resource.py
 
 class CResource:
+    SRID_WGS84 = 4326
+
     Spatial_MetaData_Type_Native_Center = 11
     Spatial_MetaData_Type_Native_BBox = 12
     Spatial_MetaData_Type_Native_Geom = 13

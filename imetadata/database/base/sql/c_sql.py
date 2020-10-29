@@ -2,10 +2,9 @@
 # @Time : 2020/10/6 15:03 
 # @Author : 王西亚 
 # @File : c_sql.py
-from imetadata.base.c_resource import CResource
 
 
-class CSql(CResource):
+class CSql:
     def __init__(self, database_type, database_version):
         self.__database_type__ = database_type
         self.__database_version__ = database_version
