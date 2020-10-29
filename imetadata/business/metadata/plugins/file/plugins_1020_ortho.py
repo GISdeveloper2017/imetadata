@@ -26,10 +26,11 @@ class plugins_1020_ortho(CFilePlugins_GUOTU_21AT):
         super().classified()
         file_main_name = self.file_info.__file_main_name__
         file_ext = self.file_info.__file_ext__  # 初始化需要的参数
+        file_object_name = file_main_name[:]
         file_name_with_full_path = self.file_info.__file_name_with_full_path__
         if file_name_with_full_path.endswith('_21at.xml'):
-            file_main_name = file_main_name[:-5]
-        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
+            file_object_name = file_main_name[:-5]
+        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_object_name)
 
         check_file_main_name_exist = \
             CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif)) or \

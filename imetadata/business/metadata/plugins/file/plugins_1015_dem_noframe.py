@@ -214,8 +214,8 @@ class plugins_1015_dem_noframe(CFilePlugins_GUOTU_21AT):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_string,
                 self.Name_Width: 100,
-                self.Name_XPath: "//item[@name='productname']",
-                self.Name_ID: 'productname',
+                self.Name_XPath: "//item[@name='ProductName']",
+                self.Name_ID: 'ProductName',
                 self.Name_Title: '产品名称',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error
@@ -224,8 +224,8 @@ class plugins_1015_dem_noframe(CFilePlugins_GUOTU_21AT):
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_date,
-                self.Name_XPath: "//item[@name='producedate']",
-                self.Name_ID: 'producedate',
+                self.Name_XPath: "//item[@name='ProduceDate']",
+                self.Name_ID: 'ProduceDate',
                 self.Name_Title: '产品日期',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error
@@ -235,8 +235,8 @@ class plugins_1015_dem_noframe(CFilePlugins_GUOTU_21AT):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
                 self.Name_Width: 8,
-                self.Name_XPath: "//item[@name='gridcellsize']",
-                self.Name_ID: 'gridcellsize',
+                self.Name_XPath: "//item[@name='GridCellSize']",
+                self.Name_ID: 'GridCellSize',
                 self.Name_Title: '网格尺寸',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error
@@ -246,8 +246,8 @@ class plugins_1015_dem_noframe(CFilePlugins_GUOTU_21AT):
                 self.Name_NotNull: False,
                 self.Name_DataType: self.value_type_string,
                 self.Name_Width: 500,
-                self.Name_XPath: "//item[@name='description']",
-                self.Name_ID: 'description',
+                self.Name_XPath: "//item[@name='Description']",
+                self.Name_ID: 'Description',
                 self.Name_Title: '说明',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error
