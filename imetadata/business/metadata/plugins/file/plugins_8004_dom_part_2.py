@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/10/20 10:11
 # @Author : 赵宇飞
-# @File : plugins_1004_dom_part_2.py
+# @File : plugins_8004_dom_part_2.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_utils import CUtils
@@ -9,7 +9,7 @@ from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CM
 from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_dom import CFilePlugins_GUOTU_DOM
 
 
-class plugins_1004_dom_part_2(CFilePlugins_GUOTU_DOM):
+class plugins_8004_dom_part_2(CFilePlugins_GUOTU_DOM):
 
     def get_information(self) -> dict:
         information = super().get_information()

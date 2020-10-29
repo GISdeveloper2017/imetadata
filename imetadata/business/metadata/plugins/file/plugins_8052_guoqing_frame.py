@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/10/25 15:27
 # @Author : 赵宇飞
-# @File : plugins_1052_guoqing_frame.py
+# @File : plugins_8052_guoqing_frame.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
@@ -9,7 +9,7 @@ from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins
     CFilePlugins_GUOTU_GuoQing
 
 
-class plugins_1052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
+class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
     """
     与国情影像-整景纠正有差别(业务元数据xml的字段),xml文件的识别也不同，也不是***_21at.xml模式，所以直接继承于CFilePlugins_GUOTU
         数据内容	    文件格式	是否有坐标系	内容样例	说明

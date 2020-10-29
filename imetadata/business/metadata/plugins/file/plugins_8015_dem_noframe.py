@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/10/20 10:24
 # @Author : 赵宇飞
-# @File : plugins_1015_dem_noframe.py
+# @File : plugins_8015_dem_noframe.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_utils import CUtils
@@ -11,7 +11,7 @@ from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins
 from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_dem import CFilePlugins_GUOTU_DEM
 
 
-class plugins_1015_dem_noframe(CFilePlugins_GUOTU_21AT):
+class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
     """
     todo 负责人 李宪
     数据内容	    文件格式	    是否有坐标系	内容样例	            说明

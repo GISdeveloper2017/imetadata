@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/10/20 10:23
 # @Author : 赵宇飞
-# @File : plugins_1014_dem_part_2.py
+# @File : plugins_8014_dem_part_2.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_dem import CFilePlugins_GUOTU_DEM
 
 
-class plugins_1014_dem_part_2(CFilePlugins_GUOTU_DEM):
+class plugins_8014_dem_part_2(CFilePlugins_GUOTU_DEM):
 
     def get_information(self) -> dict:
         information = super().get_information()

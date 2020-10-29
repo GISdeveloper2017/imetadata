@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/10/20 11:03
 # @Author : 赵宇飞
-# @File : plugins_1030_mosaic.py
+# @File : plugins_8030_mosaic.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
@@ -9,7 +9,7 @@ from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins
     CFilePlugins_GUOTU_21AT
 
 
-class plugins_1030_mosaic(CFilePlugins_GUOTU_21AT):
+class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = '镶嵌影像'

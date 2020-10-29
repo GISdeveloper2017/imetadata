@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/10/25 15:26
 # @Author : 赵宇飞
-# @File : plugins_1051_guoqing_scene_block.py
+# @File : plugins_8051_guoqing_scene_block.py
 
 from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_guoqing import \
     CFilePlugins_GUOTU_GuoQing
 
 
-class plugins_1051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
+class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
     """
     数据内容	    文件格式	是否有坐标系	内容样例	                    说明
     影像文件

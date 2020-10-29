@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/10/25 15:39
 # @Author : 赵宇飞
-# @File : plugins_1060_custom.py
+# @File : plugins_8060_custom.py
 
 from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_21at import \
     CFilePlugins_GUOTU_21AT
 
 
-class plugins_1060_custom(CFilePlugins_GUOTU_21AT):
+class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
     """
      todo 李宪
      注意5.9 自定义影像包含2中模式（***_21at.xml/无xml文件）

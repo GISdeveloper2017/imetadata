@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/10/20 11:18
 # @Author : 赵宇飞
-# @File : plugins_1040_third_survey_block.py
+# @File : plugins_8040_third_survey_block.py
 from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_third_survey import \
     CFilePlugins_GUOTU_Third_Survey
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 
 
-class plugins_1040_third_survey_block(CFilePlugins_GUOTU_Third_Survey):
+class plugins_8040_third_survey_block(CFilePlugins_GUOTU_Third_Survey):
     """
     todo 负责人 王学谦
     数据内容	            命名标准	                                            举例
