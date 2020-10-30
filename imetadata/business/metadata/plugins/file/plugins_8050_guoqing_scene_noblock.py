@@ -20,6 +20,7 @@ class plugins_8050_guoqing_scene_noblock(CFilePlugins_GUOTU_GuoQing):
     元数据文件	    xml/XML	无	GF2398924020190510M.XML	多光谱元数据文件
                                 GF2398924020190510P.XML	全色元数据文件
                                 GF2398924020190510Y.XML	整体元数据文件
+    关于正则表达式     https://baike.baidu.com/item/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/1700215?fr=aladdin
     """
 
     def get_information(self) -> dict:
@@ -39,24 +40,29 @@ class plugins_8050_guoqing_scene_noblock(CFilePlugins_GUOTU_GuoQing):
         file_main_name = self.file_info.__file_main_name__
         file_ext = self.file_info.__file_ext__  # 初始化需要的参数
         file_path = self.file_info.__file_path__
-        file_object_name = file_main_name[:]
+        file_object_name = file_main_name[:]  # 这里需要取得规则匹配用的‘对象名’，即去除尾部字母等字符的名
 
+        # 正则表达式，(?i)代表大小写不敏感，^代表字符串开头，$代表字符串结尾
+        # [a-z]指匹配所有小写字母，配合(?i)匹配所有字母，{2}代表前面的匹配模式匹配2次，即[a-z]{2}匹配两个字母
+        # \d匹配数字，即[0-9]，即\d+匹配一个或多个非空字符，\d{4}匹配四个任意数字
+        # [0123]一般指匹配一个括号中任意字符，即匹配0到3
+        # \S用于匹配所有非空字符，+代表匹配前面字符的数量为至少一个，即\S+匹配一个或多个非空字符
         if len(file_main_name) < 11:
             return self.Object_Confirm_IUnKnown, self.__object_name__
-
+        # 下面正则：开头两个字母，字母后任意数量字符,而后匹配8位时间，4位任意数字（年份），[01]\d为月份，[0123]\d日
         if CUtils.text_match_re(file_main_name, r'(?i)^[a-z]{2}\S+'
-                                                r'\d{4}[01]\d[0123]\d[a-z]$'):
-            file_object_name = file_main_name[:-1]
+                                                r'\d{4}[01]\d[0123]\d[a-z]$'):  # 结尾为单个字母的情况
+            file_object_name = file_main_name[:-1]  # 这里需要取得规则匹配用的‘对象名’，即去除尾部字母
         elif CUtils.text_match_re(file_main_name, r'(?i)^[a-z]{2}\S+'
-                                                  r'\d{4}[01]\d[0123]\d\S+$'):
+                                                  r'\d{4}[01]\d[0123]\d\S+$'):  # 结尾为多个的字符情况
             file_object_name_list = re.findall(r'(?i)^([a-z]{2}\S+\d{4}[01]\d[0123]\d)\S+$',
                                                file_main_name)
-            file_object_name = file_object_name_list[0]
-        elif CUtils.text_match_re(file_main_name, r'(?i)^[a-z]{2}\S+'
+            file_object_name = file_object_name_list[0]  # 剔除结尾多个字符
+        elif CUtils.text_match_re(file_main_name, r'(?i)^[a-z]{2}\S+'  # 其他情况默认不做处理，用主名
                                                   r'[0-9]{4}[01][0-9][0123][0-9]$'):
             pass
 
-        match_str = '(?i)^' + file_object_name + r'[FMP].img$'
+        match_str = '(?i)^' + file_object_name + r'[FMP].img$'  # 匹配主文件的规则，即对象名+F/M/P
         check_file_main_name_exist = CFile.find_file_or_subpath_of_path(file_path, match_str, CFile.MatchType_Regex)
         if not check_file_main_name_exist:  # 检查主文件存在性
             return self.Object_Confirm_IUnKnown, self.__object_name__
@@ -68,6 +74,8 @@ class plugins_8050_guoqing_scene_noblock(CFilePlugins_GUOTU_GuoQing):
                 or CUtils.text_is_numeric(name_sub_backwards_9_to_2) is False:
             return self.Object_Confirm_IUnKnown, self.__object_name__
 
+        # 作为对象的主文件存在优先级，F-M-P,比如需要F的文件不存在，M才能是主文件
+        # 能跑到这里的文件已经可以认为不是主文件，就是附属文件
         match_str_f = '(?i)^' + file_object_name + r'[F].img$'
         match_str_fm = '(?i)^' + file_object_name + r'[FM].img$'
         name_sub_backwards_1 = file_main_name[-1:]
@@ -100,7 +108,7 @@ class plugins_8050_guoqing_scene_noblock(CFilePlugins_GUOTU_GuoQing):
         """
         super().qa_file_custom(parser)
         metadata_main_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
-        metadata_main_name_with_path = metadata_main_name_with_path[:-1]
+        metadata_main_name_with_path = metadata_main_name_with_path[:-1]  # 去除尾部的F/M/P
         check_file_metadata_bus_exist = False
         ext = self.Transformer_XML
         temp_metadata_bus_file_Y = '{0}Y.xml'.format(metadata_main_name_with_path)

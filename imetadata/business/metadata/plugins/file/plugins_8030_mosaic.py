@@ -27,13 +27,13 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
         file_main_name = self.file_info.__file_main_name__
         file_ext = self.file_info.__file_ext__  # 初始化需要的参数
         file_name_with_full_path = self.file_info.__file_name_with_full_path__
-        file_object_name = file_main_name[:]
-        if file_name_with_full_path.endswith('_21at.xml'):
+        file_object_name = file_main_name[:]  # 主要名称截取
+        if file_name_with_full_path.endswith('_21at.xml'):  # 元数据文件的情况
             if len(file_main_name) > 5:
                 file_object_name = file_main_name[:-5]
             else:
                 return self.Object_Confirm_IUnKnown, self.__object_name__
-        else:
+        else:  # 矢量文件的情况
             xq_list = ['xq.shp', 'xq.shx', 'xq.dbf', 'xq.sbx', 'xq.prj', 'xq.sbn']
             for xq_end in xq_list:
                 if file_name_with_full_path.lower().endswith(xq_end):

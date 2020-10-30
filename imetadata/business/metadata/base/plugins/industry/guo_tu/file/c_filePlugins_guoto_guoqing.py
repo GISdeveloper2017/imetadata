@@ -112,7 +112,7 @@ class CFilePlugins_GUOTU_GuoQing(CFilePlugins_GUOTU):
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
         提取xml格式的业务元数据, 加载到parser的metadata对象中
-        todo 负责人 王学谦 在这里将业务元数据***_21at.xml, 存储到parser.metadata.set_metadata_bus_file中
+        todo 负责人 王学谦 在这里将业务元数据***Y/M/P.xml, 存储到parser.metadata.set_metadata_bus_file中
         :param parser:
         :return:
         """

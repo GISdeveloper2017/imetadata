@@ -21,6 +21,7 @@ class plugins_8041_third_survey_noblock(CFilePlugins_GUOTU_Third_Survey):
                         说明：当星源为多个时，各星源间用“+”连接表示，例GF1+GF2+BJ2	632701ZY3DOM.img
                                                                             632701BJ2+GF1+GJ1+ZY3.img
     元数据文件	    6位行政区划代码+县（旗、县级市）名称.mdb	                    632701玉树市.mdb
+    关于正则表达式     https://baike.baidu.com/item/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/1700215?fr=aladdin
     """
 
     def get_information(self) -> dict:
@@ -49,6 +50,9 @@ class plugins_8041_third_survey_noblock(CFilePlugins_GUOTU_Third_Survey):
         if not CUtils.text_is_numeric(CUtils.any_2_str(file_name_before_six)):
             return self.Object_Confirm_IUnKnown, self.__object_name__  # 前六位必然为数字
 
+        # 正则表达式，(?i)代表大小写不敏感，^代表字符串开头，$代表字符串结尾
+        # \S用于匹配所有非空字符，+代表匹配前面字符的数量为至少一个，即\S+匹配一个或多个非空字符
+        # \d匹配数字，即[0-9]，即\d+匹配一个或多个非空字符
         match_str = '(?i)^'+file_name_before_six+r'\S+dom.img$'
         check_file_main_name_exist = CFile.find_file_or_subpath_of_path(file_path, match_str, CFile.MatchType_Regex)
         if not check_file_main_name_exist:  # 检查主文件存在性
@@ -73,6 +77,7 @@ class plugins_8041_third_survey_noblock(CFilePlugins_GUOTU_Third_Survey):
                     self.__object_confirm__ = self.Object_Confirm_IKnown_Not
                     self.__object_name__ = None
             else:
+                # 运行到此的文件，如果格式为以下，则默认为附属文件
                 affiliated_ext_list = ['mdb', 'shp', 'shx', 'dbf', 'sbx', 'prj', 'sbn']
                 if file_extlower() in affiliated_ext_list:
                     self.__object_confirm__ = self.Object_Confirm_IKnown_Not
@@ -80,6 +85,7 @@ class plugins_8041_third_survey_noblock(CFilePlugins_GUOTU_Third_Survey):
                 else:
                     return self.Object_Confirm_IUnKnown, self.__object_name__
         else:
+            # 运行到此的文件，如果格式为以下，则默认为附属文件
             affiliated_ext_list = ['mdb', 'shp', 'shx', 'dbf', 'sbx', 'prj', 'sbn']
             if file_ext.lower() in affiliated_ext_list:
                 self.__object_confirm__ = self.Object_Confirm_IKnown_Not

@@ -15,6 +15,7 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         数据内容	    文件格式	是否有坐标系	内容样例	说明
         影像文件	    tif/TIF	有	H50E003006AP005P2011A.TIF	融合影像文件
         元数据文件	xml/XML	无	H50E003006AP005P2011M.XML	整体元数据文件
+        关于正则表达式     https://baike.baidu.com/item/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/1700215?fr=aladdin
     """
 
     def get_information(self) -> dict:
@@ -36,7 +37,7 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         file_path = self.file_info.__file_path__
         file_object_name = file_main_name[:]
 
-        if len(file_main_name) >= 21:
+        if len(file_main_name) >= 21:  # 本类文件默认至少为20位
             file_object_name = file_main_name[:20]  # 截取前20位
         elif len(file_main_name) == 20:  # 20位基本为附属文件
             pass
@@ -94,13 +95,13 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         """
         super().qa_file_custom(parser)
         metadata_main_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
-        metadata_main_name_with_path = metadata_main_name_with_path[:-1]
+        metadata_main_name_with_path = metadata_main_name_with_path[:-1]  # 剪切文件最后的a/o
         check_file_metadata_bus_exist = False
         ext = self.Transformer_XML
         temp_metadata_bus_file_Y = '{0}Y.xml'.format(metadata_main_name_with_path)
         temp_metadata_bus_file_M = '{0}M.xml'.format(metadata_main_name_with_path)
-        temp_metadata_bus_file_P = '{0}P.xml'.format(metadata_main_name_with_path)
-        if CFile.file_or_path_exist(temp_metadata_bus_file_Y):
+        temp_metadata_bus_file_P = '{0}P.xml'.format(metadata_main_name_with_path)  # 三种元数据
+        if CFile.file_or_path_exist(temp_metadata_bus_file_Y):  # 有优先级，Y-M-P
             check_file_metadata_bus_exist = True
             self.metadata_bus_transformer_type = ext
             self.metadata_bus_src_filename_with_path = temp_metadata_bus_file_Y

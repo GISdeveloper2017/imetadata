@@ -36,7 +36,7 @@ class CFilePlugins_GUOTU_Third_Survey(CFilePlugins_GUOTU):
         ext = self.Transformer_DOM_MDB  # 后缀名
 
         metadata_main_name_with_path = CFile.join_file(file_path, file_metadata_name)
-
+        # 拼接好元数据文件名称，并检查其是否存在
         temp_metadata_bus_file = '{0}.{1}'.format(metadata_main_name_with_path, ext)
         if CFile.file_or_path_exist(temp_metadata_bus_file):
             check_file_metadata_bus_exist = True
