@@ -61,6 +61,14 @@ application = CSettings(
                         'plugin': ['plugins_8040_third_survey_block', 'plugins_8041_third_survey_noblock'],
                         'keyword': '三调影像'
                     },
+                    {
+                        'plugin': [
+                            'plugins_8050_guoqing_scene_noblock'
+                            , 'plugins_8051_guoqing_scene_block'
+                            , 'plugins_8052_guoqing_frame'
+                        ],
+                        'keyword': '国情影像'
+                    },
                     {'plugin': ['plugins_8060_custom'], 'keyword': '自定义影像'}
                 ]
             },
