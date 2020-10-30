@@ -80,7 +80,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
         metadata_main_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
         check_file_metadata_bus_exist = False
         ext = self.Transformer_XML
-        temp_metadata_bus_file = f'{metadata_main_name_with_path}_21at.xml'
+        temp_metadata_bus_file = '{0}_21at.xml'.format(metadata_main_name_with_path)
         if CFile.file_or_path_exist(temp_metadata_bus_file):
             check_file_metadata_bus_exist = True
             self.metadata_bus_transformer_type = ext
@@ -214,7 +214,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_string,
                 self.Name_Width: 100,
-                self.Name_XPath: "//item[@name='ProductName']",
+                self.Name_XPath: "//ProductName",
                 self.Name_ID: 'ProductName',
                 self.Name_Title: '产品名称',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -224,7 +224,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_date,
-                self.Name_XPath: "//item[@name='ProduceDate']",
+                self.Name_XPath: "//ProduceDate",
                 self.Name_ID: 'ProduceDate',
                 self.Name_Title: '产品日期',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -235,7 +235,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
                 self.Name_Width: 8,
-                self.Name_XPath: "//item[@name='GridCellSize']",
+                self.Name_XPath: "//GridCellSize",
                 self.Name_ID: 'GridCellSize',
                 self.Name_Title: '网格尺寸',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -246,7 +246,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
                 self.Name_NotNull: False,
                 self.Name_DataType: self.value_type_string,
                 self.Name_Width: 500,
-                self.Name_XPath: "//item[@name='Description']",
+                self.Name_XPath: "//Description",
                 self.Name_ID: 'Description',
                 self.Name_Title: '说明',
                 self.Name_Group: self.QA_Group_Data_Integrity,

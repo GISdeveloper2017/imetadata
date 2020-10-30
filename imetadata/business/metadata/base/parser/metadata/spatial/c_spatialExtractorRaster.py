@@ -43,9 +43,7 @@ class CSpatialExtractorRaster(CSpatialExtractor):
             # file_main_name = CFile.file_main_name(file_name_with_full_path)
             # file_path = CFile.file_path(file_name_with_full_path)
 
-            str_metadata_json = self.metadata.metadata_json()
-            json_obj = CJson()
-            json_obj.load_json_text(str_metadata_json)
+            json_obj = self.metadata.metadata_json()
             # json_obj.load_file(file_name_with_full_path)
 
             wkt_info = 'POLYGON((min_x max_y,max_x max_y,max_x min_y,min_x min_y,min_x max_y))'
