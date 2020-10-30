@@ -94,8 +94,10 @@ where dsdscanfilestatus = 2
 
         CLogger().debug('处理的目录为: {0}'.format(ds_subpath))
         try:
-            self.parser_file_or_subpath_of_path(dataset, ds_id, ds_subpath, ds_rule_content,
-                                                check_inbound_subpath_enabled)
+            self.parser_file_or_subpath_of_path(
+                dataset, ds_id, ds_subpath, ds_rule_content,
+                check_inbound_subpath_enabled
+            )
             return CResult.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_subpath))
         except:
             return CResult.merge_result(self.Failure, '目录为[{0}]下的文件和子目录扫描处理出现错误!'.format(ds_subpath))
@@ -130,9 +132,6 @@ where dsdscanfilestatus = 2
                 inbound_subpath = True
                 if check_inbound_subpath:
                     inbound_subpath = self.check_inbound_subpath_ready(file_name_with_full_path)
-                    if inbound_subpath:
-                        # 注册到待入库请单中
-                        self.register_2_inbound_list(ds_storage_id, CFile.file_relation_path(file_name_with_full_path, ds_path))
 
                 if inbound_subpath:
                     path_obj = CDMPathInfo(
@@ -145,6 +144,13 @@ where dsdscanfilestatus = 2
                         self.get_mission_db_id(),
                         ds_rule_content
                     )
+                    if check_inbound_subpath:
+                        # 注册到待入库请单中
+                        self.register_2_inbound_list(
+                            ds_storage_id,
+                            path_obj.__my_id__,
+                            CFile.file_relation_path(file_name_with_full_path, ds_path)
+                        )
 
                     if path_obj.white_black_valid():
                         path_obj.db_check_and_update()
@@ -223,17 +229,22 @@ where dsdscanfilestatus = 2
                 '子目录[{0}]下没有找到入库标识文件[{1}], 表明数据还没有准备好, 暂不入库! '.format(inbound_path, self.FileName_Ready_21AT))
             return False
 
-    def register_2_inbound_list(self, storage_id: str, directory: str):
+    def register_2_inbound_list(self, storage_id: str, directory_id: str, directory: str):
         database = CFactory().give_me_db(self.get_mission_db_id())
         new_batch_no = database.seq_next_value(self.Seq_Type_Date_AutoInc)
         sql_register_2_inbound_list = '''
-        insert into dm2_storage_inbound(dsistorageid, dsidirectory, dsibatchno, dsistatus) 
-        VALUES(:storageid, :directory, :batchno, :status) 
+        insert into dm2_storage_inbound(dsistorageid, dsidirectory, dsibatchno, dsistatus, dsidirectoryid) 
+        VALUES(:storageid, :directory, :batch_no, :status, :directory_id) 
         '''
         database.execute(
             sql_register_2_inbound_list,
-            {'storageid': storage_id, 'directory': directory, 'batchno': new_batch_no,
-             'status': self.ProcStatus_WaitConfirm}
+            {
+                'storageid': storage_id,
+                'directory': directory,
+                'batch_no': new_batch_no,
+                'directory_id': directory_id,
+                'status': self.ProcStatus_WaitConfirm
+            }
         )
 
 

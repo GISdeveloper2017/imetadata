@@ -48,10 +48,13 @@ class CObject:
         return obj
 
     @classmethod
-    def create_module_instance(cls, package_root_name, package_name, obj_id, obj_name, obj_type, quality):
-        package_full_name = '{0}.{1}'.format(package_root_name, package_name)
-        package_obj = importlib.import_module(package_full_name)
-        class_meta = getattr(package_obj, package_name)
-        class_meta_one = class_meta
-        obj = class_meta_one(obj_id, obj_name, obj_type, quality)
-        return obj
+    def create_module_instance(cls, package_root_name, package_name, db_id, obj_id, obj_name, obj_type, quality):
+        try:
+            package_full_name = '{0}.{1}'.format(package_root_name, package_name)
+            package_obj = importlib.import_module(package_full_name)
+            class_meta = getattr(package_obj, package_name)
+            class_meta_one = class_meta
+            obj = class_meta_one(db_id, obj_id, obj_name, obj_type, quality)
+            return obj
+        except:
+            return None
