@@ -70,8 +70,10 @@ where dso_da_status = 2
             for file_name_without_path in modules_file_list:
                 file_main_name = CFile.file_main_name(file_name_without_path)
                 # 判断模块的可访问是否已经被人工审批, 如果人工审批, 则这里不再计算和覆盖
-                module_access = dso_da_json.xpath_one('{0}.{1}'.format(file_main_name, self.Name_Audit),
-                                                      self.Name_System)
+                module_access = dso_da_json.xpath_one(
+                    '{0}.{1}'.format(file_main_name, self.Name_Audit),
+                    self.Name_System
+                )
                 if CUtils.equal_ignore_case(module_access, self.Name_User):
                     continue
 
@@ -79,6 +81,7 @@ where dso_da_status = 2
                     module_obj = CObject.create_module_instance(
                         CSys.get_metadata_data_access_modules_root_name(),
                         file_main_name,
+                        self.get_mission_db_id(),
                         dso_id,
                         dso_object_name,
                         dso_data_type,

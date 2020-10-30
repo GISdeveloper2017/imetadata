@@ -44,7 +44,8 @@ select
   , dm2_storage_directory.dsdid as query_ib_dir_id 
 from dm2_storage_inbound 
   left join dm2_storage on dm2_storage.dstid = dm2_storage_inbound.dsistorageid 
-  left join dm2_storage_directory on dm2_storage_directory.dsddirectory = dm2_storage_inbound.dsidirectory
+  left join dm2_storage_directory 
+    on dm2_storage_directory.dsdid = dm2_storage_inbound.dsidirectoryid 
 where dm2_storage_inbound.dsiprocid = '{0}'
             '''.format(self.SYSTEM_NAME_MISSION_ID)
 

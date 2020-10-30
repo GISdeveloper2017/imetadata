@@ -728,3 +728,41 @@ alter table dm2_storage_object add column dso_geo_bb_native text;
 comment on column dm2_storage_object.dso_geo_bb_native is '对象-原始-外包框';
 comment on column dm2_storage_object.dso_geo_native is '对象-原始-外边框';
 comment on column dm2_storage_object.dso_center_native is '对象-原始-中心点';
+
+/*
+    2020-10-29
+    . 考虑到和第三方系统同步数据的时机, 决定从inbound表进行触发, 字段前缀为dsi_na_(notify_app)
+    . 由于入库后, 目录名称会发生变化, 这里增加记录原待入库目录的标识, 便于数据同步调度查询入库后的批次数据
+*/
+alter table dm2_storage_inbound add column dsi_na_status int default 1;
+alter table dm2_storage_inbound add column dsi_na_proc_id varchar(100);
+alter table dm2_storage_inbound add column dsi_na_proc_memo text;
+comment on column dm2_storage_inbound.dsi_na_status is '入库结束-通知应用-状态';
+comment on column dm2_storage_inbound.dsi_na_proc_id is '入库结束-通知应用-并行';
+comment on column dm2_storage_inbound.dsi_na_proc_memo is '入库结束-通知应用-备注';
+
+alter table dm2_storage_inbound add column dsiDirectoryId varchar(100);
+comment on column dm2_storage_inbound.dsiDirectoryId is '入库目录标识';
+
+/*
+    2020-10-30
+    . 为核心数据表, 增加部分业务字段
+        . 用户信息
+    . 考虑到每一个对象要同步到第三方系统, 增加数据对象与第三方系统的同步记录表
+*/
+
+alter table dm2_storage add column dstUserId varchar(100);
+comment on column dm2_storage.dstUserId is '数管-存储-用户';
+
+alter table dm2_storage_directory add column dsdUserId varchar(100);
+comment on column dm2_storage_directory.dsdUserId is '数管-存储-目录-用户';
+
+alter table dm2_storage_file add column dsfUserId varchar(100);
+comment on column dm2_storage_file.dsfUserId is '数管-存储-文件-用户';
+
+alter table dm2_storage_inbound add column dsiUserId varchar(100);
+comment on column dm2_storage_inbound.dsiUserId is '数管-存储-入库-用户';
+
+
+
+

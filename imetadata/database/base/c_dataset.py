@@ -10,18 +10,21 @@ class CDataSet:
     def __init__(self, data=None):
         self.__data__ = data
 
-    def __value_by_index__(self, row: int, index: int):
+    def __value_by_index(self, row: int, index: int):
         return self.__data__[row][index]
 
-    def __value_by_name__(self, row: int, name: str):
+    def __value_by_name(self, row: int, name: str):
         return self.__data__[row][name]
+
+    def record(self, row: int) -> dict:
+        return self.__data__[row]
 
     def value_by_index(self, row: int, index: int, default_value):
         if self.__data__ is None:
             return default_value
 
         try:
-            value = self.__value_by_index__(row, index)
+            value = self.__value_by_index(row, index)
             if value is None:
                 return default_value
             else:
@@ -34,7 +37,7 @@ class CDataSet:
             return default_value
 
         try:
-            value = self.__value_by_name__(row, name.lower())
+            value = self.__value_by_name(row, name.lower())
             if value is None:
                 return default_value
             else:
@@ -70,7 +73,7 @@ class CDataSet:
         if self.__data__ is None:
             return
 
-        value = self.__value_by_name__(row, name.lower())
+        value = self.__value_by_name(row, name.lower())
         if value is None:
             return
 
