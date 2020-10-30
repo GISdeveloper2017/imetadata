@@ -112,20 +112,20 @@ class plugins_8050_guoqing_scene_noblock(CFilePlugins_GUOTU_GuoQing):
         check_file_metadata_bus_exist = False
         ext = self.Transformer_XML
         temp_metadata_bus_file_Y = '{0}Y.xml'.format(metadata_main_name_with_path)
-        temp_metadata_bus_file_M = '{0}M.xml'.format(metadata_main_name_with_path)
         temp_metadata_bus_file_P = '{0}P.xml'.format(metadata_main_name_with_path)
+        temp_metadata_bus_file_M = '{0}M.xml'.format(metadata_main_name_with_path)
         if CFile.file_or_path_exist(temp_metadata_bus_file_Y):
             check_file_metadata_bus_exist = True
             self.metadata_bus_transformer_type = ext
             self.metadata_bus_src_filename_with_path = temp_metadata_bus_file_Y
-        elif CFile.file_or_path_exist(temp_metadata_bus_file_M):
-            check_file_metadata_bus_exist = True
-            self.metadata_bus_transformer_type = ext
-            self.metadata_bus_src_filename_with_path = temp_metadata_bus_file_M
         elif CFile.file_or_path_exist(temp_metadata_bus_file_P):
             check_file_metadata_bus_exist = True
             self.metadata_bus_transformer_type = ext
             self.metadata_bus_src_filename_with_path = temp_metadata_bus_file_P
+        elif CFile.file_or_path_exist(temp_metadata_bus_file_M):
+            check_file_metadata_bus_exist = True
+            self.metadata_bus_transformer_type = ext
+            self.metadata_bus_src_filename_with_path = temp_metadata_bus_file_M
 
         if not check_file_metadata_bus_exist:
             parser.metadata.quality.append_total_quality(
