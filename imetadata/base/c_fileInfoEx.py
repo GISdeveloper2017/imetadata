@@ -35,7 +35,8 @@ class CFileInfoEx(CFileInfo):
 
         self.__file_name_with_rel_path = CFile.file_relation_path(
             self.file_name_with_full_path,
-            self.__root_path)
+            self.__root_path
+        )
         self.__file_path_with_rel_path = CFile.file_relation_path(self.file_path, self.__root_path)
 
         self.__rule_content = rule_content
@@ -47,7 +48,7 @@ class CFileInfoEx(CFileInfo):
             xml_obj = CXml()
             try:
                 xml_obj.load_xml(self.__rule_content)
-                return CXml.get_element_text(xml_obj.xpath_one('/root/ProductType'))
+                return CXml.get_element_text(xml_obj.xpath_one(self.Path_21AT_MD_Content_ProductType))
             except:
                 return default_value
 

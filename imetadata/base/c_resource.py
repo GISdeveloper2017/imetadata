@@ -299,3 +299,5 @@ class CResource:
     DataAccess_Wait = 'wait'
     DataAccess_Forbid = 'forbid'
 
+    Path_21AT_MD_Content_ProductType = '/root/ProductType'
+    Path_21AT_MD_Content_ProductName = '/root/DSName'
