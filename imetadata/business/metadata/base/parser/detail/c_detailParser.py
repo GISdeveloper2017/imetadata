@@ -27,7 +27,7 @@ class CDetailParser(CParser):
 
         sql_detail_delete = '''
             delete from dm2_storage_obj_detail where dodobjectid = '{0}'
-        '''.format(self.__object_id__)
+        '''.format(self.object_id)
 
         # sql_detail_insert = '''
         # INSERT INTO dm2_storage_obj_detail(
@@ -64,14 +64,14 @@ class CDetailParser(CParser):
             params = dict()
             file_relation_name = CFile.file_relation_path(item_file_name_with_path, self.file_info.__root_path__)
             if CUtils.equal_ignore_case(query_file_relation_name, file_relation_name):
-                params['dodid'] = self.__object_id__
+                params['dodid'] = self.object_id
             else:
                 params['dodid'] = CUtils.one_id()
             # 文件类型
             params['dodfiletype'] = self.FileType_File
             if CFile.is_dir(item_file_name_with_path):
                 params['dodfiletype'] = self.FileType_Dir
-            params['dodobjectid'] = self.__object_id__
+            params['dodobjectid'] = self.object_id
             params['dodfilename'] = CFile.file_relation_path(
                 item_file_name_with_path,
                 self.file_info.__file_path__)

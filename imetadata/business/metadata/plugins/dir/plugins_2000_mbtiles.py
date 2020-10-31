@@ -26,17 +26,17 @@ class plugins_2000_mbtiles(CFilePlugins):
         return information
 
     def classified(self):
-        self.__object_confirm__ = self.Object_Confirm_IUnKnown
-        self.__object_name__ = None
+        self._object_confirm = self.Object_Confirm_IUnKnown
+        self._object_name = None
 
         current_path = self.file_info.__file_name_with_full_path__
         list_mb_tiles_file = CFile.file_or_subpath_of_path(current_path, '*_0.mbtiles')
         list_mb_tiles_metadata_file = CFile.file_or_subpath_of_path(current_path, '*.xml')
         if (len(list_mb_tiles_file) > 0) and (len(list_mb_tiles_metadata_file) > 0):
-            self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = self.file_info.__file_main_name__
+            self._object_confirm = self.Object_Confirm_IKnown
+            self._object_name = self.file_info.__file_main_name__
             self.__metadata_xml_file_name__ = list_mb_tiles_metadata_file[0]
-        return self.__object_confirm__, self.__object_name__
+        return self._object_confirm, self._object_name
 
     def init_metadata(self, parser: CMetaDataParser):
         """

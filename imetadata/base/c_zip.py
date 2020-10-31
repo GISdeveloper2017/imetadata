@@ -13,36 +13,36 @@ class CZip:
     """
     压缩包处理
     """
-    __file_name__: None
-    __zip_obj__: CZipBase = None
+    __file_name: None
+    __zip_obj: CZipBase = None
 
     def __init__(self, file_name_with_path):
-        self.__file_name__ = file_name_with_path
+        self.__file_name = file_name_with_path
 
     def open(self):
-        if CZip_ZipFile.i_can_read(self.__file_name__):
-            self.__zip_obj__ = CZip_ZipFile(self.__file_name__)
-            self.__zip_obj__.open()
-        elif CZip_TarFile.i_can_read(self.__file_name__):
-            self.__zip_obj__ = CZip_TarFile(self.__file_name__)
-            self.__zip_obj__.open()
+        if CZip_ZipFile.i_can_read(self.__file_name):
+            self.__zip_obj = CZip_ZipFile(self.__file_name)
+            self.__zip_obj.open()
+        elif CZip_TarFile.i_can_read(self.__file_name):
+            self.__zip_obj = CZip_TarFile(self.__file_name)
+            self.__zip_obj.open()
         else:
-            raise ZipFileCanNotOpenException(self.__file_name__)
+            raise ZipFileCanNotOpenException(self.__file_name)
 
     def file_names(self):
-        return self.__zip_obj__.file_names()
+        return self.__zip_obj.file_names()
 
     def extract_file(self, file_name, target_path):
         CFile.check_and_create_directory(target_path)
-        self.__zip_obj__.extract_file(file_name, target_path)
+        self.__zip_obj.extract_file(file_name, target_path)
 
     def extract_all(self, target_path):
         CFile.check_and_create_directory_itself(target_path)
-        self.__zip_obj__.extract_all(target_path)
+        self.__zip_obj.extract_all(target_path)
 
     def close(self):
-        if self.__zip_obj__ is not None:
-            self.__zip_obj__.close()
+        if self.__zip_obj is not None:
+            self.__zip_obj.close()
 
 
 if __name__ == '__main__':

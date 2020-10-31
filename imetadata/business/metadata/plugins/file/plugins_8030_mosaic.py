@@ -32,7 +32,7 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
             if len(file_main_name) > 5:
                 file_object_name = file_main_name[:-5]
             else:
-                return self.Object_Confirm_IUnKnown, self.__object_name__
+                return self.Object_Confirm_IUnKnown, self._object_name
         else:  # 矢量文件的情况
             xq_list = ['xq.shp', 'xq.shx', 'xq.dbf', 'xq.sbx', 'xq.prj', 'xq.sbn']
             for xq_end in xq_list:
@@ -41,28 +41,28 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
                         file_object_name = file_main_name[:-2]
                         break
                     else:
-                        return self.Object_Confirm_IUnKnown, self.__object_name__
+                        return self.Object_Confirm_IUnKnown, self._object_name
         file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_object_name)
 
         check_file_main_name_exist = \
             CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif)) or \
             CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Img))
         if not check_file_main_name_exist:  # 检查主文件存在性
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         check_file_shp_exist = CFile.file_or_path_exist('{0}xq.shp'.format(file_main_name_with_path))
         if not check_file_shp_exist:  # 检查矢量文件存在性
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         # 检查后缀名
         if CUtils.equal_ignore_case(file_ext, self.Name_Tif) or CUtils.equal_ignore_case(file_ext, self.Name_Img):
-            self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = file_main_name
+            self._object_confirm = self.Object_Confirm_IKnown
+            self._object_name = file_main_name
         else:
-            self.__object_confirm__ = self.Object_Confirm_IKnown_Not
-            self.__object_name__ = None
+            self._object_confirm = self.Object_Confirm_IKnown_Not
+            self._object_name = None
 
-        return self.__object_confirm__, self.__object_name__
+        return self._object_confirm, self._object_name
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """

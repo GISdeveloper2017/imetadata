@@ -76,8 +76,8 @@ class CSatPlugins(CPlugins):
 
     def classified(self):
         self.__object_status__ = self.Sat_Object_Status_Unknown
-        self.__object_name__ = None
-        self.__object_confirm__ = self.Object_Confirm_IUnKnown
+        self._object_name = None
+        self._object_confirm = self.Object_Confirm_IUnKnown
 
         if self.file_info.__file_type__ == self.FileType_File:
             if self.special_zip_file_ext_list().count(self.file_info.__file_ext__.lower()) > 0:
@@ -86,26 +86,26 @@ class CSatPlugins(CPlugins):
                 if (self.classified_with_character(self.file_info.__file_main_name__, sat_classified_character,
                                                    sat_classified_character_type)):
                     self.__object_status__ = self.Sat_Object_Status_Zip
-                    self.__object_confirm__ = self.Object_Confirm_IKnown
-                    self.__object_name__ = self.file_info.__file_main_name__
+                    self._object_confirm = self.Object_Confirm_IKnown
+                    self._object_name = self.file_info.__file_main_name__
             else:
                 sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
                     self.Sat_Object_Status_File)
                 if (self.classified_with_character(self.file_info.__file_name_without_path__, sat_classified_character,
                                                    sat_classified_character_type)):
                     self.__object_status__ = self.Sat_Object_Status_File
-                    self.__object_confirm__ = self.Object_Confirm_IKnown
-                    self.__object_name__ = self.get_classified_object_name_of_sat(self.Sat_Object_Status_File)
+                    self._object_confirm = self.Object_Confirm_IKnown
+                    self._object_name = self.get_classified_object_name_of_sat(self.Sat_Object_Status_File)
         elif self.file_info.__file_type__ == self.FileType_Dir:
             sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
                 self.Sat_Object_Status_Dir)
             if (self.classified_with_character(self.file_info.__file_name_without_path__, sat_classified_character,
                                                sat_classified_character_type)):
                 self.__object_status__ = self.Sat_Object_Status_Dir
-                self.__object_confirm__ = self.Object_Confirm_IKnown
-                self.__object_name__ = self.file_info.__file_name_without_path__
+                self._object_confirm = self.Object_Confirm_IKnown
+                self._object_name = self.file_info.__file_name_without_path__
 
-        return self.__object_confirm__, self.__object_name__
+        return self._object_confirm, self._object_name
 
     def classified_with_character(self, text, sat_classified_character, sat_classified_character_type) -> bool:
         """

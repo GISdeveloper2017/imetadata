@@ -48,7 +48,7 @@ class plugins_8050_guoqing_scene_noblock(CFilePlugins_GUOTU_GuoQing):
         # [0123]一般指匹配一个括号中任意字符，即匹配0到3
         # \S用于匹配所有非空字符，+代表匹配前面字符的数量为至少一个，即\S+匹配一个或多个非空字符
         if len(file_main_name) < 13:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
         # 下面正则：开头两个字母，字母后任意数量字符,而后匹配8位时间，4位任意数字（年份），[01]\d为月份，[0123]\d日
         if CUtils.text_match_re(file_main_name, r'(?i)^[a-z]{2}\S+'
                                                 r'\d{4}[01]\d[0123]\d[a-z]$'):  # 结尾为单个字母的情况
@@ -65,14 +65,14 @@ class plugins_8050_guoqing_scene_noblock(CFilePlugins_GUOTU_GuoQing):
         match_str = '(?i)^' + file_object_name + r'[FMP].img$'  # 匹配主文件的规则，即对象名+F/M/P
         check_file_main_name_exist = CFile.find_file_or_subpath_of_path(file_path, match_str, CFile.MatchType_Regex)
         if not check_file_main_name_exist:  # 检查主文件存在性
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         """文件名第1-2位为字母，最后1位是字母在F/P/M中，倒数2-9位是数字"""
         name_sub_1_to_2 = file_object_name[0:2]
         name_sub_backwards_9_to_2 = file_object_name[-8:]
         if CUtils.text_is_alpha(name_sub_1_to_2) is False \
                 or CUtils.text_is_numeric(name_sub_backwards_9_to_2) is False:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         # 作为对象的主文件存在优先级，F-M-P,比如需要F的文件不存在，M才能是主文件
         # 能跑到这里的文件已经可以认为不是主文件，就是附属文件
@@ -81,23 +81,23 @@ class plugins_8050_guoqing_scene_noblock(CFilePlugins_GUOTU_GuoQing):
         name_sub_backwards_1 = file_main_name[-1:]
         if CUtils.equal_ignore_case(name_sub_backwards_1.lower(), 'f') \
                 and CUtils.equal_ignore_case(file_ext, 'img'):
-            self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = file_main_name
+            self._object_confirm = self.Object_Confirm_IKnown
+            self._object_name = file_main_name
         elif CUtils.equal_ignore_case(name_sub_backwards_1.lower(), 'm') \
                 and CUtils.equal_ignore_case(file_ext, 'img') \
                 and not CFile.find_file_or_subpath_of_path(file_path, match_str_f, CFile.MatchType_Regex):
-            self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = file_main_name
+            self._object_confirm = self.Object_Confirm_IKnown
+            self._object_name = file_main_name
         elif CUtils.equal_ignore_case(name_sub_backwards_1.lower(), 'p') \
                 and CUtils.equal_ignore_case(file_ext, 'img') \
                 and not CFile.find_file_or_subpath_of_path(file_path, match_str_fm, CFile.MatchType_Regex):
-            self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = file_main_name
+            self._object_confirm = self.Object_Confirm_IKnown
+            self._object_name = file_main_name
         else:
-            self.__object_confirm__ = self.Object_Confirm_IKnown_Not
-            self.__object_name__ = None
+            self._object_confirm = self.Object_Confirm_IKnown_Not
+            self._object_name = None
 
-        return self.__object_confirm__, self.__object_name__
+        return self._object_confirm, self._object_name
 
     def qa_file_custom(self, parser: CMetaDataParser):
         """

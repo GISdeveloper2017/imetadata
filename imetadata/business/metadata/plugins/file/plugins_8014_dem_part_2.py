@@ -28,27 +28,27 @@ class plugins_8014_dem_part_2(CFilePlugins_GUOTU_DEM):
         check_file_main_name_exist_tif = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
         check_file_main_name_exist_bil = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Bil))
         if (not check_file_main_name_exist_tif) and (not check_file_main_name_exist_bil):
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         #判断是否有‘-’，并且为一个
         if not self.file_info.__file_main_name__.count('-') == 1:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         char_1 = self.file_info.__file_main_name__.split('-')[0]
         char_2 = self.file_info.__file_main_name__.split('-')[1]
         # char_1,char_2是否小数
         if CUtils.text_is_decimal(char_1) is False \
                 or CUtils.text_is_decimal(char_2) is False:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         if CUtils.equal_ignore_case(self.file_info.__file_ext__, self.Name_Tif) \
                 or CUtils.equal_ignore_case(self.file_info.__file_ext__, self.Name_Bil):
-            self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = self.file_info.__file_main_name__
+            self._object_confirm = self.Object_Confirm_IKnown
+            self._object_name = self.file_info.__file_main_name__
         else:
-            self.__object_confirm__ = self.Object_Confirm_IKnown_Not
-            self.__object_name__ = None
-        return self.__object_confirm__, self.__object_name__
+            self._object_confirm = self.Object_Confirm_IKnown_Not
+            self._object_name = None
+        return self._object_confirm, self._object_name
 
 if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,

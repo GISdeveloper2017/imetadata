@@ -18,7 +18,7 @@ class CFile:
     MatchType_Common = 1
     MatchType_Regex = 2
 
-    __special_file_ext_list__ = ['tar.gz']
+    __special_file_ext_list = ['tar.gz']
 
     def __init__(self):
         pass
@@ -47,7 +47,7 @@ class CFile:
     def file_main_name(cls, file_name_with_path: str):
         filename_without_path = cls.file_name(file_name_with_path)
 
-        for ext_white in cls.__special_file_ext_list__:
+        for ext_white in cls.__special_file_ext_list:
             if filename_without_path.lower().endswith(ext_white.lower()):
                 return filename_without_path[:len(filename_without_path) - len(ext_white) - 1]
         else:

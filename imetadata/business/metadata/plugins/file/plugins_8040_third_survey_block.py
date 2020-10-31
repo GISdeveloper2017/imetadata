@@ -44,10 +44,10 @@ class plugins_8040_third_survey_block(CFilePlugins_GUOTU_Third_Survey):
         if len(file_main_name) > 6:
             file_name_before_six = file_main_name[0:6]  # 截取前六位行政区划代码
         else:
-            return self.Object_Confirm_IUnKnown, self.__object_name__  # 主名必然大于6
+            return self.Object_Confirm_IUnKnown, self._object_name  # 主名必然大于6
 
         if not CUtils.text_is_numeric(CUtils.any_2_str(file_name_before_six)):
-            return self.Object_Confirm_IUnKnown, self.__object_name__  # 前六位必然为数字
+            return self.Object_Confirm_IUnKnown, self._object_name  # 前六位必然为数字
 
         # 正则表达式，(?i)代表大小写不敏感，^代表字符串开头，$代表字符串结尾
         # \S用于匹配所有非空字符，+代表匹配前面字符的数量为至少一个，即\S+匹配一个或多个非空字符
@@ -55,14 +55,14 @@ class plugins_8040_third_survey_block(CFilePlugins_GUOTU_Third_Survey):
         match_str = '(?i)^'+file_name_before_six+r'\S+dom\d+.img$'
         check_file_main_name_exist = CFile.find_file_or_subpath_of_path(file_path, match_str, CFile.MatchType_Regex)
         if not check_file_main_name_exist:  # 检查主文件存在性
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         # file_name_before_six_name = ''
         # file_metadata_name = '{0}{1}'.format(file_name_before_six, file_name_before_six_name)
         # file_metadata_name_with_path = CFile.join_file(file_path, file_metadata_name)
         # check_file_mdb_exist = CFile.file_or_path_exist('{0}.mdb'.format(file_metadata_name_with_path))
         # if not check_file_mdb_exist:  # 检查mdb文件存在性
-        #     return self.Object_Confirm_IUnKnown, self.__object_name__
+        #     return self.Object_Confirm_IUnKnown, self._object_name
         if len(file_main_name) >= 14:
             name_sub_7_to_8 = file_main_name[6:8]
             name_sub_backwards_6_to_3 = file_main_name[-5:-2]
@@ -72,29 +72,29 @@ class plugins_8040_third_survey_block(CFilePlugins_GUOTU_Third_Survey):
                                                  'dom') \
                     and CUtils.text_is_numeric(CUtils.any_2_str(name_sub_backwards_2_to_1)):
                 if CUtils.equal_ignore_case(file_ext, 'img'):
-                    self.__object_confirm__ = self.Object_Confirm_IKnown
-                    self.__object_name__ = file_main_name
+                    self._object_confirm = self.Object_Confirm_IKnown
+                    self._object_name = file_main_name
                 else:
-                    self.__object_confirm__ = self.Object_Confirm_IKnown_Not
-                    self.__object_name__ = None
+                    self._object_confirm = self.Object_Confirm_IKnown_Not
+                    self._object_name = None
             else:
                 # 运行到此的文件，如果格式为以下，则默认为附属文件
                 affiliated_ext_list = ['mdb', 'shp', 'shx', 'dbf', 'sbx', 'prj', 'sbn']
                 if file_ext.lower() in affiliated_ext_list:
-                    self.__object_confirm__ = self.Object_Confirm_IKnown_Not
-                    self.__object_name__ = None
+                    self._object_confirm = self.Object_Confirm_IKnown_Not
+                    self._object_name = None
                 else:
-                    return self.Object_Confirm_IUnKnown, self.__object_name__
+                    return self.Object_Confirm_IUnKnown, self._object_name
         else:
             # 运行到此的文件，如果格式为以下，则默认为附属文件
             affiliated_ext_list = ['mdb', 'shp', 'shx', 'dbf', 'sbx', 'prj', 'sbn']
             if file_ext.lower() in affiliated_ext_list:
-                self.__object_confirm__ = self.Object_Confirm_IKnown_Not
-                self.__object_name__ = None
+                self._object_confirm = self.Object_Confirm_IKnown_Not
+                self._object_name = None
             else:
-                return self.Object_Confirm_IUnKnown, self.__object_name__
+                return self.Object_Confirm_IUnKnown, self._object_name
 
-        return self.__object_confirm__, self.__object_name__
+        return self._object_confirm, self._object_name
 
 
 if __name__ == '__main__':

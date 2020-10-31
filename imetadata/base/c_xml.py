@@ -31,8 +31,8 @@ class CXml:
     Encoding_UTF8 = 'UTF-8'
     Encoding_GBK = 'GB2312'
 
-    __xml_tree__ = None
-    __xml_root_node__ = None
+    __xml_tree = None
+    __xml_root_node = None
 
     def __init__(self):
         pass
@@ -46,8 +46,8 @@ class CXml:
         """
         # parser = etree.XMLParser(encoding='utf-8', strip_cdata=False)
         # self.__xml_tree__ = etree.parse(filename, parser)
-        self.__xml_tree__ = etree.ElementTree(file=filename)
-        self.__xml_root_node__ = self.__xml_tree__.getroot()
+        self.__xml_tree = etree.ElementTree(file=filename)
+        self.__xml_root_node = self.__xml_tree.getroot()
 
     def load_xml(self, xml_content: str):
         """
@@ -57,20 +57,20 @@ class CXml:
         :return:
         """
         if not CUtils.equal_ignore_case(CUtils.any_2_str(xml_content), ''):
-            parser = etree.XMLParser(remove_blank_text=True)
-            self.__xml_root_node__ = etree.XML(xml_content.strip(), parser)
-            self.__xml_tree__ = etree.ElementTree(self.__xml_root_node__)
+            parser = etree.XMLParser(remove_blank_text=True, strip_cdata=False)
+            self.__xml_root_node = etree.XML(xml_content.strip(), parser)
+            self.__xml_tree = etree.ElementTree(self.__xml_root_node)
 
-    def new_xml(self, root_element_name) -> etree:
+    def new_xml(self, root_element_name) -> etree.Element:
         """
         新建一个xml对象, 必须给定根节点名称
 
         :param root_element_name:
         :return:
         """
-        self.__xml_root_node__ = etree.Element(root_element_name)
-        self.__xml_tree__ = etree.ElementTree(self.__xml_root_node__)
-        return self.__xml_root_node__
+        self.__xml_root_node = etree.Element(root_element_name)
+        self.__xml_tree = etree.ElementTree(self.__xml_root_node)
+        return self.__xml_root_node
 
     def save_file(self, filename, encoding=Encoding_UTF8):
         """
@@ -80,15 +80,15 @@ class CXml:
         :return:
         """
         CFile.check_and_create_directory(filename)
-        self.__xml_tree__ = etree.ElementTree(self.__xml_root_node__)
-        self.__xml_tree__.write(filename, encoding=encoding, xml_declaration=True)
+        self.__xml_tree = etree.ElementTree(self.__xml_root_node)
+        self.__xml_tree.write(filename, encoding=encoding, xml_declaration=True)
 
     def to_xml(self) -> str:
         """
         通过给定的xml内容, 对xml对象进行初始化
         :return:
         """
-        return etree.tostring(self.__xml_tree__, xml_declaration=False, pretty_print=False, encoding="utf-8").decode(
+        return etree.tostring(self.__xml_tree, xml_declaration=False, pretty_print=False, encoding="utf-8").decode(
             'utf-8')
 
     def xpath_one(self, query) -> etree:
@@ -109,10 +109,10 @@ class CXml:
         :param query:
         :return:
         """
-        if self.__xml_tree__ is None:
+        if self.__xml_tree is None:
             return []
         else:
-            return self.__xml_tree__.xpath(query)
+            return self.__xml_tree.xpath(query)
 
     @classmethod
     def node_xpath_one(cls, xml_node, query) -> etree:
@@ -263,20 +263,42 @@ class CXml:
         else:
             return bytes.decode(etree.tostring(element, xml_declaration=False))
 
-    @classmethod
-    def get_element_root(cls, element):
+    def root_element(self) -> etree.Element:
         """
         获取节点的根节点
         :param element:
         :return:
         """
+        if self.__xml_root_node is None:
+            self.__xml_root_node = self.__xml_tree.getroot()
+        return self.__xml_root_node
+
+    def tree(self) -> etree.ElementTree:
+        """
+        获取节点的根节点
+        :param element:
+        :return:
+        """
+        return self.__xml_tree
+
+    @classmethod
+    def get_element_root(cls, element: etree.Element) -> etree.Element:
+        """
+        获取节点的根节点
+        :param element:
+        :return:
+        """
+        return cls.get_tree_root(cls.get_element_tree(element))
+
+    @classmethod
+    def get_element_tree(cls, element: etree.Element) -> etree.ElementTree:
         if element is None:
             return None
         else:
-            return element.getparent()
+            return element.getroottree()
 
     @classmethod
-    def get_element_name(cls, element) -> etree:
+    def get_element_name(cls, element) -> str:
         """
         获取节点的名称
         :param element:
@@ -300,19 +322,7 @@ class CXml:
             return isinstance(element, etree._Comment)
 
     @classmethod
-    def get_tree(cls, element):
-        """
-        获取节点所在的树对象
-        :param element:
-        :return:
-        """
-        if element is None:
-            return None
-        else:
-            return etree.ElementTree(element)
-
-    @classmethod
-    def get_tree_root(cls, tree) -> etree:
+    def get_tree_root(cls, tree: etree.ElementTree) -> etree.Element:
         """
         获取树对象的根节点
         :param tree:
@@ -378,3 +388,16 @@ class CXml:
             return xml_obj.xpath_one(query)
         except:
             return None
+
+
+if __name__ == '__main__':
+    xml_content = '''<root name="hello world"><parent><![CDATA[this is root.]]><grandson>hello</grandson></parent></root>'''
+    xml = CXml()
+    xml.load_xml(xml_content)
+    root = xml.root_element()
+    print(CXml.get_element_xml(root))
+    grandson_list = CXml.node_xpath(root, './parent/*')
+    print(len(grandson_list))
+    for grandson in grandson_list:
+        print(type(grandson))
+        print(CXml.get_element_xml(grandson))

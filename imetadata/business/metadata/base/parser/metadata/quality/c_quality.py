@@ -39,8 +39,7 @@ class CQuality(CResource):
 
     def __init__(self):
         self.__xml_obj = CXml()
-        self.__xml_obj.new_xml(self.Name_Root)
-        self.__xml_root_node = self.__xml_obj.__xml_root_node__
+        self.__xml_root_node = self.__xml_obj.new_xml(self.Name_Root)
 
         self.__node_total = CXml.create_element(self.__xml_root_node, self.Name_Total)
 

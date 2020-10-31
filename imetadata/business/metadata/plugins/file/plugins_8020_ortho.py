@@ -37,17 +37,17 @@ class plugins_8020_ortho(CFilePlugins_GUOTU_21AT):
             CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Img))
 
         if not check_file_main_name_exist:  # 检查主文件存在性
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         # 检查后缀名
         if CUtils.equal_ignore_case(file_ext, self.Name_Tif) or CUtils.equal_ignore_case(file_ext, self.Name_Img):
-            self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = file_main_name
+            self._object_confirm = self.Object_Confirm_IKnown
+            self._object_name = file_main_name
         else:
-            self.__object_confirm__ = self.Object_Confirm_IKnown_Not
-            self.__object_name__ = None
+            self._object_confirm = self.Object_Confirm_IKnown_Not
+            self._object_name = None
 
-        return self.__object_confirm__, self.__object_name__
+        return self._object_confirm, self._object_name
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """

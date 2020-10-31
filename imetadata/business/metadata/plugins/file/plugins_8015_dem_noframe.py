@@ -36,16 +36,16 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
         check_file_main_name_exist_tif = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
         check_file_main_name_exist_img = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Img))
         if (not check_file_main_name_exist_tif) and (not check_file_main_name_exist_img):
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         if CUtils.equal_ignore_case(self.file_info.__file_ext__, self.Name_Tif)\
                 or CUtils.equal_ignore_case(self.file_info.__file_ext__, self.Name_Img):
-            self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = self.file_info.__file_main_name__
+            self._object_confirm = self.Object_Confirm_IKnown
+            self._object_name = self.file_info.__file_main_name__
         else:
-            self.__object_confirm__ = self.Object_Confirm_IKnown_Not
-            self.__object_name__ = None
-        return self.__object_confirm__, self.__object_name__
+            self._object_confirm = self.Object_Confirm_IKnown_Not
+            self._object_name = None
+        return self._object_confirm, self._object_name
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """

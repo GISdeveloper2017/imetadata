@@ -10,7 +10,7 @@ from imetadata.base.c_xml import CXml
 
 class CFileInfoEx(CFileInfo):
     # 入库规则
-    __rule_content__: str
+    __rule_content: str
 
     __file_name_with_rel_path__: str
     __file_path_with_rel_path__: str
@@ -25,19 +25,19 @@ class CFileInfoEx(CFileInfo):
                                                                     self.__root_path__)
         self.__file_path_with_rel_path__ = CFile.file_relation_path(self.__file_path__, self.__root_path__)
 
-        self.__rule_content__ = rule_content
+        self.__rule_content = rule_content
 
     def rule_id(self, default_value):
-        if self.__rule_content__ == '':
+        if self.__rule_content == '':
             return default_value
         else:
             xml_obj = CXml()
             try:
-                xml_obj.load_xml(self.__rule_content__)
+                xml_obj.load_xml(self.__rule_content)
                 return CXml.get_element_text(xml_obj.xpath_one('/root/ProductType'))
             except:
                 return default_value
 
     @property
     def rule_content(self):
-        return self.__rule_content__
+        return self.__rule_content

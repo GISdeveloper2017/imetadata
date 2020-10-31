@@ -10,27 +10,27 @@ from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFile
 
 
 class CParser(CResource):
-    __object_id__ = None
-    __object_name__ = None
-    __file_info__: CDMFilePathInfoEx = None
+    __object_id = None
+    _object_name = None
+    __file_info: CDMFilePathInfoEx = None
 
     def __init__(self, object_id: str, object_name: str, file_info: CDMFilePathInfoEx):
-        self.__object_id__ = object_id
-        self.__file_info__ = file_info
-        self.__object_name__ = object_name
+        self.__object_id = object_id
+        self.__file_info = file_info
+        self._object_name = object_name
         self.custom_init()
 
     @property
     def object_id(self):
-        return self.__object_id__
+        return self.__object_id
 
     @property
     def object_name(self):
-        return self.__object_name__
+        return self._object_name
 
     @property
     def file_info(self):
-        return self.__file_info__
+        return self.__file_info
 
     @abstractmethod
     def process(self) -> str:

@@ -52,8 +52,8 @@ class CFilePlugins(CPlugins):
         设置默认的识别出的对象名称
         :return:
         """
-        self.__object_name__ = self.file_info.__file_main_name__
-        return self.__object_name__
+        self._object_name = self.file_info.__file_main_name__
+        return self._object_name
 
     def classified_by_character_common(self):
         """
@@ -64,13 +64,13 @@ class CFilePlugins(CPlugins):
         .[0]: 概率, 0-不知道;1-可能是;-1确认是
         .[1]: 识别的对象的名称, 如GF1-xxxxxx-000-000
         """
-        self.__object_confirm__ = self.Object_Confirm_IUnKnown
+        self._object_confirm = self.Object_Confirm_IUnKnown
         sat_classified_character, sat_classified_character_type = self.get_classified_character()
         if sat_classified_character_type == self.TextMatchType_Common:
             if CFile.file_match(self.get_classified_text(), sat_classified_character):
-                self.__object_confirm__ = self.Object_Confirm_IKnown
+                self._object_confirm = self.Object_Confirm_IKnown
         elif sat_classified_character_type == self.TextMatchType_Regex:
             if CUtils.text_match_re(self.get_classified_text(), sat_classified_character):
-                self.__object_confirm__ = self.Object_Confirm_IKnown
+                self._object_confirm = self.Object_Confirm_IKnown
 
-        return self.__object_confirm__, self.classified_object_name()
+        return self._object_confirm, self.classified_object_name()

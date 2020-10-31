@@ -28,10 +28,10 @@ class CJson:
     Encoding_UTF8 = 'UTF-8'
     Encoding_GBK = 'GB2312'
 
-    # __json_obj__ = None
+    __json_obj = None
 
     def __init__(self):
-        self.__json_obj__ = dict()
+        self.__json_obj = dict()
 
     def load_file(self, filename):
         """
@@ -40,7 +40,7 @@ class CJson:
         :param filename:
         :return:
         """
-        self.__json_obj__ = demjson.decode_file(filename)
+        self.__json_obj = demjson.decode_file(filename)
 
     def load_json_text(self, json_content: str):
         """
@@ -55,7 +55,7 @@ class CJson:
         elif rt_json_content == '':
             rt_json_content = '{}'
 
-        self.__json_obj__ = demjson.decode(rt_json_content)
+        self.__json_obj = demjson.decode(rt_json_content)
 
     def load_obj(self, obj):
         """
@@ -67,17 +67,17 @@ class CJson:
         self.load_json_text(demjson.encode(obj))
 
     def to_json(self) -> str:
-        return demjson.encode(self.__json_obj__)
+        return demjson.encode(self.__json_obj)
 
     def to_file(self, filename):
-        demjson.encode_to_file(filename, self.__json_obj__, overwrite=True)
+        demjson.encode_to_file(filename, self.__json_obj, overwrite=True)
 
     def set_value_of_name(self, name, value):
-        self.__json_obj__[name] = value
+        self.__json_obj[name] = value
 
     @property
     def json_obj(self):
-        return self.__json_obj__
+        return self.__json_obj
 
     def xpath_one(self, query, attr_value_default) -> any:
         """
@@ -99,7 +99,7 @@ class CJson:
         :param query:
         :return:
         """
-        result_list = jsonpath.jsonpath(self.__json_obj__, query)
+        result_list = jsonpath.jsonpath(self.__json_obj, query)
         if not result_list:
             return []
         else:

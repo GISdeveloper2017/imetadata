@@ -7,6 +7,7 @@ c_xml.py的测试文
 
 from lxml import etree
 
+from imetadata.base.c_file import CFile
 from imetadata.base.c_xml import CXml
 
 
@@ -18,8 +19,11 @@ class Test_Base_C_XML:
         通过给定的xml文件名, 对xml对象进行初始化
         """
         xml = CXml()
-        xml.load_file(self.test_filename)
-        assert True
+        if CFile.file_or_path_exist(self.test_filename):
+            xml.load_file(self.test_filename)
+            assert True
+        else:
+            assert False
 
     def test_load_xml(self):
         """
@@ -63,8 +67,8 @@ class Test_Base_C_XML:
         <root><element>hello</element></root>
         '''
         xml.load_xml(xml_content)
-        xmlString = xml.to_xml()
-        assert xmlString == '<root><element>hello</element></root>'
+        xml_string = xml.to_xml()
+        assert xml_string == '<root><element>hello</element></root>'
 
     def test_xpath(self):
         """
@@ -86,7 +90,7 @@ class Test_Base_C_XML:
         xml = CXml()
         xml_comment = '''<root name="hello world"><element>hello</element></root>'''
         xml.load_xml(xml_comment)
-        element = CXml.clone(xml.__xml_root_node__)
+        element = CXml.clone(xml.root_element())
         assert CXml.get_element_xml(element) == xml_comment
 
     def test_append(self):
@@ -98,7 +102,7 @@ class Test_Base_C_XML:
         xml = CXml()
         xml.load_xml(xml_content)
         child_element = etree.Element('train', name='wing')
-        element = xml.__xml_root_node__
+        element = xml.root_element()
         CXml.append(element, child_element)
         assert CXml.get_element_xml(element) == '<root name="hello world"><train name="wing"/></root>'
 
@@ -112,7 +116,7 @@ class Test_Base_C_XML:
             '''
         xml = CXml()
         xml.load_xml(xml_content)
-        element = xml.__xml_root_node__
+        element = xml.root_element()
         CXml.create_element(element, "element1")
         assert CXml.get_element_xml(element) == '<root name="hello world"><element name="hello"/><element1/></root>'
 
@@ -137,7 +141,7 @@ class Test_Base_C_XML:
         xml = CXml()
         xml.load_xml(xml_content)
         element = xml.xpath('/root/element')[1]
-        value = CXml.get_attr(element, 'Hello1', "null")
+        value = CXml.get_attr(element, 'Hello', "null")
         assert value == '美国'
 
     def test_element_attr_exist(self):
@@ -183,7 +187,7 @@ class Test_Base_C_XML:
         xml_content = '''<root name="hello world"><element>hello</element></root>'''
         xml = CXml()
         xml.load_xml(xml_content)
-        element = xml.__xml_root_node__[0]
+        element = xml.root_element()
         rt = CXml.get_element_root(element)
         assert CXml.get_element_xml(rt) == xml_content
 
@@ -195,7 +199,7 @@ class Test_Base_C_XML:
         xml_content = '''<root name="hello world"><element>hello</element></root>'''
         xml = CXml()
         xml.load_xml(xml_content)
-        assert CXml.get_element_xml(xml.__xml_tree__) == xml_content
+        assert CXml.get_element_xml(xml.root_element()) == xml_content
 
     def test_get_element_name(self):
         """
@@ -228,8 +232,8 @@ class Test_Base_C_XML:
         xml_content = '''<root name="hello world"><element>hello</element></root>'''
         xml = CXml()
         xml.load_xml(xml_content)
-        element = xml.__xml_root_node__
-        tree = CXml.get_tree(element)
+        element = xml.root_element()
+        tree = CXml.get_element_tree(element)
         assert CXml.get_element_xml(tree) == xml_content
 
     def test_get_tree_root(self):
@@ -237,8 +241,8 @@ class Test_Base_C_XML:
         获取树对象的根节点
         :return:
         """
-        xml_content = '''<root name="hello world"><element>hello</element></root>'''
+        xml_content = '''<root name="hello world"><parent><grandson>hello</grandson></parent></root>'''
         xml = CXml()
         xml.load_xml(xml_content)
-        tree = CXml.get_tree_root(xml.__xml_tree__)
-        assert CXml.get_element_xml(tree) == xml_content
+        tree = CXml.get_tree_root(xml.tree())
+        assert CXml.get_element_name(tree) == 'root'

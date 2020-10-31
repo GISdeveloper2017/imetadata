@@ -14,7 +14,7 @@ class CDetailParser_Same_File_Main_Name(CDetailParser):
         :return:
         """
         super().custom_init()
-        self.__detail_file_path__ = self.__file_info__.__file_path__
+        self.__detail_file_path__ = self.file_info.__file_path__
         self.__detail_file_recurse__ = False
         self.__detail_file_match_type__ = CFile.MatchType_Common
-        self.__detail_file_match_text__ = '{0}.*'.format(self.__file_info__.__file_main_name__)
+        self.__detail_file_match_text__ = '{0}.*'.format(self.file_info.__file_main_name__)

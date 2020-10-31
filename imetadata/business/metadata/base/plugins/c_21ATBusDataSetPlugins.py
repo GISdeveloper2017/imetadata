@@ -46,8 +46,8 @@ class C21ATBusDataSetPlugins(CDirPlugins):
     #         return super().get_id()
 
     def classified(self):
-        self.__object_confirm__ = self.Object_Confirm_IUnKnown
-        self.__object_name__ = None
+        self._object_confirm = self.Object_Confirm_IUnKnown
+        self._object_name = None
 
         current_path = self.file_info.__file_name_with_full_path__
         metadata_file_name = CFile.join_file(current_path, self.FileName_MetaData_Bus_21AT)
@@ -63,15 +63,15 @@ class C21ATBusDataSetPlugins(CDirPlugins):
                         self.__classified_object_type,
                         CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Name, None)
                 ):
-                    self.__object_confirm__ = self.Object_Confirm_IKnown
-                    self.__object_name__ = CXml.get_element_text(
+                    self._object_confirm = self.Object_Confirm_IKnown
+                    self._object_name = CXml.get_element_text(
                         self.__metadata_xml_obj__.xpath_one(self.Path_21AT_MD_Content_ProductName)
                     )
             except:
                 self.__metadata_xml_obj__ = None
                 CLogger().warning('发现文件{0}符合二十一世纪业务数据集标准, 但该文件格式有误, 无法打开! ')
 
-        return self.__object_confirm__, self.__object_name__
+        return self._object_confirm, self._object_name
 
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """

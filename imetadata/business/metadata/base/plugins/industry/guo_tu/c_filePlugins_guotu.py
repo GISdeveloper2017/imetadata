@@ -47,6 +47,6 @@ class CFilePlugins_GUOTU(CFilePlugins):
         .[0]: 概率, 0-不知道;1-可能是;-1确认是
         .[1]: 识别的对象的名称, 如GF1-xxxxxx-000-000
         """
-        self.__object_name__ = None
-        self.__object_confirm__ = self.Object_Confirm_IUnKnown
-        return self.__object_confirm__, self.__object_name__
+        self._object_name = None
+        self._object_confirm = self.Object_Confirm_IUnKnown
+        return self._object_confirm, self._object_name

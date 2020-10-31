@@ -42,14 +42,14 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         elif len(file_main_name) == 20:  # 20位基本为附属文件
             pass
         else:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         file_main_name_with_path = CFile.join_file(file_path, file_object_name)
         check_file_main_name_exist = \
             CFile.file_or_path_exist('{0}o.{1}'.format(file_main_name_with_path, 'tif')) or \
             CFile.file_or_path_exist('{0}a.{1}'.format(file_main_name_with_path, 'tif'))
         if not check_file_main_name_exist:  # 检查主文件存在性
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         # 文件名第1，4，11，12，16，21位为字母，第2，3，5-10，14，15，17-20位是数字
         name_sub_1 = file_main_name[0:1]
@@ -68,23 +68,23 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
                 or CUtils.text_is_numeric(name_sub_14_to_15) is False \
                 or CUtils.text_is_alpha(name_sub_16) is False \
                 or CUtils.text_is_numeric(name_sub_17_to_20) is False:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         if len(file_main_name) == 21:
             name_sub_21 = file_main_name[20:21]
             if (CUtils.equal_ignore_case(name_sub_21.lower(), 'a')
                 or CUtils.equal_ignore_case(name_sub_21.lower(), 'o')) \
                     and CUtils.equal_ignore_case(file_ext, 'tif'):
-                self.__object_confirm__ = self.Object_Confirm_IKnown
-                self.__object_name__ = file_main_name
+                self._object_confirm = self.Object_Confirm_IKnown
+                self._object_name = file_main_name
             else:
-                self.__object_confirm__ = self.Object_Confirm_IKnown_Not
-                self.__object_name__ = None
+                self._object_confirm = self.Object_Confirm_IKnown_Not
+                self._object_name = None
         else:
-            self.__object_confirm__ = self.Object_Confirm_IKnown_Not
-            self.__object_name__ = None
+            self._object_confirm = self.Object_Confirm_IKnown_Not
+            self._object_name = None
 
-        return self.__object_confirm__, self.__object_name__
+        return self._object_confirm, self._object_name
 
     def qa_file_custom(self, parser: CMetaDataParser):
         """

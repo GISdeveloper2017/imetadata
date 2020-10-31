@@ -28,24 +28,24 @@ class plugins_8004_dom_part_2(CFilePlugins_GUOTU_DOM):
         file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
         check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
         if not check_file_main_name_exist:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         if not self.file_info.__file_main_name__.count('-') == 1:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         char_1 = self.file_info.__file_main_name__.split('-')[0]
         char_2 = self.file_info.__file_main_name__.split('-')[1]
         if CUtils.text_is_decimal(char_1) is False \
                 or CUtils.text_is_decimal(char_2) is False:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         if CUtils.equal_ignore_case(self.file_info.__file_ext__, self.Name_Tif):
-            self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = self.file_info.__file_main_name__
+            self._object_confirm = self.Object_Confirm_IKnown
+            self._object_name = self.file_info.__file_main_name__
         else:
-            self.__object_confirm__ = self.Object_Confirm_IKnown_Not
-            self.__object_name__ = None
-        return self.__object_confirm__, self.__object_name__
+            self._object_confirm = self.Object_Confirm_IKnown_Not
+            self._object_name = None
+        return self._object_confirm, self._object_name
 
 if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,

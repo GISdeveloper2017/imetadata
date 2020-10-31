@@ -32,13 +32,13 @@ class plugins_8001_dom_10_dom(CFilePlugins_GUOTU_DOM):
 
         check_file_main_name_length = len(file_main_name) == 13
         if not check_file_main_name_length:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
         check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
 
         if not check_file_main_name_exist:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         """
         下面判别第1位是字母
@@ -60,16 +60,16 @@ class plugins_8001_dom_10_dom(CFilePlugins_GUOTU_DOM):
                 or CUtils.text_is_numeric(char_5_to_7) is False \
                 or CUtils.text_is_numeric(char_8_to_10) is False \
                 or CUtils.equal_ignore_case(char_11_to_13, "DOM") is False:
-            return self.Object_Confirm_IUnKnown, self.__object_name__
+            return self.Object_Confirm_IUnKnown, self._object_name
 
         if CUtils.equal_ignore_case(file_ext, self.Name_Tif):
-            self.__object_confirm__ = self.Object_Confirm_IKnown
-            self.__object_name__ = file_main_name
+            self._object_confirm = self.Object_Confirm_IKnown
+            self._object_name = file_main_name
         else:
-            self.__object_confirm__ = self.Object_Confirm_IKnown_Not
-            self.__object_name__ = None
+            self._object_confirm = self.Object_Confirm_IKnown_Not
+            self._object_name = None
 
-        return self.__object_confirm__, self.__object_name__
+        return self._object_confirm, self._object_name
 
 if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,

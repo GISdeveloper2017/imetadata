@@ -116,12 +116,12 @@ class CPlugins(CResource):
 
     MetaData_Rule_Type_None = 'none'
 
-    __file_content__: CVirtualContent = None
-    __file_info__: CDMFilePathInfoEx = None
-    __metadata_rule_obj__: CXml = None
+    __file_content: CVirtualContent = None
+    __file_info: CDMFilePathInfoEx = None
+    __metadata_rule_obj: CXml = None
 
-    __object_confirm__: int
-    __object_name__: str
+    _object_confirm: int
+    _object_name: str
 
     metadata_bus_transformer_type = None
     metadata_bus_src_filename_with_path = None
@@ -130,31 +130,31 @@ class CPlugins(CResource):
         """
         :param file_info:  目标文件或路径的名称
         """
-        self.__metadata_rule_obj__ = CXml()
-        self.__file_info__ = file_info
+        self.__metadata_rule_obj = CXml()
+        self.__file_info = file_info
 
         # 在质检中或者在识别过程中, 需要明确元数据的类型, 和文件名!!!否则将被视为无业务数据集
         self.metadata_bus_transformer_type = None
         self.metadata_bus_src_filename_with_path = None
         if self.file_info is not None:
-            self.__metadata_rule_obj__.load_xml(self.file_info.__rule_content__)
+            self.__metadata_rule_obj.load_xml(self.file_info.rule_content)
 
     @property
     def file_content(self):
-        return self.__file_content__
+        return self.__file_content
 
     @property
     def file_info(self):
-        return self.__file_info__
+        return self.__file_info
 
     def classified_object_confirm(self):
-        return self.__object_confirm__
+        return self._object_confirm
 
     def classified_object_name(self):
-        return self.__object_name__
+        return self._object_name
 
     def get_metadata_rule_type(self):
-        default_rule_type = CXml.get_element_text(self.__metadata_rule_obj__.xpath_one(self.Path_MD_Rule_Type))
+        default_rule_type = CXml.get_element_text(self.__metadata_rule_obj.xpath_one(self.Path_MD_Rule_Type))
         if CUtils.equal_ignore_case(default_rule_type, ''):
             default_rule_type = self.MetaData_Rule_Type_None
         return default_rule_type
@@ -205,26 +205,26 @@ class CPlugins(CResource):
         pass
 
     def create_virtual_content(self) -> bool:
-        if self.__file_content__ is None:
+        if self.__file_content is None:
             self.create_file_content()
 
-        if self.__file_content__ is None:
+        if self.__file_content is None:
             raise FileContentWapperNotExistException()
 
-        if not self.__file_content__.virtual_content_valid():
-            return self.__file_content__.create_virtual_content()
+        if not self.__file_content.virtual_content_valid():
+            return self.__file_content.create_virtual_content()
         else:
             return True
 
     def destroy_virtual_content(self):
-        if self.__file_content__ is None:
+        if self.__file_content is None:
             self.create_file_content()
 
-        if self.__file_content__ is None:
+        if self.__file_content is None:
             raise FileContentWapperNotExistException()
 
-        if self.__file_content__.virtual_content_valid():
-            self.__file_content__.destroy_virtual_content()
+        if self.__file_content.virtual_content_valid():
+            self.__file_content.destroy_virtual_content()
 
     def parser_metadata(self, parser: CMetaDataParser) -> str:
         """
