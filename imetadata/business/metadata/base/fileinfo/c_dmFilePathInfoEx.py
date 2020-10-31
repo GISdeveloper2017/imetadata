@@ -10,15 +10,47 @@ from imetadata.database.c_factory import CFactory
 
 
 class CDMFilePathInfoEx(CFileInfoEx):
-    __db_server_id__ = None
-    __parent_id__ = None
-    __owner_obj_id__ = None
+    __db_server_id = None
+    __parent_id = None
+    __owner_obj_id = None
 
-    __storage_id__ = None
-    __my_id__ = None
+    __storage_id = None
+    __my_id = None
 
-    __ds_storage__ = None
-    __ds_file_or_path__ = None
+    _ds_storage = None
+    _ds_file_or_path = None
+
+    @property
+    def my_id(self):
+        return self.__my_id
+
+    @my_id.setter
+    def my_id(self, value):
+        self.__my_id = value
+
+    @property
+    def storage_id(self):
+        return self.__storage_id
+
+    @property
+    def ds_storage(self):
+        return self._ds_storage
+
+    @property
+    def ds_file_or_path(self):
+        return self._ds_file_or_path
+
+    @property
+    def db_server_id(self):
+        return self.__db_server_id
+
+    @property
+    def parent_id(self):
+        return self.__parent_id
+
+    @property
+    def owner_obj_id(self):
+        return self.__owner_obj_id
 
     def __init__(self, file_type, file_name_with_full_path, storage_id, file_or_path_id, parent_id, owner_obj_id,
                  db_server_id, rule_content):
@@ -31,23 +63,19 @@ class CDMFilePathInfoEx(CFileInfoEx):
             如果为None, 则首先根据文件相对路径和storage_id, 查找数据库中登记的标识, 如果不存在, 则自行创建uuid;
             如果不为空, 则表明数据库中已经存储该文件标识
         """
-        self.__storage_id__ = storage_id
-        self.__my_id__ = file_or_path_id
-        self.__db_server_id__ = db_server_id
-        self.__parent_id__ = parent_id
-        self.__owner_obj_id__ = owner_obj_id
+        self.__storage_id = storage_id
+        self.my_id = file_or_path_id
+        self.__db_server_id = db_server_id
+        self.__parent_id = parent_id
+        self.__owner_obj_id = owner_obj_id
 
-        self.__ds_storage__ = CFactory().give_me_db(self.__db_server_id__).one_row(
+        self._ds_storage = CFactory().give_me_db(self.__db_server_id).one_row(
             'select dstid, dsttitle, dstunipath, dstotheroption from dm2_storage where dstid = :dstID',
-            {'dstid': self.__storage_id__})
+            {'dstid': self.storage_id})
 
-        root_path = self.__ds_storage__.value_by_name(0, 'dstunipath', '')
+        root_path = self._ds_storage.value_by_name(0, 'dstunipath', '')
         super().__init__(file_type, file_name_with_full_path, root_path, rule_content)
         self.custom_init()
-
-    @property
-    def db_server_id(self):
-        return self.__db_server_id__
 
     def custom_init(self):
         """
@@ -64,7 +92,7 @@ class CDMFilePathInfoEx(CFileInfoEx):
             where dsdid = :dsdid
             '''
 
-        CFactory().give_me_db(self.__db_server_id__).execute(sql_update_path_object, {'dsdid': dir_id})
+        CFactory().give_me_db(self.db_server_id).execute(sql_update_path_object, {'dsdid': dir_id})
 
     def db_delete_object_by_id(self, object_id):
         if object_id == '' or object_id is None:
@@ -80,7 +108,7 @@ class CDMFilePathInfoEx(CFileInfoEx):
         where dodid = :dsoID
         '''
 
-        engine = CFactory().give_me_db(self.__db_server_id__)
+        engine = CFactory().give_me_db(self.db_server_id)
         session = engine.give_me_session()
         try:
             engine.session_execute(session, sql_delete_object_details_by_id, {'dsoid': object_id})
@@ -96,7 +124,7 @@ class CDMFilePathInfoEx(CFileInfoEx):
         """
         检查指定文件是否符合白名单, 黑名单验证
         """
-        ds_storage_option = self.__ds_storage__.value_by_name(0, 'dstotheroption', None)
+        ds_storage_option = self._ds_storage.value_by_name(0, 'dstotheroption', None)
         if ds_storage_option == '' or ds_storage_option is None:
             return True
 
@@ -114,25 +142,25 @@ class CDMFilePathInfoEx(CFileInfoEx):
                                                                        self.Name_Black_List), '')
 
         result = True
-        if self.__file_type__ != self.FileType_Unknown:
+        if self.file_type != self.FileType_Unknown:
             if (dir_filter_white_list != '') and (dir_filter_black_list != ''):
-                result = CFile.file_match(self.__file_path_with_rel_path__, dir_filter_white_list) and (
-                    not CFile.file_match(self.__file_path_with_rel_path__, dir_filter_black_list))
+                result = CFile.file_match(self.file_path_with_rel_path, dir_filter_white_list) and (
+                    not CFile.file_match(self.file_path_with_rel_path, dir_filter_black_list))
             elif dir_filter_white_list != '':
-                result = CFile.file_match(self.__file_path_with_rel_path__, dir_filter_white_list)
+                result = CFile.file_match(self.file_path_with_rel_path, dir_filter_white_list)
             elif dir_filter_black_list != '':
-                result = not CFile.file_match(self.__file_path_with_rel_path__, dir_filter_black_list)
+                result = not CFile.file_match(self.file_path_with_rel_path, dir_filter_black_list)
 
         if not result:
             return result
 
-        if self.__file_type__ == self.FileType_File:
+        if self.file_type == self.FileType_File:
             if (file_filter_white_list != '') and (file_filter_black_list != ''):
-                return CFile.file_match(self.__file_name_without_path__, file_filter_white_list) and (
-                    not CFile.file_match(self.__file_name_without_path__, file_filter_black_list))
+                return CFile.file_match(self.file_name_without_path, file_filter_white_list) and (
+                    not CFile.file_match(self.file_name_without_path, file_filter_black_list))
             elif file_filter_white_list != '':
-                return CFile.file_match(self.__file_name_without_path__, file_filter_white_list)
+                return CFile.file_match(self.file_name_without_path, file_filter_white_list)
             elif file_filter_black_list != '':
-                return not CFile.file_match(self.__file_name_without_path__, file_filter_black_list)
+                return not CFile.file_match(self.file_name_without_path, file_filter_black_list)
             else:
                 return True

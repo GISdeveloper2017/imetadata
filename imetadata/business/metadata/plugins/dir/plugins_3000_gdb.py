@@ -26,9 +26,9 @@ class plugins_3000_gdb(CDirPlugins):
         self._object_confirm = self.Object_Confirm_IUnKnown
         self._object_name = None
 
-        current_path = self.file_info.__file_name_with_full_path__
-        if (self.file_info.__file_name_without_path__.lower().endswith('.gdb')) \
+        current_path = self.file_info.file_name_with_full_path
+        if (self.file_info.file_name_without_path.lower().endswith('.gdb')) \
                 and CFile.find_file_or_subpath_of_path(current_path, '*.gdbtable'):
             self._object_confirm = self.Object_Confirm_IKnown
-            self._object_name = self.file_info.__file_main_name__
+            self._object_name = self.file_info.file_main_name
         return self._object_confirm, self._object_name

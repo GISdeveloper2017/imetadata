@@ -148,7 +148,7 @@ where dsdscanfilestatus = 2
                         # 注册到待入库请单中
                         self.register_2_inbound_list(
                             ds_storage_id,
-                            path_obj.__my_id__,
+                            path_obj.my_id,
                             CFile.file_relation_path(file_name_with_full_path, ds_path)
                         )
 

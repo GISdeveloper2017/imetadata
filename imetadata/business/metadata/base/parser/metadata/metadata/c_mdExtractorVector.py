@@ -17,7 +17,7 @@ class CMDExtractorVector(CMDExtractor):
         :return:
         """
         out_metadata_file_fullname = CFile.join_file(self.file_content.work_root_dir, self.FileName_MetaData)
-        vector_mdreader = CVectorMDReader(self.file_info.__file_name_with_full_path__)
+        vector_mdreader = CVectorMDReader(self.file_info.file_name_with_full_path)
         result = vector_mdreader.get_metadata_2_file(out_metadata_file_fullname)
         # 进程调用模式
         # p_one = Process(target=vector_mdreader.get_metadata_2_file, args=(out_metadata_file_fullname,))

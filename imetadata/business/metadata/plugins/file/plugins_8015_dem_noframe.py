@@ -32,16 +32,16 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
         todo 负责人 李宪 在这里检验dem_noframe的识别规则
         :return:
         """
-        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
+        file_main_name_with_path = CFile.join_file(self.file_info.file_path, self.file_info.file_main_name)
         check_file_main_name_exist_tif = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
         check_file_main_name_exist_img = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Img))
         if (not check_file_main_name_exist_tif) and (not check_file_main_name_exist_img):
             return self.Object_Confirm_IUnKnown, self._object_name
 
-        if CUtils.equal_ignore_case(self.file_info.__file_ext__, self.Name_Tif)\
-                or CUtils.equal_ignore_case(self.file_info.__file_ext__, self.Name_Img):
+        if CUtils.equal_ignore_case(self.file_info.file_ext, self.Name_Tif)\
+                or CUtils.equal_ignore_case(self.file_info.file_ext, self.Name_Img):
             self._object_confirm = self.Object_Confirm_IKnown
-            self._object_name = self.file_info.__file_main_name__
+            self._object_name = self.file_info.file_main_name
         else:
             self._object_confirm = self.Object_Confirm_IKnown_Not
             self._object_name = None
@@ -66,7 +66,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
         :return:
         """
         list_qa = list()
-        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.__file_name_with_full_path__))
+        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))
         return list_qa
 
     def qa_file_custom(self, parser: CMetaDataParser):
@@ -77,7 +77,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
         :return:
         """
         super().qa_file_custom(parser)
-        metadata_main_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
+        metadata_main_name_with_path = CFile.join_file(self.file_info.file_path, self.file_info.file_main_name)
         check_file_metadata_bus_exist = False
         ext = self.Transformer_XML
         temp_metadata_bus_file = '{0}_21at.xml'.format(metadata_main_name_with_path)

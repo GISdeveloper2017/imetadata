@@ -57,9 +57,9 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         :return:
         """
         if sat_file_status == self.Sat_Object_Status_Zip or sat_file_status == self.Sat_Object_Status_File:
-            return self.file_info.__file_main_name__
+            return self.file_info.file_main_name
         elif sat_file_status == self.Sat_Object_Status_Dir:
-            return self.file_info.__file_name_without_path__
+            return self.file_info.file_name_without_path
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
@@ -372,7 +372,7 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
 
         return CResult.merge_result(
             self.Success,
-            '数据文件[{0}]的空间信息解析成功! '.format(self.file_info.__file_name_with_full_path__)
+            '数据文件[{0}]的空间信息解析成功! '.format(self.file_info.file_name_with_full_path)
         )
 
     def parser_metadata_view_list(self, parser: CMetaDataParser):

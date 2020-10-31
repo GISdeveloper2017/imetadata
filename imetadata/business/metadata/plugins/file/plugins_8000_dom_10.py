@@ -27,14 +27,14 @@ class plugins_8000_dom_10(CFilePlugins_GUOTU_DOM):
         :return:
         """
         super().classified()
-        file_main_name = self.file_info.__file_main_name__
-        file_ext = self.file_info.__file_ext__
+        file_main_name = self.file_info.file_main_name
+        file_ext = self.file_info.file_ext
 
         check_file_main_name_length = len(file_main_name) == 10
         if not check_file_main_name_length:
             return self.Object_Confirm_IUnKnown, self._object_name
 
-        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_main_name)
+        file_main_name_with_path = CFile.join_file(self.file_info.file_path, file_main_name)
         check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
 
         if not check_file_main_name_exist:

@@ -116,7 +116,7 @@ class CPlugins(CResource):
 
     MetaData_Rule_Type_None = 'none'
 
-    __file_content: CVirtualContent = None
+    _file_content: CVirtualContent = None
     __file_info: CDMFilePathInfoEx = None
     __metadata_rule_obj: CXml = None
 
@@ -141,7 +141,7 @@ class CPlugins(CResource):
 
     @property
     def file_content(self):
-        return self.__file_content
+        return self._file_content
 
     @property
     def file_info(self):
@@ -205,26 +205,26 @@ class CPlugins(CResource):
         pass
 
     def create_virtual_content(self) -> bool:
-        if self.__file_content is None:
+        if self._file_content is None:
             self.create_file_content()
 
-        if self.__file_content is None:
+        if self._file_content is None:
             raise FileContentWapperNotExistException()
 
-        if not self.__file_content.virtual_content_valid():
-            return self.__file_content.create_virtual_content()
+        if not self._file_content.virtual_content_valid():
+            return self._file_content.create_virtual_content()
         else:
             return True
 
     def destroy_virtual_content(self):
-        if self.__file_content is None:
+        if self._file_content is None:
             self.create_file_content()
 
-        if self.__file_content is None:
+        if self._file_content is None:
             raise FileContentWapperNotExistException()
 
-        if self.__file_content.virtual_content_valid():
-            self.__file_content.destroy_virtual_content()
+        if self._file_content.virtual_content_valid():
+            self._file_content.destroy_virtual_content()
 
     def parser_metadata(self, parser: CMetaDataParser) -> str:
         """
@@ -248,7 +248,7 @@ class CPlugins(CResource):
         return CResult.merge_result(
             self.Success,
             '数据[{0}]的全部元数据解析完毕! '.format(
-                self.file_info.__file_name_with_full_path__,
+                self.file_info.file_name_with_full_path,
             )
         )
 
@@ -330,7 +330,7 @@ class CPlugins(CResource):
             parser.metadata.set_metadata_time(
                 self.Exception,
                 '数据[{0}]时间元数据解析出现异常, 详细错误信息为: [{1}]'.format(
-                    self.file_info.__file_name_with_full_path__,
+                    self.file_info.file_name_with_full_path,
                     error.__str__()
                 )
             )
@@ -344,7 +344,7 @@ class CPlugins(CResource):
             parser.metadata.set_metadata_spatial(
                 self.Exception,
                 '数据[{0}]空间元数据解析出现异常, 详细错误信息为: [{1}]'.format(
-                    self.file_info.__file_name_with_full_path__,
+                    self.file_info.file_name_with_full_path,
                     error.__str__()
                 )
             )
@@ -358,7 +358,7 @@ class CPlugins(CResource):
             parser.metadata.set_metadata_view(
                 self.Exception,
                 '数据[{0}]空间元数据解析出现异常, 详细错误信息为: [{1}]'.format(
-                    self.file_info.__file_name_with_full_path__,
+                    self.file_info.file_name_with_full_path,
                     error.__str__()
                 )
             )
@@ -368,7 +368,7 @@ class CPlugins(CResource):
         return CResult.merge_result(
             self.Success,
             '数据[{0}]的时间, 空间, 和可视元数据解析完毕! '.format(
-                self.file_info.__file_name_with_full_path__,
+                self.file_info.file_name_with_full_path,
             )
         )
 
@@ -469,22 +469,22 @@ class CPlugins(CResource):
                 try:
                     parser.metadata.set_metadata_spatial(
                         self.DB_True,
-                        '元数据文件[{0}]成功加载! '.format(self.file_info.__file_name_with_full_path__),
+                        '元数据文件[{0}]成功加载! '.format(self.file_info.file_name_with_full_path),
                         self.Name_Native_Center,
                         None
                     )
                     return CResult.merge_result(self.Success,
-                                                '元数据文件[{0}]成功加载! '.format(self.file_info.__file_name_with_full_path__))
+                                                '元数据文件[{0}]成功加载! '.format(self.file_info.file_name_with_full_path))
                 except Exception as error:
                     parser.metadata.set_metadata(
                         self.DB_False,
-                        '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(self.file_info.__file_name_with_full_path__,
+                        '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(self.file_info.file_name_with_full_path,
                                                                    error.__str__()),
                         self.MetaDataFormat_Text,
                         '')
                     return CResult.merge_result(self.Exception,
                                                 '元数据文件[{0}]格式不合法, 无法处理! '.format(
-                                                    self.file_info.__file_name_with_full_path__))
+                                                    self.file_info.file_name_with_full_path))
             else:
                 return result
         else:
@@ -511,30 +511,30 @@ class CPlugins(CResource):
                 try:
                     parser.metadata.set_metadata_view(
                         self.DB_True,
-                        '文件[{0}]的预览图成功加载! '.format(self.file_info.__file_name_with_full_path__),
+                        '文件[{0}]的预览图成功加载! '.format(self.file_info.file_name_with_full_path),
                         self.Name_Browse,
                         metadata_view_browse
                     )
                     parser.metadata.set_metadata_view(
                         self.DB_True,
-                        '文件[{0}]的拇指图成功加载! '.format(self.file_info.__file_name_with_full_path__),
+                        '文件[{0}]的拇指图成功加载! '.format(self.file_info.file_name_with_full_path),
                         self.Name_Thumb,
                         metadata_view_thumb
                     )
                     return CResult.merge_result(
                         self.Success,
-                        '文件[{0}]的可视元数据成功加载! '.format(self.file_info.__file_name_with_full_path__)
+                        '文件[{0}]的可视元数据成功加载! '.format(self.file_info.file_name_with_full_path)
                     )
                 except Exception as error:
                     parser.metadata.set_metadata(
                         self.DB_False,
-                        '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(self.file_info.__file_name_with_full_path__,
+                        '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(self.file_info.file_name_with_full_path,
                                                                    error.__str__()),
                         self.MetaDataFormat_Text,
                         '')
                     return CResult.merge_result(
                         self.Exception,
-                        '元数据文件[{0}]格式不合法, 无法处理! '.format(self.file_info.__file_name_with_full_path__))
+                        '元数据文件[{0}]格式不合法, 无法处理! '.format(self.file_info.file_name_with_full_path))
             else:
                 return result
         else:

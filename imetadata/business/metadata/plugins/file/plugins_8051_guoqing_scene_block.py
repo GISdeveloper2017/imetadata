@@ -41,9 +41,9 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
         :return:
         """
         super().classified()
-        file_main_name = self.file_info.__file_main_name__
-        file_ext = self.file_info.__file_ext__  # 初始化需要的参数
-        file_path = self.file_info.__file_path__
+        file_main_name = self.file_info.file_main_name
+        file_ext = self.file_info.file_ext  # 初始化需要的参数
+        file_path = self.file_info.file_path
         file_object_name = file_main_name[:]  # 这里需要取得规则匹配用的‘对象名’，即去除尾部字母等字符的名
 
         # 正则表达式，(?i)代表大小写不敏感，^代表字符串开头，$代表字符串结尾
@@ -130,9 +130,9 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
         """
         super().qa_file_custom(parser)
         file_object_name_list = re.findall(r'(?i)^([a-z]{2}\S+\d{4}[01]\d[0123]\d)[a-z][-]\d+$',
-                                           self.file_info.__file_main_name__)
+                                           self.file_info.file_main_name)
         file_object_name = file_object_name_list[0]  # 去除尾部的F/M/P-数字
-        metadata_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_object_name)
+        metadata_main_name_with_path = CFile.join_file(self.file_info.file_path, file_object_name)
 
         check_file_metadata_bus_exist = False
         ext = self.Transformer_XML

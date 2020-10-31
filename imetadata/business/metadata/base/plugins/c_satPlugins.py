@@ -54,11 +54,11 @@ class CSatPlugins(CPlugins):
 
     def create_file_content(self):
         if self.__object_status__ == self.Sat_Object_Status_Dir:
-            self.__file_content__ = CVirtualContentDir(self.file_info.__file_name_with_full_path__)
+            self._file_content = CVirtualContentDir(self.file_info.file_name_with_full_path)
         elif self.__object_status__ == self.Sat_Object_Status_Zip:
-            self.__file_content__ = CVirtualContentPackage(self.file_info.__file_name_with_full_path__)
+            self._file_content = CVirtualContentPackage(self.file_info.file_name_with_full_path)
         else:
-            self.__file_content__ = CVirtualContentDir(self.file_info.__file_path__)
+            self._file_content = CVirtualContentDir(self.file_info.file_path)
 
     def special_zip_file_ext_list(self) -> list:
         """
@@ -79,31 +79,31 @@ class CSatPlugins(CPlugins):
         self._object_name = None
         self._object_confirm = self.Object_Confirm_IUnKnown
 
-        if self.file_info.__file_type__ == self.FileType_File:
-            if self.special_zip_file_ext_list().count(self.file_info.__file_ext__.lower()) > 0:
+        if self.file_info.file_type == self.FileType_File:
+            if self.special_zip_file_ext_list().count(self.file_info.file_ext.lower()) > 0:
                 sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
                     self.Sat_Object_Status_Zip)
-                if (self.classified_with_character(self.file_info.__file_main_name__, sat_classified_character,
+                if (self.classified_with_character(self.file_info.file_main_name, sat_classified_character,
                                                    sat_classified_character_type)):
                     self.__object_status__ = self.Sat_Object_Status_Zip
                     self._object_confirm = self.Object_Confirm_IKnown
-                    self._object_name = self.file_info.__file_main_name__
+                    self._object_name = self.file_info.file_main_name
             else:
                 sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
                     self.Sat_Object_Status_File)
-                if (self.classified_with_character(self.file_info.__file_name_without_path__, sat_classified_character,
+                if (self.classified_with_character(self.file_info.file_name_without_path, sat_classified_character,
                                                    sat_classified_character_type)):
                     self.__object_status__ = self.Sat_Object_Status_File
                     self._object_confirm = self.Object_Confirm_IKnown
                     self._object_name = self.get_classified_object_name_of_sat(self.Sat_Object_Status_File)
-        elif self.file_info.__file_type__ == self.FileType_Dir:
+        elif self.file_info.file_type == self.FileType_Dir:
             sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
                 self.Sat_Object_Status_Dir)
-            if (self.classified_with_character(self.file_info.__file_name_without_path__, sat_classified_character,
+            if (self.classified_with_character(self.file_info.file_name_without_path, sat_classified_character,
                                                sat_classified_character_type)):
                 self.__object_status__ = self.Sat_Object_Status_Dir
                 self._object_confirm = self.Object_Confirm_IKnown
-                self._object_name = self.file_info.__file_name_without_path__
+                self._object_name = self.file_info.file_name_without_path
 
         return self._object_confirm, self._object_name
 
@@ -154,7 +154,7 @@ class CSatPlugins(CPlugins):
             . Sat_Object_Status_File = 'file'
         :return:
         """
-        return self.file_info.__file_main_name__
+        return self.file_info.file_main_name
 
     @abstractmethod
     def get_metadata_bus_filename_by_file(self) -> str:
@@ -162,7 +162,7 @@ class CSatPlugins(CPlugins):
         卫星数据解压后, 哪个文件是业务元数据?
         :return:
         """
-        return self.file_info.__file_main_name__
+        return self.file_info.file_main_name
 
     def get_runtime_detail_engine(self):
         """
@@ -274,7 +274,7 @@ class CSatPlugins(CPlugins):
                 if CUtils.equal_ignore_case(src, self.Name_Data):
                     parser.metadata.set_metadata_time(
                         self.Success,
-                        '时间信息[{0}]成功解析! '.format(self.file_info.__file_name_with_full_path__),
+                        '时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
                         CUtils.dict_value_by_name(metadata_time_item, self.Name_ID, self.Name_Time),
                         CXml.get_element_text(
                             parser.metadata.metadata_xml().xpath_one(
@@ -285,7 +285,7 @@ class CSatPlugins(CPlugins):
                 else:
                     parser.metadata.set_metadata_time(
                         self.Success,
-                        '时间信息[{0}]成功解析! '.format(self.file_info.__file_name_with_full_path__),
+                        '时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
                         CUtils.dict_value_by_name(metadata_time_item, self.Name_ID, self.Name_Time),
                         CXml.get_element_text(
                             parser.metadata.metadata_bus_xml().xpath_one(
@@ -296,7 +296,7 @@ class CSatPlugins(CPlugins):
 
         return CResult.merge_result(
             self.Success,
-            '数据文件[{0}]的时间信息解析成功! '.format(self.file_info.__file_name_with_full_path__)
+            '数据文件[{0}]的时间信息解析成功! '.format(self.file_info.file_name_with_full_path)
         )
 
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
@@ -350,7 +350,7 @@ class CSatPlugins(CPlugins):
         data_view_sub_path = CFile.join_file(data_view_sub_path, data_year)
         data_view_sub_path = CFile.join_file(data_view_sub_path, data_month)
         data_view_sub_path = CFile.join_file(data_view_sub_path, self.classified_object_name())
-        data_view_sub_path = CFile.join_file(data_view_sub_path, self.file_info.__my_id__)
+        data_view_sub_path = CFile.join_file(data_view_sub_path, self.file_info.my_id)
 
         data_view_path = CFile.join_file(self.file_content.view_root_dir, data_view_sub_path)
 
@@ -370,7 +370,7 @@ class CSatPlugins(CPlugins):
             for metadata_view_item in metadata_view_list:
                 parser.metadata.set_metadata_view(
                     self.DB_True,
-                    '文件[{0}]的预览图成功加载! '.format(self.file_info.__file_name_with_full_path__),
+                    '文件[{0}]的预览图成功加载! '.format(self.file_info.file_name_with_full_path),
                     CUtils.dict_value_by_name(metadata_view_item, self.Name_ID, self.View_MetaData_Type_Browse),
                     CFile.join_file(
                         data_view_sub_path,
@@ -382,7 +382,7 @@ class CSatPlugins(CPlugins):
 
         return CResult.merge_result(
             self.Success,
-            '数据文件[{0}]的可视化信息解析成功! '.format(self.file_info.__file_name_with_full_path__)
+            '数据文件[{0}]的可视化信息解析成功! '.format(self.file_info.file_name_with_full_path)
         )
 
     def parser_metadata_file_copy_list(self, parser: CMetaDataParser) -> list:

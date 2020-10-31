@@ -88,7 +88,7 @@ where dsfscanstatus = 2
                                self.get_mission_db_id(),
                                ds_rule_content)
 
-        if not file_obj.__file_existed__:
+        if not file_obj.file_existed:
             file_obj.db_update_status_on_file_invalid()
             return CResult.merge_result(CResult.Success, '文件[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_file_name_with_path))
         else:

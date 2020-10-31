@@ -24,27 +24,27 @@ class plugins_8014_dem_part_2(CFilePlugins_GUOTU_DEM):
         :return:
         """
         super().classified()
-        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
+        file_main_name_with_path = CFile.join_file(self.file_info.file_path, self.file_info.file_main_name)
         check_file_main_name_exist_tif = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
         check_file_main_name_exist_bil = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Bil))
         if (not check_file_main_name_exist_tif) and (not check_file_main_name_exist_bil):
             return self.Object_Confirm_IUnKnown, self._object_name
 
         #判断是否有‘-’，并且为一个
-        if not self.file_info.__file_main_name__.count('-') == 1:
+        if not self.file_info.file_main_name.count('-') == 1:
             return self.Object_Confirm_IUnKnown, self._object_name
 
-        char_1 = self.file_info.__file_main_name__.split('-')[0]
-        char_2 = self.file_info.__file_main_name__.split('-')[1]
+        char_1 = self.file_info.file_main_name.split('-')[0]
+        char_2 = self.file_info.file_main_name.split('-')[1]
         # char_1,char_2是否小数
         if CUtils.text_is_decimal(char_1) is False \
                 or CUtils.text_is_decimal(char_2) is False:
             return self.Object_Confirm_IUnKnown, self._object_name
 
-        if CUtils.equal_ignore_case(self.file_info.__file_ext__, self.Name_Tif) \
-                or CUtils.equal_ignore_case(self.file_info.__file_ext__, self.Name_Bil):
+        if CUtils.equal_ignore_case(self.file_info.file_ext, self.Name_Tif) \
+                or CUtils.equal_ignore_case(self.file_info.file_ext, self.Name_Bil):
             self._object_confirm = self.Object_Confirm_IKnown
-            self._object_name = self.file_info.__file_main_name__
+            self._object_name = self.file_info.file_main_name
         else:
             self._object_confirm = self.Object_Confirm_IKnown_Not
             self._object_name = None

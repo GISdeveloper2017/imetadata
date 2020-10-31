@@ -53,7 +53,7 @@ class CPluginsMng(CResource):
                     if CUtils.equal_ignore_case(key_word, rule_type):
                         class_classified_obj = cls.__plugins_classified_by_plugin_list__(file_info, plugin_list)
         else:
-            file_path = file_info.__file_path_with_rel_path__
+            file_path = file_info.file_path_with_rel_path
             plugins_json_array = settings.application.xpath_one(cls.Path_Setting_MetaData_Plugins_Dir, None)
             if plugins_json_array is not None:
                 for plugins_define in plugins_json_array:
@@ -83,7 +83,7 @@ class CPluginsMng(CResource):
         :param plugins_id:
         :return:
         """
-        target_type = file_info.__file_type__
+        target_type = file_info.file_type
         target_path = CFile.join_file(CSys.get_plugins_root_dir(), target_type)
         plugins_file_name = CFile.join_file(target_path, '{0}.{1}'.format(plugins_id, cls.FileExt_Py))
         if not CFile.file_or_path_exist(plugins_file_name):
@@ -100,8 +100,8 @@ class CPluginsMng(CResource):
         :param file_info:
         :return:
         """
-        target = file_info.__file_main_name__
-        target_type = file_info.__file_type__
+        target = file_info.file_main_name
+        target_type = file_info.file_type
         plugins_root_package_name = '{0}.{1}'.format(CSys.get_plugins_package_root_name(), target_type)
         path = CFile.join_file(CSys.get_plugins_root_dir(), target_type)
         plugins_file_list = CFile.file_or_subpath_of_path(path, '{0}_*.{1}'.format(cls.Name_Plugins, cls.FileExt_Py))
@@ -142,7 +142,7 @@ class CPluginsMng(CResource):
                 object_confirm, object_name = class_classified_obj.classified()
                 if object_confirm != cls.Object_Confirm_IUnKnown:
                     CLogger().debug(
-                        '{0} is classified as {1}.{2}'.format(file_info.__file_main_name__,
+                        '{0} is classified as {1}.{2}'.format(file_info.file_main_name,
                                                               class_classified_obj.get_information(),
                                                               class_classified_obj.get_id()))
                     return class_classified_obj
@@ -170,7 +170,7 @@ class CPluginsMng(CResource):
                 object_confirm, object_name = class_classified_obj.classified()
                 if object_confirm != cls.Object_Confirm_IUnKnown:
                     CLogger().debug(
-                        '{0} is classified as {1}.{2}'.format(file_info.__file_main_name__,
+                        '{0} is classified as {1}.{2}'.format(file_info.file_main_name,
                                                               class_classified_obj.get_information(),
                                                               class_classified_obj.get_id()))
                     return class_classified_obj

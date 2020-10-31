@@ -49,11 +49,11 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
         :return:
         """
         if sat_file_status == self.Sat_Object_Status_Zip:
-            return self.file_info.__file_main_name__
+            return self.file_info.file_main_name
         elif sat_file_status == self.Sat_Object_Status_Dir:
-            return self.file_info.__file_name_without_path__
+            return self.file_info.file_name_without_path
         else:
-            return self.file_info.__file_main_name__.replace('-PAN', '')
+            return self.file_info.file_main_name.replace('-PAN', '')
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """
@@ -363,7 +363,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
 
         return CResult.merge_result(
             self.Success,
-            '数据文件[{0}]的空间信息解析成功! '.format(self.file_info.__file_name_with_full_path__)
+            '数据文件[{0}]的空间信息解析成功! '.format(self.file_info.file_name_with_full_path)
         )
 
     def parser_metadata_view_list(self, parser: CMetaDataParser):

@@ -15,4 +15,4 @@ class CDirPlugins(CPlugins):
     def __init__(self, file_info: CFileInfoEx):
         super().__init__(file_info)
         if self.file_info is not None:
-            self.__file_content__ = CVirtualContentDir(self.file_info.__file_name_with_full_path__)
+            self._file_content = CVirtualContentDir(self.file_info.file_name_with_full_path)

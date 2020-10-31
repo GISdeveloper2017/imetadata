@@ -20,12 +20,12 @@ class CFilePlugins_GUOTU_Third_Survey(CFilePlugins_GUOTU):
         :return:
         """
         super().qa_file_custom(parser)
-        file_path = self.file_info.__file_path__
-        file_main_name = self.file_info.__file_main_name__
+        file_path = self.file_info.file_path
+        file_main_name = self.file_info.file_main_name
         file_name_before_six = file_main_name[0:6]  # 截取前六位行政区划代码
         # 查询行政区划代码对应的名称并拼接
         try:
-            db = CFactory().give_me_db(self.file_info.__db_server_id__)
+            db = CFactory().give_me_db(self.file_info.db_server_id)
             file_name_before_six_name = db.one_row("select gdstitle from ro_global_dim_space "
                                                    "where gdsid = '{0}'".format(file_name_before_six))\
                 .value_by_name(0, 'gdstitle', None)
@@ -95,7 +95,7 @@ class CFilePlugins_GUOTU_Third_Survey(CFilePlugins_GUOTU):
         """
         list_qa = list()
         list_qa.extend(
-            self.init_qa_file_integrity_default_list(self.file_info.__file_name_with_full_path__))  # 调用默认的规则列表
+            self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))  # 调用默认的规则列表
 
         return list_qa
 

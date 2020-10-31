@@ -49,7 +49,7 @@ class CFilePlugins_GUOTU_21AT(CFilePlugins_GUOTU):
         :return:
         """
         super().qa_file_custom(parser)
-        metadata_main_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
+        metadata_main_name_with_path = CFile.join_file(self.file_info.file_path, self.file_info.file_main_name)
         check_file_metadata_bus_exist = False
         ext = self.Transformer_XML
         temp_metadata_bus_file = '{0}_21at.xml'.format(metadata_main_name_with_path)

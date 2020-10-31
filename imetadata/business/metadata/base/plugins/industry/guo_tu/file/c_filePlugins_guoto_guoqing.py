@@ -19,13 +19,13 @@ class CFilePlugins_GUOTU_GuoQing(CFilePlugins_GUOTU):
         todo 负责人 王学谦 在这里检验初始化国情的质检列表
         """
         # file_main_name = self.classified_object_name()
-        # file_ext = self.file_info.__file_ext__
+        # file_ext = self.file_info.file_ext
         # file_main_name_with_path = '{0}.{1}'.format(
-        #     CFile.join_file(self.file_info.__file_path__, file_main_name), file_ext)  # 获取初始化需要的参数
+        #     CFile.join_file(self.file_info.file_path, file_main_name), file_ext)  # 获取初始化需要的参数
 
         list_qa = list()
         list_qa.extend(
-            self.init_qa_file_integrity_default_list(self.file_info.__file_name_with_full_path__))  # 调用默认的规则列表
+            self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))  # 调用默认的规则列表
 
         return list_qa
 

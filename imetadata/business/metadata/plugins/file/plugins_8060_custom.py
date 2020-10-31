@@ -33,15 +33,15 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
         :return:
         """
         super().classified()
-        file_main_name = self.file_info.__file_main_name__
-        file_ext = self.file_info.__file_ext__
+        file_main_name = self.file_info.file_main_name
+        file_ext = self.file_info.file_ext
         file_object_name = file_main_name
-        file_name_with_full_path = self.file_info.__file_name_with_full_path__   # 初始化需要的参数
+        file_name_with_full_path = self.file_info.file_name_with_full_path   # 初始化需要的参数
 
         if file_name_with_full_path.endswith('_21at.xml'):
             file_object_name = file_main_name[:-5]
 
-        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_object_name)
+        file_main_name_with_path = CFile.join_file(self.file_info.file_path, file_object_name)
         check_file_main_name_exist_tif = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
         check_file_main_name_exist_img = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Img))
         if (not check_file_main_name_exist_tif) and (not check_file_main_name_exist_img):
@@ -50,7 +50,7 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
         if CUtils.equal_ignore_case(file_ext, self.Name_Tif) \
                 or CUtils.equal_ignore_case(file_ext, self.Name_Img):
             self._object_confirm = self.Object_Confirm_IKnown
-            self._object_name = self.file_info.__file_main_name__
+            self._object_name = self.file_info.file_main_name
         else:
             self._object_confirm = self.Object_Confirm_IKnown_Not
             self._object_name = None
@@ -75,7 +75,7 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
         :return:
         """
         list_qa = list()
-        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.__file_name_with_full_path__))
+        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))
         return list_qa
 
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:

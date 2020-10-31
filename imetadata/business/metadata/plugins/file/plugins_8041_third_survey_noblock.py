@@ -38,9 +38,9 @@ class plugins_8041_third_survey_noblock(CFilePlugins_GUOTU_Third_Survey):
         :return:
         """
         super().classified()
-        file_main_name = self.file_info.__file_main_name__
-        file_ext = self.file_info.__file_ext__  # 初始化需要的参数
-        file_path = self.file_info.__file_path__
+        file_main_name = self.file_info.file_main_name
+        file_ext = self.file_info.file_ext  # 初始化需要的参数
+        file_path = self.file_info.file_path
 
         if len(file_main_name) > 6:
             file_name_before_six = file_main_name[0:6]  # 截取前六位行政区划代码

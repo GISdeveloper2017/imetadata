@@ -25,23 +25,23 @@ class plugins_8004_dom_part_2(CFilePlugins_GUOTU_DOM):
         :return:
         """
         super().classified()
-        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
+        file_main_name_with_path = CFile.join_file(self.file_info.file_path, self.file_info.file_main_name)
         check_file_main_name_exist = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
         if not check_file_main_name_exist:
             return self.Object_Confirm_IUnKnown, self._object_name
 
-        if not self.file_info.__file_main_name__.count('-') == 1:
+        if not self.file_info.file_main_name.count('-') == 1:
             return self.Object_Confirm_IUnKnown, self._object_name
 
-        char_1 = self.file_info.__file_main_name__.split('-')[0]
-        char_2 = self.file_info.__file_main_name__.split('-')[1]
+        char_1 = self.file_info.file_main_name.split('-')[0]
+        char_2 = self.file_info.file_main_name.split('-')[1]
         if CUtils.text_is_decimal(char_1) is False \
                 or CUtils.text_is_decimal(char_2) is False:
             return self.Object_Confirm_IUnKnown, self._object_name
 
-        if CUtils.equal_ignore_case(self.file_info.__file_ext__, self.Name_Tif):
+        if CUtils.equal_ignore_case(self.file_info.file_ext, self.Name_Tif):
             self._object_confirm = self.Object_Confirm_IKnown
-            self._object_name = self.file_info.__file_main_name__
+            self._object_name = self.file_info.file_main_name
         else:
             self._object_confirm = self.Object_Confirm_IKnown_Not
             self._object_name = None

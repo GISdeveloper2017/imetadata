@@ -57,12 +57,12 @@ class CDetailParser(CParser):
             self.__detail_file_match_text__,
             self.__detail_file_match_type__)
 
-        query_storage_id = self.file_info.__storage_id__
-        query_file_relation_name = self.file_info.__file_name_with_rel_path__
+        query_storage_id = self.file_info.storage_id
+        query_file_relation_name = self.file_info.file_name_with_rel_path
         for item_file_name_with_path in list_file_fullname:
             CLogger().debug(item_file_name_with_path)
             params = dict()
-            file_relation_name = CFile.file_relation_path(item_file_name_with_path, self.file_info.__root_path__)
+            file_relation_name = CFile.file_relation_path(item_file_name_with_path, self.file_info.root_path)
             if CUtils.equal_ignore_case(query_file_relation_name, file_relation_name):
                 params['dodid'] = self.object_id
             else:
@@ -74,7 +74,7 @@ class CDetailParser(CParser):
             params['dodobjectid'] = self.object_id
             params['dodfilename'] = CFile.file_relation_path(
                 item_file_name_with_path,
-                self.file_info.__file_path__)
+                self.file_info.file_path)
             params['dodfileext'] = CFile.file_ext(item_file_name_with_path)
             params['dodfilesize'] = CFile.file_size(item_file_name_with_path)
             params['dodfilecreatetime'] = CFile.file_create_time(item_file_name_with_path)
@@ -82,7 +82,7 @@ class CDetailParser(CParser):
             # params['dodstorageid'] = query_storage_id
             # params['dodfilerelationname'] = CFile.file_relation_path(
             #     item_file_name_with_path,
-            #     self.file_info.__root_path__)
+            #     self.file_info.root_path)
             sql_params_tuple = (sql_detail_insert, params)
             sql_detail_insert_params_list.append(sql_params_tuple)
 

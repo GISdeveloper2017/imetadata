@@ -24,13 +24,13 @@ class plugins_8020_ortho(CFilePlugins_GUOTU_21AT):
         :return:
         """
         super().classified()
-        file_main_name = self.file_info.__file_main_name__
-        file_ext = self.file_info.__file_ext__  # 初始化需要的参数
+        file_main_name = self.file_info.file_main_name
+        file_ext = self.file_info.file_ext  # 初始化需要的参数
         file_object_name = file_main_name[:]
-        file_name_with_full_path = self.file_info.__file_name_with_full_path__
+        file_name_with_full_path = self.file_info.file_name_with_full_path
         if file_name_with_full_path.endswith('_21at.xml'):
             file_object_name = file_main_name[:-5]
-        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_object_name)
+        file_main_name_with_path = CFile.join_file(self.file_info.file_path, file_object_name)
 
         check_file_main_name_exist = \
             CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif)) or \
@@ -55,13 +55,13 @@ class plugins_8020_ortho(CFilePlugins_GUOTU_21AT):
         todo 负责人 王学谦 在这里检验初始化ortho的质检列表
         """
         # file_main_name = self.classified_object_name()
-        # file_ext = self.file_info.__file_ext__
+        # file_ext = self.file_info.file_ext
         # file_main_name_with_path = '{0}.{1}'.format(
-        #     CFile.join_file(self.file_info.__file_path__, file_main_name), file_ext)  # 获取初始化需要的参数
+        #     CFile.join_file(self.file_info.file_path, file_main_name), file_ext)  # 获取初始化需要的参数
 
         list_qa = list()
         list_qa.extend(
-            self.init_qa_file_integrity_default_list(self.file_info.__file_name_with_full_path__))  # 调用默认的规则列表
+            self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))  # 调用默认的规则列表
 
         return list_qa
 

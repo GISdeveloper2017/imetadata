@@ -18,7 +18,7 @@ class CFilePlugins(CPlugins):
     def __init__(self, file_info: CFileInfoEx):
         super().__init__(file_info)
         if self.file_info is not None:
-            self.__file_content__ = CVirtualContentFile(self.file_info.__file_name_with_full_path__)
+            self._file_content = CVirtualContentFile(self.file_info.file_name_with_full_path)
 
     def classified(self):
         """
@@ -45,14 +45,14 @@ class CFilePlugins(CPlugins):
         获取待识别验证的字符串
         :return:
         """
-        return self.file_info.__file_name_without_path__
+        return self.file_info.file_name_without_path
 
     def classified_object_name(self):
         """
         设置默认的识别出的对象名称
         :return:
         """
-        self._object_name = self.file_info.__file_main_name__
+        self._object_name = self.file_info.file_main_name
         return self._object_name
 
     def classified_by_character_common(self):

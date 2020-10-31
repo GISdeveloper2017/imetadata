@@ -32,9 +32,9 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         :return:
         """
         super().classified()
-        file_main_name = self.file_info.__file_main_name__
-        file_ext = self.file_info.__file_ext__  # 初始化需要的参数
-        file_path = self.file_info.__file_path__
+        file_main_name = self.file_info.file_main_name
+        file_ext = self.file_info.file_ext  # 初始化需要的参数
+        file_path = self.file_info.file_path
         file_object_name = file_main_name[:]
 
         if len(file_main_name) >= 21:  # 本类文件默认至少为20位
@@ -94,7 +94,7 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         :return:
         """
         super().qa_file_custom(parser)
-        metadata_main_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
+        metadata_main_name_with_path = CFile.join_file(self.file_info.file_path, self.file_info.file_main_name)
         metadata_main_name_with_path = metadata_main_name_with_path[:-1]  # 剪切文件最后的a/o
         check_file_metadata_bus_exist = False
         ext = self.Transformer_XML

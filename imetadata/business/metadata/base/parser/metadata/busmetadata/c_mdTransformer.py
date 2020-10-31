@@ -14,7 +14,7 @@ from imetadata.business.metadata.base.parser.metadata.c_metadata import CMetaDat
 class CMDTransformer(CParser):
     def __init__(self, object_id: str, object_name: str, file_info: CDMFilePathInfoEx, file_content: CVirtualContent,
                  metadata: CMetaData, transformer_type: str, transformer_src_filename: str):
-        self.__file_content__ = file_content
+        self.__file_content = file_content
         self.__transformer_type__ = transformer_type
         self.__transformer_src_filename__ = transformer_src_filename
         self.__metadata__ = metadata
@@ -22,7 +22,7 @@ class CMDTransformer(CParser):
 
     @property
     def file_content(self):
-        return self.__file_content__
+        return self.__file_content
 
     @property
     def transformer_type(self):

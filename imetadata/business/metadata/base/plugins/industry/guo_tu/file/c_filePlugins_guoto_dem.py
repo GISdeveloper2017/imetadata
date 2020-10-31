@@ -52,7 +52,7 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
         :return:
         """
         list_qa = list()
-        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.__file_name_with_full_path__))
+        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))
         return list_qa
 
     def qa_file_custom(self, parser: CMetaDataParser):
@@ -63,7 +63,7 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
         :return:
         """
         super().qa_file_custom(parser)
-        file_metadata_name_with_path = CFile.join_file(self.file_info.__file_path__, self.file_info.__file_main_name__)
+        file_metadata_name_with_path = CFile.join_file(self.file_info.file_path, self.file_info.file_main_name)
         check_file_metadata_name_exist = False
         ext_list = ['xls', 'xlsx', 'mat', 'mdb']
         for ext in ext_list:

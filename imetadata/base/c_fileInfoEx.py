@@ -12,18 +12,31 @@ class CFileInfoEx(CFileInfo):
     # 入库规则
     __rule_content: str
 
-    __file_name_with_rel_path__: str
-    __file_path_with_rel_path__: str
+    __file_name_with_rel_path: str
+    __file_path_with_rel_path: str
 
-    __root_path__ = str
+    __root_path: str
+
+    @property
+    def file_name_with_rel_path(self):
+        return self.__file_name_with_rel_path
+
+    @property
+    def root_path(self):
+        return self.__root_path
+
+    @property
+    def file_path_with_rel_path(self):
+        return self.__file_path_with_rel_path
 
     def __init__(self, file_type, file_name_with_full_path, root_path, rule_content):
         super().__init__(file_type, file_name_with_full_path)
-        self.__root_path__ = root_path
+        self.__root_path = root_path
 
-        self.__file_name_with_rel_path__ = CFile.file_relation_path(self.__file_name_with_full_path__,
-                                                                    self.__root_path__)
-        self.__file_path_with_rel_path__ = CFile.file_relation_path(self.__file_path__, self.__root_path__)
+        self.__file_name_with_rel_path = CFile.file_relation_path(
+            self.file_name_with_full_path,
+            self.__root_path)
+        self.__file_path_with_rel_path = CFile.file_relation_path(self.file_path, self.__root_path)
 
         self.__rule_content = rule_content
 

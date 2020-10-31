@@ -28,14 +28,14 @@ class CMetaDataParser(CParser):
     . 对象的元数据优化
     """
     __information__: dict
-    __file_content__: CVirtualContent = None
+    __file_content: CVirtualContent = None
     __metadata__: CMetaData = None
 
     def __init__(self, object_id: str, object_name: str, file_info: CDMFilePathInfoEx,
                  file_content: CVirtualContent, information: dict):
         self.__metadata__ = CMetaData()
         self.__information__ = information
-        self.__file_content__ = file_content
+        self.__file_content = file_content
         super().__init__(object_id, object_name, file_info)
 
     @property
@@ -44,7 +44,7 @@ class CMetaDataParser(CParser):
 
     @property
     def file_content(self):
-        return self.__file_content__
+        return self.__file_content
 
     def process(self) -> str:
         """
@@ -303,7 +303,7 @@ class CMetaDataParser(CParser):
                 )
             )
         # 所有元数据入库
-        CFactory().give_me_db(self.file_info.__db_server_id__).execute_batch(commands)
+        CFactory().give_me_db(self.file_info.db_server_id).execute_batch(commands)
         return CResult.merge_result(self.Success, '元数据和业务元数据处理完毕!')
 
     def save_metadata_time(self) -> str:
@@ -316,7 +316,7 @@ class CMetaDataParser(CParser):
             mdt_ext_content = None
 
         # 所有元数据入库
-        CFactory().give_me_db(self.file_info.__db_server_id__).execute(
+        CFactory().give_me_db(self.file_info.db_server_id).execute(
             '''
             update dm2_storage_object
             set dso_time_result = :dso_time_result
@@ -344,7 +344,7 @@ class CMetaDataParser(CParser):
             mdt_view_browse_file = None
 
         # 所有元数据入库
-        CFactory().give_me_db(self.file_info.__db_server_id__).execute(
+        CFactory().give_me_db(self.file_info.db_server_id).execute(
             '''
             update dm2_storage_object
             set dso_view_result = :dso_view_result
@@ -381,7 +381,7 @@ class CMetaDataParser(CParser):
             'dso_prj_zone': mdt_spatial.prj_zone,
             'dso_prj_source': mdt_spatial.prj_source
         }
-        database = CFactory().give_me_db(self.file_info.__db_server_id__)
+        database = CFactory().give_me_db(self.file_info.db_server_id)
 
         params['dso_center_native'] = CFile.file_2_str(mdt_spatial.native_center)
         params['dso_geo_bb_native'] = CFile.file_2_str(mdt_spatial.native_box)
@@ -407,7 +407,7 @@ class CMetaDataParser(CParser):
         else:
             dso_geo_wgs84 = 'null'
             # 所有元数据入库
-        CFactory().give_me_db(self.file_info.__db_server_id__).execute(
+        CFactory().give_me_db(self.file_info.db_server_id).execute(
             '''
             update dm2_storage_object
             set dso_spatial_result = :dso_spatial_result

@@ -14,4 +14,4 @@ class CTagsParser_GF_InMainName(CTagsParser):
         :return:
         """
         super().custom_init()
-        self.__tags_parser_text__ = self.file_info.__file_main_name__
+        self.__tags_parser_text__ = self.file_info.file_main_name

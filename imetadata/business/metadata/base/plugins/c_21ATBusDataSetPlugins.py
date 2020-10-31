@@ -49,7 +49,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
         self._object_confirm = self.Object_Confirm_IUnKnown
         self._object_name = None
 
-        current_path = self.file_info.__file_name_with_full_path__
+        current_path = self.file_info.file_name_with_full_path
         metadata_file_name = CFile.join_file(current_path, self.FileName_MetaData_Bus_21AT)
         if CFile.file_or_path_exist(metadata_file_name):
             self.__bus_metadata_xml_file_name__ = metadata_file_name

@@ -24,9 +24,9 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
         :return:
         """
         super().classified()
-        file_main_name = self.file_info.__file_main_name__
-        file_ext = self.file_info.__file_ext__  # 初始化需要的参数
-        file_name_with_full_path = self.file_info.__file_name_with_full_path__
+        file_main_name = self.file_info.file_main_name
+        file_ext = self.file_info.file_ext  # 初始化需要的参数
+        file_name_with_full_path = self.file_info.file_name_with_full_path
         file_object_name = file_main_name[:]  # 主要名称截取
         if file_name_with_full_path.endswith('_21at.xml'):  # 元数据文件的情况
             if len(file_main_name) > 5:
@@ -42,7 +42,7 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
                         break
                     else:
                         return self.Object_Confirm_IUnKnown, self._object_name
-        file_main_name_with_path = CFile.join_file(self.file_info.__file_path__, file_object_name)
+        file_main_name_with_path = CFile.join_file(self.file_info.file_path, file_object_name)
 
         check_file_main_name_exist = \
             CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif)) or \
@@ -73,7 +73,7 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
 
         list_qa = list()
         list_qa.extend(
-            self.init_qa_file_integrity_default_list(self.file_info.__file_name_with_full_path__))  # 调用默认的规则列表
+            self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))  # 调用默认的规则列表
         list_qa.extend([
             {
                 self.Name_FileName: '{0}xq.shp'.format(file_main_name),

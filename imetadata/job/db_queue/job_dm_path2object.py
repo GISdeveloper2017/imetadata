@@ -87,7 +87,7 @@ where dsdscanstatus = 2
 
         path_obj = CDMPathInfo(self.FileType_Dir, ds_path_full_name, ds_storage_id, ds_id, parent_id, owner_obj_id,
                                self.get_mission_db_id(), ds_rule_content)
-        if not path_obj.__file_existed__:
+        if not path_obj.file_existed:
             path_obj.db_update_status_on_path_invalid()
             return CResult.merge_result(CResult.Success,
                                         '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path_full_name))

@@ -14,4 +14,4 @@ class CTagsParser_GF_InRelationPath(CTagsParser):
         :return:
         """
         super().custom_init()
-        self.__tags_parser_text__ = self.file_info.__file_path_with_rel_path__
+        self.__tags_parser_text__ = self.file_info.file_path_with_rel_path
