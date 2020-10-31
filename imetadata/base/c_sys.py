@@ -68,16 +68,24 @@ class CSys(CResource):
         return os.path.join(cls.get_business_root_dir(), cls.Name_MetaData)
 
     @classmethod
+    def get_inbound_root_dir(cls):
+        return os.path.join(cls.get_metadata_root_dir(), cls.Name_InBound)
+
+    @classmethod
     def get_metadata_package_root_name(cls):
         return '{0}.{1}'.format(cls.get_business_package_root_name(), cls.Name_MetaData)
 
     @classmethod
+    def get_inbound_package_root_name(cls):
+        return '{0}.{1}'.format(cls.get_metadata_package_root_name(), cls.Name_InBound)
+
+    @classmethod
     def get_plugins_root_dir(cls):
-        return os.path.join(cls.get_metadata_root_dir(), cls.Name_Plugins)
+        return os.path.join(cls.get_inbound_root_dir(), cls.Name_Plugins)
 
     @classmethod
     def get_plugins_package_root_name(cls):
-        return '{0}.{1}'.format(cls.get_metadata_package_root_name(), cls.Name_Plugins)
+        return '{0}.{1}'.format(cls.get_inbound_package_root_name(), cls.Name_Plugins)
 
     @classmethod
     def get_work_root_dir(cls):
@@ -108,8 +116,6 @@ class CSys(CResource):
 
 
 if __name__ == '__main__':
-    print(CSys.get_project_dir())
-    print(CSys.get_application_dir())
     print(CSys.get_plugins_package_root_name())
     print(CSys.get_plugins_root_dir())
     print(CSys.get_metadata_data_access_modules_root_name())
@@ -120,9 +126,9 @@ if __name__ == '__main__':
     print(CSys.get_execute_os_name())
     print(platform.system())
 
-    if (platform.system() == 'Windows'):
+    if platform.system() == 'Windows':
         print('Windows系统')
-    elif (platform.system() == 'Linux'):
+    elif platform.system() == 'Linux':
         print('Linux系统')
     else:
         print('其他')

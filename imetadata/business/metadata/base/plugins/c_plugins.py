@@ -122,6 +122,7 @@ class CPlugins(CResource):
 
     _object_confirm: int
     _object_name: str
+    _object_detail_file_full_name_list = []
 
     metadata_bus_transformer_type = None
     metadata_bus_src_filename_with_path = None
@@ -175,6 +176,12 @@ class CPlugins(CResource):
     def classified(self):
         """
         对目标目录或文件进行分类
+        . 注意: 可以在识别中, 直接将个别特殊的附属文件加入到_object_detail_file_full_name_list列表中, 后续在附属文件入库功能中, 将自动
+            将该列表中的文件, 登记到对象附属文件中
+            . 注意: _object_detail_file_full_name_list中存储的附属文件名称, 为包含完整路径的文件名, 注意!!!
+
+        todo(注意) 对象识别过程中, 可以处理特殊的对象附属文件. 它与标准的对象附属文件处理逻辑不冲突, 最后结果为两者的并集!!!
+
         :return: 返回两个结果
         .[0]: 概率, 0-不知道;1-可能是;-1确认是;2-确定不是
         .[1]: 识别的对象的名称, 如GF1-xxxxxx-000-000
@@ -190,6 +197,10 @@ class CPlugins(CResource):
             return parser.process()
 
         return CResult.merge_result(self.Success, '处理完毕!')
+
+    @property
+    def object_detail_file_full_name_list(self) -> list:
+        return self._object_detail_file_full_name_list
 
     def parser_detail(self, parser: CParser) -> str:
         """

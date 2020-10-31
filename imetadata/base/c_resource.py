@@ -171,6 +171,9 @@ class CResource:
     Name_Access = 'access'
     Name_Quality = 'quality'
 
+    Name_InBound = 'inbound'
+    Name_OutBound = 'outbound'
+
     Name_DataType = 'datatype'
     Name_Width = 'width'
     Name_SQL = 'sql'

@@ -12,6 +12,7 @@ from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
+from imetadata.business.metadata.base.parser.detail.c_detailParser import CDetailParser
 from imetadata.business.metadata.base.parser.detail.c_detailParserMng import CDetailParserMng
 from imetadata.business.metadata.base.plugins.manager.c_pluginsMng import CPluginsMng
 from imetadata.database.c_factory import CFactory
@@ -139,9 +140,12 @@ where dsodetailparsestatus = 2
         try:
             plugins_obj.classified()
             plugins_information = plugins_obj.get_information()
+
             detail_parser = CDetailParserMng.give_me_parser(
                 CUtils.dict_value_by_name(plugins_information, plugins_obj.Plugins_Info_DetailEngine, None),
-                dso_id, dso_object_name, file_info_obj)
+                dso_id, dso_object_name, file_info_obj,
+                plugins_obj.object_detail_file_full_name_list
+            )
             process_result = plugins_obj.parser_detail(detail_parser)
             if CResult.result_success(process_result):
                 self.db_update_object_status(
