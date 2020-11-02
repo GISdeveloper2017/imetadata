@@ -520,7 +520,6 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
                 * dsdScanFileStatus=0
                 * dsdScanDirStatus=0
                 * dsd_directory_valid=0
-            
         1. 目录存在:
             * 检查并判断指定的元数据扫描规则文件是否与数据库中的记录相等(都是空也算相等)
                 * 如果和记录中的不同
@@ -658,6 +657,8 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
    1. 抢占dm2_storage_object表中dsoDetailParserStatus=1的记录, 状态更新为2
    1. 根据对象类型, 清理对象的详情
    1. 根据对象类型, 重新注册对象的详情
+   1. 统计对象附属文件的大小汇总, 保存到对象的容量字段中
+   1. 统计对象名称和大小重复的对象个数, 保存到对象重复情况统计(jsonb)字段中
    1. 将处理成功的dm2_storage_object记录
         1. dsoDetailParserStatus=0
 

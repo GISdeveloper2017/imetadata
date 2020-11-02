@@ -384,23 +384,28 @@ where dsodetailparsestatus = 2
                 ), 0
             )
 
-            json_obj = CJson()
-            json_obj.load_obj({
-                self.Storage_Type_Core: {
-                    self.Name_FileName: count_copy_same_filename_core,
-                    '{0}_{1}'.format(self.Name_FileName, self.Name_Size): count_copy_same_filename_and_size_core
-                },
-                self.Storage_Type_InBound: {
-                    self.Name_FileName: count_copy_same_filename_same_batch,
-                    '{0}_{1}'.format(self.Name_FileName, self.Name_Size): count_copy_same_filename_and_size_same_batch
-                }
-            })
+            json_text = None
+            if count_copy_same_filename_and_size_same_batch + \
+                    count_copy_same_filename_and_size_core + \
+                    count_copy_same_filename_same_batch + count_copy_same_filename_core > 0:
+                json_obj = CJson()
+                json_obj.load_obj({
+                    self.Storage_Type_Core: {
+                        self.Name_FileName: count_copy_same_filename_core,
+                        '{0}_{1}'.format(self.Name_FileName, self.Name_Size): count_copy_same_filename_and_size_core
+                    },
+                    self.Storage_Type_InBound: {
+                        self.Name_FileName: count_copy_same_filename_same_batch,
+                        '{0}_{1}'.format(self.Name_FileName, self.Name_Size): count_copy_same_filename_and_size_same_batch
+                    }
+                })
+                json_text = json_obj.to_json()
 
             CFactory().give_me_db(self.get_mission_db_id()).execute('''
                 update dm2_storage_object
                 set dsocopystat = :copy_stat
                 where dsoid = :dsoid
-                ''', {'dsoid': object_id, 'copy_stat': json_obj.to_json()})
+                ''', {'dsoid': object_id, 'copy_stat': json_text})
             return CResult.merge_result(self.Success, '数据容量统计和数据重复数据分析成功完成! ')
         except Exception as error:
             return CResult.merge_result(self.Failure, '数据容量统计和数据重复数据分析过程出现错误, 详细情况: {0}'.format(error.__str__()))
