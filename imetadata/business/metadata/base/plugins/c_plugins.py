@@ -485,12 +485,21 @@ class CPlugins(CResource):
             result = parser.process_default_spatial(default_engine)
             if CResult.result_success(result):
                 try:
-                    parser.metadata.set_metadata_spatial(
-                        self.DB_True,
-                        '元数据文件[{0}]成功加载! '.format(self.file_info.file_name_with_full_path),
-                        self.Name_Native_Center,
-                        None
-                    )
+                    dict_spatial_metadata_type = {
+                        self.Name_Native_Center: self.Spatial_MetaData_Type_Native_Center,
+                        self.Name_Native_BBox: self.Spatial_MetaData_Type_Native_BBox,
+                        self.Name_Native_Geom: self.Spatial_MetaData_Type_Native_Geom,
+                        self.Name_Wgs84_Center: self.Spatial_MetaData_Type_Native_Center,
+                        self.Name_Wgs84_BBox: self.Spatial_MetaData_Type_Wgs84_BBox,
+                        self.Name_Wgs84_Geom: self.Spatial_MetaData_Type_Wgs84_Geom
+                    }
+                    for type_name, type_value in dict_spatial_metadata_type.items():
+                        parser.metadata.set_metadata_spatial(
+                            self.DB_True,
+                            '元数据文件[{0}]成功加载! '.format(self.file_info.file_name_with_full_path),
+                            type_value,
+                            CResult.result_info(result, type_name, '')
+                        )
                     return CResult.merge_result(self.Success,
                                                 '元数据文件[{0}]成功加载! '.format(self.file_info.file_name_with_full_path))
                 except Exception as error:

@@ -98,18 +98,8 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         metadata_main_name_with_path = metadata_main_name_with_path[:-1]  # 剪切文件最后的a/o
         check_file_metadata_bus_exist = False
         ext = self.Transformer_XML
-        temp_metadata_bus_file_Y = '{0}Y.xml'.format(metadata_main_name_with_path)
-        temp_metadata_bus_file_P = '{0}P.xml'.format(metadata_main_name_with_path)
         temp_metadata_bus_file_M = '{0}M.xml'.format(metadata_main_name_with_path)  # 三种元数据
-        if CFile.file_or_path_exist(temp_metadata_bus_file_Y):  # 有优先级，Y-P-M
-            check_file_metadata_bus_exist = True
-            self.metadata_bus_transformer_type = ext
-            self.metadata_bus_src_filename_with_path = temp_metadata_bus_file_Y
-        elif CFile.file_or_path_exist(temp_metadata_bus_file_P):
-            check_file_metadata_bus_exist = True
-            self.metadata_bus_transformer_type = ext
-            self.metadata_bus_src_filename_with_path = temp_metadata_bus_file_P
-        elif CFile.file_or_path_exist(temp_metadata_bus_file_M):
+        if CFile.file_or_path_exist(temp_metadata_bus_file_M):
             check_file_metadata_bus_exist = True
             self.metadata_bus_transformer_type = ext
             self.metadata_bus_src_filename_with_path = temp_metadata_bus_file_M
