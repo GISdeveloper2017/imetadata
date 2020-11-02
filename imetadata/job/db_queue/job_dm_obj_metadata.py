@@ -6,6 +6,7 @@
 
 from __future__ import absolute_import
 
+from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
@@ -101,11 +102,11 @@ where dsometadataparsestatus = 2
         sql_get_rule = '''
             select dsdScanRule
             from dm2_storage_directory
-            where dsdStorageid = :dsdStorageID and Position(dsddirectory || '/' in :dsdDirectory) = 1
+            where dsdStorageid = :dsdStorageID and Position(dsddirectory || '{0}' in :dsdDirectory) = 1
                 and dsdScanRule is not null
             order by dsddirectory desc
             limit 1
-            '''
+            '''.format(CFile.sep())
         rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {
             'dsdStorageID': ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
             'dsdDirectory': ds_file_info.value_by_name(0, 'query_object_relation_path', '')})

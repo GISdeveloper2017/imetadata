@@ -67,45 +67,76 @@ where dsdscanstatus = 2
         owner_obj_id = dataset.value_by_name(0, 'query_dir_parent_objid', '')
         parent_id = dataset.value_by_name(0, 'query_dir_parent_id', '')
 
-        sql_get_rule = '''
-            select dsdScanRule
-            from dm2_storage_directory
-            where dsdStorageid = :dsdStorageID and Position(dsddirectory || '/' in :dsdDirectory) = 1
-                and dsdScanRule is not null
-            order by dsddirectory desc
-            limit 1
-            '''
-        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {'dsdStorageID': ds_storage_id,
-                                                                                         'dsdDirectory': ds_subpath})
-        ds_rule_content = rule_ds.value_by_name(0, 'dsdScanRule', '')
+        try:
+            sql_get_rule = '''
+                select dsdScanRule
+                from dm2_storage_directory
+                where dsdStorageid = :dsdStorageID and Position(dsddirectory || '{0}' in :dsdDirectory) = 1
+                    and dsdScanRule is not null
+                order by dsddirectory desc
+                limit 1
+                '''.format(CFile.sep())
+            rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(
+                sql_get_rule,
+                {
+                    'dsdStorageID': ds_storage_id,
+                    'dsdDirectory': ds_subpath
+                }
+            )
+            ds_rule_content = rule_ds.value_by_name(0, 'dsdScanRule', '')
 
-        if ds_subpath == '':
-            ds_path_full_name = ds_root_path
-        else:
-            ds_path_full_name = CFile.join_file(ds_root_path, ds_subpath)
-        CLogger().debug('处理的子目录为: {0}'.format(ds_path_full_name))
+            if ds_subpath == '':
+                ds_path_full_name = ds_root_path
+            else:
+                ds_path_full_name = CFile.join_file(ds_root_path, ds_subpath)
+            CLogger().debug('处理的子目录为: {0}'.format(ds_path_full_name))
 
-        path_obj = CDMPathInfo(self.FileType_Dir, ds_path_full_name, ds_storage_id, ds_id, parent_id, owner_obj_id,
-                               self.get_mission_db_id(), ds_rule_content)
-        if not path_obj.file_existed:
-            path_obj.db_update_status_on_path_invalid()
-            return CResult.merge_result(CResult.Success,
-                                        '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path_full_name))
-        else:
-            path_obj.db_check_and_update_metadata_rule(CFile.join_file(ds_path_full_name, self.FileName_MetaData_Rule))
+            path_obj = CDMPathInfo(self.FileType_Dir, ds_path_full_name, ds_storage_id, ds_id, parent_id, owner_obj_id,
+                                   self.get_mission_db_id(), ds_rule_content)
+            if not path_obj.file_existed:
+                path_obj.db_update_status_on_path_invalid()
+                return CResult.merge_result(CResult.Success,
+                                            '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path_full_name))
+            else:
+                path_obj.db_check_and_update_metadata_rule(
+                    CFile.join_file(ds_path_full_name, self.FileName_MetaData_Rule))
 
-            path_obj.db_path2object()
+                path_obj.db_path2object()
 
-        sql_update_directory_status = '''
+            result = CResult.merge_result(CResult.Success, '目录[{0}]处理顺利完成!'.format(ds_path_full_name))
+            self.update_dir_status(ds_id, result)
+            return result
+        except Exception as error:
+            result = CResult.merge_result(
+                CResult.Failure,
+                '目录[{0}]识别过程出现错误, 详细情况: {1}!'.format(ds_path_full_name, error.__str__())
+            )
+            self.update_dir_status(ds_id, result)
+            return result
+
+    def update_dir_status(self, dir_id, result):
+        if CResult.result_success(result):
+            sql_update_directory_status = '''
             update dm2_storage_directory
-            set dsdscanstatus = 0, dsdlastmodifytime = now()
+            set 
+                dsdscanstatus = 0,
+                dsdscanmemo = :memo, 
+                dsdlastmodifytime = now()
+            where dsdid = :dsdid
+            '''
+        else:
+            sql_update_directory_status = '''
+            update dm2_storage_directory
+            set 
+                dsdscanstatus = 3,
+                dsdscanmemo = :memo, 
+                dsdlastmodifytime = now()
             where dsdid = :dsdid
             '''
         params = dict()
-        params['dsdid'] = dataset.value_by_name(0, 'query_dir_id', '')
+        params['dsdid'] = dir_id
+        params['memo'] = CResult.result_message(result)
         CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_directory_status, params)
-
-        return CResult.merge_result(CResult.Success, '目录[{0}]处理顺利完成!'.format(ds_path_full_name))
 
 
 if __name__ == '__main__':

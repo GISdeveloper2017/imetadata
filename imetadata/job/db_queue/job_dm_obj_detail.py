@@ -7,14 +7,15 @@
 from __future__ import absolute_import
 
 from imetadata.base.c_file import CFile
+from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
-from imetadata.business.metadata.base.parser.detail.c_detailParser import CDetailParser
 from imetadata.business.metadata.base.parser.detail.c_detailParserMng import CDetailParserMng
 from imetadata.business.metadata.base.plugins.manager.c_pluginsMng import CPluginsMng
+from imetadata.database.base.c_dataset import CDataSet
 from imetadata.database.c_factory import CFactory
 
 
@@ -147,6 +148,18 @@ where dsodetailparsestatus = 2
                 plugins_obj.object_detail_file_full_name_list
             )
             process_result = plugins_obj.parser_detail(detail_parser)
+            if not CResult.result_success(process_result):
+                self.db_update_object_status(dso_id, self.ProcStatus_Error, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
+                    ds_file_info.value_by_name(0, 'query_object_fullname', ''), CResult.result_message(process_result)))
+                return process_result
+
+            process_result = self.object_copy_stat(
+                ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
+                dso_id,
+                dso_object_name,
+                ds_file_info.value_by_name(0, 'query_object_relation_path', '')
+            )
+
             if CResult.result_success(process_result):
                 self.db_update_object_status(
                     dso_id,
@@ -175,6 +188,230 @@ where dsodetailparsestatus = 2
               , dsodetailparsememo = :dsodetailparsememo
             where dsoid = :dsoid
             ''', {'dsoid': dso_id, 'dsodetailparsememo': memo, 'status': dso_status})
+
+    def object_copy_stat(self, storage_id, object_id, object_name, object_relation_name):
+        try:
+            object_size = self.ds_copy_stat(
+                CFactory().give_me_db(self.get_mission_db_id()).one_row(
+                    '''
+                    select sum(dodfilesize) from dm2_storage_obj_detail where dodobjectid = :object_id
+                    ''',
+                    {'object_id': object_id}
+                ), 0
+            )
+
+            batch_root_relation_dir = self.ds_copy_stat(
+                CFactory().give_me_db(self.get_mission_db_id()).one_row(
+                    '''
+                    select dsddirectory
+                    from dm2_storage_directory
+                    where dsdStorageid = :storage_id and Position(dsddirectory || '{0}' in :directory) = 1
+                        and dsddirectory <> ''
+                    order by dsddirectory 
+                    limit 1
+                    '''.format(CFile.sep()),
+                    {'storage_id': storage_id, 'directory': object_relation_name}
+                ), object_relation_name
+            )
+
+            CFactory().give_me_db(self.get_mission_db_id()).execute(
+                '''
+                update dm2_storage_object 
+                set dso_volumn_now = :object_size
+                where dsoid = :object_id
+                ''', {'object_id': object_id, 'object_size': object_size}
+            )
+
+            count_copy_same_filename_core = self.ds_copy_stat(
+                CFactory().give_me_db(self.get_mission_db_id()).one_row(
+                    '''
+                    select count(dm2_storage_object.dsoid)
+                    from dm2_storage_object
+                        left join dm2_storage_directory on dm2_storage_object.dsoid = dm2_storage_directory.dsd_object_id 
+                        left join dm2_storage on dm2_storage_directory.dsdstorageid = dm2_storage.dstid 
+                    where 
+                        dm2_storage.dstid is not null
+                        and dm2_storage.dsttype = '{0}'
+                        and dm2_storage_object.dsoobjectname = :object_name
+                        and dm2_storage_object.dsoid <> :object_id
+                        and dm2_storage_object.dsodatatype = '{1}'
+                    '''.format(self.Storage_Type_Core, self.FileType_Dir),
+                    {'object_id': object_id, 'object_name': object_name}
+                ), 0
+            ) + self.ds_copy_stat(
+                CFactory().give_me_db(self.get_mission_db_id()).one_row(
+                    '''
+                    select count(dm2_storage_object.dsoid)
+                    from dm2_storage_object
+                        left join dm2_storage_file on dm2_storage_file.dsf_object_id = dm2_storage_object.dsoid
+                        left join dm2_storage on dm2_storage_file.dsfstorageid = dm2_storage.dstid 
+                    where 
+                        dm2_storage.dstid is not null
+                        and dm2_storage.dsttype = '{0}'
+                        and dm2_storage_object.dsoobjectname = :object_name
+                        and dm2_storage_object.dsoid <> :object_id
+                        and dm2_storage_object.dsodatatype = '{1}'
+                    '''.format(self.Storage_Type_Core, self.FileType_File),
+                    {'object_id': object_id, 'object_name': object_name}
+                ), 0
+            )
+
+            count_copy_same_filename_and_size_core = self.ds_copy_stat(
+                CFactory().give_me_db(self.get_mission_db_id()).one_row(
+                    '''
+                    select count(dm2_storage_object.dsoid)
+                    from dm2_storage_object
+                        left join dm2_storage_directory on dm2_storage_object.dsoid = dm2_storage_directory.dsd_object_id 
+                        left join dm2_storage on dm2_storage_directory.dsdstorageid = dm2_storage.dstid 
+                    where 
+                        dm2_storage.dstid is not null
+                        and dm2_storage.dsttype = '{0}'
+                        and dm2_storage_object.dso_volumn_now = :object_size
+                        and dm2_storage_object.dsoobjectname = :object_name
+                        and dm2_storage_object.dsoid <> :object_id
+                        and dm2_storage_object.dsodatatype = '{1}'
+                    '''.format(self.Storage_Type_Core, self.FileType_Dir),
+                    {'object_id': object_id, 'object_name': object_name, 'object_size': object_size}
+                ), 0
+            ) + self.ds_copy_stat(
+                CFactory().give_me_db(self.get_mission_db_id()).one_row(
+                    '''
+                    select count(dm2_storage_object.dsoid)
+                    from dm2_storage_object
+                        left join dm2_storage_file on dm2_storage_file.dsf_object_id = dm2_storage_object.dsoid
+                        left join dm2_storage on dm2_storage_file.dsfstorageid = dm2_storage.dstid 
+                    where 
+                        dm2_storage.dstid is not null
+                        and dm2_storage.dsttype = '{0}'
+                        and dm2_storage_object.dso_volumn_now = :object_size
+                        and dm2_storage_object.dsoobjectname = :object_name
+                        and dm2_storage_object.dsoid <> :object_id
+                        and dm2_storage_object.dsodatatype = '{1}'
+                    '''.format(self.Storage_Type_Core, self.FileType_File),
+                    {'object_id': object_id, 'object_name': object_name, 'object_size': object_size}
+                ), 0
+            )
+
+            count_copy_same_filename_same_batch = self.ds_copy_stat(
+                CFactory().give_me_db(self.get_mission_db_id()).one_row(
+                    '''
+                    select count(dm2_storage_object.dsoid)
+                    from dm2_storage_object
+                        left join dm2_storage_directory on dm2_storage_object.dsoid = dm2_storage_directory.dsd_object_id 
+                        left join dm2_storage on dm2_storage_directory.dsdstorageid = dm2_storage.dstid 
+                    where 
+                        dm2_storage.dstid = :storage_id
+                        and position(:directory in dm2_storage_directory.dsddirectory) = 1
+                        and dm2_storage_object.dsoobjectname = :object_name
+                        and dm2_storage_object.dsoid <> :object_id
+                        and dm2_storage_object.dsodatatype = '{0}'
+                    '''.format(self.FileType_Dir),
+                    {
+                        'storage_id': storage_id,
+                        'object_id': object_id,
+                        'object_name': object_name,
+                        'directory': batch_root_relation_dir
+                    }
+                ), 0
+            ) + self.ds_copy_stat(
+                CFactory().give_me_db(self.get_mission_db_id()).one_row(
+                    '''
+                    select count(dm2_storage_object.dsoid)
+                    from dm2_storage_object
+                        left join dm2_storage_file on dm2_storage_file.dsf_object_id = dm2_storage_object.dsoid
+                        left join dm2_storage on dm2_storage_file.dsfstorageid = dm2_storage.dstid 
+                    where 
+                        dm2_storage.dstid = :storage_id
+                        and position(:directory in dm2_storage_file.dsffilerelationname) = 1
+                        and dm2_storage_object.dsoobjectname = :object_name
+                        and dm2_storage_object.dsoid <> :object_id
+                        and dm2_storage_object.dsodatatype = '{0}'
+                    '''.format(self.FileType_File),
+                    {
+                        'storage_id': storage_id,
+                        'object_id': object_id,
+                        'object_name': object_name,
+                        'directory': batch_root_relation_dir
+                    }
+                ), 0
+            )
+
+            count_copy_same_filename_and_size_same_batch = self.ds_copy_stat(
+                CFactory().give_me_db(self.get_mission_db_id()).one_row(
+                    '''
+                    select count(dm2_storage_object.dsoid)
+                    from dm2_storage_object
+                        left join dm2_storage_directory on dm2_storage_object.dsoid = dm2_storage_directory.dsd_object_id 
+                        left join dm2_storage on dm2_storage_directory.dsdstorageid = dm2_storage.dstid 
+                    where 
+                        dm2_storage.dstid = :storage_id
+                        and position(:directory in dm2_storage_directory.dsddirectory) = 1
+                        and dm2_storage_object.dso_volumn_now = :object_size
+                        and dm2_storage_object.dsoobjectname = :object_name
+                        and dm2_storage_object.dsoid <> :object_id
+                        and dm2_storage_object.dsodatatype = '{0}'
+                    '''.format(self.FileType_Dir),
+                    {
+                        'storage_id': storage_id,
+                        'object_id': object_id,
+                        'object_name': object_name,
+                        'object_size': object_size,
+                        'directory': object_relation_name
+                    }
+                ), 0
+            ) + self.ds_copy_stat(
+                CFactory().give_me_db(self.get_mission_db_id()).one_row(
+                    '''
+                    select count(dm2_storage_object.dsoid)
+                    from dm2_storage_object
+                        left join dm2_storage_file on dm2_storage_file.dsf_object_id = dm2_storage_object.dsoid
+                        left join dm2_storage on dm2_storage_file.dsfstorageid = dm2_storage.dstid 
+                    where 
+                        dm2_storage.dstid = :storage_id
+                        and position(:directory in dm2_storage_file.dsffilerelationname) = 1
+                        and dm2_storage_object.dso_volumn_now = :object_size
+                        and dm2_storage_object.dsoobjectname = :object_name
+                        and dm2_storage_object.dsoid <> :object_id
+                        and dm2_storage_object.dsodatatype = '{0}'
+                    '''.format(self.FileType_File),
+                    {
+                        'storage_id': storage_id,
+                        'object_id': object_id,
+                        'object_name': object_name,
+                        'object_size': object_size,
+                        'directory': object_relation_name
+                    }
+                ), 0
+            )
+
+            json_obj = CJson()
+            json_obj.load_obj({
+                self.Storage_Type_Core: {
+                    self.Name_FileName: count_copy_same_filename_core,
+                    '{0}_{1}'.format(self.Name_FileName, self.Name_Size): count_copy_same_filename_and_size_core
+                },
+                self.Storage_Type_InBound: {
+                    self.Name_FileName: count_copy_same_filename_same_batch,
+                    '{0}_{1}'.format(self.Name_FileName, self.Name_Size): count_copy_same_filename_and_size_same_batch
+                }
+            })
+
+            CFactory().give_me_db(self.get_mission_db_id()).execute('''
+                update dm2_storage_object
+                set dsocopystat = :copy_stat
+                where dsoid = :dsoid
+                ''', {'dsoid': object_id, 'copy_stat': json_obj.to_json()})
+            return CResult.merge_result(self.Success, '数据容量统计和数据重复数据分析成功完成! ')
+        except Exception as error:
+            return CResult.merge_result(self.Failure, '数据容量统计和数据重复数据分析过程出现错误, 详细情况: {0}'.format(error.__str__()))
+
+    def ds_copy_stat(self, object_copy_stat_dataset: CDataSet, default_value):
+        if object_copy_stat_dataset is None:
+            return default_value
+        elif object_copy_stat_dataset.is_empty():
+            return default_value
+        else:
+            return object_copy_stat_dataset.value_by_index(0, 0, default_value)
 
 
 if __name__ == '__main__':

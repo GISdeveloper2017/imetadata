@@ -117,6 +117,8 @@ class CSys(CResource):
 
 if __name__ == '__main__':
     print(CSys.get_plugins_package_root_name())
+    # print(CSys.get_project_dir())
+    # print(CSys.get_metadata_root_dir())
     print(CSys.get_plugins_root_dir())
     print(CSys.get_metadata_data_access_modules_root_name())
     print(CSys.get_metadata_data_access_modules_root_dir())

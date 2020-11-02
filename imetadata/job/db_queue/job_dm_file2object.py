@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import
 
+from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
 from imetadata.business.metadata.base.fileinfo.c_dmFileInfo import CDMFileInfo
@@ -68,40 +69,67 @@ where dsfscanstatus = 2
         ds_owner_obj_id = dataset.value_by_name(0, 'query_dir_parent_objid', '')
         CLogger().debug('处理的文件为: {0}.{1}'.format(ds_file_id, ds_file_name_with_path))
 
-        sql_get_rule = '''
-            select dsdScanRule
-            from dm2_storage_directory
-            where dsdStorageid = :dsdStorageID and Position(dsddirectory || '/' in :dsdDirectory) = 1
-                and dsdScanRule is not null
-            order by dsddirectory desc
-            limit 1
+        try:
+            sql_get_rule = '''
+                select dsdScanRule
+                from dm2_storage_directory
+                where dsdStorageid = :dsdStorageID and Position(dsddirectory || '{0}' in :dsdDirectory) = 1
+                    and dsdScanRule is not null
+                order by dsddirectory desc
+                limit 1
+                '''.format(CFile.sep())
+            rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {'dsdStorageID': ds_storage_id,
+                                                                                             'dsdDirectory': ds_subpath})
+            ds_rule_content = rule_ds.value_by_name(0, 'dsdScanRule', '')
+
+            file_obj = CDMFileInfo(
+                self.FileType_File,
+                ds_file_name_with_path,
+                ds_storage_id,
+                ds_file_id,
+                ds_dir_id,
+                ds_owner_obj_id,
+                self.get_mission_db_id(),
+                ds_rule_content
+            )
+
+            if not file_obj.file_existed:
+                file_obj.db_update_status_on_file_invalid()
+                return CResult.merge_result(CResult.Success, '文件[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_file_name_with_path))
+            else:
+                file_obj.db_file2object()
+
+            result = CResult.merge_result(CResult.Success, '文件[{0}]的识别过程顺利完成!'.format(ds_file_name_with_path))
+            self.update_file_status(ds_file_id, result)
+        except Exception as error:
+            result = CResult.merge_result(
+                CResult.Failure,
+                '文件[{0}]的识别过程出现错误, 详细情况: {1}!'.format(ds_file_name_with_path, error.__str__())
+            )
+            self.update_file_status(ds_file_id, result)
+            return result
+
+    def update_file_status(self, file_id, result):
+        if CResult.result_success(result):
+            sql_update_file_status = '''
+            update dm2_storage_file
+            set dsfscanstatus = 0
+                , dsflastmodifytime = now()
+                , dsfscanmemo = :memo
+            where dsfid = :dsfid
             '''
-        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {'dsdStorageID': ds_storage_id,
-                                                                                         'dsdDirectory': ds_subpath})
-        ds_rule_content = rule_ds.value_by_name(0, 'dsdScanRule', '')
-
-        file_obj = CDMFileInfo(self.FileType_File, ds_file_name_with_path,
-                               ds_storage_id,
-                               ds_file_id,
-                               ds_dir_id,
-                               ds_owner_obj_id,
-                               self.get_mission_db_id(),
-                               ds_rule_content)
-
-        if not file_obj.file_existed:
-            file_obj.db_update_status_on_file_invalid()
-            return CResult.merge_result(CResult.Success, '文件[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_file_name_with_path))
         else:
-            file_obj.db_file2object()
-
-        sql_update_directory_status = '''
-        update dm2_storage_file
-        set dsfscanstatus = 0, dsflastmodifytime = now()
-        where dsfid = :dsfid
-        '''
-        CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_directory_status, {'dsfid': ds_file_id})
-
-        return CResult.merge_result(CResult.Success, '文件[{0}]处理顺利完成!'.format(ds_file_name_with_path))
+            sql_update_file_status = '''
+            update dm2_storage_file
+            set dsfscanstatus = 3
+                , dsflastmodifytime = now()
+                , dsfscanmemo = :memo
+            where dsfid = :dsfid
+            '''
+        params = dict()
+        params['dsfid'] = file_id
+        params['memo'] = CResult.result_message(result)
+        CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_file_status, params)
 
 
 if __name__ == '__main__':

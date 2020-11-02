@@ -74,11 +74,11 @@ where dsdscanfilestatus = 2
         sql_get_rule = '''
         select dsdScanRule
         from dm2_storage_directory
-        where dsdStorageid = :dsdStorageID and Position(dsddirectory || '/' in :dsdDirectory) = 1
+        where dsdStorageid = :dsdStorageID and Position(dsddirectory || '{0}' in :dsdDirectory) = 1
             and dsdScanRule is not null
         order by dsddirectory desc
         limit 1
-        '''
+        '''.format(CFile.sep())
         rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {'dsdStorageID': ds_storage_id,
                                                                                          'dsdDirectory': ds_subpath})
         ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
