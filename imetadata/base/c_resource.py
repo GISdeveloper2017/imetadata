@@ -304,3 +304,29 @@ class CResource:
 
     Path_21AT_MD_Content_ProductType = '/root/ProductType'
     Path_21AT_MD_Content_ProductName = '/root/DSName'
+
+    DataGroup_Sat_raster = 'sat_raster'
+    DataGroup_Industry_Data = 'industry_data'
+    DataGroup_Industry_DataSet = 'industry_dataset'
+    DataGroup_Raster = 'raster'
+    DataGroup_Raster_DataSet = 'raster_dataset'
+    DataGroup_Vector = 'vector'
+    DataGroup_Vector_DataSet = 'vector_dataset'
+
+    def data_group_title(self, group_name: str):
+        if group_name.lower() == self.DataGroup_Sat_raster:
+            return '卫星影像'
+        elif group_name.lower() == self.DataGroup_Industry_Data:
+            return '行业数据'
+        elif group_name.lower() == self.DataGroup_Industry_DataSet:
+            return '行业数据集'
+        elif group_name.lower() == self.DataGroup_Raster:
+            return '影像'
+        elif group_name.lower() == self.DataGroup_Raster_DataSet:
+            return '影像数据集'
+        elif group_name.lower() == self.DataGroup_Vector:
+            return '矢量'
+        elif group_name.lower() == self.DataGroup_Vector_DataSet:
+            return '矢量数据集'
+        else:
+            return None

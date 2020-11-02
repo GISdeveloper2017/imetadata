@@ -11,6 +11,8 @@ class plugins_3001_shp(CVectorFilePlugins):
         information = super().get_information()
         information[self.Plugins_Info_Name] = 'shp'
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
+        information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector
+        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
         return information
 
     def get_classified_character(self):

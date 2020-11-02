@@ -88,6 +88,11 @@ class CPlugins(CResource):
     Plugins_Info_ID = 'dsodid'
     # 插件英文描述-内置
     Plugins_Info_Name = 'dsodname'
+    # 插件分组名称(英文)-内置
+    Plugins_Info_Group_Name = 'dsodgroupname'
+    # 插件分组名称(中文)-内置
+    Plugins_Info_Group_Title = 'dsodgrouptitle'
+
     # 插件中文描述-内置
     Plugins_Info_Title = 'dsodtitle'
     # 插件英文编码-业务
@@ -166,6 +171,8 @@ class CPlugins(CResource):
         information[self.Plugins_Info_ViewEngine] = None
         information[self.Plugins_Info_SpatialEngine] = None
         information[self.Plugins_Info_HasChildObj] = self.DB_False
+        information[self.Plugins_Info_Group_Name] = None
+        information[self.Plugins_Info_Group_Title] = None
 
         return information
 

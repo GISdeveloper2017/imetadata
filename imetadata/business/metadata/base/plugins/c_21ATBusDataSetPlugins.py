@@ -33,6 +33,8 @@ class C21ATBusDataSetPlugins(CDirPlugins):
         information[self.Plugins_Info_TagsEngine] = 'global_dim'
         information[self.Plugins_Info_DetailEngine] = None
         information[self.Plugins_Info_HasChildObj] = self.DB_True
+        information[self.Plugins_Info_Group_Name] = self.DataGroup_Industry_DataSet
+        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
 
         return information
 

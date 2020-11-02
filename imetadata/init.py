@@ -11,6 +11,7 @@ from imetadata.base.c_logger import CLogger
 from imetadata.base.c_object import CObject
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_sys import CSys
+from imetadata.database.c_factory import CFactory
 
 
 class CApplicationInit(CResource):
@@ -19,9 +20,16 @@ class CApplicationInit(CResource):
         delete from dm2_storage_object_def
         '''
 
-        sql_register_dm_metadata_plugins = '''
-        insert into dm2_storage_object_def(dsodid, dsodname, dsodtitle, dsodtype, dsod_metadata_engine, dsod_detail_engine, dsod_tags_engine, dsod_ext_whitelist, dsod_browserimg, dsod_thumbimg, dsod_check_engine_type, dsod_check_engine, dsod_check_engine_workdir, dsod_deploy_engine_type, dsod_deploy_engine, dsod_deploy_engine_workdir, dsodtype_title, dsodcode, dsocatalog) 
+        sql_unregister_dm_metadata_plugins = '''
+        delete from dm2_storage_object_def where dsodid = :dsodid
         '''
+        sql_register_dm_metadata_plugins = '''
+        insert into dm2_storage_object_def(
+            dsodid, dsodname, dsodtitle, dsodtype, dsodtype_title, dsodcode, dsocatalog, dsodgroupname, dsodgrouptitle) 
+            values (:dsodid, :dsodname, :dsodtitle, :dsodtype, :dsodtype_title, :dsodcode, :dsocatalog, :dsodgroupname, :dsodgrouptitle) 
+        '''
+
+        CFactory().give_me_db().execute(sql_register_dm_metadata_plugins_clear)
 
         plugins_root_dir = CSys.get_plugins_root_dir()
         plugins_type_list = CFile.file_or_subpath_of_path(plugins_root_dir)
@@ -34,9 +42,16 @@ class CApplicationInit(CResource):
                                                                                            self.FileExt_Py))
                 for file_name_without_path in plugins_file_list:
                     file_main_name = CFile.file_main_name(file_name_without_path)
-                    class_classified_obj = CObject.create_plugins_instance(plugins_root_package_name, file_main_name,
-                                                                           None)
-                    print('{0}/{1}:{2}'.format(plugins_type, file_main_name, class_classified_obj.get_information()))
+                    class_classified_obj = CObject.create_plugins_instance(
+                        plugins_root_package_name,
+                        file_main_name,
+                        None
+                    )
+                    plugins_info = class_classified_obj.get_information()
+                    print('{0}/{1}:{2}'.format(plugins_type, file_main_name, plugins_info))
+
+                    CFactory().give_me_db().execute(sql_unregister_dm_metadata_plugins, plugins_info)
+                    CFactory().give_me_db().execute(sql_register_dm_metadata_plugins, plugins_info)
 
 
 def start_init():

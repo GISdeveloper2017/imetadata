@@ -23,6 +23,9 @@ class plugins_2000_mbtiles(CFilePlugins):
         information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
+        information[self.Plugins_Info_Group_Name] = self.DataGroup_Raster
+        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+
         return information
 
     def classified(self):

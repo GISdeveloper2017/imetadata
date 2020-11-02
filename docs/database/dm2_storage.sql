@@ -763,6 +763,12 @@ comment on column dm2_storage_file.dsfUserId is '数管-存储-文件-用户';
 alter table dm2_storage_inbound add column dsiUserId varchar(100);
 comment on column dm2_storage_inbound.dsiUserId is '数管-存储-入库-用户';
 
-
-
-
+/*
+    2020-11-02
+    . 扩展object_def表, 支持可视化展示
+        . 增加数据类型的分组
+*/
+alter table dm2_storage_object_def add column dsodgroupname varchar(100);
+comment on column dm2_storage_object_def.dsodgroupname is '数管-定义-分组名称';
+alter table dm2_storage_object_def add column dsodgrouptitle varchar(100);
+comment on column dm2_storage_object_def.dsodgrouptitle is '数管-定义-分组标题';

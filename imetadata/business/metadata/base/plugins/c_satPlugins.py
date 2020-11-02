@@ -49,6 +49,8 @@ class CSatPlugins(CPlugins):
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
         information[self.Plugins_Info_DetailEngine] = self.get_runtime_detail_engine()
+        information[self.Plugins_Info_Group_Name] = self.DataGroup_Sat_raster
+        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
 
         return information
 
