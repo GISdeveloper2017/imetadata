@@ -52,3 +52,9 @@ class CFilePlugins_GUOTU(CFilePlugins):
         self._object_name = None
         self._object_confirm = self.Object_Confirm_IUnKnown
         return self._object_confirm, self._object_name
+
+    def add_file_to_details(self, file_full_name):
+        """
+        追加到附属文件集合中
+        """
+        self._object_detail_file_full_name_list.append(file_full_name)

@@ -51,6 +51,8 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
                 or CUtils.equal_ignore_case(file_ext, self.Name_Img):
             self._object_confirm = self.Object_Confirm_IKnown
             self._object_name = self.file_info.file_main_name
+            file_detail_xml = '{0}_21at.xml'.format(self.file_info.file_main_name_with_full_path)
+            self.add_file_to_details(file_detail_xml)       #将文件加入到附属文件列表中
         else:
             self._object_confirm = self.Object_Confirm_IKnown_Not
             self._object_name = None
