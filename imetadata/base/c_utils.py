@@ -135,7 +135,7 @@ class CUtils(CResource):
     @classmethod
     def text_is_date_day(cls, check_text: str) -> bool:
         """
-        TODO 张源博 判断是否为年月日（不包含时间），如20201022,2020/10/22,2020-10-22
+        TODO 张源博 判断是否为年月日（不包含时间），如20201022,2020/10/22,2020-10-22,2020.10.22,2020年10月22日
         @param check_text:
         @return:
         """
@@ -337,6 +337,20 @@ class CUtils(CResource):
         """
         try:
             value = float(obj)
+            return value
+        except:
+            return default_value
+
+    @classmethod
+    def to_integer(cls, obj, default_value=-1):
+        """
+        文本转整数
+        @param obj:
+        @param default_value:
+        @return:
+        """
+        try:
+            value = int(obj)
             return value
         except:
             return default_value

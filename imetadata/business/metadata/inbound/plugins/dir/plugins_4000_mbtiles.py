@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/9/17 16:51 
 # @Author : 王西亚 
-# @File : plugins_2000_mbtiles.py
+# @File : plugins_4000_mbtiles.py
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
@@ -9,7 +9,7 @@ from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CM
 from imetadata.business.metadata.base.plugins.c_filePlugins import CFilePlugins
 
 
-class plugins_2000_mbtiles(CFilePlugins):
+class plugins_4000_mbtiles(CFilePlugins):
     __metadata_xml_file_name__ = None
 
     def get_information(self) -> dict:
