@@ -27,7 +27,7 @@ class CFilePlugins_GUOTU_Third_Survey(CFilePlugins_GUOTU):
         try:
             db = CFactory().give_me_db(self.file_info.db_server_id)
             file_name_before_six_name = db.one_row("select gdstitle from ro_global_dim_space "
-                                                   "where gdsid = '{0}'".format(file_name_before_six))\
+                                                   "where gdsid = '{0}'".format(file_name_before_six)) \
                 .value_by_name(0, 'gdstitle', None)
         except:
             file_name_before_six_name = ''
@@ -326,5 +326,30 @@ class CFilePlugins_GUOTU_Third_Survey(CFilePlugins_GUOTU):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_DataType: self.value_type_date,
+            }
+        ]
+
+    def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
+        """
+        标准模式的提取时间信息的列表
+        """
+        return [
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Time,
+                self.Name_XPath: "//item[@name='sjscsj']",
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Start_Time,
+                self.Name_XPath: "//item[@name='sjscsj']",
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_End_Time,
+                self.Name_XPath: "//item[@name='sjscsj']",
+                self.Name_Format: self.MetaDataFormat_XML
             }
         ]

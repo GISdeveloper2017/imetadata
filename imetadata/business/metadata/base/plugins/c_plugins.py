@@ -608,7 +608,7 @@ class CPlugins(CResource):
                         self.Name_Native_Center: self.Spatial_MetaData_Type_Native_Center,
                         self.Name_Native_BBox: self.Spatial_MetaData_Type_Native_BBox,
                         self.Name_Native_Geom: self.Spatial_MetaData_Type_Native_Geom,
-                        self.Name_Wgs84_Center: self.Spatial_MetaData_Type_Native_Center,
+                        self.Name_Wgs84_Center: self.Spatial_MetaData_Type_Wgs84_Center,
                         self.Name_Wgs84_BBox: self.Spatial_MetaData_Type_Wgs84_BBox,
                         self.Name_Wgs84_Geom: self.Spatial_MetaData_Type_Wgs84_Geom
                     }
