@@ -467,7 +467,105 @@ class CPlugins(CResource):
         :param parser:
         :return:
         """
-        pass
+        metadata_time_parser_list = self.parser_metadata_time_list(parser)
+        if len(metadata_time_parser_list) > 0:
+            for metadata_time_item in metadata_time_parser_list:
+                src = CUtils.dict_value_by_name(metadata_time_item, self.Name_Source, self.Name_Business)
+                src_format = CUtils.dict_value_by_name(metadata_time_item, self.Name_Format, self.MetaDataFormat_XML)
+                if CUtils.equal_ignore_case(src, self.Name_Data):
+                    if CUtils.equal_ignore_case(src_format, self.MetaDataFormat_XML):
+                        parser.metadata.set_metadata_time(
+                            self.Success,
+                            '时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
+                            CUtils.dict_value_by_name(metadata_time_item, self.Name_ID, self.Name_Time),
+                            CXml.get_element_text(
+                                parser.metadata.metadata_xml().xpath_one(
+                                    CUtils.dict_value_by_name(metadata_time_item, self.Name_XPath, '')
+                                )
+                            )
+                        )
+                    else:
+                        parser.metadata.set_metadata_time(
+                            self.Success,
+                            '时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
+                            CUtils.dict_value_by_name(metadata_time_item, self.Name_ID, self.Name_Time),
+                            parser.metadata.metadata_json().xpath_one(
+                                CUtils.dict_value_by_name(metadata_time_item, self.Name_XPath, ''),
+                                None
+                            )
+                        )
+                else:
+                    if CUtils.equal_ignore_case(src_format, self.MetaDataFormat_XML):
+                        parser.metadata.set_metadata_time(
+                            self.Success,
+                            '时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
+                            CUtils.dict_value_by_name(metadata_time_item, self.Name_ID, self.Name_Time),
+                            CXml.get_element_text(
+                                parser.metadata.metadata_bus_xml().xpath_one(
+                                    CUtils.dict_value_by_name(metadata_time_item, self.Name_XPath, '')
+                                )
+                            )
+                        )
+                    else:
+                        parser.metadata.set_metadata_time(
+                            self.Success,
+                            '时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
+                            CUtils.dict_value_by_name(metadata_time_item, self.Name_ID, self.Name_Time),
+                            parser.metadata.metadata_bus_json().xpath_one(
+                                CUtils.dict_value_by_name(metadata_time_item, self.Name_XPath, ''),
+                                None
+                            )
+                        )
+
+            # 从metadata中重新提取时间time_information, 获取time的值, 然后对time, start_time和end_time进行修正
+            time_json = parser.metadata.time_information
+            time_text = time_json.xpath_one(self.Name_Time, '')
+            # 监测time_text是否是合法的日期...
+
+            return CResult.merge_result(
+                self.Success,
+                '数据文件[{0}]的时间信息解析成功! '.format(self.file_info.file_name_with_full_path)
+            )
+        else:
+            return self.get_default_metadata_time(parser)
+
+    def get_default_metadata_time(self, parser: CMetaDataParser) -> str:
+        parser.metadata.set_metadata_time(self.Success, '', self.Name_Time, self.file_info.file_create_time)
+        parser.metadata.set_metadata_time(self.Success, '', self.Name_Start_Time, self.file_info.file_create_time)
+        parser.metadata.set_metadata_time(self.Success, '', self.Name_End_Time, self.file_info.file_create_time)
+
+        return CResult.merge_result(
+            self.Success,
+            '数据文件[{0}]的时间信息解析成功! '.format(self.file_info.file_name_with_full_path)
+        )
+
+    def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
+        """
+        标准模式的提取时间信息的列表
+        示例:
+        return [
+            {
+                self.Name_ID: self.Name_Time,
+                self.Name_XPath: '/ProductMetaData/CenterTime'
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Start_Time,
+                self.Name_XPath: '/ProductMetaData/StartTime'
+            },
+            {
+                self.Name_Source: self.Name_Data,
+                self.Name_ID: self.Name_End_Time,
+                self.Name_XPath: '/ProductMetaData/EndTime'
+            }
+        ]
+        self.Name_Source
+        1. self.Name_Business: 表示从数据的业务xml元数据中取(默认, 可以不设置)
+        1. self.Name_Data: 表示从数据的xml元数据中取
+        :param parser:
+        :return:
+        """
+        return []
 
     def parser_metadata_spatial_after_qa(self, parser: CMetaDataParser):
         """

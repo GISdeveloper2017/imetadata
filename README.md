@@ -112,30 +112,6 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
      |interval|trigger.weeks|可选, 每隔x星期执行一次|{"trigger": {"weeks": 2}}|
      |db_queue|job.db_server_id|数据库队列, 引用的数据库的标识, 该标识在settings.py中定义|{"job": {"db_server_id": 2}}|
      |db_queue|process.parallel_count|并行worker的个数|{"process": {"parallel_count": 1}}|
-
-# 进度
-## 数据管理
-### 插件
- |类型|名称|开发人|进度|说明|
- |  ----  |  ----  |  ----  | ----  | ----  |
- |卫星数据插件| GF1-PMS |赵宇飞|完成|高分一号PMS传感器|
-
-### 调度
- |类型|进度|开发人|算法|说明|
- |  ----  |  ----  |  ----  | ----  | ----  |
- |db_queue| 已完成 |wangxy|job_dm_root_parser|根目录扫描调度, 处理dm2_storage表队列, dsStatus:0->1->2->0|
- |db_queue| 已完成 |zhaoyf, wangxy|job_dm_path2object|目录识别对象调度, 处理dm2_storage_directory表队列, dsScanStatus:0->1->2->0|
- |db_queue| 已完成 |zhaoyf, wangxy|job_dm_path_parser|目录下的子目录扫描调度, 处理dm2_storage_directory表队列, dsScanFileStatus:0->1->2->0|
- |db_queue| 已完成 |zhaoyf, wangxy|job_dm_file2object|目录识别对象调度, 处理dm2_storage_directory表队列, dsScanStatus:0->1->2->0|
- |db_queue| 进行中 |zhaoyf|job_dm_obj_tags|对象的标签自动识别|
- |db_queue| 进行中 |zhaoyf|job_dm_obj_detail|对象的附属文件解析|
- |db_queue| 进行中 |zhaoyf|job_dm_obj_metadata|对象的质检及元数据解析|
-
-### 框架
- |进度|说明|
- | ---- | ---- |
- |已完成|支持在metadata.rule中设置当前目录下的文件的优先识别插件|
- |已完成|支持在应用程序配置中, 设置特定目录下的文件的优先识别插件|
 ***
 # 业务
 ## 数据管理
@@ -739,6 +715,23 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
     1. 最后
         1. 将处理成功的dm2_storage_inbound记录
             1. dsiStatus=0
+
+***
+## 数据发布
+### 场景
+1. 即时服务产品的入库合法数据, 支持全分辨率浏览
+    1. 用户入库数据, 在扫描后, 识别为对象, 并对对象的可分发能力进行质检
+    1. 通过质检的数据, 系统将根据质检结果, 对数据的应用能力进行判别, 不同的对象, 对第三方应用的支撑能力不同.
+    1. 在服务发布子系统中正常发布的服务, 将与对象标识关联
+    1. 在数据检索分发子系统中的对象编目, 也与对象标识关联
+    1. 数据检索分发子系统中的编目, 将通过
+1. 用户入库的数据, 可发布为服务, 支持第三方应用
+
+***
+## 数据分析
+### 场景
+1. 用户入库的数据, 可通过自动化分析, 分析结果入库或发布为ogc服务
+
 
 # 2020-09-05
 扩展trigger的类型为
