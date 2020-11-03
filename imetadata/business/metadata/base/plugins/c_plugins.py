@@ -8,6 +8,7 @@ from abc import abstractmethod
 from imetadata.base.c_file import CFile
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
+from imetadata.base.c_time import CTime
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.base.exceptions import FileContentWapperNotExistException
@@ -16,6 +17,7 @@ from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFile
 from imetadata.business.metadata.base.parser.c_parser import CParser
 from imetadata.business.metadata.base.parser.c_parserCustom import CParserCustom
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
+from imetadata.database.c_factory import CFactory
 
 
 class CPlugins(CResource):
@@ -521,7 +523,26 @@ class CPlugins(CResource):
             time_json = parser.metadata.time_information
             time_text = time_json.xpath_one(self.Name_Time, '')
             # 监测time_text是否是合法的日期...
-
+            if not CUtils.text_is_date_or_datetime(time_text):
+                # 从ro_global_dim_time表中识别是否有记录，如果有，则获取对应的开始时间、结束时间
+                sql = '''
+                select starttime, endtime from ro_global_dim_time where gdtquickcode ='{0}'
+                '''.format(time_text)
+                ds_time = CFactory().give_me_db(self.file_info.db_server_id).one_row(sql)
+                starttime = ds_time.value_by_name(0, 'starttime', None)
+                endtime = ds_time.value_by_name(0, 'endtime', None)
+                if starttime is not None:
+                    parser.metadata.set_metadata_time(
+                        self.Success,
+                        '时间信息[{0}]成功从ro_global_dim_time表中解析',
+                        self.Name_Start_Time,
+                        starttime)
+                if endtime is not None:
+                    parser.metadata.set_metadata_time(
+                        self.Success,
+                        '时间信息[{0}]成功从ro_global_dim_time表中解析',
+                        self.Name_End_Time,
+                        endtime)
             return CResult.merge_result(
                 self.Success,
                 '数据文件[{0}]的时间信息解析成功! '.format(self.file_info.file_name_with_full_path)
