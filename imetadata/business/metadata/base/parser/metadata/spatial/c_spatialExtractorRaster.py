@@ -21,25 +21,17 @@ class CSpatialExtractorRaster(CSpatialExtractor):
         result_process = self.process_raster()
         if CResult.result_success(result_process):
             file_path = self.file_content.work_root_dir
+            dict_temp_file_name = {
+                self.Name_Native_Center: '{0}_native_center.wkt'.format(self.object_name),
+                self.Name_Native_BBox: '{0}_native_bbox.wkt'.format(self.object_name),
+                self.Name_Native_Geom: '{0}_native_geom.wkt'.format(self.object_name),
+                self.Name_Wgs84_Center: '{0}_wgs84_center.wkt'.format(self.object_name),
+                self.Name_Wgs84_BBox: '{0}_wgs84_bbox.wkt'.format(self.object_name),
+                self.Name_Wgs84_Geom: '{0}_wgs84_geom.wkt'.format(self.object_name)
+            }
             result = CResult.merge_result(self.Success, '处理完毕!')
-            result = CResult.merge_result_info(result, self.Name_Native_Center,
-                                               CFile.join_file(file_path,
-                                                               '{0}_native_center.wkt'.format(self.object_name)))
-            result = CResult.merge_result_info(result, self.Name_Native_BBox,
-                                               CFile.join_file(file_path,
-                                                               '{0}_native_bbox.wkt'.format(self.object_name)))
-            result = CResult.merge_result_info(result, self.Name_Native_Geom,
-                                               CFile.join_file(file_path,
-                                                               '{0}_native_geom.wkt'.format(self.object_name)))
-            result = CResult.merge_result_info(result, self.Name_Wgs84_Center,
-                                               CFile.join_file(file_path,
-                                                               '{0}_wgs84_center.wkt'.format(self.object_name)))
-            result = CResult.merge_result_info(result, self.Name_Wgs84_BBox,
-                                               CFile.join_file(file_path,
-                                                               '{0}_wgs84_bbox.wkt'.format(self.object_name)))
-            result = CResult.merge_result_info(result, self.Name_Wgs84_Geom,
-                                               CFile.join_file(file_path,
-                                                               '{0}_wgs84_geom.wkt'.format(self.object_name)))
+            for file_type, file_name in dict_temp_file_name.items():
+                result = CResult.merge_result_info(result, file_type, CFile.join_file(file_path, file_name))
         else:
             result = CResult.merge_result(self.Failure, CResult.result_message(result_process))
         return result
