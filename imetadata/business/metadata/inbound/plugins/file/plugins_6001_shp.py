@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/9/22 15:25 
 # @Author : 王西亚 
-# @File : plugins_3001_shp.py.py
+# @File : plugins_6001_shp.py.py
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.common.c_vectorFilePlugins import CVectorFilePlugins
 
 
-class plugins_3001_shp(CVectorFilePlugins):
+class plugins_6001_shp(CVectorFilePlugins):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Name] = 'shp'

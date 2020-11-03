@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*- 
-# @Time : 2020/10/29 15:23
-# @Author : 赵宇飞
-# @File : plugins_4001_tif.py
+# @Time : 2020/9/22 15:25 
+# @Author : 王西亚 
+# @File : plugins_7000_img.py
 
 from imetadata.business.metadata.base.plugins.industry.common.c_rasterFilePlugins import CRasterFilePlugins
 
 
-class plugins_4001_tif(CRasterFilePlugins):
+class plugins_7000_img(CRasterFilePlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Name] = 'tif'
+        information[self.Plugins_Info_Name] = 'img'
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
         return information
 
@@ -22,4 +22,4 @@ class plugins_4001_tif(CRasterFilePlugins):
             TextMatchType_Common: 常规通配符, 如 *.txt
             TextMatchType_Regex: 正则表达式
         """
-        return '*.tif', self.TextMatchType_Common
+        return '*.img', self.TextMatchType_Common

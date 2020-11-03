@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/10/29 15:24
 # @Author : 赵宇飞
-# @File : plugins_4002_tiff.py
+# @File : plugins_7002_tiff.py
 
 from imetadata.business.metadata.base.plugins.industry.common.c_rasterFilePlugins import CRasterFilePlugins
 
 
-class plugins_4002_tiff(CRasterFilePlugins):
+class plugins_7002_tiff(CRasterFilePlugins):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Name] = 'tiff'
