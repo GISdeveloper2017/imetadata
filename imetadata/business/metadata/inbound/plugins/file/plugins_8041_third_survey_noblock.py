@@ -73,13 +73,14 @@ class plugins_8041_third_survey_noblock(CFilePlugins_GUOTU_Third_Survey):
                 if CUtils.equal_ignore_case(file_ext, 'img'):
                     self._object_confirm = self.Object_Confirm_IKnown
                     self._object_name = file_main_name
+                    self.add_file_to_detail_list(file_name_before_six)
                 else:
                     self._object_confirm = self.Object_Confirm_IKnown_Not
                     self._object_name = None
             else:
                 # 运行到此的文件，如果格式为以下，则默认为附属文件
                 affiliated_ext_list = ['mdb', 'shp', 'shx', 'dbf', 'sbx', 'prj', 'sbn']
-                if file_extlower() in affiliated_ext_list:
+                if file_ext.lower() in affiliated_ext_list:
                     self._object_confirm = self.Object_Confirm_IKnown_Not
                     self._object_name = None
                 else:

@@ -74,6 +74,7 @@ class plugins_8040_third_survey_block(CFilePlugins_GUOTU_Third_Survey):
                 if CUtils.equal_ignore_case(file_ext, 'img'):
                     self._object_confirm = self.Object_Confirm_IKnown
                     self._object_name = file_main_name
+                    self.add_file_to_detail_list(file_name_before_six)
                 else:
                     self._object_confirm = self.Object_Confirm_IKnown_Not
                     self._object_name = None

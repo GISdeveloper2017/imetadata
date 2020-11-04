@@ -77,6 +77,7 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
                     and CUtils.equal_ignore_case(file_ext, 'tif'):
                 self._object_confirm = self.Object_Confirm_IKnown
                 self._object_name = file_main_name
+                self.add_file_to_detail_list(file_object_name)  # 在这里设置不同名的附属文件
             else:
                 self._object_confirm = self.Object_Confirm_IKnown_Not
                 self._object_name = None

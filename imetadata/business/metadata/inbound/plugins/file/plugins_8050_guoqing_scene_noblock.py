@@ -83,16 +83,19 @@ class plugins_8050_guoqing_scene_noblock(CFilePlugins_GUOTU_GuoQing):
                 and CUtils.equal_ignore_case(file_ext, 'img'):
             self._object_confirm = self.Object_Confirm_IKnown
             self._object_name = file_main_name
+            self.add_file_to_detail_list(file_object_name)
         elif CUtils.equal_ignore_case(name_sub_backwards_1.lower(), 'm') \
                 and CUtils.equal_ignore_case(file_ext, 'img') \
                 and not CFile.find_file_or_subpath_of_path(file_path, match_str_f, CFile.MatchType_Regex):
             self._object_confirm = self.Object_Confirm_IKnown
             self._object_name = file_main_name
+            self.add_file_to_detail_list(file_object_name)
         elif CUtils.equal_ignore_case(name_sub_backwards_1.lower(), 'p') \
                 and CUtils.equal_ignore_case(file_ext, 'img') \
                 and not CFile.find_file_or_subpath_of_path(file_path, match_str_fm, CFile.MatchType_Regex):
             self._object_confirm = self.Object_Confirm_IKnown
             self._object_name = file_main_name
+            self.add_file_to_detail_list(file_object_name)
         else:
             self._object_confirm = self.Object_Confirm_IKnown_Not
             self._object_name = None
