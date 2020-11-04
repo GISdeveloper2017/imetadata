@@ -30,6 +30,13 @@ class CResource:
     Name_Wgs84_Center = 'wgs84_center'
     Name_Wgs84_BBox = 'wgs84_bbox'
     Name_Wgs84_Geom = 'wgs84_geom'
+    Name_Prj_Wkt = 'prj_wkt'
+    Name_Prj_Proj4 = 'prj_proj4'
+    Name_Prj_Project = 'prj_project'
+    Name_Prj_Coordinate = 'prj_coordinate'
+    Name_Prj_Degree = 'prj_degree'
+    Name_Prj_Zone = 'prj_zone'
+    Name_Prj_Source = 'prj_source'
 
     Name_Password = 'password'
     Name_UserName = 'username'

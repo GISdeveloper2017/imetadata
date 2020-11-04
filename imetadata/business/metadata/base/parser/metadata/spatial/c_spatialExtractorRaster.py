@@ -5,9 +5,11 @@
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
+from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.spatial.c_spatialExtractor import CSpatialExtractor
+from osgeo import osr
 
 
 class CSpatialExtractorRaster(CSpatialExtractor):
@@ -27,7 +29,14 @@ class CSpatialExtractorRaster(CSpatialExtractor):
                 self.Name_Native_Geom: '{0}_native_geom.wkt'.format(self.object_name),
                 self.Name_Wgs84_Center: '{0}_wgs84_center.wkt'.format(self.object_name),
                 self.Name_Wgs84_BBox: '{0}_wgs84_bbox.wkt'.format(self.object_name),
-                self.Name_Wgs84_Geom: '{0}_wgs84_geom.wkt'.format(self.object_name)
+                self.Name_Wgs84_Geom: '{0}_wgs84_geom.wkt'.format(self.object_name),
+                self.Name_Prj_Wkt: CResult.result_info(result_process, self.Name_Prj_Wkt),
+                self.Name_Prj_Proj4: CResult.result_info(result_process, self.Name_Prj_Proj4),
+                self.Name_Prj_Project: CResult.result_info(result_process, self.Name_Prj_Project),
+                self.Name_Prj_Coordinate: CResult.result_info(result_process, self.Name_Prj_Coordinate),
+                self.Name_Prj_Source: CResult.result_info(result_process, self.Name_Prj_Source),
+                self.Name_Prj_Zone: CResult.result_info(result_process, self.Name_Prj_Zone),
+                self.Name_Prj_Degree: CResult.result_info(result_process, self.Name_Prj_Degree)
             }
             result = CResult.merge_result(self.Success, '处理完毕!')
             for file_type, file_name in dict_temp_file_name.items():
@@ -44,7 +53,7 @@ class CSpatialExtractorRaster(CSpatialExtractor):
 
             json_obj = self.metadata.metadata_json()
             # json_obj.load_file(file_name_with_full_path)
-
+            # 1.空间坐标信息
             wkt_info = 'POLYGON((min_x max_y,max_x max_y,max_x min_y,min_x min_y,min_x max_y))'
 
             native_max_x = json_obj.xpath_one('boundingbox.right', 0)
@@ -100,7 +109,40 @@ class CSpatialExtractorRaster(CSpatialExtractor):
             CFile.str_2_file(wgs84_bbox, wgs84_bbox_filepath)
             wgs84_geom_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_geom.wkt')
             CFile.str_2_file(wgs84_geom, wgs84_geom_filepath)
-            return CResult.merge_result(self.Success, '处理完毕!')
+
+            # 2.投影信息
+            native_wkt = json_obj.xpath_one('coordinate.wkt', None)
+            native_proj4 = json_obj.xpath_one('coordinate.proj4', None)
+
+            spatial_ref = osr.SpatialReference(wkt=native_wkt)
+            native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
+            native_project = spatial_ref.GetAttrValue('PROJECTION')
+            native_source = CResource.Prj_Source_Data
+            native_zone = self.get_prj_zone(json_obj)
+            native_degree = self.get_prj_degree(json_obj)
+
+            result = CResult.merge_result(self.Success, '处理完毕!')
+            result = CResult.merge_result_info(result, self.Name_Prj_Wkt, native_wkt)
+            result = CResult.merge_result_info(result, self.Name_Prj_Proj4, native_proj4)
+            result = CResult.merge_result_info(result, self.Name_Prj_Project, native_project)
+            result = CResult.merge_result_info(result, self.Name_Prj_Coordinate, native_coordinate)
+            result = CResult.merge_result_info(result, self.Name_Prj_Source, native_source)
+            result = CResult.merge_result_info(result, self.Name_Prj_Zone, native_zone)
+            result = CResult.merge_result_info(result, self.Name_Prj_Degree, native_degree)
+            return result
+            # return CResult.merge_result(self.Success, '处理完毕!')
         except Exception as error:
             CLogger().warning('影像数据的空间信息处理出现异常, 错误信息为: {0}'.format(error.__str__))
             return CResult.merge_result(self.Failure, '影像数据的空间信息处理出现异常,错误信息为：{0}!'.format(error.__str__))
+
+    def get_prj_zone(self, json_obj):
+        """
+        函数预留
+        """
+        return '35'
+
+    def get_prj_degree(self, json_obj):
+        """
+        函数预留
+        """
+        return '11.253655'
