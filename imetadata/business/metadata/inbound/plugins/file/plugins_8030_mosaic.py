@@ -283,28 +283,3 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
                 self.Name_Width: 500
             }
         ]
-
-    def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
-        """
-        标准模式的提取时间信息的列表
-        """
-        return [
-            {
-                self.Name_Source: self.Name_Business,
-                self.Name_ID: self.Name_Time,
-                self.Name_XPath: '//ProduceDate',
-                self.Name_Format: self.MetaDataFormat_XML
-            },
-            {
-                self.Name_Source: self.Name_Business,
-                self.Name_ID: self.Name_Start_Time,
-                self.Name_XPath: '//ProduceDate',
-                self.Name_Format: self.MetaDataFormat_XML
-            },
-            {
-                self.Name_Source: self.Name_Business,
-                self.Name_ID: self.Name_End_Time,
-                self.Name_XPath: '//ProduceDate',
-                self.Name_Format: self.MetaDataFormat_XML
-            }
-        ]

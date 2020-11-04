@@ -18,7 +18,6 @@ class CFilePlugins_GUOTU_21AT(CFilePlugins_GUOTU):
         5.8 DEM-非分幅影像（***_21at.xml）
         5.9 自定义影像（***_21at.xml/无xml文件）
     """
-
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
         提取xml格式的业务元数据, 加载到parser的metadata对象中
@@ -80,3 +79,28 @@ class CFilePlugins_GUOTU_21AT(CFilePlugins_GUOTU):
                     self.Name_Message: '业务元数据[{0}]存在'.format(self.metadata_bus_src_filename_with_path)
                 }
             )
+
+    def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
+        """
+        标准模式的提取时间信息的列表
+        """
+        return [
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Time,
+                self.Name_XPath: '//ProduceDate',
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Start_Time,
+                self.Name_XPath: '//ProduceDate',
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_End_Time,
+                self.Name_XPath: '//ProduceDate',
+                self.Name_Format: self.MetaDataFormat_XML
+            }
+        ]

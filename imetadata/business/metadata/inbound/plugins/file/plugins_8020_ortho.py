@@ -44,7 +44,7 @@ class plugins_8020_ortho(CFilePlugins_GUOTU_21AT):
             self._object_confirm = self.Object_Confirm_IKnown
             self._object_name = file_main_name
             file_detail_xml = '{0}_21at.xml'.format(self.file_info.file_main_name_with_full_path)
-            self.add_file_to_details(file_detail_xml)       #将文件加入到附属文件列表中
+            self.add_file_to_details(file_detail_xml)       # 将文件加入到附属文件列表中
         else:
             self._object_confirm = self.Object_Confirm_IKnown_Not
             self._object_name = None
@@ -219,30 +219,5 @@ class plugins_8020_ortho(CFilePlugins_GUOTU_21AT):
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_DataType: self.value_type_string,
                 self.Name_Width: 500
-            }
-        ]
-
-    def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
-        """
-        标准模式的提取时间信息的列表
-        """
-        return [
-            {
-                self.Name_Source: self.Name_Business,
-                self.Name_ID: self.Name_Time,
-                self.Name_XPath: '//ProduceDate',
-                self.Name_Format: self.MetaDataFormat_XML
-            },
-            {
-                self.Name_Source: self.Name_Business,
-                self.Name_ID: self.Name_Start_Time,
-                self.Name_XPath: '//ProduceDate',
-                self.Name_Format: self.MetaDataFormat_XML
-            },
-            {
-                self.Name_Source: self.Name_Business,
-                self.Name_ID: self.Name_End_Time,
-                self.Name_XPath: '//ProduceDate',
-                self.Name_Format: self.MetaDataFormat_XML
             }
         ]

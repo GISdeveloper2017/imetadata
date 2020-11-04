@@ -729,3 +729,91 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
                 self.Name_Result: self.QA_Result_Error
             }
         ]
+
+    def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
+        """
+        标准模式的提取时间信息的列表
+        """
+        transformer_type = self.metadata_bus_transformer_type.lower()
+        if transformer_type == 'mdb':
+            return self.__metadata_time_mdb_list()
+        elif transformer_type == 'mat':
+            return self.__metadata_time_mat_list()
+        elif transformer_type == 'xls' or transformer_type == 'xlsx':
+            return self.__metadata_time_xls_list()
+        else:
+            return []
+
+    def __metadata_time_mdb_list(self) -> list:
+        """
+        标准模式的提取时间信息的列表
+        self.Name_Source
+        1. self.Name_Business: 表示从数据的业务xml元数据中取(默认, 可以不设置)
+        1. self.Name_Data: 表示从数据的xml元数据中取
+        :param parser:
+        :return:
+        """
+        return [
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Time,
+                self.Name_XPath: "//item[@name='sjscsj']",
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Start_Time,
+                self.Name_XPath: "//item[@name='sjscsj']",
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_End_Time,
+                self.Name_XPath: "//item[@name='sjscsj']",
+                self.Name_Format: self.MetaDataFormat_XML
+            }
+        ]
+
+    def __metadata_time_mat_list(self) -> list:
+        return [
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Time,
+                self.Name_XPath: "//item[@name='航摄时间']",
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Start_Time,
+                self.Name_XPath: "//item[@name='航摄时间']",
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_End_Time,
+                self.Name_XPath: "//item[@name='航摄时间']",
+                self.Name_Format: self.MetaDataFormat_XML
+            }
+        ]
+
+    def __metadata_time_xls_list(self) -> list:
+        return [
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Time,
+                self.Name_XPath: "//item[@name='航摄日期']",
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Start_Time,
+                self.Name_XPath: "//item[@name='航摄日期']",
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_End_Time,
+                self.Name_XPath: "//item[@name='航摄日期']",
+                self.Name_Format: self.MetaDataFormat_XML
+            }
+        ]
