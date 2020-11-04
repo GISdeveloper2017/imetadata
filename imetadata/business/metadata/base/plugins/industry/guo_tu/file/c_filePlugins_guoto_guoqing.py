@@ -2,9 +2,7 @@
 # @Time : 2020/10/25 15:22
 # @Author : 赵宇飞
 # @File : c_filePlugins_guoto_guoqing.py
-from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
-from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerCommon import CMDTransformerCommon
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
@@ -156,19 +154,3 @@ class CFilePlugins_GUOTU_GuoQing(CFilePlugins_GUOTU):
                 self.Name_Format: self.MetaDataFormat_XML
             }
         ]
-
-    def add_file_to_detail_list(self, match_name):
-        """
-        设定国土行业数据国情的附属文件的验证规则（镶嵌影像）
-        todo 负责人 王学谦 在这里检验国情的附属文件
-        :return:
-        """
-        file_main_name = self._object_name
-        file_path = self.file_info.file_path
-        # 模糊匹配附属文件
-        if not CUtils.equal_ignore_case(file_path, ''):
-            match_str = '{0}*.*'.format(match_name)
-            match_file_list = CFile.file_or_dir_fullname_of_path(file_path, False, match_str, CFile.MatchType_Common)
-            for file_with_path in match_file_list:
-                if not CUtils.equal_ignore_case(CFile.file_main_name(file_with_path), file_main_name):  # 去除自身与同名文件
-                    self.add_file_to_details(file_with_path)  # 将文件加入到附属文件列表中

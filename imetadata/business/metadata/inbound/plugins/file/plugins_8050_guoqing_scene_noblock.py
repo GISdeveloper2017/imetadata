@@ -102,6 +102,31 @@ class plugins_8050_guoqing_scene_noblock(CFilePlugins_GUOTU_GuoQing):
 
         return self._object_confirm, self._object_name
 
+    def add_file_to_detail_list(self, match_name):
+        """
+        设定国土行业数据国情的附属文件的验证规则（镶嵌影像）
+        todo 负责人 王学谦 在这里检验国情的附属文件
+        :return:
+        """
+        file_main_name = self._object_name
+        file_path = self.file_info.file_path
+        # 正则匹配附属文件
+        if not CUtils.equal_ignore_case(file_path, ''):
+            match_str = '{0}*.*'.format(match_name)
+            match_file_list = CFile.file_or_dir_fullname_of_path(file_path, False, match_str, CFile.MatchType_Common)
+
+            match_str_main_name = r'(?i)^{0}[FMP]$'.format(match_name)  # 主附属
+            ext_list = ['rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'xml']
+            for file_with_path in match_file_list:
+                if CUtils.equal_ignore_case(CFile.file_main_name(file_with_path), file_main_name):  # 去除自身与同名文件
+                    pass
+                elif CUtils.text_match_re(CFile.file_main_name(file_with_path), match_str_main_name):
+                    self.add_file_to_details(file_with_path)  # 将文件加入到附属文件列表中
+                elif CFile.file_ext(file_with_path).lower() in ext_list:
+                    self.add_file_to_details(file_with_path)
+                else:
+                    pass
+
     def qa_file_custom(self, parser: CMetaDataParser):
         """
         自定义的文件存在性质检, 发生在元数据解析之前

@@ -102,19 +102,19 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
                     and CUtils.equal_ignore_case(file_ext, 'img'):
                 self._object_confirm = self.Object_Confirm_IKnown
                 self._object_name = file_main_name
-                self.add_file_to_detail_list(file_object_name)
+                self.add_file_to_detail_list(file_object_name, name_sub_backwards_num)
             elif CUtils.equal_ignore_case(name_sub_backwards_fmp.lower(), 'm') \
                     and CUtils.equal_ignore_case(file_ext, 'img') \
                     and not CFile.find_file_or_subpath_of_path(file_path, match_str_f, CFile.MatchType_Regex):
                 self._object_confirm = self.Object_Confirm_IKnown
                 self._object_name = file_main_name
-                self.add_file_to_detail_list(file_object_name)
+                self.add_file_to_detail_list(file_object_name, name_sub_backwards_num)
             elif CUtils.equal_ignore_case(name_sub_backwards_fmp.lower(), 'p') \
                     and CUtils.equal_ignore_case(file_ext, 'img') \
                     and not CFile.find_file_or_subpath_of_path(file_path, match_str_fm, CFile.MatchType_Regex):
                 self._object_confirm = self.Object_Confirm_IKnown
                 self._object_name = file_main_name
-                self.add_file_to_detail_list(file_object_name)
+                self.add_file_to_detail_list(file_object_name, name_sub_backwards_num)
             else:
                 self._object_confirm = self.Object_Confirm_IKnown_Not
                 self._object_name = None
@@ -123,6 +123,34 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
             self._object_name = None
 
         return self._object_confirm, self._object_name
+
+    def add_file_to_detail_list(self, match_name, name_sub_backwards_num):
+        """
+        设定国土行业数据国情的附属文件的验证规则（镶嵌影像）
+        todo 负责人 王学谦 在这里检验国情的附属文件
+        :return:
+        """
+        file_main_name = self._object_name
+        file_path = self.file_info.file_path
+        # 正则匹配附属文件
+        if not CUtils.equal_ignore_case(file_path, ''):
+            match_str = '{0}*.*'.format(match_name)
+            match_file_list = CFile.file_or_dir_fullname_of_path(file_path, False, match_str, CFile.MatchType_Common)
+
+            match_str_main_name = r'(?i)^{0}[FMP]-{1}$'.format(match_name, name_sub_backwards_num)  # 带-部分
+            match_str_main_name_all_num = r'(?i)^{0}[FMP]-\d+$'.format(match_name)  # 带-其他部分
+            ext_list = ['rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'xml']
+            for file_with_path in match_file_list:
+                if CUtils.equal_ignore_case(CFile.file_main_name(file_with_path), file_main_name):  # 去除自身与同名文件
+                    pass
+                elif CUtils.text_match_re(CFile.file_main_name(file_with_path), match_str_main_name):
+                    self.add_file_to_details(file_with_path)  # 将文件加入到附属文件列表中
+                elif CUtils.text_match_re(CFile.file_main_name(file_with_path), match_str_main_name_all_num):
+                    pass  # 如果不是-同数字的带-文件，则不录入
+                elif CFile.file_ext(file_with_path).lower() in ext_list:
+                    self.add_file_to_details(file_with_path)
+                else:
+                    pass
 
     def qa_file_custom(self, parser: CMetaDataParser):
         """
