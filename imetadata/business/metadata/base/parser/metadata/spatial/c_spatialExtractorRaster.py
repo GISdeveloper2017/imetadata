@@ -3,7 +3,6 @@
 # @Author : 王西亚 
 # @File : c_mdExtractorRaster.py
 from imetadata.base.c_file import CFile
-from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
@@ -65,67 +64,76 @@ class CSpatialExtractorRaster(CSpatialExtractor):
             native_min_x = json_obj.xpath_one('boundingbox.left', 0)
             native_min_y = json_obj.xpath_one('boundingbox.bottom', 0)
 
-            native_dict = {'max_x': CUtils.any_2_str(native_max_x),
+            dict_native = {'max_x': CUtils.any_2_str(native_max_x),
                            'max_y': CUtils.any_2_str(native_max_y),
                            'min_x': CUtils.any_2_str(native_min_x),
                            'min_y': CUtils.any_2_str(native_min_y)}
 
             center_x = (native_max_x - native_min_x) / 2 + native_min_x
             center_y = (native_max_y - native_min_y) / 2 + native_min_y
-            native_center = 'POINT({0} {1})'.format(center_x, center_y)
+            native_center_wkt = 'POINT({0} {1})'.format(center_x, center_y)
 
-            native_bbox = wkt_info
-            for name, value in native_dict.items():
-                native_bbox = native_bbox.replace(name, value)
-            native_geom = native_bbox
+            native_bbox_wkt = wkt_info
+            for name, value in dict_native.items():
+                native_bbox_wkt = native_bbox_wkt.replace(name, value)
+            native_geom_wkt = native_bbox_wkt
 
             file_path = self.file_content.work_root_dir
             file_main_name = self.object_name
             native_center_filepath = CFile.join_file(file_path, file_main_name + '_native_center.wkt')
-            CFile.str_2_file(native_center, native_center_filepath)
+            CFile.str_2_file(native_center_wkt, native_center_filepath)
             native_bbox_filepath = CFile.join_file(file_path, file_main_name + '_native_bbox.wkt')
-            CFile.str_2_file(native_bbox, native_bbox_filepath)
+            CFile.str_2_file(native_bbox_wkt, native_bbox_filepath)
             native_geom_filepath = CFile.join_file(file_path, file_main_name + '_native_geom.wkt')
-            CFile.str_2_file(native_geom, native_geom_filepath)
+            CFile.str_2_file(native_geom_wkt, native_geom_filepath)
 
             wgs84_max_x = CUtils.to_decimal(json_obj.xpath_one('wgs84.boundingbox.right', 0))
             wgs84_max_y = CUtils.to_decimal(json_obj.xpath_one('wgs84.boundingbox.top', 0))
             wgs84_min_x = CUtils.to_decimal(json_obj.xpath_one('wgs84.boundingbox.left', 0))
             wgs84_min_y = CUtils.to_decimal(json_obj.xpath_one('wgs84.boundingbox.bottom', 0))
 
-            wgs84_dict = {'max_x': CUtils.any_2_str(wgs84_max_x),
+            dict_wgs84 = {'max_x': CUtils.any_2_str(wgs84_max_x),
                           'max_y': CUtils.any_2_str(wgs84_max_y),
                           'min_x': CUtils.any_2_str(wgs84_min_x),
                           'min_y': CUtils.any_2_str(wgs84_min_y)}
 
             center_x = (wgs84_max_x - wgs84_min_x) / 2 + wgs84_min_x
             center_y = (wgs84_max_y - wgs84_min_y) / 2 + wgs84_min_y
-            wgs84_center = 'POINT({0} {1})'.format(center_x, center_y)
+            wgs84_center_wkt = 'POINT({0} {1})'.format(center_x, center_y)
 
-            wgs84_bbox = wkt_info
-            for name, value in wgs84_dict.items():
-                wgs84_bbox = wgs84_bbox.replace(name, value)
-            wgs84_geom = wgs84_bbox
+            wgs84_bbox_wkt = wkt_info
+            for name, value in dict_wgs84.items():
+                wgs84_bbox_wkt = wgs84_bbox_wkt.replace(name, value)
+            wgs84_geom_wkt = wgs84_bbox_wkt
 
             wgs84_center_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_center.wkt')
-            CFile.str_2_file(wgs84_center, wgs84_center_filepath)
+            CFile.str_2_file(wgs84_center_wkt, wgs84_center_filepath)
             wgs84_bbox_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_bbox.wkt')
-            CFile.str_2_file(wgs84_bbox, wgs84_bbox_filepath)
+            CFile.str_2_file(wgs84_bbox_wkt, wgs84_bbox_filepath)
             wgs84_geom_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_geom.wkt')
-            CFile.str_2_file(wgs84_geom, wgs84_geom_filepath)
+            CFile.str_2_file(wgs84_geom_wkt, wgs84_geom_filepath)
 
             # 2.投影信息
             native_wkt = json_obj.xpath_one('coordinate.wkt', None)
             native_proj4 = json_obj.xpath_one('coordinate.proj4', None)
-
-            spatial_ref = osr.SpatialReference(wkt=native_wkt)
-            native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
-            native_project = spatial_ref.GetAttrValue('PROJECTION')
-            native_degree = spatial_ref.GetAttrValue('GEOGCS|UNIT', 1)
             native_source = CResource.Prj_Source_Data
 
-            pixel_size = json_obj.xpath_one('pixelsize.width', None)
-            native_zone = self.get_prj_zone(spatial_ref, pixel_size)
+            native_coordinate = None
+            native_degree = None
+            native_project = None
+            native_zone = None
+            spatial_ref = osr.SpatialReference(wkt=native_wkt)
+            if spatial_ref.IsProjected():
+                native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
+                native_project = spatial_ref.GetAttrValue('PROJECTION')
+                native_degree = spatial_ref.GetAttrValue('GEOGCS|UNIT', 1)
+                pixel_size = json_obj.xpath_one('pixelsize.width', None)
+                native_zone = self.get_prj_zone(spatial_ref, pixel_size)
+            elif spatial_ref.IsGeocentric():
+                native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
+                native_degree = spatial_ref.GetAttrValue('UNIT', 1)
+                native_project = None
+                native_zone = None
 
             result = CResult.merge_result(self.Success, '处理完毕!')
             result = CResult.merge_result_info(result, self.Name_Prj_Wkt, native_wkt)

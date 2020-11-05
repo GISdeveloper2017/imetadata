@@ -3,12 +3,12 @@
 # @Author : 王西亚 
 # @File : c_mdExtractorVector.py
 from imetadata.base.c_file import CFile
-from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
+from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.spatial.c_spatialExtractor import CSpatialExtractor
-
+from osgeo import osr
 
 class CSpatialExtractorVector(CSpatialExtractor):
     def process(self) -> str:
@@ -30,25 +30,28 @@ class CSpatialExtractorVector(CSpatialExtractor):
         result_process = self.process_vector()
         if CResult.result_success(result_process):
             file_path = self.file_content.work_root_dir
+            dict_temp_file_name = {
+                self.Name_Native_Center: '{0}_native_center.wkt'.format(self.object_name),
+                self.Name_Native_BBox: '{0}_native_bbox.wkt'.format(self.object_name),
+                self.Name_Native_Geom: '{0}_native_geom.wkt'.format(self.object_name),
+                self.Name_Wgs84_Center: '{0}_wgs84_center.wkt'.format(self.object_name),
+                self.Name_Wgs84_BBox: '{0}_wgs84_bbox.wkt'.format(self.object_name),
+                self.Name_Wgs84_Geom: '{0}_wgs84_geom.wkt'.format(self.object_name)
+            }
+            dict_temp_prj_name = {
+                self.Name_Prj_Wkt: CResult.result_info(result_process, self.Name_Prj_Wkt, None),
+                self.Name_Prj_Proj4: CResult.result_info(result_process, self.Name_Prj_Proj4, None),
+                self.Name_Prj_Project: CResult.result_info(result_process, self.Name_Prj_Project, None),
+                self.Name_Prj_Coordinate: CResult.result_info(result_process, self.Name_Prj_Coordinate, None),
+                self.Name_Prj_Source: CResult.result_info(result_process, self.Name_Prj_Source, None),
+                self.Name_Prj_Zone: CResult.result_info(result_process, self.Name_Prj_Zone, None),
+                self.Name_Prj_Degree: CResult.result_info(result_process, self.Name_Prj_Degree, None)
+            }
             result = CResult.merge_result(self.Success, '处理完毕!')
-            result = CResult.merge_result_info(result, self.Name_Native_Center,
-                                               CFile.join_file(file_path,
-                                                               '{0}_native_center.wkt'.format(self.object_name)))
-            result = CResult.merge_result_info(result, self.Name_Native_BBox,
-                                               CFile.join_file(file_path,
-                                                               '{0}_native_bbox.wkt'.format(self.object_name)))
-            result = CResult.merge_result_info(result, self.Name_Native_Geom,
-                                               CFile.join_file(file_path,
-                                                               '{0}_native_geom.wkt'.format(self.object_name)))
-            result = CResult.merge_result_info(result, self.Name_Wgs84_Center,
-                                               CFile.join_file(file_path,
-                                                               '{0}_wgs84_center.wkt'.format(self.object_name)))
-            result = CResult.merge_result_info(result, self.Name_Wgs84_BBox,
-                                               CFile.join_file(file_path,
-                                                               '{0}_wgs84_bbox.wkt'.format(self.object_name)))
-            result = CResult.merge_result_info(result, self.Name_Wgs84_Geom,
-                                               CFile.join_file(file_path,
-                                                               '{0}_wgs84_geom.wkt'.format(self.object_name)))
+            for file_type, file_name in dict_temp_file_name.items():
+                result = CResult.merge_result_info(result, file_type, CFile.join_file(file_path, file_name))
+            for prj_type, prj_name in dict_temp_prj_name.items():
+                result = CResult.merge_result_info(result, prj_type, prj_name)
         else:
             result = CResult.merge_result(self.Failure, CResult.result_message(result_process))
         return result
@@ -59,7 +62,7 @@ class CSpatialExtractorVector(CSpatialExtractor):
             # file_main_name = CFile.file_main_name(file_name_with_full_path)
             # file_path = CFile.file_path(file_name_with_full_path)
             json_obj = self.metadata.metadata_json()
-
+            # 1.空间坐标信息
             wkt_info = 'POLYGON((min_x max_y,max_x max_y,max_x min_y,min_x min_y,min_x max_y))'
 
             native_max_x = json_obj.xpath_one('layers[0].extent.maxx', 0)
@@ -67,29 +70,29 @@ class CSpatialExtractorVector(CSpatialExtractor):
             native_min_x = json_obj.xpath_one('layers[0].extent.minx', 0)
             native_min_y = json_obj.xpath_one('layers[0].extent.miny', 0)
 
-            native_dict = {'max_x': CUtils.any_2_str(native_max_x),
+            dict_native = {'max_x': CUtils.any_2_str(native_max_x),
                            'max_y': CUtils.any_2_str(native_max_y),
                            'min_x': CUtils.any_2_str(native_min_x),
                            'min_y': CUtils.any_2_str(native_min_y)}
 
             center_x = (native_max_x - native_min_x) / 2 + native_min_x
             center_y = (native_max_y - native_min_y) / 2 + native_min_y
-            native_center = 'POINT({0} {1})'.format(center_x, center_y)
+            native_center_wkt = 'POINT({0} {1})'.format(center_x, center_y)
 
-            native_bbox = wkt_info
-            for name, value in native_dict.items():
-                native_bbox = native_bbox.replace(name, value)
-            geom_native = native_bbox
+            native_bbox_wkt = wkt_info
+            for name, value in dict_native.items():
+                native_bbox_wkt = native_bbox_wkt.replace(name, value)
+            geom_native_wkt = native_bbox_wkt
 
             file_path = self.file_content.work_root_dir
             file_main_name = self.object_name
 
             native_center_filepath = CFile.join_file(file_path, file_main_name + '_native_center.wkt')
-            CFile.str_2_file(native_center, native_center_filepath)
+            CFile.str_2_file(native_center_wkt, native_center_filepath)
             native_bbox_filepath = CFile.join_file(file_path, file_main_name + '_native_bbox.wkt')
-            CFile.str_2_file(native_bbox, native_bbox_filepath)
+            CFile.str_2_file(native_bbox_wkt, native_bbox_filepath)
             native_geom_filepath = CFile.join_file(file_path, file_main_name + '_native_geom.wkt')
-            CFile.str_2_file(geom_native, native_geom_filepath)
+            CFile.str_2_file(geom_native_wkt, native_geom_filepath)
 
             wgs84_max_x = CUtils.to_decimal(json_obj.xpath_one('layers[0].wgs84.extent.maxx', 0))
             wgs84_max_y = CUtils.to_decimal(json_obj.xpath_one('layers[0].wgs84.extent.maxy', 0))
@@ -103,20 +106,49 @@ class CSpatialExtractorVector(CSpatialExtractor):
 
             center_x = (wgs84_max_x - wgs84_min_x) / 2 + wgs84_min_x
             center_y = (wgs84_max_y - wgs84_min_y) / 2 + wgs84_min_y
-            wgs84_center = 'POINT({0} {1})'.format(center_x, center_y)
+            wgs84_center_wkt = 'POINT({0} {1})'.format(center_x, center_y)
 
-            wgs84_bbox = wkt_info
+            wgs84_bbox_wkt = wkt_info
             for name, value in wgs84_dict.items():
-                wgs84_bbox = wgs84_bbox.replace(name, value)
-            wgs84_geom = wgs84_bbox
+                wgs84_bbox_wkt = wgs84_bbox_wkt.replace(name, value)
+            wgs84_geom_wkt = wgs84_bbox_wkt
 
             wgs84_center_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_center.wkt')
-            CFile.str_2_file(wgs84_center, wgs84_center_filepath)
+            CFile.str_2_file(wgs84_center_wkt, wgs84_center_filepath)
             wgs84_bbox_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_bbox.wkt')
-            CFile.str_2_file(wgs84_bbox, wgs84_bbox_filepath)
+            CFile.str_2_file(wgs84_bbox_wkt, wgs84_bbox_filepath)
             wgs84_geom_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_geom.wkt')
-            CFile.str_2_file(wgs84_geom, wgs84_geom_filepath)
-            return CResult.merge_result(self.Success, '处理完毕!')
+            CFile.str_2_file(wgs84_geom_wkt, wgs84_geom_filepath)
+
+            # 2.投影信息
+            native_wkt = json_obj.xpath_one('layers[0].wkt.data', None)
+            native_proj4 = json_obj.xpath_one('layers[0].wkt.proj4', None)
+            native_source = CResource.Prj_Source_Data
+
+            native_project = None
+            native_coordinate = None
+            native_degree = None
+            native_zone = None
+            spatial_ref = osr.SpatialReference(wkt=native_wkt)
+            if spatial_ref.IsProjected():
+                native_project = spatial_ref.GetAttrValue('PROJECTION')
+                native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
+                native_degree = spatial_ref.GetAttrValue('GEOGCS|UNIT', 1)
+            elif spatial_ref.IsGeocentric():
+                native_project = None
+                native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
+                native_degree = spatial_ref.GetAttrValue('UNIT', 1)
+
+            result = CResult.merge_result(self.Success, '处理完毕!')
+            result = CResult.merge_result_info(result, self.Name_Prj_Wkt, native_wkt)
+            result = CResult.merge_result_info(result, self.Name_Prj_Proj4, native_proj4)
+            result = CResult.merge_result_info(result, self.Name_Prj_Project, native_project)
+            result = CResult.merge_result_info(result, self.Name_Prj_Coordinate, native_coordinate)
+            result = CResult.merge_result_info(result, self.Name_Prj_Source, native_source)
+            result = CResult.merge_result_info(result, self.Name_Prj_Zone, native_zone)
+            result = CResult.merge_result_info(result, self.Name_Prj_Degree, native_degree)
+            return result
+            # return CResult.merge_result(self.Success, '处理完毕!')
         except Exception as error:
-            CLogger().warning('影像数据的空间信息处理出现异常, 错误信息为: {0}'.format(error.__str__))
-            return CResult.merge_result(self.Failure, '影像数据的空间信息处理出现异常,错误信息为：{0}!'.format(error.__str__))
+            CLogger().warning('矢量数据的空间信息处理出现异常, 错误信息为: {0}'.format(error.__str__))
+            return CResult.merge_result(self.Failure, '矢量数据的空间信息处理出现异常,错误信息为：{0}!'.format(error.__str__))
