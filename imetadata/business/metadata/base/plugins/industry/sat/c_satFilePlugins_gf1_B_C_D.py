@@ -84,6 +84,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
         """
         return [
             {
+                self.Name_Type: self.QA_Type_FileExist,
                 self.Name_FileName: '{0}-PAN.tiff'.format(self.classified_object_name()),
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '全色文件',
@@ -104,7 +105,24 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_XPath: '/ProductMetaData/OrbitID',
                 self.Name_ID: 'OrbitID',
                 self.Name_Title: '轨道编号',
-                self.Name_Width: 1000,
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/ProduceType',
+                self.Name_ID: 'ProduceType',
+                self.Name_Title: '产品类型',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/ProductLevel',
+                self.Name_ID: 'ProductLevel',
+                self.Name_Title: '产品属性',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_DataType: self.value_type_string
@@ -120,7 +138,8 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -133,7 +152,8 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -146,7 +166,8 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -159,7 +180,8 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -172,7 +194,8 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -185,7 +208,8 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -198,7 +222,8 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -211,7 +236,8 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -247,7 +273,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_Title: '分辨率',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType: self.value_type_string
+                self.Name_DataType: self.value_type_integer
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -269,7 +295,9 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
+
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -279,6 +307,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_DataType: self.value_type_decimal_or_integer
+
             }
         ]
 
@@ -309,8 +338,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
         注意:
             super().parser_metadata_spatial_after_qa(parser)
             要写在自定义的空间信息提取之后!!!
-
-        todo(全体) 继承本方法, 因为卫星数据的特殊性, 可以只取中心点和外包框
+            完成 负责人 邢凯凯 继承本方法, 因为卫星数据的特殊性, 可以只取中心点和外包框
 
         :param parser:
         :return:
@@ -345,7 +373,7 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
                                                          '{0}_native_bbox.wkt'.format(CUtils.one_id()))
         CFile.str_2_file('point({0} {1})'.format(center_latitude, center_longitude), native_center_filename_with_path)
         CFile.str_2_file(
-            'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) , ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
+            'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
                 BottomLeftLatitude_text, BottomLeftLongitude_text,
                 TopLeftLatitude_text, TopLeftLongitude_text,
                 TopRightLatitude_text, TopRightLongitude_text,

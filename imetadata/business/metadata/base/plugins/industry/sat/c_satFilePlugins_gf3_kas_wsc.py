@@ -88,44 +88,44 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
         """
         return [
             {
-                self.Name_Type: self.QA_Type_FileExist,
                 self.Name_FileName: '{0}_Strip_0.tiff'.format(self.classified_object_name().replace('VHVV', 'VV')),
                 self.Name_ID: 'Strip_0.tiff',
                 self.Name_Title: '影像文件Strip_0',
                 self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.DataFormat_Raster_File
             },
             {
-                self.Name_Type: self.QA_Type_FileExist,
                 self.Name_FileName: '{0}_Strip_1.tiff'.format(self.classified_object_name().replace('VHVV', 'VV')),
                 self.Name_ID: 'Strip_1.tiff',
                 self.Name_Title: '影像文件Strip_1',
                 self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.DataFormat_Raster_File
             },
             {
-                self.Name_Type: self.QA_Type_FileExist,
                 self.Name_FileName: '{0}_Strip_2.tiff'.format(self.classified_object_name().replace('VHVV', 'VV')),
                 self.Name_ID: 'Strip_2.tiff',
                 self.Name_Title: '影像文件Strip_2',
                 self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.DataFormat_Raster_File
             },
             {
-                self.Name_Type: self.QA_Type_FileExist,
                 self.Name_FileName: '{0}_Strip_3.tiff'.format(self.classified_object_name().replace('VHVV', 'VV')),
                 self.Name_ID: 'Strip_3.tiff',
                 self.Name_Title: '影像文件Strip_3',
                 self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.DataFormat_Raster_File
             },
             {
-                self.Name_Type: self.QA_Type_FileExist,
                 self.Name_FileName: '{0}_Strip_4.tiff'.format(self.classified_object_name().replace('VHVV', 'VV')),
                 self.Name_ID: 'Strip_4.tiff',
                 self.Name_Title: '影像文件Strip_4',
                 self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.DataFormat_Raster_File
             }
         ]
 
@@ -165,6 +165,15 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/product/productinfo/ProductLevel',
+                self.Name_ID: 'ProductLevel',
+                self.Name_Title: '产品属性',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
                 self.Name_XPath: '/product/imageinfo/corner/topLeft/latitude',
                 self.Name_ID: 'TopLeftLatitude',
                 self.Name_Title: '左上角纬度',
@@ -174,7 +183,8 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -187,7 +197,8 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -200,7 +211,8 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -213,7 +225,8 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -226,7 +239,8 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -239,7 +253,8 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -252,7 +267,8 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -265,7 +281,8 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -278,7 +295,8 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -291,7 +309,8 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -349,7 +368,8 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
 
             }
         ]
@@ -384,6 +404,8 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
         注意:
             super().parser_metadata_spatial_after_qa(parser)
             要写在自定义的空间信息提取之后!!!
+            完成 负责人 邢凯凯 继承本方法, 因为卫星数据的特殊性, 可以只取中心点和外包框
+
         :param parser:
         :return:
         """
@@ -437,14 +459,12 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
         """
         return [
             {
-                self.Name_Type:self.QA_Type_FileExist,
                 self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: '{0}.jpg'.format(self.classified_object_name().replace('_VHVV_','_VV_'))
+                self.Name_FileName: '{0}.jpg'.format(self.classified_object_name().replace('_VHVV_', '_VV_'))
 
             },
             {
-                self.Name_Type: self.QA_Type_FileExist,
                 self.Name_ID: self.View_MetaData_Type_Thumb,
-                self.Name_FileName: '{0}.thumnail.jpg'.format(self.classified_object_name().replace('_VHVV_','_VV_'))
+                self.Name_FileName: '{0}.thumnail.jpg'.format(self.classified_object_name().replace('_VHVV_', '_VV_'))
             }
         ]

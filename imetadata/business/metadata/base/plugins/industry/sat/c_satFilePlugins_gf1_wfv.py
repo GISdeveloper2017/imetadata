@@ -35,7 +35,7 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             TextMatchType_Common: 常规通配符, 如 *.txt
             TextMatchType_Regex: 正则表达式
         """
-        #支持的类型有：DIR和ZIP GF1_WFV1_E65.2_N26.6_20130927_L1A0000090284
+        # 支持的类型有：DIR和ZIP GF1_WFV1_E65.2_N26.6_20130927_L1A0000090284
         #                    GF1_WFV2_E65.2_N26.6_20130927_L1A0000090284
         #            File    GF1_WFV1_E65.2_N26.6_20130927_L1A0000090284-PAN1.tiff
         #                    GF1_WFV2_E65.2_N26.6_20130927_L1A0000090284-PAN2.tiff
@@ -106,6 +106,24 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/ProduceType',
+                self.Name_ID: 'ProduceType',
+                self.Name_Title: '产品类型',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: '/ProductMetaData/ProductLevel',
+                self.Name_ID: 'ProductLevel',
+                self.Name_Title: '产品属性',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
                 self.Name_XPath: '/ProductMetaData/TopLeftLatitude',
                 self.Name_ID: 'TopLeftLatitude',
                 self.Name_Title: '左上角纬度',
@@ -115,7 +133,8 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -128,7 +147,8 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -141,7 +161,8 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -154,7 +175,8 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -167,7 +189,8 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -180,7 +203,8 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -193,7 +217,8 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -206,7 +231,8 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                     {
                         self.Name_Min: -180,
                         self.Name_Max: 180
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -242,7 +268,7 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                 self.Name_Title: '分辨率',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType: self.value_type_string
+                self.Name_DataType: self.value_type_integer
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -264,7 +290,8 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                     {
                         self.Name_Min: -90,
                         self.Name_Max: 90
-                    }
+                    },
+                self.Name_DataType: self.value_type_decimal
 
             },
             {
@@ -277,7 +304,6 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                 self.Name_DataType: self.value_type_decimal_or_integer
 
             }
-
         ]
 
     def get_metadata_bus_filename_by_file(self) -> str:
@@ -299,15 +325,18 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         return [
             {
                 self.Name_ID: self.Name_Time,
-                self.Name_XPath: '/ProductMetaData/CenterTime'
+                self.Name_XPath: '/ProductMetaData/CenterTime',
+                self.Name_Format: self.MetaDataFormat_XML
             },
             {
                 self.Name_ID: self.Name_Start_Time,
-                self.Name_XPath: '/ProductMetaData/StartTime'
+                self.Name_XPath: '/ProductMetaData/StartTime',
+                self.Name_Format: self.MetaDataFormat_XML
             },
             {
                 self.Name_ID: self.Name_End_Time,
-                self.Name_XPath: '/ProductMetaData/EndTime'
+                self.Name_XPath: '/ProductMetaData/EndTime',
+                self.Name_Format: self.MetaDataFormat_XML
             }
         ]
 
@@ -317,8 +346,7 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         注意:
             super().parser_metadata_spatial_after_qa(parser)
             要写在自定义的空间信息提取之后!!!
-
-        todo(全体) 继承本方法, 因为卫星数据的特殊性, 可以只取中心点和外包框
+            完成 负责人 邢凯凯 继承本方法, 因为卫星数据的特殊性, 可以只取中心点和外包框
 
         :param parser:
         :return:
@@ -326,10 +354,6 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         xml = parser.metadata.metadata_bus_xml()
         TopLeftLatitude = xml.xpath_one('/ProductMetaData/TopLeftLatitude')
         TopLeftLongitude = xml.xpath_one('/ProductMetaData/TopLeftLongitude')
-        BottomLeftLatitude = xml.xpath_one('/ProductMetaData/BottomLeftLatitude')
-        BottomLeftLongitude = xml.xpath_one('/ProductMetaData/BottomLeftLongitude')
-        TopRightLatitude = xml.xpath_one('/ProductMetaData/TopRightLatitude')
-        TopRightLongitude = xml.xpath_one('/ProductMetaData/TopRightLongitude')
         BottomRightLatitude = xml.xpath_one('/ProductMetaData/TopLeftLatitude')
         BottomRightLongitude = xml.xpath_one('/ProductMetaData/TopLeftLongitude')
 
@@ -340,10 +364,10 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
 
         TopLeftLatitude_text = xml.get_element_text(TopLeftLatitude)
         TopLeftLongitude_text = xml.get_element_text(TopLeftLongitude)
-        BottomLeftLatitude_text = xml.get_element_text(BottomLeftLatitude)
-        BottomLeftLongitude_text = xml.get_element_text(BottomLeftLongitude)
-        TopRightLatitude_text = xml.get_element_text(TopRightLatitude)
-        TopRightLongitude_text = xml.get_element_text(TopRightLongitude)
+        BottomLeftLatitude_text = xml.get_element_text(xml.xpath_one('/ProductMetaData/BottomLeftLatitude'))
+        BottomLeftLongitude_text = xml.get_element_text(xml.xpath_one('/ProductMetaData/BottomLeftLongitude'))
+        TopRightLatitude_text = xml.get_element_text(xml.xpath_one('/ProductMetaData/TopRightLatitude'))
+        TopRightLongitude_text = xml.get_element_text(xml.xpath_one('/ProductMetaData/TopRightLongitude'))
         BottomRightLatitude_text = xml.get_element_text(BottomRightLatitude)
         BottomRightLongitude_text = xml.get_element_text(BottomRightLongitude)
 
@@ -353,7 +377,7 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                                                          '{0}_native_bbox.wkt'.format(CUtils.one_id()))
         CFile.str_2_file('point({0} {1})'.format(center_latitude, center_longitude), native_center_filename_with_path)
         CFile.str_2_file(
-            'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) , ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
+            'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
                 BottomLeftLatitude_text, BottomLeftLongitude_text,
                 TopLeftLatitude_text, TopLeftLongitude_text,
                 TopRightLatitude_text, TopRightLongitude_text,
@@ -366,7 +390,6 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                                              native_center_filename_with_path)
         parser.metadata.set_metadata_spatial(self.Success, '', self.Spatial_MetaData_Type_Native_BBox,
                                              native_bbox_filename_with_path)
-
 
         super().parser_metadata_spatial_after_qa(parser)
 
