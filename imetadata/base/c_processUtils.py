@@ -5,7 +5,7 @@
 
 
 import os
-
+import multiprocessing
 import psutil
 
 
@@ -48,6 +48,22 @@ class CProcessUtils:
                 for child in process.children():
                     os.kill(child.pid, -1)
                 os.kill(process.pid, -1)
+
+    @classmethod
+    def processing_method(cls, method_name, parameter):
+        """
+        王学谦 多进程调用,注意，进程调用只能在if __name__ == '__main__'中使用，不然会出异常
+        @param method_name:调用方法名
+        @param parameter:调用方法的参数，目前写法仅为单个参数
+        @return:调用方法返回的参数
+        示例：ret = CGdalUtils.processing_method(CGdalUtils.is_raster_file_can_read, file_src)
+        ret即is_raster_file_can_read的返回值
+        """
+        pool = multiprocessing.Pool(1)
+        res = pool.map(method_name, (parameter,))
+        pool.close()
+        pool.join()
+        return res[0]
 
 
 if __name__ == "__main__":

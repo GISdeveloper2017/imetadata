@@ -37,7 +37,7 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
     def classified(self):
         """
         设计国土行业数据guoqing_scene_block的验证规则（国情影像—分块）,带数字 F-1/F-2
-        todo 负责人 王学谦 在这里检验guoqing_scene_block的识别规则
+        完成 负责人 王学谦 在这里检验guoqing_scene_block的识别规则
         :return:
         """
         super().classified()
@@ -60,6 +60,10 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
             file_object_name_list = re.findall(r'(?i)^([a-z]{2}\S+\d{4}[01]\d[0123]\d)[a-z][-]\d+$',
                                                file_main_name)
             file_object_name = file_object_name_list[0]
+        elif CUtils.text_match_re(file_main_name, r'(?i)^[a-z]{2}\S+'  # 尾部只有单个字母的情况
+                                                  r'\d{4}[01]\d[0123]\d[FMP]$') and \
+                CUtils.equal_ignore_case(file_ext.lower(), 'img'):
+            return self.Object_Confirm_IUnKnown, self._object_name
         elif CUtils.text_match_re(file_main_name, r'(?i)^[a-z]{2}\S+'  # 尾部只有单个字母的情况
                                                   r'\d{4}[01]\d[0123]\d[a-z]$'):
             file_object_name = file_main_name[:-1]
@@ -99,18 +103,18 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
             match_str_fm = '(?i)^' + file_object_name + r'[FM][-][' + name_sub_backwards_num + '].img$'
             # 作为对象的主文件存在优先级，F-M-P,比如需要F的文件不存在，M才能是主文件
             if CUtils.equal_ignore_case(name_sub_backwards_fmp.lower(), 'f') \
-                    and CUtils.equal_ignore_case(file_ext, 'img'):
+                    and CUtils.equal_ignore_case(file_ext.lower(), 'img'):
                 self._object_confirm = self.Object_Confirm_IKnown
                 self._object_name = file_main_name
                 self.add_file_to_detail_list(file_object_name, name_sub_backwards_num)
             elif CUtils.equal_ignore_case(name_sub_backwards_fmp.lower(), 'm') \
-                    and CUtils.equal_ignore_case(file_ext, 'img') \
+                    and CUtils.equal_ignore_case(file_ext.lower(), 'img') \
                     and not CFile.find_file_or_subpath_of_path(file_path, match_str_f, CFile.MatchType_Regex):
                 self._object_confirm = self.Object_Confirm_IKnown
                 self._object_name = file_main_name
                 self.add_file_to_detail_list(file_object_name, name_sub_backwards_num)
             elif CUtils.equal_ignore_case(name_sub_backwards_fmp.lower(), 'p') \
-                    and CUtils.equal_ignore_case(file_ext, 'img') \
+                    and CUtils.equal_ignore_case(file_ext.lower(), 'img') \
                     and not CFile.find_file_or_subpath_of_path(file_path, match_str_fm, CFile.MatchType_Regex):
                 self._object_confirm = self.Object_Confirm_IKnown
                 self._object_name = file_main_name
@@ -127,7 +131,7 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
     def add_file_to_detail_list(self, match_name, name_sub_backwards_num):
         """
         设定国土行业数据国情的附属文件的验证规则（镶嵌影像）
-        todo 负责人 王学谦 在这里检验国情的附属文件
+        完成 负责人 王学谦 在这里检验国情的附属文件
         :return:
         """
         file_main_name = self._object_name
@@ -155,7 +159,7 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
     def qa_file_custom(self, parser: CMetaDataParser):
         """
         自定义的文件存在性质检, 发生在元数据解析之前
-        todo 负责人 王学谦
+        完成 负责人 王学谦
         :param parser:
         :return:
         """
@@ -209,7 +213,7 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 业务元数据xml文件的检验列表
-        todo 负责人 王学谦
+        完成 负责人 王学谦
         :param parser:
         :return:
         """

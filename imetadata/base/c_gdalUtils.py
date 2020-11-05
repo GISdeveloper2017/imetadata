@@ -2,14 +2,12 @@
 # @Time : 2020/10/26 13:30
 # @Author : 赵宇飞
 # @File : c_gdalUtils.py
-import multiprocessing
-
 from osgeo import gdal, ogr
 
 from imetadata.base.c_file import CFile
-
-
+from imetadata.base.c_processUtils import CProcessUtils
 # import numpy
+
 
 class CGdalUtils:
     @classmethod
@@ -31,7 +29,7 @@ class CGdalUtils:
         @param vector_file_with_path:
         @return:
         """
-        return CGdalUtils.processing_method(CGdalUtils.is_vector_file_can_read, vector_file_with_path)
+        return CProcessUtils.processing_method(CGdalUtils.is_vector_file_can_read, vector_file_with_path)
 
     @classmethod
     def is_vector_dataset_can_read(cls, vector_dataset_with_path: str) -> bool:
@@ -50,7 +48,7 @@ class CGdalUtils:
         @param vector_dataset_with_path:
         @return:
         """
-        return CGdalUtils.processing_method(CGdalUtils.is_vector_dataset_can_read, vector_dataset_with_path)
+        return CProcessUtils.processing_method(CGdalUtils.is_vector_dataset_can_read, vector_dataset_with_path)
 
     @classmethod
     def is_raster_file_can_read(cls, raster_file_with_path: str) -> bool:
@@ -95,7 +93,7 @@ class CGdalUtils:
         @param raster_file_with_path:
         @return:
         """
-        return CGdalUtils.processing_method(CGdalUtils.is_raster_file_can_read, raster_file_with_path)
+        return CProcessUtils.processing_method(CGdalUtils.is_raster_file_can_read, raster_file_with_path)
 
     @classmethod
     def is_raster_file_integrity(cls, raster_file_with_path: str) -> bool:
@@ -116,22 +114,6 @@ class CGdalUtils:
                 if not CFile.file_or_path_exist(ige):
                     return False
         return True
-
-    @classmethod
-    def processing_method(cls, method_name, parameter):
-        """
-        todo 王学谦 多进程调用,注意，进程调用只能在if __name__ == '__main__'中使用，不然会出异常
-        @param method_name:调用方法名
-        @param parameter:调用方法的参数，目前写法仅为单个参数
-        @return:调用方法返回的参数
-        示例：ret = CGdalUtils.processing_method(CGdalUtils.is_raster_file_can_read, file_src)
-        ret即is_raster_file_can_read的返回值
-        """
-        pool = multiprocessing.Pool(1)
-        res = pool.map(method_name, (parameter,))
-        pool.close()
-        pool.join()
-        return res[0]
 
 
 if __name__ == '__main__':
