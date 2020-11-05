@@ -29,7 +29,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
     def classified(self):
         """
         设计国土行业数据的dem_noframe非分幅数据的验证规则
-        todo 负责人 李宪 在这里检验dem_noframe的识别规则
+        完成 负责人 李宪 在这里检验dem_noframe的识别规则
         :return:
         """
         file_main_name_with_path = CFile.join_file(self.file_info.file_path, self.file_info.file_main_name)
@@ -52,7 +52,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 文件的质检列表
-        todo 负责人 李宪
+        完成 负责人 李宪
         质检项目应包括并不限于如下内容:
         1. 实体数据的附属文件是否完整, 实体数据是否可以正常打开和读取
         1. 元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
@@ -74,7 +74,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
     def qa_file_custom(self, parser: CMetaDataParser):
         """
         自定义的文件存在性质检, 发生在元数据解析之前
-        todo 负责人 李宪
+        完成 负责人 李宪
         :param parser:
         :return:
         """
@@ -114,7 +114,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
         设置解析json格式元数据的检验规则列表, 为空表示无检查规则
-        todo 负责人 李宪
+        完成 负责人 李宪
         :param parser:
         :return:
         """
@@ -207,7 +207,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """
         xml的质检字段列表
-        todo 负责人 李宪
+        完成 负责人 李宪
         @return:
         """
         return [

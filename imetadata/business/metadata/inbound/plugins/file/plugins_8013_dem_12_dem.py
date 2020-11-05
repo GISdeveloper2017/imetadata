@@ -20,7 +20,7 @@ class plugins_8013_dem_12_dem(CFilePlugins_GUOTU_DEM):
     def classified(self):
         """
         设计国土行业数据的dem_12_dem验证规则
-        todo 负责人 李宪 在这里检验dem_12_dem的识别规则
+        完成 负责人 李宪 在这里检验dem_12_dem的识别规则
         :return:
         """
         super().classified()

@@ -29,7 +29,7 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
     def classified(self):
         """
         设计国土行业数据custom的验证规则（自定义影像）
-        todo 负责人 李宪 在这里检验custom的识别规则
+        完成 负责人 李宪 在这里检验custom的识别规则
         :return:
         """
         super().classified()
@@ -61,7 +61,7 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 文件的质检列表
-        todo 负责人 李宪
+        完成 负责人 李宪
         质检项目应包括并不限于如下内容:
         1. 实体数据的附属文件是否完整, 实体数据是否可以正常打开和读取
         1. 元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
@@ -83,7 +83,7 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
         设置解析json格式元数据的检验规则列表, 为空表示无检查规则
-        todo 负责人 李宪
+        完成 负责人 李宪
         :param parser:
         :return:
         """
@@ -176,7 +176,7 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """
         xml的质检字段列表
-        todo 负责人 李宪
+        完成 负责人 李宪
         @return:
         """
         return [

@@ -68,7 +68,7 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
     def add_file_to_detail_list(self):
         """
         设定国土行业数据mosaic的附属文件的验证规则（镶嵌影像）
-        todo 负责人 李宪 在这里检验mosaic的附属文件的识别规则
+        完成 负责人 李宪 在这里检验mosaic的附属文件的识别规则
         :return:
         """
         file_detail_xml = '{0}_21at.xml'.format(self.file_info.file_main_name_with_full_path)
