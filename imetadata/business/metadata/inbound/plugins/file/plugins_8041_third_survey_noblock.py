@@ -10,7 +10,7 @@ from imetadata.base.c_utils import CUtils
 
 class plugins_8041_third_survey_noblock(CFilePlugins_GUOTU_Third_Survey):
     """
-    todo 负责人 王学谦
+    完成 负责人 王学谦
     数据内容	            命名标准	                                            举例
     影像文件
     （二者任一均可）	分块影像：
@@ -34,7 +34,7 @@ class plugins_8041_third_survey_noblock(CFilePlugins_GUOTU_Third_Survey):
     def classified(self):
         """
         设计国土行业数据third_survey_noblock的验证规则（三调影像—非分块）
-        todo 负责人 王学谦 在这里检验third_survey_noblock的识别规则
+        完成 负责人 王学谦 在这里检验third_survey_noblock的识别规则
         :return:
         """
         super().classified()

@@ -171,7 +171,7 @@ class CFile:
     @classmethod
     def identify_encoding(cls, text):
         """
-        TODO 王学谦 编码格式识别
+        完成 王学谦 编码格式识别
         :param text:需要转换的文本
         :return true_text:转换后的编码格式
         """

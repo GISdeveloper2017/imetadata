@@ -21,7 +21,7 @@ class CFilePlugins_GUOTU_21AT(CFilePlugins_GUOTU):
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
         提取xml格式的业务元数据, 加载到parser的metadata对象中
-        todo 负责人 王学谦 在这里将业务元数据***_21at.xml, 存储到parser.metadata.set_metadata_bus_file中
+        完成 负责人 王学谦 在这里将业务元数据***_21at.xml, 存储到parser.metadata.set_metadata_bus_file中
         :param parser:
         :return:
         """
@@ -43,7 +43,7 @@ class CFilePlugins_GUOTU_21AT(CFilePlugins_GUOTU):
     def qa_file_custom(self, parser: CMetaDataParser):
         """
         自定义的文件存在性质检, 发生在元数据解析之前
-        todo 负责人 王学谦
+        完成 负责人 王学谦
         :param parser:
         :return:
         """

@@ -28,7 +28,7 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
     def classified(self):
         """
         设计国土行业数据guoqing_frame的验证规则（国情影像—分幅影像）
-        todo 负责人 王学谦 在这里检验guoqing_frame的识别规则
+        完成 负责人 王学谦 在这里检验guoqing_frame的识别规则
         :return:
         """
         super().classified()
@@ -90,7 +90,7 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
     def add_file_to_detail_list(self, match_name):
         """
         设定国土行业数据国情的附属文件的验证规则（镶嵌影像）
-        todo 负责人 王学谦 在这里检验国情的附属文件
+        完成 负责人 王学谦 在这里检验国情的附属文件
         :return:
         """
         file_main_name = self._object_name
@@ -112,7 +112,7 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
     def qa_file_custom(self, parser: CMetaDataParser):
         """
         自定义的文件存在性质检, 发生在元数据解析之前
-        todo 负责人 王学谦
+        完成 负责人 王学谦
         :param parser:
         :return:
         """
@@ -153,7 +153,7 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 业务元数据xml文件的检验列表
-        todo 负责人 王学谦
+        完成 负责人 王学谦
         :param parser:
         :return:
         """

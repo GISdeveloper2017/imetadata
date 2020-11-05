@@ -12,7 +12,7 @@ import pypyodbc
 
 class CMDTransformerThirdSurvey(CMDTransformer):
     """
-    todo 王学谦  三调mdb里多表 转 业务元数据xml文件
+    完成 王学谦  三调mdb里多表 转 业务元数据xml文件
     """
 
     def process(self) -> str:

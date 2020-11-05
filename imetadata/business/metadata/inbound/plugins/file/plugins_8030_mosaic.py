@@ -20,7 +20,7 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
     def classified(self):
         """
         设计国土行业数据mosaic的验证规则（镶嵌影像）
-        todo 负责人 王学谦 在这里检验mosaic的识别规则
+        完成 负责人 王学谦 在这里检验mosaic的识别规则
         :return:
         """
         super().classified()
@@ -86,7 +86,7 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
         设定镶嵌影像的质检列表,调用默认的主文件质检列表方法，并拼接剩余附属文件
-        todo 负责人 王学谦 在这里检验设定镶嵌影像的质检列表
+        完成 负责人 王学谦 在这里检验设定镶嵌影像的质检列表
         """
         file_main_name = self.classified_object_name()
 
@@ -132,7 +132,7 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 元数据xml文件的检验列表
-        todo 负责人 王学谦
+        完成 负责人 王学谦
         :param parser:
         :return:
         """
@@ -212,7 +212,7 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 业务元数据xml文件的检验列表
-        todo 负责人 王学谦
+        完成 负责人 王学谦
         :param parser:
         :return:
         """

@@ -108,7 +108,7 @@ class CMDTransformerDOM(CMDTransformer):
 
     def mat_to_xml(self, file_metadata_name_with_path: str):
         """
-        TODO 王学谦 mat文件转xml,在函数外提前定义xml对象并获取父节点传入，函数会将通过父节点构造xml对象 by王学谦
+        完成 王学谦 mat文件转xml,在函数外提前定义xml对象并获取父节点传入，函数会将通过父节点构造xml对象 by王学谦
         :param file_metadata_name_with_path:查询的mat文件全名，带路径
         :return xml_obj:将文件内容存储好的项目对象
         """
@@ -134,7 +134,7 @@ class CMDTransformerDOM(CMDTransformer):
 
     def xls_to_xml(self, file_metadata_name_with_path: str):
         """
-         TODO 王学谦 xls/xlsx文件转xml,在函数外提前定义xml对象并获取父节点传入，函数会将通过父节点构造xml对象 by王学谦
+         完成 王学谦 xls/xlsx文件转xml,在函数外提前定义xml对象并获取父节点传入，函数会将通过父节点构造xml对象 by王学谦
         :param file_metadata_name_with_path:查询的xls/xlsx文件全名，带路径
         :return xml_obj:将文件内容存储好的项目对象
         """

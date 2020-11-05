@@ -20,7 +20,7 @@ class plugins_8020_ortho(CFilePlugins_GUOTU_21AT):
     def classified(self):
         """
         设计国土行业数据ortho的验证规则（单景正射）
-        todo 负责人 王学谦 在这里检验ortho的识别规则
+        完成 负责人 王学谦 在这里检验ortho的识别规则
         :return:
         """
         super().classified()
@@ -54,7 +54,7 @@ class plugins_8020_ortho(CFilePlugins_GUOTU_21AT):
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
         初始化ortho文件的质检列表,调用默认的img方法，并拼接剩余附属文件
-        todo 负责人 王学谦 在这里检验初始化ortho的质检列表
+        完成 负责人 王学谦 在这里检验初始化ortho的质检列表
         """
         # file_main_name = self.classified_object_name()
         # file_ext = self.file_info.file_ext
@@ -70,7 +70,7 @@ class plugins_8020_ortho(CFilePlugins_GUOTU_21AT):
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 元数据xml文件的检验列表
-        todo 负责人 王学谦
+        完成 负责人 王学谦
         :param parser:
         :return:
         """
@@ -150,7 +150,7 @@ class plugins_8020_ortho(CFilePlugins_GUOTU_21AT):
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 业务元数据xml文件的检验列表
-        todo 负责人 王学谦
+        完成 负责人 王学谦
         :param parser:
         :return:
         """

@@ -16,7 +16,7 @@ class CFilePlugins_GUOTU_GuoQing(CFilePlugins_GUOTU):
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
         初始化国情文件的质检列表,调用默认的img方法，并拼接剩余附属文件
-        todo 负责人 王学谦 在这里检验初始化国情的质检列表
+        完成 负责人 王学谦 在这里检验初始化国情的质检列表
         """
         # file_main_name = self.classified_object_name()
         # file_ext = self.file_info.file_ext
@@ -111,7 +111,7 @@ class CFilePlugins_GUOTU_GuoQing(CFilePlugins_GUOTU):
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
         提取xml格式的业务元数据, 加载到parser的metadata对象中
-        todo 负责人 王学谦 在这里将业务元数据***Y/M/P.xml, 存储到parser.metadata.set_metadata_bus_file中
+        完成 负责人 王学谦 在这里将业务元数据***Y/M/P.xml, 存储到parser.metadata.set_metadata_bus_file中
         :param parser:
         :return:
         """

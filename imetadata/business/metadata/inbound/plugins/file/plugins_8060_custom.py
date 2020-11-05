@@ -12,7 +12,7 @@ from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins
 
 class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
     """
-     todo 李宪
+     完成 李宪
      注意5.9 自定义影像包含2中模式（***_21at.xml/无xml文件）
     数据内容	    文件格式	是否有坐标系	内容样例	        说明
     影像文件	    img/IMG
