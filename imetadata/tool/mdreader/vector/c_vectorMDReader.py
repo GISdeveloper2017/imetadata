@@ -27,7 +27,8 @@ class CVectorMDReader(CMDReader):
         json_vector = None
         # os.environ['PROJ_LIB'] = r'C:\APP\Python\Python38\Lib\site-packages\osgeo\data\proj' 环境变量中设置
 
-        result_success = abs(self.Success)  # 成功的标记，元数据json中的为1，而系统常量为-1，暂采用绝对值
+        # result_success = abs(self.Success)  # 成功的标记，元数据json中的为1，而系统常量为-1，暂采用绝对值
+        result_success = self.Success  # 成功的标记-1
 
         gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
         gdal.SetConfigOption("SHAPE_ENCODING", "GBK")

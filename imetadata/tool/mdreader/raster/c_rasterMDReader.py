@@ -31,7 +31,8 @@ class CRasterMDReader(CMDReader):
         raster_ds = None
         json_raster = None
 
-        result_success = abs(self.Success)  # 成功的标记，元数据json中的为1，而系统常量为-1，暂采用绝对值
+        # result_success = abs(self.Success)  # 成功的标记，元数据json中的为1，而系统常量为-1，暂采用绝对值
+        result_success = self.Success  # 成功的标记-1
         gdal.AllRegister()
         gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
 
