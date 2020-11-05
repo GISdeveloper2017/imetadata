@@ -11,7 +11,7 @@ from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guot
 
 class CFilePlugins_GUOTU_21AT(CFilePlugins_GUOTU):
     """
-    todo 赵宇飞 业务元数据为***_21at.xml模式的基础类，用于插件识别业务元数据文件、设置业务元数据对象的通用方法
+    完成 赵宇飞 业务元数据为***_21at.xml模式的基础类，用于插件识别业务元数据文件、设置业务元数据对象的通用方法
     涉及的插件类别为：
         5.1 单景正射（***_21at.xml）
         5.2 镶嵌影像（***_21at.xml）

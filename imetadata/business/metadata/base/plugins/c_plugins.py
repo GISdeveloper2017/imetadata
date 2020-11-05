@@ -747,7 +747,7 @@ class CPlugins(CResource):
 
     def init_qa_file_integrity_default_list(self, file_name_with_full_path: str):
         """
-        todo 赵宇飞  常用的文件对象校验列表集合（img/tif/bil/tiff/shp）,tiff暂无
+        完成 赵宇飞  常用的文件对象校验列表集合（img/tif/bil/tiff/shp）,tiff暂无
         @param file_name_with_full_path: 文件的全文件名（img/tif/tiff/shp）
         @return: 返回常用文件完整性的质检列表，如果是主文件，会有一个格式的项，用于质检文件的打开可读性
         """
@@ -764,7 +764,7 @@ class CPlugins(CResource):
 
     def init_qa_file_integrity_img_list(self, file_name_with_full_path: str):
         """
-        todo 赵宇飞 对img数据进行完整性质检，并返回检查结果列表
+        完成 赵宇飞 对img数据进行完整性质检，并返回检查结果列表
             xxx.img	文件	栅格数据可读	错误
             xxx.ige	文件	img小于1M时必须存在	警告
             xxx.rrd	文件	是否有金字塔，内置和外置金字塔文件	警告
@@ -826,7 +826,7 @@ class CPlugins(CResource):
 
     def init_qa_file_integrity_tif_list(self, file_name_with_full_path: str):
         """
-        todo 赵宇飞 对tif数据进行完整性质检，并返回检查结果列表
+        完成 赵宇飞 对tif数据进行完整性质检，并返回检查结果列表
             可用性	xxx.tif	文件	栅格数据可读	错误
             完整性	xxx.tfw	文件	投影信息文件	警告
         @param file_name_with_full_path: tif的全文件名
@@ -858,7 +858,7 @@ class CPlugins(CResource):
 
     def init_qa_file_integrity_bil_list(self, file_name_with_full_path: str):
         """
-        todo 赵宇飞 对bil数据进行完整性质检，并返回检查结果列表
+        完成 赵宇飞 对bil数据进行完整性质检，并返回检查结果列表
             可用性	xxx.bil	文件	栅格数据可读	错误
             完整性	xxx.blw	文件	投影信息文件	警告
         @param file_name_with_full_path: bil的全文件名
@@ -890,7 +890,7 @@ class CPlugins(CResource):
 
     def init_qa_file_integrity_shp_list(self, file_name_with_full_path: str):
         """
-        todo 赵宇飞 对shp数据进行完整性质检，并返回检查结果列表
+        完成 赵宇飞 对shp数据进行完整性质检，并返回检查结果列表
         @param file_name_with_full_path: img的全文件名
         @return: 返回img的质检列表,如果是主文件shp，会有一个格式的项，用于质检文件的打开可读性
         """

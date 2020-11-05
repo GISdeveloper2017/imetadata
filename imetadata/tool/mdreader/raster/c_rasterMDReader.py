@@ -19,7 +19,7 @@ from multiprocessing import Process
 
 class CRasterMDReader(CMDReader):
     """
-     TODO 张源博 栅格数据文件的元数据读取器（已修改过3次）
+     完成 张源博 栅格数据文件的元数据读取器（已修改过3次）
         新增修改内容：
          1 coordinate节点扩展子节点wkt/proj4/esri
          2 扩展wgs84节点，包含coordinate、boundingbox，msg节点(为原始坐标系转为wgs84坐标系的结果，msg节点说明转wgs84的结果，转换失败需要说明原因）

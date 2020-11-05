@@ -15,7 +15,7 @@ class CGdalUtils:
     @classmethod
     def is_vector_file_can_read(cls, vector_file_with_path: str) -> bool:
         """
-        todo 张源博 判断矢量文件的可读性，采用进程读取
+        完成 张源博 判断矢量文件的可读性，采用进程读取
         @param vector_file_with_path:
         @return:
         """
@@ -55,7 +55,7 @@ class CGdalUtils:
     @classmethod
     def is_raster_file_can_read(cls, raster_file_with_path: str) -> bool:
         """
-        todo 张源博 判断影像文件的可读性,除了能正常打开外，还需要获取块的大小，并且读取第1个块和最后一个块有值，才能确定影像正常可以读取
+        完成 张源博 判断影像文件的可读性,除了能正常打开外，还需要获取块的大小，并且读取第1个块和最后一个块有值，才能确定影像正常可以读取
           采用进程读取
         @param raster_file_with_path:
         @return:

@@ -18,7 +18,7 @@ class CAudit(CResource):
     def __a_check_file__(cls, result_template: dict, file_name_with_path: str, qa_items: dict) -> list:
         """
         根据规则, 验证文件的合法性
-        todo 负责人 赵宇飞 在这里对文件的其他内容进行质检, 目前实现了检查文件大小, 请参考__a_check_file_size__完善其他内容, 包括并不限于
+        完成 负责人 赵宇飞 在这里对文件的其他内容进行质检, 目前实现了检查文件大小, 请参考__a_check_file_size__完善其他内容, 包括并不限于
             验证文件可读性, 验证元数据文件可读性, 验证元数据文件的格式(xml\json), 以便于后面在处理元数据时, 不会出现异常
         :param result_template 检查结果的模板
         :param file_name_with_path: 文件名
@@ -51,7 +51,7 @@ class CAudit(CResource):
         """
         根据规则, 验证值的合法性
         注意: 值有可能为None!
-        todo 负责人 赵宇飞 这里仅仅对值进行了字典检验, 请添加其他检验, 比如大小判断, 数值类型判断, 长度检验等内容
+        完成 负责人 赵宇飞 这里仅仅对值进行了字典检验, 请添加其他检验, 比如大小判断, 数值类型判断, 长度检验等内容
         :param result_template: 检查结果的模板
         :param value: 待检验的值, 可能为None
         :param qa_items: 检查项目, keywords
@@ -191,7 +191,7 @@ class CAudit(CResource):
         """
         根据规则, 验证值的合法性
         注意: 值有可能为None!
-        todo 负责人 赵宇飞 这里对值进行了长度检验
+        完成 负责人 赵宇飞 这里对值进行了长度检验
         :param result_template: 检查结果的模板
         :param value: 待检验的值, 可能为None
         :param title_prefix: 提示文本的前缀
@@ -215,7 +215,7 @@ class CAudit(CResource):
         """
         根据规则, 验证值的合法性
         注意: 值有可能为None!
-        todo 负责人 赵宇飞 这里对值在列表中存在性检验
+        完成 负责人 赵宇飞 这里对值在列表中存在性检验
         :param result_template: 检查结果的模板
         :param value: 待检验的值, 可能为None
         :param title_prefix: 提示文本的前缀
@@ -236,7 +236,7 @@ class CAudit(CResource):
         """
         根据规则, 验证值的合法性
         注意: 值有可能为None!
-        todo 负责人 赵宇飞 这里判断值在指定的sql查询必须有结果
+        完成 负责人 赵宇飞 这里判断值在指定的sql查询必须有结果
         :param result_template: 检查结果的模板
         :param value: 待检验的值, 可能为None
         :param title_prefix: 提示文本的前缀
@@ -267,7 +267,7 @@ class CAudit(CResource):
     @classmethod
     def __a_check_value_datatype__(cls, result_template: dict, value, title_prefix, value_type):
         """
-        TODO 赵宇飞 对字段值根据字段类型进行检验（正整数或正小数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
+        完成 赵宇飞 对字段值根据字段类型进行检验（正整数或正小数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
         :param result_template: 检查结果的模板
         :param value: 待检验的值, 可能为None
         :param title_prefix:
