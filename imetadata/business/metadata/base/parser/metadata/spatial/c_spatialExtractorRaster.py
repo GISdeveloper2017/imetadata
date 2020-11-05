@@ -29,18 +29,22 @@ class CSpatialExtractorRaster(CSpatialExtractor):
                 self.Name_Native_Geom: '{0}_native_geom.wkt'.format(self.object_name),
                 self.Name_Wgs84_Center: '{0}_wgs84_center.wkt'.format(self.object_name),
                 self.Name_Wgs84_BBox: '{0}_wgs84_bbox.wkt'.format(self.object_name),
-                self.Name_Wgs84_Geom: '{0}_wgs84_geom.wkt'.format(self.object_name),
-                self.Name_Prj_Wkt: CResult.result_info(result_process, self.Name_Prj_Wkt),
-                self.Name_Prj_Proj4: CResult.result_info(result_process, self.Name_Prj_Proj4),
-                self.Name_Prj_Project: CResult.result_info(result_process, self.Name_Prj_Project),
-                self.Name_Prj_Coordinate: CResult.result_info(result_process, self.Name_Prj_Coordinate),
-                self.Name_Prj_Source: CResult.result_info(result_process, self.Name_Prj_Source),
-                self.Name_Prj_Zone: CResult.result_info(result_process, self.Name_Prj_Zone),
-                self.Name_Prj_Degree: CResult.result_info(result_process, self.Name_Prj_Degree)
+                self.Name_Wgs84_Geom: '{0}_wgs84_geom.wkt'.format(self.object_name)
+            }
+            dict_temp_prj_name = {
+                self.Name_Prj_Wkt: CResult.result_info(result_process, self.Name_Prj_Wkt, None),
+                self.Name_Prj_Proj4: CResult.result_info(result_process, self.Name_Prj_Proj4, None),
+                self.Name_Prj_Project: CResult.result_info(result_process, self.Name_Prj_Project, None),
+                self.Name_Prj_Coordinate: CResult.result_info(result_process, self.Name_Prj_Coordinate, None),
+                self.Name_Prj_Source: CResult.result_info(result_process, self.Name_Prj_Source, None),
+                self.Name_Prj_Zone: CResult.result_info(result_process, self.Name_Prj_Zone, None),
+                self.Name_Prj_Degree: CResult.result_info(result_process, self.Name_Prj_Degree, None)
             }
             result = CResult.merge_result(self.Success, '处理完毕!')
             for file_type, file_name in dict_temp_file_name.items():
                 result = CResult.merge_result_info(result, file_type, CFile.join_file(file_path, file_name))
+            for prj_type, prj_name in dict_temp_prj_name.items():
+                result = CResult.merge_result_info(result, prj_type, prj_name)
         else:
             result = CResult.merge_result(self.Failure, CResult.result_message(result_process))
         return result

@@ -610,7 +610,14 @@ class CPlugins(CResource):
                         self.Name_Native_Geom: self.Spatial_MetaData_Type_Native_Geom,
                         self.Name_Wgs84_Center: self.Spatial_MetaData_Type_Wgs84_Center,
                         self.Name_Wgs84_BBox: self.Spatial_MetaData_Type_Wgs84_BBox,
-                        self.Name_Wgs84_Geom: self.Spatial_MetaData_Type_Wgs84_Geom
+                        self.Name_Wgs84_Geom: self.Spatial_MetaData_Type_Wgs84_Geom,
+                        self.Name_Prj_Wkt: self.Spatial_MetaData_Type_Prj_Wkt,
+                        self.Name_Prj_Proj4: self.Spatial_MetaData_Type_Prj_Proj4,
+                        self.Name_Prj_Project: self.Spatial_MetaData_Type_Prj_Project,
+                        self.Name_Prj_Coordinate: self.Spatial_MetaData_Type_Prj_Coordinate,
+                        self.Name_Prj_Degree: self.Spatial_MetaData_Type_Prj_Degree,
+                        self.Name_Prj_Zone: self.Spatial_MetaData_Type_Prj_Zone,
+                        self.Name_Prj_Source: self.Spatial_MetaData_Type_Prj_Source
                     }
                     for type_name, type_value in dict_spatial_metadata_type.items():
                         parser.metadata.set_metadata_spatial(
