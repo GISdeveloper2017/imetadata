@@ -2,6 +2,7 @@
 # @Time : 2020/10/26 13:30
 # @Author : 赵宇飞
 # @File : c_gdalUtils.py
+import multiprocessing
 
 from osgeo import gdal, ogr
 
@@ -24,6 +25,15 @@ class CGdalUtils:
         return False
 
     @classmethod
+    def is_vector_file_can_read_process(cls, vector_file_with_path: str) -> bool:
+        """
+        进程方式调用方法
+        @param vector_file_with_path:
+        @return:
+        """
+        return CGdalUtils.processing_method(CGdalUtils.is_vector_file_can_read, vector_file_with_path)
+
+    @classmethod
     def is_vector_dataset_can_read(cls, vector_dataset_with_path: str) -> bool:
         """
         todo 判断矢量数据集的可读性（mdb中的矢量图层，gdb中的矢量图层），注意函数的参数可能不够，先预留
@@ -32,6 +42,15 @@ class CGdalUtils:
         @return:
         """
         return False
+
+    @classmethod
+    def is_vector_dataset_can_read_process(cls, vector_dataset_with_path: str) -> bool:
+        """
+        进程方式调用方法
+        @param vector_dataset_with_path:
+        @return:
+        """
+        return CGdalUtils.processing_method(CGdalUtils.is_vector_dataset_can_read, vector_dataset_with_path)
 
     @classmethod
     def is_raster_file_can_read(cls, raster_file_with_path: str) -> bool:
@@ -70,12 +89,21 @@ class CGdalUtils:
         return True
 
     @classmethod
-    def is_raster_file_integrity(self, raster_file_with_path: str) -> bool:
+    def is_raster_file_can_read_process(cls, raster_file_with_path: str) -> bool:
+        """
+        进程方式调用方法
+        @param raster_file_with_path:
+        @return:
+        """
+        return CGdalUtils.processing_method(CGdalUtils.is_raster_file_can_read, raster_file_with_path)
+
+    @classmethod
+    def is_raster_file_integrity(cls, raster_file_with_path: str) -> bool:
         """
         判断影像数据的文件完整性，img
             xxx.img	文件	栅格数据可读	错误
             xxx.ige	文件	img小于1M时必须存在	警告
-        @param img_file_with_path:
+        @param raster_file_with_path:
         @return:
         """
         file_ext = CFile.file_ext(raster_file_with_path)
@@ -89,11 +117,27 @@ class CGdalUtils:
                     return False
         return True
 
+    @classmethod
+    def processing_method(cls, method_name, parameter):
+        """
+        todo 王学谦 多进程调用,注意，进程调用只能在if __name__ == '__main__'中使用，不然会出异常
+        @param method_name:调用方法名
+        @param parameter:调用方法的参数，目前写法仅为单个参数
+        @return:调用方法返回的参数
+        示例：ret = CGdalUtils.processing_method(CGdalUtils.is_raster_file_can_read, file_src)
+        ret即is_raster_file_can_read的返回值
+        """
+        pool = multiprocessing.Pool(1)
+        res = pool.map(method_name, (parameter,))
+        pool.close()
+        pool.join()
+        return res[0]
+
 
 if __name__ == '__main__':
     """
     Job对象的简洁测试模式
     创建时, 以sch_center_mission表的scmid, scmParams的内容初始化即可, 调用其execute方法, 即是一次并行调度要运行的主要过程
     """
-    file = r'D:\work\项目\0产品数管后台\data_test\数据入库3\DOM\DOM\湖南标准分幅成果数据\G49G001030\G49G001030.tif'
-    CGdalUtils.is_raster_file_can_read(file)
+    file_src = r'E:\图片\使用\IMG_6277大.JPG'
+    print(CGdalUtils.is_raster_file_can_read(file_src))
