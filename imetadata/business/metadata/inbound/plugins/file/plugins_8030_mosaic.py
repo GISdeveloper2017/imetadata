@@ -93,40 +93,45 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
         list_qa = list()
         list_qa.extend(
             self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))  # 调用默认的规则列表
-        list_qa.extend([
-            {
-                self.Name_FileName: '{0}xq.shp'.format(file_main_name),
-                self.Name_ID: 'shp',
-                self.Name_Title: 'shp文件',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_Format: self.DataFormat_Vector_File
-            }, {
-                self.Name_FileName: '{0}xq.shx'.format(file_main_name),
-                self.Name_ID: 'shx',
-                self.Name_Title: 'shx文件',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            }, {
-                self.Name_FileName: '{0}xq.dbf'.format(file_main_name),
-                self.Name_ID: 'dbf',
-                self.Name_Title: 'dbf文件',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            }, {
-                self.Name_FileName: '{0}xq.sbx'.format(file_main_name),
-                self.Name_ID: 'sbx',
-                self.Name_Title: 'sbx文件',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            }, {
-                self.Name_FileName: '{0}xq.prj'.format(file_main_name),
-                self.Name_ID: 'prj',
-                self.Name_Title: 'prj文件',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            }
-        ])
+        # 获取xq.shp数据并判断完整性
+        xq_shp_with_full_path = CFile.join_file(self.file_info.file_path, '{0}xq.shp'.format(file_main_name))
+        list_qa.extend(
+            self.init_qa_file_integrity_default_list(xq_shp_with_full_path))
+
+        # list_qa.extend([
+        #     {
+        #         self.Name_FileName: '{0}xq.shp'.format(file_main_name),
+        #         self.Name_ID: 'shp',
+        #         self.Name_Title: 'shp文件',
+        #         self.Name_Group: self.QA_Group_Data_Integrity,
+        #         self.Name_Result: self.QA_Result_Error,
+        #         self.Name_Format: self.DataFormat_Vector_File
+        #     }, {
+        #         self.Name_FileName: '{0}xq.shx'.format(file_main_name),
+        #         self.Name_ID: 'shx',
+        #         self.Name_Title: 'shx文件',
+        #         self.Name_Group: self.QA_Group_Data_Integrity,
+        #         self.Name_Result: self.QA_Result_Error
+        #     }, {
+        #         self.Name_FileName: '{0}xq.dbf'.format(file_main_name),
+        #         self.Name_ID: 'dbf',
+        #         self.Name_Title: 'dbf文件',
+        #         self.Name_Group: self.QA_Group_Data_Integrity,
+        #         self.Name_Result: self.QA_Result_Error
+        #     }, {
+        #         self.Name_FileName: '{0}xq.sbx'.format(file_main_name),
+        #         self.Name_ID: 'sbx',
+        #         self.Name_Title: 'sbx文件',
+        #         self.Name_Group: self.QA_Group_Data_Integrity,
+        #         self.Name_Result: self.QA_Result_Warn
+        #     }, {
+        #         self.Name_FileName: '{0}xq.prj'.format(file_main_name),
+        #         self.Name_ID: 'prj',
+        #         self.Name_Title: 'prj文件',
+        #         self.Name_Group: self.QA_Group_Data_Integrity,
+        #         self.Name_Result: self.QA_Result_Warn
+        #     }
+        # ])
         return list_qa
 
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:

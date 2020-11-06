@@ -756,6 +756,8 @@ class CPlugins(CResource):
             return self.init_qa_file_integrity_img_list(file_name_with_full_path)
         elif CUtils.equal_ignore_case(file_ext, self.Name_Tif):
             return self.init_qa_file_integrity_tif_list(file_name_with_full_path)
+        elif CUtils.equal_ignore_case(file_ext, self.Name_Tiff):
+            return self.init_qa_file_integrity_tiff_list(file_name_with_full_path)
         elif CUtils.equal_ignore_case(file_ext, self.Name_Bil):
             return self.init_qa_file_integrity_bil_list(file_name_with_full_path)
         elif CUtils.equal_ignore_case(file_ext, self.Name_Shp):
@@ -852,6 +854,31 @@ class CPlugins(CResource):
                     self.Name_Title: 'TFW投影文件',
                     self.Name_Group: self.QA_Group_Data_Integrity,
                     self.Name_Result: self.QA_Result_Warn
+                }
+            ])
+        return result_list
+
+    def init_qa_file_integrity_tiff_list(self, file_name_with_full_path: str):
+        """
+        完成 赵宇飞 对tiff数据进行完整性质检，并返回检查结果列表
+            可用性	xxx.tiff	文件	栅格数据可读	错误
+        @param file_name_with_full_path: tif的全文件名
+        @return: 返回tiff的质检列表,如果是主文件tiff，会有一个格式的项，用于质检文件的打开可读性
+        """
+        file_main_name = CFile.file_main_name(file_name_with_full_path)
+        file_ext = CFile.file_ext(file_name_with_full_path)
+        # file_path = CFile.file_path(file_name_with_full_path)
+
+        result_list = list()
+        if CUtils.equal_ignore_case(file_ext, self.Name_Tif):
+            result_list.extend([
+                {
+                    self.Name_FileName: '{0}.tiff'.format(file_main_name),
+                    self.Name_ID: 'tiff',
+                    self.Name_Title: 'TIFF影像',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error,
+                    self.Name_Format: self.DataFormat_Raster_File
                 }
             ])
         return result_list
