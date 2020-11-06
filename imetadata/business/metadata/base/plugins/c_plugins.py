@@ -870,7 +870,7 @@ class CPlugins(CResource):
         # file_path = CFile.file_path(file_name_with_full_path)
 
         result_list = list()
-        if CUtils.equal_ignore_case(file_ext, self.Name_Tif):
+        if CUtils.equal_ignore_case(file_ext, self.Name_Tiff):
             result_list.extend([
                 {
                     self.Name_FileName: '{0}.tiff'.format(file_main_name),
