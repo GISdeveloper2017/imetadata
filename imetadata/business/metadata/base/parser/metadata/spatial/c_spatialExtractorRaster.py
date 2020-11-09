@@ -48,31 +48,33 @@ class CSpatialExtractorRaster(CSpatialExtractor):
             result = CResult.merge_result(self.Failure, CResult.result_message(result_process))
         return result
 
-    def process_raster(self) -> bool:
+    def process_raster(self) -> str:
         try:
             # file_name_with_full_path = r'D:\test\raster_test\石嘴山市.json'
             # file_main_name = CFile.file_main_name(file_name_with_full_path)
             # file_path = CFile.file_path(file_name_with_full_path)
-
             json_obj = self.metadata.metadata_json()
             # json_obj.load_file(file_name_with_full_path)
-            # 1.空间坐标信息
+
+            # <editor-fold desc="1.空间坐标信息">
             wkt_info = 'POLYGON((min_x max_y,max_x max_y,max_x min_y,min_x min_y,min_x max_y))'
 
-            native_max_x = json_obj.xpath_one('boundingbox.right', 0)
-            native_max_y = json_obj.xpath_one('boundingbox.top', 0)
-            native_min_x = json_obj.xpath_one('boundingbox.left', 0)
-            native_min_y = json_obj.xpath_one('boundingbox.bottom', 0)
-
+            # 四至坐标
+            native_max_x = CUtils.to_decimal(json_obj.xpath_one('boundingbox.right', 0))
+            native_max_y = CUtils.to_decimal(json_obj.xpath_one('boundingbox.top', 0))
+            native_min_x = CUtils.to_decimal(json_obj.xpath_one('boundingbox.left', 0))
+            native_min_y = CUtils.to_decimal(json_obj.xpath_one('boundingbox.bottom', 0))
             dict_native = {'max_x': CUtils.any_2_str(native_max_x),
                            'max_y': CUtils.any_2_str(native_max_y),
                            'min_x': CUtils.any_2_str(native_min_x),
                            'min_y': CUtils.any_2_str(native_min_y)}
 
+            # 中心点坐标
             center_x = (native_max_x - native_min_x) / 2 + native_min_x
             center_y = (native_max_y - native_min_y) / 2 + native_min_y
             native_center_wkt = 'POINT({0} {1})'.format(center_x, center_y)
 
+            # 外边框、外包框
             native_bbox_wkt = wkt_info
             for name, value in dict_native.items():
                 native_bbox_wkt = native_bbox_wkt.replace(name, value)
@@ -87,20 +89,22 @@ class CSpatialExtractorRaster(CSpatialExtractor):
             native_geom_filepath = CFile.join_file(file_path, file_main_name + '_native_geom.wkt')
             CFile.str_2_file(native_geom_wkt, native_geom_filepath)
 
+            # wgs84转换后的四至坐标
             wgs84_max_x = CUtils.to_decimal(json_obj.xpath_one('wgs84.boundingbox.right', 0))
             wgs84_max_y = CUtils.to_decimal(json_obj.xpath_one('wgs84.boundingbox.top', 0))
             wgs84_min_x = CUtils.to_decimal(json_obj.xpath_one('wgs84.boundingbox.left', 0))
             wgs84_min_y = CUtils.to_decimal(json_obj.xpath_one('wgs84.boundingbox.bottom', 0))
-
             dict_wgs84 = {'max_x': CUtils.any_2_str(wgs84_max_x),
                           'max_y': CUtils.any_2_str(wgs84_max_y),
                           'min_x': CUtils.any_2_str(wgs84_min_x),
                           'min_y': CUtils.any_2_str(wgs84_min_y)}
 
+            # 中心点坐标（wgs84）
             center_x = (wgs84_max_x - wgs84_min_x) / 2 + wgs84_min_x
             center_y = (wgs84_max_y - wgs84_min_y) / 2 + wgs84_min_y
             wgs84_center_wkt = 'POINT({0} {1})'.format(center_x, center_y)
 
+            # 外边框、外包框（wgs84)
             wgs84_bbox_wkt = wkt_info
             for name, value in dict_wgs84.items():
                 wgs84_bbox_wkt = wgs84_bbox_wkt.replace(name, value)
@@ -112,16 +116,23 @@ class CSpatialExtractorRaster(CSpatialExtractor):
             CFile.str_2_file(wgs84_bbox_wkt, wgs84_bbox_filepath)
             wgs84_geom_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_geom.wkt')
             CFile.str_2_file(wgs84_geom_wkt, wgs84_geom_filepath)
+            # </editor-fold>
 
-            # 2.投影信息
+            # <editor-fold desc="2.投影信息">
             native_wkt = json_obj.xpath_one('coordinate.wkt', None)
             native_proj4 = json_obj.xpath_one('coordinate.proj4', None)
             native_source = CResource.Prj_Source_Data
 
+            # 坐标系
             native_coordinate = None
+            # 3度带/6度带
             native_degree = None
+            # 投影方式
             native_project = None
+            # 带号
             native_zone = None
+
+            # 创建SpatialReference对象，导入wkt信息
             spatial_ref = osr.SpatialReference(wkt=native_wkt)
             if spatial_ref.IsProjected():
                 native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
@@ -131,10 +142,11 @@ class CSpatialExtractorRaster(CSpatialExtractor):
                 # native_zone = self.get_prj_zone(spatial_ref, pixel_size)
                 native_degree, native_zone = self.get_prj_degree_zone(spatial_ref)
             elif spatial_ref.IsGeocentric():
-                native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
-                native_degree = spatial_ref.GetAttrValue('UNIT', 1)
                 native_project = None
+                native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
+                native_degree = None
                 native_zone = None
+            # </editor-fold>
 
             result = CResult.merge_result(self.Success, '处理完毕!')
             result = CResult.merge_result_info(result, self.Name_Prj_Wkt, native_wkt)
@@ -149,5 +161,3 @@ class CSpatialExtractorRaster(CSpatialExtractor):
         except Exception as error:
             CLogger().warning('影像数据的空间信息处理出现异常, 错误信息为: {0}'.format(error.__str__))
             return CResult.merge_result(self.Failure, '影像数据的空间信息处理出现异常,错误信息为：{0}!'.format(error.__str__))
-
-

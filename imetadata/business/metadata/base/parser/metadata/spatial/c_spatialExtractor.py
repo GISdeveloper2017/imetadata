@@ -26,7 +26,7 @@ class CSpatialExtractor(CParser):
     def metadata(self):
         return self.__meta_data
 
-    def get_prj_degree_zone(spatial_ref):
+    def get_prj_degree_zone(self, spatial_ref):
         """
         由投影坐标系名称获取分带情况。
         Beijing_1954_3_Degree_GK_CM_75E
