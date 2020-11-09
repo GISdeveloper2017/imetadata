@@ -15,7 +15,7 @@ class CTagsParser(CParser):
     # 标签识别用的字符串
     __tags_parser_text__: str
     # 标签分隔符
-    __tags_parser_split_list__: list = ['\\', '_', '/', '-', ' ']
+    __tags_parser_split_list__: list = ['\\', '_', '/', '-', ' ', '+']
 
     def process(self) -> str:
         """
@@ -64,7 +64,8 @@ class CTagsParser(CParser):
         '''
 
         # 将__tags_parser_text__进行拆分成数组
-        text_part_list = CUtils.split(self.__tags_parser_text__, self.__tags_parser_split_list__)
+        text_part_list = CUtils.split(CUtils.any_2_str(self.__tags_parser_text__).lower(),  # 将用于对比的名字转为小写
+                                      self.__tags_parser_split_list__)
         # 1.绑定tag_custom
         process_result = self.process_tag(sql_tag_custom, text_part_list)
         if not CResult.result_success(process_result):
@@ -113,7 +114,7 @@ class CTagsParser(CParser):
                     if field_index == 0:
                         continue
                     field_value = ds.value_by_index(row_index, field_index, "")
-                    if text_part_list.__contains__(CUtils.any_2_str(field_value)):
+                    if text_part_list.__contains__(CUtils.any_2_str(field_value).lower()):
                         check_exist = True
                 if check_exist:
                     list_tag_id.append(tag_id)

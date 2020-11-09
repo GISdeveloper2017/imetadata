@@ -10,6 +10,7 @@ from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.spatial.c_spatialExtractor import CSpatialExtractor
 from osgeo import osr
 
+
 class CSpatialExtractorVector(CSpatialExtractor):
     def process(self) -> str:
         """
@@ -56,29 +57,32 @@ class CSpatialExtractorVector(CSpatialExtractor):
             result = CResult.merge_result(self.Failure, CResult.result_message(result_process))
         return result
 
-    def process_vector(self) -> bool:
+    def process_vector(self) -> str:
         try:
             # file_name_with_full_path = r'D:\test\vector_test\石嘴山市-3xq.json'
             # file_main_name = CFile.file_main_name(file_name_with_full_path)
             # file_path = CFile.file_path(file_name_with_full_path)
             json_obj = self.metadata.metadata_json()
-            # 1.空间坐标信息
+
+            # <editor-fold desc="1.空间坐标信息">
             wkt_info = 'POLYGON((min_x max_y,max_x max_y,max_x min_y,min_x min_y,min_x max_y))'
 
-            native_max_x = json_obj.xpath_one('layers[0].extent.maxx', 0)
-            native_max_y = json_obj.xpath_one('layers[0].extent.maxy', 0)
-            native_min_x = json_obj.xpath_one('layers[0].extent.minx', 0)
-            native_min_y = json_obj.xpath_one('layers[0].extent.miny', 0)
-
+            # 四至坐标
+            native_max_x = CUtils.to_decimal(json_obj.xpath_one('layers[0].extent.maxx', 0))
+            native_max_y = CUtils.to_decimal(json_obj.xpath_one('layers[0].extent.maxy', 0))
+            native_min_x = CUtils.to_decimal(json_obj.xpath_one('layers[0].extent.minx', 0))
+            native_min_y = CUtils.to_decimal(json_obj.xpath_one('layers[0].extent.miny', 0))
             dict_native = {'max_x': CUtils.any_2_str(native_max_x),
                            'max_y': CUtils.any_2_str(native_max_y),
                            'min_x': CUtils.any_2_str(native_min_x),
                            'min_y': CUtils.any_2_str(native_min_y)}
 
+            # 中心坐标
             center_x = (native_max_x - native_min_x) / 2 + native_min_x
             center_y = (native_max_y - native_min_y) / 2 + native_min_y
             native_center_wkt = 'POINT({0} {1})'.format(center_x, center_y)
 
+            # 外边框、外包框
             native_bbox_wkt = wkt_info
             for name, value in dict_native.items():
                 native_bbox_wkt = native_bbox_wkt.replace(name, value)
@@ -86,7 +90,6 @@ class CSpatialExtractorVector(CSpatialExtractor):
 
             file_path = self.file_content.work_root_dir
             file_main_name = self.object_name
-
             native_center_filepath = CFile.join_file(file_path, file_main_name + '_native_center.wkt')
             CFile.str_2_file(native_center_wkt, native_center_filepath)
             native_bbox_filepath = CFile.join_file(file_path, file_main_name + '_native_bbox.wkt')
@@ -94,22 +97,24 @@ class CSpatialExtractorVector(CSpatialExtractor):
             native_geom_filepath = CFile.join_file(file_path, file_main_name + '_native_geom.wkt')
             CFile.str_2_file(geom_native_wkt, native_geom_filepath)
 
+            # wgs84转换后的四至坐标
             wgs84_max_x = CUtils.to_decimal(json_obj.xpath_one('layers[0].wgs84.extent.maxx', 0))
             wgs84_max_y = CUtils.to_decimal(json_obj.xpath_one('layers[0].wgs84.extent.maxy', 0))
             wgs84_min_x = CUtils.to_decimal(json_obj.xpath_one('layers[0].wgs84.extent.minx', 0))
             wgs84_min_y = CUtils.to_decimal(json_obj.xpath_one('layers[0].wgs84.extent.miny', 0))
-
-            wgs84_dict = {'max_x': CUtils.any_2_str(wgs84_max_x),
+            dict_wgs84 = {'max_x': CUtils.any_2_str(wgs84_max_x),
                           'max_y': CUtils.any_2_str(wgs84_max_y),
                           'min_x': CUtils.any_2_str(wgs84_min_x),
                           'min_y': CUtils.any_2_str(wgs84_min_y)}
 
+            # 中心坐标
             center_x = (wgs84_max_x - wgs84_min_x) / 2 + wgs84_min_x
             center_y = (wgs84_max_y - wgs84_min_y) / 2 + wgs84_min_y
             wgs84_center_wkt = 'POINT({0} {1})'.format(center_x, center_y)
 
+            # 外边框、外包框
             wgs84_bbox_wkt = wkt_info
-            for name, value in wgs84_dict.items():
+            for name, value in dict_wgs84.items():
                 wgs84_bbox_wkt = wgs84_bbox_wkt.replace(name, value)
             wgs84_geom_wkt = wgs84_bbox_wkt
 
@@ -119,25 +124,35 @@ class CSpatialExtractorVector(CSpatialExtractor):
             CFile.str_2_file(wgs84_bbox_wkt, wgs84_bbox_filepath)
             wgs84_geom_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_geom.wkt')
             CFile.str_2_file(wgs84_geom_wkt, wgs84_geom_filepath)
+            # </editor-fold>
 
-            # 2.投影信息
+            # <editor-fold desc="2.投影信息">
             native_wkt = json_obj.xpath_one('layers[0].wkt.data', None)
             native_proj4 = json_obj.xpath_one('layers[0].wkt.proj4', None)
             native_source = CResource.Prj_Source_Data
 
-            native_project = None
+            # 坐标系
             native_coordinate = None
+            # 3度带/6度带
             native_degree = None
+            # 投影方式
+            native_project = None
+            # 带号
             native_zone = None
+
+            # 创建SpatialReference对象，导入wkt信息
             spatial_ref = osr.SpatialReference(wkt=native_wkt)
             if spatial_ref.IsProjected():
                 native_project = spatial_ref.GetAttrValue('PROJECTION')
                 native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
-                native_degree = spatial_ref.GetAttrValue('GEOGCS|UNIT', 1)
+                # native_degree = spatial_ref.GetAttrValue('GEOGCS|UNIT', 1)
+                native_degree, native_zone = self.get_prj_degree_zone(spatial_ref)
             elif spatial_ref.IsGeocentric():
                 native_project = None
                 native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
-                native_degree = spatial_ref.GetAttrValue('UNIT', 1)
+                native_degree = None
+                native_zone = None
+            # </editor-fold>
 
             result = CResult.merge_result(self.Success, '处理完毕!')
             result = CResult.merge_result_info(result, self.Name_Prj_Wkt, native_wkt)
