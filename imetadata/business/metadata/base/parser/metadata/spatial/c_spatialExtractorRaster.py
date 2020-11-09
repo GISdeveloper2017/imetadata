@@ -126,9 +126,10 @@ class CSpatialExtractorRaster(CSpatialExtractor):
             if spatial_ref.IsProjected():
                 native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
                 native_project = spatial_ref.GetAttrValue('PROJECTION')
-                native_degree = spatial_ref.GetAttrValue('GEOGCS|UNIT', 1)
-                pixel_size = json_obj.xpath_one('pixelsize.width', None)
-                native_zone = self.get_prj_zone(spatial_ref, pixel_size)
+                # native_degree = spatial_ref.GetAttrValue('GEOGCS|UNIT', 1)
+                # pixel_size = json_obj.xpath_one('pixelsize.width', None)
+                # native_zone = self.get_prj_zone(spatial_ref, pixel_size)
+                native_degree, native_zone = self.get_prj_degree_zone(spatial_ref)
             elif spatial_ref.IsGeocentric():
                 native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
                 native_degree = spatial_ref.GetAttrValue('UNIT', 1)
@@ -148,19 +149,5 @@ class CSpatialExtractorRaster(CSpatialExtractor):
         except Exception as error:
             CLogger().warning('影像数据的空间信息处理出现异常, 错误信息为: {0}'.format(error.__str__))
             return CResult.merge_result(self.Failure, '影像数据的空间信息处理出现异常,错误信息为：{0}!'.format(error.__str__))
-
-    def get_prj_zone(self, spatial_ref, pixel_size):
-        """
-        获取数据所在的带区，函数预留
-        """
-        meridian = spatial_ref.GetProjParm(osr.SRS_PP_CENTRAL_MERIDIAN)
-        meridian = CUtils.to_decimal(meridian)
-        pixel = CUtils.to_decimal(pixel_size)
-        scale = pixel / ((1 / 96) * (25.4 / 1000))
-        if scale < 25000:
-            number_zone = CUtils.to_integer((meridian + 1.5) / 3)
-        else:
-            number_zone = CUtils.to_integer((meridian + 6) / 6)
-        return number_zone
 
 

@@ -99,7 +99,7 @@ class CSpatialExtractorVector(CSpatialExtractor):
             wgs84_min_x = CUtils.to_decimal(json_obj.xpath_one('layers[0].wgs84.extent.minx', 0))
             wgs84_min_y = CUtils.to_decimal(json_obj.xpath_one('layers[0].wgs84.extent.miny', 0))
 
-            wgs84_dict = {'max_x': CUtils.any_2_str(wgs84_max_x),
+            dict_wgs84 = {'max_x': CUtils.any_2_str(wgs84_max_x),
                           'max_y': CUtils.any_2_str(wgs84_max_y),
                           'min_x': CUtils.any_2_str(wgs84_min_x),
                           'min_y': CUtils.any_2_str(wgs84_min_y)}
@@ -109,7 +109,7 @@ class CSpatialExtractorVector(CSpatialExtractor):
             wgs84_center_wkt = 'POINT({0} {1})'.format(center_x, center_y)
 
             wgs84_bbox_wkt = wkt_info
-            for name, value in wgs84_dict.items():
+            for name, value in dict_wgs84.items():
                 wgs84_bbox_wkt = wgs84_bbox_wkt.replace(name, value)
             wgs84_geom_wkt = wgs84_bbox_wkt
 
@@ -133,11 +133,12 @@ class CSpatialExtractorVector(CSpatialExtractor):
             if spatial_ref.IsProjected():
                 native_project = spatial_ref.GetAttrValue('PROJECTION')
                 native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
-                native_degree = spatial_ref.GetAttrValue('GEOGCS|UNIT', 1)
+                # native_degree = spatial_ref.GetAttrValue('GEOGCS|UNIT', 1)
+                native_degree, native_zone = self.get_prj_degree_zone(spatial_ref)
             elif spatial_ref.IsGeocentric():
                 native_project = None
                 native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
-                native_degree = spatial_ref.GetAttrValue('UNIT', 1)
+                # native_degree = spatial_ref.GetAttrValue('UNIT', 1)
 
             result = CResult.merge_result(self.Success, '处理完毕!')
             result = CResult.merge_result_info(result, self.Name_Prj_Wkt, native_wkt)
