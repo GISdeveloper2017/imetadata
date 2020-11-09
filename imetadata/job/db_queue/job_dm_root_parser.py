@@ -30,7 +30,7 @@ where dstid = (
 
     def get_mission_info_sql(self):
         return '''
-select dstid as root_directory_id, dstunipath as root_directory from dm2_storage where dstprocessid = '{0}'        
+select dstid as root_directory_id, coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as root_directory from dm2_storage where dstprocessid = '{0}'        
         '''.format(self.SYSTEM_NAME_MISSION_ID)
 
     def get_abnormal_mission_restart_sql(self) -> str:

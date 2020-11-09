@@ -31,10 +31,10 @@ where dsdid = (
     def get_mission_info_sql(self) -> str:
         return '''
 select 
-    dm2_storage.dstunipath as query_root_path
+    coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as query_root_path
   , dm2_storage_directory.dsdparentid as query_dir_parent_id
   , dm2_storage_directory.dsddirectory as query_subpath
-  , dm2_storage.dstunipath || dm2_storage_directory.dsdpath as query_dir_full_path
+  , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) || dm2_storage_directory.dsdpath as query_dir_full_path
   , dm2_storage_directory.dsddirectoryname as query_subpath_name
   , dm2_storage_directory.dsdid as query_dir_id
   , dm2_storage_directory.dsddirtype as query_dir_type

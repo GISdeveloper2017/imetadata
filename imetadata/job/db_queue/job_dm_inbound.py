@@ -40,7 +40,7 @@ select
   , dm2_storage_inbound.dsibatchno as query_ib_batchno
   , dm2_storage_inbound.dsiotheroption as query_ib_option
   , dm2_storage.dstid as query_storage_id
-  , dm2_storage.dstunipath as query_rootpath
+  , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as query_rootpath
   , dm2_storage_directory.dsdid as query_ib_dir_id 
 from dm2_storage_inbound 
   left join dm2_storage on dm2_storage.dstid = dm2_storage_inbound.dsistorageid 
@@ -279,7 +279,7 @@ where dsistatus = 2
             if not CUtils.equal_ignore_case(storage_id, ''):
                 sql_storage = '''
                 select dm2_storage.dstid, dm2_storage.dsttitle, 
-                    dm2_storage.dstunipath,
+                    coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as root_path,
                     dm2_storage.dst_volumn_max, dm2_storage.dst_volumn_max - coalesce(stat.file_size_sum, 0) as free_space
                 from dm2_storage left join (
                     select dsfstorageid, sum(dsffilesize) as file_size_sum
@@ -311,12 +311,12 @@ where dsistatus = 2
                                 storage_title, storage_volumn_free, need_storage_size
                             )
 
-                    storage_root_path = ds_available_storage.value_by_name(0, 'dstunipath', '')
+                    storage_root_path = ds_available_storage.value_by_name(0, 'root_path', '')
 
         if CUtils.equal_ignore_case(storage_id, ''):
             sql_available_storage = '''
             select dm2_storage.dstid, dm2_storage.dsttitle, 
-                dm2_storage.dstunipath,
+                coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as root_path,
                 dm2_storage.dst_volumn_max, dm2_storage.dst_volumn_max - coalesce(stat.file_size_sum, 0) as free_space
             from dm2_storage left join (
                 select dsfstorageid, sum(dsffilesize) as file_size_sum
@@ -337,12 +337,12 @@ where dsistatus = 2
 
                 if storage_volumn_max <= 0:
                     storage_id = ds_available_storage.value_by_name(storage_index, 'dstid', '')
-                    storage_root_path = ds_available_storage.value_by_name(storage_index, 'dstunipath', '')
+                    storage_root_path = ds_available_storage.value_by_name(storage_index, 'root_path', '')
                     CLogger().debug('存储[{0}]的存储空间没有限制, 系统将把本批数据入库到该存储下'.format(storage_title))
                     break
                 elif storage_volumn_free > need_storage_size:
                     storage_id = ds_available_storage.value_by_name(storage_index, 'dstid', '')
-                    storage_root_path = ds_available_storage.value_by_name(storage_index, 'dstunipath', '')
+                    storage_root_path = ds_available_storage.value_by_name(storage_index, 'root_path', '')
                     CLogger().debug(
                         '存储[{0}]的剩余存储空间为[{1}], 本批数据存储所需空间为[{2}], 系统将把本批数据入库到该存储下'.format(
                             storage_title, storage_volumn_free, need_storage_size
@@ -538,7 +538,8 @@ where dsistatus = 2
         invalid_file_list = []
         more_failure_file = False
         sql_all_ib_file = '''
-        select dm2_storage.dstunipath || dm2_storage_file.dsffilerelationname as file_name
+        select 
+            coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) || dm2_storage_file.dsffilerelationname as file_name
             , dm2_storage_file.dsffilesize as file_size
             , dm2_storage_file.dsffilemodifytime as file_modify_time
         from dm2_storage_file left join dm2_storage

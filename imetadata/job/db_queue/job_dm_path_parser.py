@@ -37,7 +37,7 @@ where dsdid = (
     def get_mission_info_sql(self) -> str:
         return '''
 select 
-    dm2_storage.dstunipath as query_rootpath
+    coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as query_rootpath
   , dm2_storage_directory.dsddirectory as query_subpath
   , dm2_storage_directory.dsdid as query_dir_id
   , dm2_storage_directory.dsddirtype as query_dir_type

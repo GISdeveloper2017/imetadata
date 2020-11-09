@@ -57,9 +57,9 @@ where dsodetailparsestatus = 2
         if CUtils.equal_ignore_case(dso_data_type, self.FileType_Dir):
             sql_get_info = '''
                 select 
-                    dm2_storage.dstunipath || dm2_storage_directory.dsddirectory as query_object_fullname   
+                    coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) || dm2_storage_directory.dsddirectory as query_object_fullname   
                     , dm2_storage_directory.dsd_directory_valid as query_object_valid  
-                    , dm2_storage.dstunipath as query_object_root_dir 
+                    , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as query_object_root_dir 
                     , dm2_storage.dstid as query_object_storage_id
                     , dm2_storage_directory.dsddirectory as query_object_relation_path
                     , dm2_storage_directory.dsdid as query_object_file_id
@@ -74,9 +74,9 @@ where dsodetailparsestatus = 2
         else:
             sql_get_info = '''
                 select 
-                    dm2_storage.dstunipath || dm2_storage_file.dsffilerelationname as query_object_fullname 
+                    coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) || dm2_storage_file.dsffilerelationname as query_object_fullname 
                     , dm2_storage_file.dsffilevalid as query_object_valid     
-                    , dm2_storage.dstunipath as query_object_root_dir 
+                    , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as query_object_root_dir 
                     , dm2_storage.dstid as query_object_storage_id
                     , dm2_storage_file.dsffilerelationname as query_object_relation_path
                     , dm2_storage_file.dsfid as query_object_file_id

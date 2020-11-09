@@ -31,13 +31,13 @@ where dsfid = (
     def get_mission_info_sql(self) -> str:
         return '''
 select 
-    dm2_storage.dstunipath as query_rootpath
+    coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as query_rootpath
   , dm2_storage_directory.dsddirectory as query_subpath
   , dm2_storage.dstid as query_storage_id
   , dm2_storage_file.dsfid as query_file_id
   , dm2_storage_file.dsfdirectoryid as query_directory_id
-  , dm2_storage.dstunipath || dm2_storage_file.dsffilerelationname as query_file_full_name
-  , dm2_storage.dstunipath || dm2_storage_directory.dsddirectory as query_file_full_path
+  , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) || dm2_storage_file.dsffilerelationname as query_file_full_name
+  , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) || dm2_storage_directory.dsddirectory as query_file_full_path
   , dm2_storage_file.dsffilename as query_file_name
   , dm2_storage_file.dsffilemainname as query_file_main_name
   , dm2_storage_file.dsfext as query_file_ext

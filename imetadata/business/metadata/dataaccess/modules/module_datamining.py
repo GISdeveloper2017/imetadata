@@ -7,6 +7,9 @@ from imetadata.business.metadata.dataaccess.base.c_daModule import CDAModule
 
 
 class module_datamining(CDAModule):
+    """
+    数据挖掘模块对数管编目的质检要求
+    """
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '数据分析挖掘'

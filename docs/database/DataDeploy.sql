@@ -266,9 +266,9 @@ insert into a_stat(sgroup, subgroup, stat_count, stat_sum_area) values(:query_fi
 
 -- Table: public.dp_v_qfg_schema
 
--- DROP TABLE public.dp_v_qfg_schema;
+DROP TABLE if exists public.dp_v_qfg_schema;
 
-CREATE TABLE public.dp_v_qfg_schema
+CREATE TABLE if not exists public.dp_v_qfg_schema
 (
     dpid character varying(100) COLLATE pg_catalog."default" NOT NULL,
     dpstatus integer DEFAULT 1,
@@ -348,9 +348,9 @@ COMMENT ON COLUMN public.dp_v_qfg_schema.dpserviceparams
 
 -- Table: public.dp_v_qfg_schema_layer
 
--- DROP TABLE public.dp_v_qfg_schema_layer;
+DROP TABLE if exists public.dp_v_qfg_schema_layer;
 
-CREATE TABLE public.dp_v_qfg_schema_layer
+CREATE TABLE if not exists public.dp_v_qfg_schema_layer
 (
     dpid character varying(100) COLLATE pg_catalog."default" NOT NULL,
     dpschemaid character varying(100) COLLATE pg_catalog."default" NOT NULL,
@@ -438,9 +438,9 @@ COMMENT ON COLUMN public.dp_v_qfg_schema_layer.dpbatchdeploy
 
 -- Table: public.dp_v_qfg
 
--- DROP TABLE public.dp_v_qfg;
+DROP TABLE if exists public.dp_v_qfg;
 
-CREATE TABLE public.dp_v_qfg
+CREATE TABLE if not exists public.dp_v_qfg
 (
     dpid character varying(100) COLLATE pg_catalog."default" NOT NULL,
     dpstatus integer DEFAULT 1,
@@ -529,9 +529,9 @@ COMMENT ON COLUMN public.dp_v_qfg.dpserviceparams
 
 -- Table: public.dp_v_qfg_layer
 
--- DROP TABLE public.dp_v_qfg_layer;
+DROP TABLE if exists public.dp_v_qfg_layer;
 
-CREATE TABLE public.dp_v_qfg_layer
+CREATE TABLE if not exists public.dp_v_qfg_layer
 (
     dpid character varying(100) COLLATE pg_catalog."default" NOT NULL,
     dpservice_id character varying(100) COLLATE pg_catalog."default" NOT NULL,
@@ -615,9 +615,9 @@ COMMENT ON COLUMN public.dp_v_qfg_layer.dplastmodifytime
 
 -- Table: public.dp_v_qfg_layer_file
 
--- DROP TABLE public.dp_v_qfg_layer_file;
+DROP TABLE if exists public.dp_v_qfg_layer_file;
 
-CREATE TABLE public.dp_v_qfg_layer_file
+CREATE TABLE if not exists public.dp_v_qfg_layer_file
 (
     dpdf_id character varying(100) COLLATE pg_catalog."default" NOT NULL,
     dpdf_layer_id character varying(100) COLLATE pg_catalog."default" NOT NULL,
@@ -730,7 +730,7 @@ insert into ro_global_config(gcfgid, gcfgcode, gcfgtitle, gcfgvalue, gcfgmemo)
   values(3001, 'atgis_server_deploy_dbserverid', '服务-发布-目标服务标识', 'v3f935edd3d904dbd91d67c93836d8a0c', null);
 
 update dm2_storage 
-  set dstotheroption = '{"ds_opt_server_deploy_mount_point_path":"/User/wangxiya/mount/' || dstid || '"}';
+  set dstotheroption = ('{"ds_opt_server_deploy_mount_point_path":"/User/wangxiya/mount/' || dstid || '"}')::jsonb;
 
 
 /*

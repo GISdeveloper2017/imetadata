@@ -70,10 +70,17 @@ class CDMFilePathInfoEx(CFileInfoEx):
         self.__owner_obj_id = owner_obj_id
 
         self._ds_storage = CFactory().give_me_db(self.__db_server_id).one_row(
-            'select dstid, dsttitle, dstunipath, dstotheroption from dm2_storage where dstid = :dstID',
-            {'dstid': self.storage_id})
+            '''
+            select dstid, dsttitle, dm2_storage.dstownerpath, dm2_storage.dstunipath
+                , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as root_path
+                , dstotheroption 
+            from dm2_storage 
+            where dstid = :dstID
+            ''',
+            {'dstid': self.storage_id}
+        )
 
-        root_path = self._ds_storage.value_by_name(0, 'dstunipath', '')
+        root_path = self._ds_storage.value_by_name(0, 'root_path', '')
         super().__init__(file_type, file_name_with_full_path, root_path, rule_content)
         self.custom_init()
 
@@ -128,18 +135,18 @@ class CDMFilePathInfoEx(CFileInfoEx):
         if ds_storage_option == '' or ds_storage_option is None:
             return True
 
-        dir_filter_white_list = CJson.json_attr_value(ds_storage_option,
-                                                      CJson.json_join(self.Name_Filter, self.Name_Directory,
-                                                                      self.Name_White_List), '')
-        dir_filter_black_list = CJson.json_attr_value(ds_storage_option,
-                                                      CJson.json_join(self.Name_Filter, self.Name_Directory,
-                                                                      self.Name_Black_List), '')
-        file_filter_white_list = CJson.json_attr_value(ds_storage_option,
-                                                       CJson.json_join(self.Name_Filter, self.Name_File,
-                                                                       self.Name_White_List), '')
-        file_filter_black_list = CJson.json_attr_value(ds_storage_option,
-                                                       CJson.json_join(self.Name_Filter, self.Name_File,
-                                                                       self.Name_Black_List), '')
+        dir_filter_white_list = CJson.json_attr_value(
+            ds_storage_option, self.Path_SO_Inbound_Filter_Dir_WhiteList, ''
+        )
+        dir_filter_black_list = CJson.json_attr_value(
+            ds_storage_option, self.Path_SO_Inbound_Filter_Dir_BlackList, ''
+        )
+        file_filter_white_list = CJson.json_attr_value(
+            ds_storage_option, self.Path_SO_Inbound_Filter_File_WhiteList, ''
+        )
+        file_filter_black_list = CJson.json_attr_value(
+            ds_storage_option, self.Path_SO_Inbound_Filter_File_BlackList, ''
+        )
 
         result = True
         if self.file_type != self.FileType_Unknown:

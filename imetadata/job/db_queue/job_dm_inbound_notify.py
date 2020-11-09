@@ -37,7 +37,7 @@ select
   , dm2_storage_inbound.dsiotheroption as query_ib_option
   , dm2_storage.dstid as query_storage_id
   , dm2_storage.dsttitle as query_storage_title
-  , dm2_storage.dstunipath as query_rootpath
+  , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as query_rootpath
   , dm2_storage_directory.dsdid as query_ib_dir_id 
   , dm2_storage_directory.dsddirectory as query_ib_relation_dir
 from dm2_storage_inbound 

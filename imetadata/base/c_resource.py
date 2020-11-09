@@ -217,6 +217,15 @@ class CResource:
     Path_Setting_MetaData_InBound_Schema_Default = '{0}.default'.format(Path_Setting_MetaData_InBound_Schema)
     Path_Setting_MetaData_InBound_Schema_Special = '{0}.special'.format(Path_Setting_MetaData_InBound_Schema)
 
+    Path_Storage_Option_Inbound = 'inbound'
+    Path_SO_Inbound_Filter = '{0}.{1}'.format(Path_Storage_Option_Inbound, Name_Filter)
+    Path_SO_Inbound_Filter_Dir = '{0}.{1}'.format(Path_SO_Inbound_Filter, Name_Directory)
+    Path_SO_Inbound_Filter_Dir_BlackList = '{0}.{1}'.format(Path_SO_Inbound_Filter_Dir, Name_Black_List)
+    Path_SO_Inbound_Filter_Dir_WhiteList = '{0}.{1}'.format(Path_SO_Inbound_Filter_Dir, Name_White_List)
+    Path_SO_Inbound_Filter_File = '{0}.{1}'.format(Path_SO_Inbound_Filter, Name_File)
+    Path_SO_Inbound_Filter_File_BlackList = '{0}.{1}'.format(Path_SO_Inbound_Filter_File, Name_Black_List)
+    Path_SO_Inbound_Filter_File_WhiteList = '{0}.{1}'.format(Path_SO_Inbound_Filter_File, Name_White_List)
+
     TextMatchType_Common = 'common'
     TextMatchType_Regex = 'regex'
 

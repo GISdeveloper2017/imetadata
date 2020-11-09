@@ -785,3 +785,16 @@ comment on column dm2_storage_directory.dsdscanmemo is '数管-目录-识别备�
 
 alter table dm2_storage_file add column dsfscanmemo text;
 comment on column dm2_storage_file.dsfscanmemo is '数管-文件-识别备注';
+
+
+/*
+    2020-11-09
+    . 扩展dm2_storage, 考虑支持linux和windows应用的协同应用
+*/
+alter table dm2_storage add column dstOwnerPath varchar(4000);
+comment on column dm2_storage.dstOwnerPath is '数管-存储-私有路径';
+
+alter table dm2_storage add column dstScanMemo text;
+comment on column dm2_storage.dstScanMemo is '数管-存储-扫描-结果';
+
+
