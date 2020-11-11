@@ -450,6 +450,7 @@ CREATE TABLE if not exists public.dp_v_qfg
     dpid character varying(100) COLLATE pg_catalog."default" NOT NULL,
     dpstatus integer DEFAULT 1,
     dpprocessid character varying(100) COLLATE pg_catalog."default",
+    dpprocessresult text,
     dpaddtime timestamp(6) without time zone DEFAULT now(),
     dplastmodifytime timestamp(6) without time zone DEFAULT now(),
     dpmemo text COLLATE pg_catalog."default",
@@ -461,8 +462,6 @@ CREATE TABLE if not exists public.dp_v_qfg
     dpspatialid character varying(100) COLLATE pg_catalog."default",
     dpbusid character varying(100) COLLATE pg_catalog."default",
 
-    dpproject character varying(2000) COLLATE pg_catalog."default",
-
     dpprocesstype character varying(100) COLLATE pg_catalog."default",
     dpschemaid character varying(100) COLLATE pg_catalog."default",
 
@@ -470,7 +469,9 @@ CREATE TABLE if not exists public.dp_v_qfg
 
     dpservicetype character varying(100) COLLATE pg_catalog."default" DEFAULT 'wmts'::character varying,
 
-    --这两个字段, 在服务发布中已经没有作用
+    --这三个字段, 在服务发布中已经没有作用
+
+    dpproject character varying(2000) COLLATE pg_catalog."default",
     dpdeploydir character varying(2000) COLLATE pg_catalog."default",
     dpfileprefix character varying(2000) COLLATE pg_catalog."default",
 
@@ -493,6 +494,9 @@ COMMENT ON COLUMN public.dp_v_qfg.dpstatus
 
 COMMENT ON COLUMN public.dp_v_qfg.dpprocessid
     IS '并行处理辅助字段';
+
+COMMENT ON COLUMN public.dp_v_qfg.dpprocessresult
+    IS '并行处理结果';
 
 COMMENT ON COLUMN public.dp_v_qfg.dpaddtime
     IS '任务创建时间';

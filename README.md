@@ -841,6 +841,9 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
     * 类型: varchar
     * 意义: 并行处理标识
 
+##### dp_v_qfg_layer
+##### dp_v_qfg_layer_file
+
 #### 调度设计
 ##### 服务发布调度
 1. 名称: job_d2s_service_deploy
@@ -869,8 +872,6 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 类型: db_queue
 
 
-##### dp_v_qfg_layer
-##### dp_v_qfg_layer_file
 
 ***
 ## 数据分析
