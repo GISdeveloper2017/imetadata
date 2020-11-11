@@ -11,6 +11,11 @@ from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guot
 
 class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
 
+    def get_information(self) -> dict:
+        information = super().get_information()
+        information[self.Plugins_Info_Type] = 'dom'
+        return information
+
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
         提取xml格式的业务元数据, 加载到parser的metadata对象中

@@ -11,5 +11,5 @@ class plugins_9003_busdataset_ortho(C21ATBusDataSetPlugins):
         information = super().get_information()
         information[self.Plugins_Info_Title] = '业务数据集-单景正射'
         information[self.Plugins_Info_Name] = '单景正射'
-
+        information[self.Plugins_Info_Type] = 'business_data_set_ortho'
         return information

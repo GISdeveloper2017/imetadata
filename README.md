@@ -327,6 +327,8 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
        , "module2":  {"audit": "system", "result": "wait"}
        , "module3":  {"audit": "system", "result": "pass"}
    }
+   
+   {"total": "pass", "metadata": {"data": "pass", "business": "pass"},"data": {"items": "pass"}}
    ```
    其中:
    * module1-3: 为三个子系统的名称
@@ -849,7 +851,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 名称: job_d2s_service_deploy
 1. 类型: db_queue
 1. 算法:
-   1. 抢占dp_v_qfg表中dpStatus=5, dpServiceType=wmts的记录, 状态更新为6
+   1. 抢占dp_v_qfg表中dpStatus=5的记录, 状态更新为6
    1. 获取dp_v_qfg_layer表中, 该服务下的所有图层
         1. 获取dp_v_qfg_layer_file中的dpdf_group_id(记得要distinct)
             1. 获取dp_v_qfg_layer_file中dpdf_group_id下的每一个file
@@ -857,15 +859,61 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
                 1. 将文件信息, 写入到mapfile文件中
                 1. ...
    1. 将处理成功的dp_v_qfg记录, 更新状态为0
-        1. dsdScanStatus=0
+        1. dpStatus=0
 
 ##### 服务更新调度
-1. 名称: job_d2s_service_update
+###### 服务状态更新
+1. 业务交互系统处理:
+    1. 将dp_v_qfg表中dpStatus改为1
+    1. 将将dp_v_qfg_layer表中, 该服务下的所有图层的状态dpstatus, 批量更新为1(启动服务检查更新的调度)
+    
+###### 服务图层数据更新
+1. 名称: job_d2s_service_layer_update
 1. 类型: db_queue
 1. 设计:
-    1. 当一个批次数据入库后, 服务系统需要做什么
-        1. 已有服务是否需要更新
+    1. 抢占dp_v_qfg_layer表中dpStatus=1的记录, 状态更新为2
+    1. 读取dp_v_qfg_layer表中的dpLayer_Object属性
+        1. 将dp_v_qfg_layer_file表中, 所有Layer下的记录, 状态改为删除
+            1. dpdf_processType=delete
+        1. 根据dpLayer_Object属性, 获取所有符合要求的对象列表, 逐一处理:
+            1. 检查dp_v_qfg_layer_file中是否有该object
+                1. 如果存在
+                    1. 更新dp_v_qfg_layer_file中的object信息
+                        1. dpdf_object_id
+                            1. dpdf_object_fullname
+                            1. dpdf_object_title
+                            1. dpdf_object_size
+                            1. dpdf_object_date
+                            1. dpdf_object_fp
+                    1. 对比当前对象的指纹, 和dpdf_object_fp_lastdeploy中的是否相同
+                        1. 相同
+                            1. dpdf_processType=same
+                        1. 不同
+                            1. dpdf_processType=update
+                1. 不存在
+                    1. 在dp_v_qfg_layer_file中增加object信息
+                        1. dpdf_layer_id=dp_v_qfg_layer.dpid
+                        1. dpdf_group_id=dpdf_layer_id
+                        1. dpdf_object_fullname
+                        1. dpdf_object_title
+                        1. dpdf_object_size
+                        1. dpdf_object_date
+                        1. dpdf_object_fp
+                        1. dpdf_processType=new
+    1. 将处理成功的dp_v_qfg_layer记录, 更新状态为0
+        1. dpStatus=0
 1. 算法:
+
+###### 服务状态监控
+1. 名称: job_d2s_service_update_monitor
+1. 类型: interval
+1. 定时: 每10-30秒处理一次
+1. 设计:
+    1. 获取dp_v_qfg表中dpStatus=1的服务
+    1. 检查该服务的所有layer的dpStatus是否全部为0
+        1. 如果全部为0, 则将dp_v_qfg表中dpStatus改为4(后将在全局调度中设置该默认值, 改为5, 就直接自动触发服务发布动作)
+        1. 如果有状态为1的记录, 则表明还有正在处理的, 继续等待下一次扫描
+        1. 如果没有状态为1的, 但是不是全部为0, 则表明处理完毕, 但有处理错误的图层, 此时将dp_v_qfg表中dpStatus改为11
 
 ##### 服务批量创建
 1. 名称: job_d2s_service_creator

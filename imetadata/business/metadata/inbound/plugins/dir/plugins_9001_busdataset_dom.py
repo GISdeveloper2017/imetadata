@@ -11,5 +11,5 @@ class plugins_9001_busdataset_dom(C21ATBusDataSetPlugins):
         information = super().get_information()
         information[self.Plugins_Info_Title] = '业务数据集-DOM'
         information[self.Plugins_Info_Name] = 'DOM'
-
+        information[self.Plugins_Info_Type] = 'business_data_set_dom'
         return information

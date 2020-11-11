@@ -47,7 +47,7 @@ where dpStatus = 6
     def process_mission(self, dataset) -> str:
         """
         详细算法复杂, 参见readme.md中[##### 服务发布调度]章节
-        @todo(张雄雄) 开始开发服务发布框架
+        todo(张雄雄) 开始开发服务发布框架
         :param dataset:
         :return:
         """
@@ -57,7 +57,6 @@ where dpStatus = 6
         CLogger().debug('即将发布服务为: {0}.{1}.{2}'.format(deploy_id, deploy_s_name, deploy_s_title))
         try:
 
-            # dataset = CFactory().give_me_db(self.get_mission_db_id()).all_row()
             result = CResult.merge_result(
                 self.Success,
                 '服务: {0}.{1}.{2}发布成功'.format(deploy_id, deploy_s_name, deploy_s_title)

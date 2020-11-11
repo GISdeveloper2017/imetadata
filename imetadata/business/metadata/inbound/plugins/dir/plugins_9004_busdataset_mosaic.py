@@ -11,5 +11,5 @@ class plugins_9004_busdataset_mosaic(C21ATBusDataSetPlugins):
         information = super().get_information()
         information[self.Plugins_Info_Title] = '业务数据集-镶嵌影像'
         information[self.Plugins_Info_Name] = '镶嵌影像'
-
+        information[self.Plugins_Info_Type] = 'business_data_set_mosaic'
         return information
