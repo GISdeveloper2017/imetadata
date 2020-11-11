@@ -783,6 +783,11 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 服务发布系统内部需要维护服务列表
 1. 服务发布系统需要屏蔽技术和性能门槛, 对外只提供服务
 
+#### 进度设计
+1. 第一阶段: 完成同类坐标投影数据, 自动发布到一个OGCService中(已完成)
+1. 第二阶段: 完成不同投影坐标数据, 自动发布到一个OGCService中(目前的状态)
+1. 第三阶段: 完成不同投影坐标数据, 自动发布到OGCService集群或云中
+
 #### 权限设计
 1. 服务发布系统的权限采用token+权限, 通过token对外提供访问控制
 1. token的权限关联:
@@ -811,6 +816,61 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
         1. 负责中小矢量的渲染服务
 1. 对外提供服务的ogcService, 在服务发布系统内部可能为集群或发布为多份
 1. 允许服务发布系统通过预切片或实时切片提高服务能力, 但信息不得对外提供反馈    
+
+#### 数据库设计
+##### dp_v_qfg
+###### 简述
+###### 字段
+1. dpid
+    * 类型: varchar
+    * 意义: 标识
+1. dpStatus
+    * 类型: int
+    * 意义: 状态
+        * 0: 成功完成发布
+        * 1: 等待发布
+        * 2: 发布中-正在处理
+        * ...
+        * 5: 发布中-等待发布为ogc服务
+        * 6: 发布中-正在筹备ogc服务发布前的预备工作
+        * 61: 发布中-筹备ogc服务发布前的预备工作失败; 重试请更改为5
+        * 7: 发布中-已经提交给ogc服务器, 等待处理完成
+        * 81: 发布中-已经提交给ogc服务器, 但ogc服务器发布失败
+        * ...
+1. dpProcessID
+    * 类型: varchar
+    * 意义: 并行处理标识
+
+#### 调度设计
+##### 服务发布调度
+1. 名称: job_d2s_service_deploy
+1. 类型: db_queue
+1. 算法:
+   1. 抢占dp_v_qfg表中dpStatus=5, dpServiceType=wmts的记录, 状态更新为6
+   1. 获取dp_v_qfg_layer表中, 该服务下的所有图层
+        1. 获取dp_v_qfg_layer_file中的dpdf_group_id(记得要distinct)
+            1. 获取dp_v_qfg_layer_file中dpdf_group_id下的每一个file
+                1. 根据dpProcessType内容, 处理新增\更新\删除
+                1. 将文件信息, 写入到mapfile文件中
+                1. ...
+   1. 将处理成功的dp_v_qfg记录, 更新状态为0
+        1. dsdScanStatus=0
+
+##### 服务更新调度
+1. 名称: job_d2s_service_update
+1. 类型: db_queue
+1. 设计:
+    1. 当一个批次数据入库后, 服务系统需要做什么
+        1. 已有服务是否需要更新
+1. 算法:
+
+##### 服务批量创建
+1. 名称: job_d2s_service_creator
+1. 类型: db_queue
+
+
+##### dp_v_qfg_layer
+##### dp_v_qfg_layer_file
 
 ***
 ## 数据分析

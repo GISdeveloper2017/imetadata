@@ -365,8 +365,13 @@ CREATE TABLE if not exists public.dp_v_qfg_schema_layer
     dplayer_resultfields character varying(1000) COLLATE pg_catalog."default" NOT NULL DEFAULT 'all'::character varying,
     dplayer_style text COLLATE pg_catalog."default",
     dpdeploysubdir character varying(2000) COLLATE pg_catalog."default",
+
     dpfiletags character varying[] COLLATE pg_catalog."default",
     dpobjecttype character varying[] COLLATE pg_catalog."default",
+
+    -- 图层中的对象, 使用text格式存储, 是因为虽然内容是json格式, 但有可能json文本中需要使用通配符, 替换后方可转换为合法的json格式
+    dplayer_object text,
+
     dpfileprocessalgorithm character varying(100) COLLATE pg_catalog."default",
     dpfileprocessparams text COLLATE pg_catalog."default",
     dpbatchdeploy character varying(2000) COLLATE pg_catalog."default",
@@ -448,19 +453,27 @@ CREATE TABLE if not exists public.dp_v_qfg
     dpaddtime timestamp(6) without time zone DEFAULT now(),
     dplastmodifytime timestamp(6) without time zone DEFAULT now(),
     dpmemo text COLLATE pg_catalog."default",
-    dpprocesstype character varying(100) COLLATE pg_catalog."default",
-    dpschemaid character varying(100) COLLATE pg_catalog."default" NOT NULL,
+
     dptitle character varying(200) COLLATE pg_catalog."default" NOT NULL,
     dpname character varying(200) COLLATE pg_catalog."default" NOT NULL,
-    dpdeploydir character varying(2000) COLLATE pg_catalog."default",
-    dpfileprefix character varying(2000) COLLATE pg_catalog."default",
+
     dptimeid character varying(100) COLLATE pg_catalog."default",
     dpspatialid character varying(100) COLLATE pg_catalog."default",
     dpbusid character varying(100) COLLATE pg_catalog."default",
+
     dpproject character varying(2000) COLLATE pg_catalog."default",
-    dpservicetype character varying(100) COLLATE pg_catalog."default" DEFAULT 'wmts'::character varying,
-    dpdeploymissionid character varying(100) COLLATE pg_catalog."default",
+
+    dpprocesstype character varying(100) COLLATE pg_catalog."default",
+    dpschemaid character varying(100) COLLATE pg_catalog."default",
+
     dpserviceparams text COLLATE pg_catalog."default",
+
+    dpservicetype character varying(100) COLLATE pg_catalog."default" DEFAULT 'wmts'::character varying,
+
+    --这两个字段, 在服务发布中已经没有作用
+    dpdeploydir character varying(2000) COLLATE pg_catalog."default",
+    dpfileprefix character varying(2000) COLLATE pg_catalog."default",
+
     CONSTRAINT dp_v_qfg_pkey PRIMARY KEY (dpid)
 )
 
@@ -502,12 +515,6 @@ COMMENT ON COLUMN public.dp_v_qfg.dptitle
 COMMENT ON COLUMN public.dp_v_qfg.dpname
     IS '服务英文名';
 
-COMMENT ON COLUMN public.dp_v_qfg.dpdeploydir
-    IS '发布目标目录';
-
-COMMENT ON COLUMN public.dp_v_qfg.dpfileprefix
-    IS '发布数据名称所涵盖的前缀，用于linux兼容';
-
 COMMENT ON COLUMN public.dp_v_qfg.dptimeid
     IS '时间标识';
 
@@ -520,11 +527,15 @@ COMMENT ON COLUMN public.dp_v_qfg.dpbusid
 COMMENT ON COLUMN public.dp_v_qfg.dpproject
     IS '投影坐标系';
 
-COMMENT ON COLUMN public.dp_v_qfg.dpdeploymissionid
-    IS '服务发布任务标识';
-
 COMMENT ON COLUMN public.dp_v_qfg.dpserviceparams
     IS '服务发布参数';
+
+-- 这两个字段, 仅仅用于数据分析
+COMMENT ON COLUMN public.dp_v_qfg.dpdeploydir
+    IS '发布目标目录';
+
+COMMENT ON COLUMN public.dp_v_qfg.dpfileprefix
+    IS '发布数据名称所涵盖的前缀，用于linux兼容';
 
 
 -- Table: public.dp_v_qfg_layer
@@ -535,21 +546,29 @@ CREATE TABLE if not exists public.dp_v_qfg_layer
 (
     dpid character varying(100) COLLATE pg_catalog."default" NOT NULL,
     dpservice_id character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dplayerschema_id character varying(100) COLLATE pg_catalog."default" NOT NULL,
     dpprocesstype character varying(100) COLLATE pg_catalog."default",
     dpstatus integer DEFAULT 1,
     dpprocessid character varying(100) COLLATE pg_catalog."default",
-    dplayer_id character varying(2000) COLLATE pg_catalog."default",
-    dplayer_name character varying(2000) COLLATE pg_catalog."default",
-    dplayer_deploysubdir character varying(2000) COLLATE pg_catalog."default",
+
+    dplayer_id character varying(200) COLLATE pg_catalog."default",
+    dplayer_name character varying(200) COLLATE pg_catalog."default",
     dplayer_datatype character varying(200) COLLATE pg_catalog."default" NOT NULL DEFAULT 'Raster'::character varying,
     dplayer_queryable character varying(200) COLLATE pg_catalog."default",
     dplayer_resultfields character varying(1000) COLLATE pg_catalog."default" NOT NULL DEFAULT 'all'::character varying,
     dplayer_style text COLLATE pg_catalog."default",
-    dpfileprocessalgorithm character varying(100) COLLATE pg_catalog."default",
-    dpfileprocessparams text COLLATE pg_catalog."default",
+
     dpaddtime timestamp(6) without time zone DEFAULT now(),
     dplastmodifytime timestamp(6) without time zone DEFAULT now(),
+
+    dplayerschema_id character varying(100) COLLATE pg_catalog."default",
+
+    -- 新增图层的对象, 采用jsonb格式, 为了后续的扩展
+    dplayer_object jsonb,
+
+    -- 这三个字段, 是用于数据分析而用的
+    dplayer_deploysubdir character varying(2000) COLLATE pg_catalog."default",
+    dpfileprocessalgorithm character varying(100) COLLATE pg_catalog."default",
+    dpfileprocessparams text COLLATE pg_catalog."default",
     CONSTRAINT dp_v_qfg_layer_pkey PRIMARY KEY (dpid)
 )
 
@@ -585,9 +604,6 @@ COMMENT ON COLUMN public.dp_v_qfg_layer.dplayer_id
 COMMENT ON COLUMN public.dp_v_qfg_layer.dplayer_name
     IS '图层名称';
 
-COMMENT ON COLUMN public.dp_v_qfg_layer.dplayer_deploysubdir
-    IS '服务图层-发布子目录';
-
 COMMENT ON COLUMN public.dp_v_qfg_layer.dplayer_datatype
     IS '服务图层-数据类型';
 
@@ -600,18 +616,21 @@ COMMENT ON COLUMN public.dp_v_qfg_layer.dplayer_resultfields
 COMMENT ON COLUMN public.dp_v_qfg_layer.dplayer_style
     IS '服务图层-渲染风格';
 
-COMMENT ON COLUMN public.dp_v_qfg_layer.dpfileprocessalgorithm
-    IS '算法名称';
-
-COMMENT ON COLUMN public.dp_v_qfg_layer.dpfileprocessparams
-    IS '算法参数';
-
 COMMENT ON COLUMN public.dp_v_qfg_layer.dpaddtime
     IS '创建时间';
 
 COMMENT ON COLUMN public.dp_v_qfg_layer.dplastmodifytime
     IS '最后修改时间';
 
+
+COMMENT ON COLUMN public.dp_v_qfg_layer.dplayer_deploysubdir
+    IS '服务图层-发布子目录';
+
+COMMENT ON COLUMN public.dp_v_qfg_layer.dpfileprocessalgorithm
+    IS '算法名称';
+
+COMMENT ON COLUMN public.dp_v_qfg_layer.dpfileprocessparams
+    IS '算法参数';
 
 -- Table: public.dp_v_qfg_layer_file
 
@@ -621,27 +640,40 @@ CREATE TABLE if not exists public.dp_v_qfg_layer_file
 (
     dpdf_id character varying(100) COLLATE pg_catalog."default" NOT NULL,
     dpdf_layer_id character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    dpdf_group_id character varying(100) COLLATE pg_catalog."default",
+
     dpdf_object_id character varying(100) COLLATE pg_catalog."default",
     dpdf_object_fullname character varying(2000) COLLATE pg_catalog."default",
+
     dpdf_object_title character varying(2000) COLLATE pg_catalog."default",
     dpdf_object_size bigint,
     dpdf_object_date timestamp(6) without time zone,
+
     dpdf_object_fp character varying(200) COLLATE pg_catalog."default",
     dpdf_object_fp_lastdeploy character varying(200) COLLATE pg_catalog."default",
-    dpdf_target_filepath character varying(2000) COLLATE pg_catalog."default",
-    dpdf_service_filepath character varying(2000) COLLATE pg_catalog."default",
+
     dpdf_processtype character varying(100) COLLATE pg_catalog."default",
-    dpdf_check_status integer,
-    dpdf_check_memo text COLLATE pg_catalog."default",
-    dpdf_check_procid character varying(100) COLLATE pg_catalog."default",
+
     dpdf_publish_status integer DEFAULT 0,
     dpdf_publish_memo text COLLATE pg_catalog."default",
     dpdf_publish_procid character varying(100) COLLATE pg_catalog."default",
+
     dpdf_addtime timestamp(6) without time zone DEFAULT now(),
     dpdf_lastmodifytime timestamp(6) without time zone DEFAULT now(),
+
+    -- 这两个字段, 是用于旧版本的质检, 目前已经在数管中应用, 无需再有
+    dpdf_check_status integer,
+    dpdf_check_memo text COLLATE pg_catalog."default",
+    dpdf_check_procid character varying(100) COLLATE pg_catalog."default",
+
+    -- 这五个字段, 是为了数据分析而专用的
+    dpdf_target_filepath character varying(2000) COLLATE pg_catalog."default",
+    dpdf_service_filepath character varying(2000) COLLATE pg_catalog."default",
+
     dpdf_publish_filename character varying(2000) COLLATE pg_catalog."default",
     dpdf_publish_filemetadata text COLLATE pg_catalog."default",
     dpdf_publish_filemetatype integer DEFAULT 0,
+
     CONSTRAINT dp_v_qfg_layer_file_pkey PRIMARY KEY (dpdf_id)
 )
 
@@ -658,6 +690,9 @@ COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_id
 
 COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_layer_id
     IS '图层标识';
+
+COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_group_id
+    IS '分组标识';
 
 COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_object_id
     IS '对象标识';
@@ -680,23 +715,8 @@ COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_object_fp
 COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_object_fp_lastdeploy
     IS '最后一次发布的对象指纹';
 
-COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_target_filepath
-    IS '对象处理目标路径';
-
-COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_service_filepath
-    IS '服务发布文件路径';
-
 COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_processtype
     IS '处理类型：new-新创建；update-更新；delete-删除';
-
-COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_check_status
-    IS '检查状态;0-完成;1-待处理;2-处理中;3-处理有误';
-
-COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_check_memo
-    IS '检查结果';
-
-COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_check_procid
-    IS '检查并行辅助字段';
 
 COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_publish_status
     IS '发布状态;0-完成;1-待处理;2-处理中;3-处理有误';
@@ -712,6 +732,25 @@ COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_addtime
 
 COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_lastmodifytime
     IS '最后修改时间';
+
+
+
+
+---------------------------------------------------------------------------------
+COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_target_filepath
+    IS '对象处理目标路径';
+
+COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_service_filepath
+    IS '服务发布文件路径';
+
+COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_check_status
+    IS '检查状态;0-完成;1-待处理;2-处理中;3-处理有误';
+
+COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_check_memo
+    IS '检查结果';
+
+COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_check_procid
+    IS '检查并行辅助字段';
 
 COMMENT ON COLUMN public.dp_v_qfg_layer_file.dpdf_publish_filename
     IS '发布文件名';
@@ -730,7 +769,8 @@ insert into ro_global_config(gcfgid, gcfgcode, gcfgtitle, gcfgvalue, gcfgmemo)
   values(3001, 'atgis_server_deploy_dbserverid', '服务-发布-目标服务标识', 'v3f935edd3d904dbd91d67c93836d8a0c', null);
 
 update dm2_storage 
-  set dstotheroption = ('{"ds_opt_server_deploy_mount_point_path":"/User/wangxiya/mount/' || dstid || '"}')::jsonb;
+  set dstotheroption = ('{"ds_opt_server_deploy_mount_point_path":"/User/wangxiya/mount/' || dstid || '"}')::jsonb
+where dstotheroption is null;
 
 
 /*
@@ -750,8 +790,6 @@ insert into dp_v_qfg_schema(dpid, dpstatus, dpprocessid, dpaddtime, dplastmodify
 values('multi_service', 1, null, now(), now(), null, 'new',
   '昆明市2019年全覆盖数据展示服务', '全覆盖数据展示服务-昆明全市-$time_title$', 'qfg-kunming-$time_id$', 'C:\data\Target', 'linux',
   '[{"project":"EPSG:4326"},{"project":"EPSG:3857"}]', '[{"dim_time":"t0","dim_spatial":"","dim_bus":""}]');
-
-
 
 truncate table dp_v_qfg_schema_layer;
 insert into dp_v_qfg_schema_layer(dpid, dpSchemaID, dpaddtime, dplastmodifytime, dpmemo, 
