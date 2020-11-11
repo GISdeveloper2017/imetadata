@@ -1,4 +1,6 @@
-# coding:utf-8
+#!/usr/bin/python3
+# -*- coding:utf-8 -*-
+from imetadata import settings
 
 class LayerDef(object):
     def __init__(self):
@@ -27,3 +29,7 @@ class ServiceDef(object):
             else:
                 grids = grids + coor + ','
         return grids.rstrip(',')
+
+
+if __name__ == '__main__':
+    print(settings.application.xpath_one('data2service.tindex_dir', None))

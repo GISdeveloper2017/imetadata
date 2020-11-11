@@ -1,11 +1,5 @@
-# coding:utf-8
-'''
-@Author: zhangxx
-@Date: 2020-02-19 14:14:42
-@LastEditors: zhangxx
-@LastEditTime: 2020-03-04 14:44:32
-@Description: a python class to handle MapServer mapfile
-'''
+#!/usr/bin/python3
+# -*- coding:utf-8 -*-
 
 import os
 import re
@@ -13,13 +7,10 @@ import sys
 from collections import OrderedDict
 
 PY3 = sys.version_info[0] >= 3
-if not PY3:
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
 
 LINESEP = '\n'
 LINETAB = '  '
-SIMPLE_TYPES = (str if PY3 else basestring, int, float, type(None))
+SIMPLE_TYPES = (str, int, float, type(None))
 COMPLEX_TYPES = (list, dict)
 DICT_KEYWORDS = ("MAP", "MAP.LAYER", "MAP.SYMBOL", "MAP.LAYER.CLASS",
                  "MAP.LAYER.CLUSTER", "MAP.LAYER.CLASS.STYLE", "MAP.LAYER.CLASS.LABEL",
