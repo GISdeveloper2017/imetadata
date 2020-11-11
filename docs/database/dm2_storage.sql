@@ -798,3 +798,41 @@ alter table dm2_storage add column dstScanMemo text;
 comment on column dm2_storage.dstScanMemo is '数管-存储-扫描-结果';
 
 
+/*
+    补充dm2_storage_obj_na表设计
+*/
+
+drop table if exists dm2_storage_obj_na;
+
+create table if not exists dm2_storage_obj_na
+(
+	dsonid serial not null
+		constraint dm2_storage_obj_na_pk
+			primary key,
+	dson_object_id varchar(100),
+	dson_app_id varchar(200),
+	dson_notify_status integer default 1,
+	dson_notify_proc_id varchar(100),
+	dson_notify_proc_memo text,
+	dson_addtime timestamp(6) default now()
+);
+
+comment on table dm2_storage_obj_na is '数管-对象-同步';
+
+comment on column dm2_storage_obj_na.dsonid is '标识';
+
+comment on column dm2_storage_obj_na.dson_object_id is '对象标识';
+
+comment on column dm2_storage_obj_na.dson_app_id is '应用标识';
+
+comment on column dm2_storage_obj_na.dson_notify_status is '通知状态';
+
+comment on column dm2_storage_obj_na.dson_notify_proc_id is '并行标识';
+
+comment on column dm2_storage_obj_na.dson_notify_proc_memo is '通知结果';
+
+comment on column dm2_storage_obj_na.dson_addtime is '添加时间';
+
+alter table dm2_storage_obj_na owner to postgres;
+
+
