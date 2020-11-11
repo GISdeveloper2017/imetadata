@@ -6,6 +6,7 @@ from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
 from imetadata.business.data2service.base.job.c_d2sBaseJob import CD2SBaseJob
 from imetadata.database.c_factory import CFactory
+from imetadata.business.data2service.service.c_service_def import ServiceDef, LayerDef
 
 
 class job_d2s_service_deploy(CD2SBaseJob):
@@ -56,7 +57,7 @@ where dpStatus = 6
         deploy_s_name = dataset.value_by_name(0, 'dpname', '')
         CLogger().debug('即将发布服务为: {0}.{1}.{2}'.format(deploy_id, deploy_s_name, deploy_s_title))
         try:
-
+            serdef = ServiceDef(deploy_s_name, deploy_s_title)
             result = CResult.merge_result(
                 self.Success,
                 '服务: {0}.{1}.{2}发布成功'.format(deploy_id, deploy_s_name, deploy_s_title)
