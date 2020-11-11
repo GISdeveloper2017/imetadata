@@ -14,6 +14,11 @@ from imetadata.database.c_factory import CFactory
 
 class CFilePlugins_GUOTU_Third_Survey(CFilePlugins_GUOTU):
 
+    def get_information(self) -> dict:
+        information = super().get_information()
+        information[self.Plugins_Info_Type] = 'third_survey'
+        return information
+
     def qa_file_custom(self, parser: CMetaDataParser):
         """
         自定义的文件存在性质检, 发生在元数据解析之前

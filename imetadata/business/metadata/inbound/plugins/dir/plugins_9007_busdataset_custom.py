@@ -11,5 +11,5 @@ class plugins_9007_busdataset_custom(C21ATBusDataSetPlugins):
         information = super().get_information()
         information[self.Plugins_Info_Title] = '业务数据集-自定义影像'
         information[self.Plugins_Info_Name] = '自定义影像'
-
+        information[self.Plugins_Info_Type] = 'business_data_set_custom'
         return information
