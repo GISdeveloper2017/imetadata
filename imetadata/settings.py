@@ -25,6 +25,9 @@ application = CSettings(
         'directory': {
             'work': '/Users/wangxiya/Documents/交换/9.数管/9.工作目录'
         },
+        'data2service': {
+            'local_dir': '/home/geocube/local'
+        },
         'metadata': {
             'title': '数管配置',
             'directory': {

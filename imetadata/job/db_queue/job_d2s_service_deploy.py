@@ -56,6 +56,8 @@ where dpStatus = 6
         deploy_s_name = dataset.value_by_name(0, 'dpname', '')
         CLogger().debug('即将发布服务为: {0}.{1}.{2}'.format(deploy_id, deploy_s_name, deploy_s_title))
         try:
+
+            # dataset = CFactory().give_me_db(self.get_mission_db_id()).all_row()
             result = CResult.merge_result(
                 self.Success,
                 '服务: {0}.{1}.{2}发布成功'.format(deploy_id, deploy_s_name, deploy_s_title)
