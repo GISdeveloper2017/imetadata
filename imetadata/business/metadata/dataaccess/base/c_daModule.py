@@ -27,6 +27,7 @@ class CDAModule(CResource):
         info = dict()
         info[self.Name_ID] = type(self).__name__
         info[self.Name_Title] = None
+        info[self.Name_Type] = None
 
         return info
 
