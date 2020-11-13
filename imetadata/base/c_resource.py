@@ -156,6 +156,7 @@ class CResource:
     Name_Audit = 'audit'
     Name_System = 'system'
     Name_User = 'user'
+    Name_Distribution = 'distribution'
 
     FileExt_Py = 'py'
 

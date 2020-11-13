@@ -22,7 +22,7 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         information = super().get_information()
         information[self.Plugins_Info_Title] = '国情影像-分幅影像'
         information[self.Plugins_Info_Name] = 'guoqing_frame'
-
+        information[self.Plugins_Info_Type] = 'guoqing_frame'
         return information
 
     def classified(self):

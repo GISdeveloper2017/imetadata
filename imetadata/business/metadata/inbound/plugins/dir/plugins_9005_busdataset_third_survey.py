@@ -11,5 +11,5 @@ class plugins_9005_busdataset_third_survey(C21ATBusDataSetPlugins):
         information = super().get_information()
         information[self.Plugins_Info_Title] = '业务数据集-三调影像'
         information[self.Plugins_Info_Name] = '三调影像'
-
+        information[self.Plugins_Info_Type] = 'business_data_set_third_survey'
         return information

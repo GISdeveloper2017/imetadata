@@ -27,7 +27,7 @@ class plugins_8050_guoqing_scene_noblock(CFilePlugins_GUOTU_GuoQing):
         information = super().get_information()
         information[self.Plugins_Info_Title] = '国情影像-整景纠正'
         information[self.Plugins_Info_Name] = 'guoqing_scene_noblock'
-
+        information[self.Plugins_Info_Type] = 'guoqing_scene'
         return information
 
     def classified(self):
