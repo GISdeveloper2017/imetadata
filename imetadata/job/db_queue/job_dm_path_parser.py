@@ -79,8 +79,13 @@ where dsdscanfilestatus = 2
         order by dsddirectory desc
         limit 1
         '''.format(CFile.sep())
-        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {'dsdStorageID': ds_storage_id,
-                                                                                         'dsdDirectory': ds_subpath})
+        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(
+            sql_get_rule,
+            {
+                'dsdStorageID': ds_storage_id,
+                'dsdDirectory': ds_subpath
+            }
+        )
         ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
 
         if ds_subpath == '':
@@ -89,8 +94,18 @@ where dsdscanfilestatus = 2
             ds_subpath = CFile.join_file(ds_root_path, ds_subpath)
 
         check_inbound_subpath_enabled = False
-        if CUtils.equal_ignore_case(ds_storage_type, self.Storage_Type_InBound):
-            check_inbound_subpath_enabled = CUtils.equal_ignore_case(ds_id, ds_storage_id)
+        if CUtils.equal_ignore_case(
+                settings.application.xpath_one(
+                    self.path_switch(
+                        self.Path_Setting_MetaData_InBound_Switch,
+                        self.Switch_Use_Ready_Flag_File_Name
+                    ),
+                    self.Name_OFF
+                ),
+                self.Name_ON
+        ):
+            if CUtils.equal_ignore_case(ds_storage_type, self.Storage_Type_InBound):
+                check_inbound_subpath_enabled = CUtils.equal_ignore_case(ds_id, ds_storage_id)
 
         CLogger().debug('处理的目录为: {0}'.format(ds_subpath))
         try:

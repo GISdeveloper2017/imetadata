@@ -327,8 +327,6 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
        , "module2":  {"audit": "system", "result": "wait"}
        , "module3":  {"audit": "system", "result": "pass"}
    }
-   
-   {"total": "pass", "metadata": {"data": "pass", "business": "pass"},"data": {"items": "pass"}}
    ```
    其中:
    * module1-3: 为三个子系统的名称
@@ -844,6 +842,21 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
     * 意义: 并行处理标识
 
 ##### dp_v_qfg_layer
+###### 简述
+###### 字段
+1. dpid
+    * 类型: varchar
+    * 意义: 标识
+1. dplayer_object
+    * 类型: jsonb
+    * 意义: 图层所需要的数据对象类型
+    * 示例:
+```json
+{
+    "": ""  
+}
+```    
+    
 ##### dp_v_qfg_layer_file
 
 #### 调度设计
@@ -851,26 +864,32 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 名称: job_d2s_service_deploy
 1. 类型: db_queue
 1. 算法:
-   1. 抢占dp_v_qfg表中dpStatus=5的记录, 状态更新为6
-   1. 获取dp_v_qfg_layer表中, 该服务下的所有图层
+    1. 抢占dp_v_qfg表中dpStatus=5的记录, 状态更新为6
+    1. 获取dp_v_qfg_layer表中, 该服务下的所有图层
         1. 获取dp_v_qfg_layer_file中的dpdf_group_id(记得要distinct)
             1. 获取dp_v_qfg_layer_file中dpdf_group_id下的每一个file
                 1. 根据dpProcessType内容, 处理新增\更新\删除
                 1. 将文件信息, 写入到mapfile文件中
-                1. ...
-   1. 将处理成功的dp_v_qfg记录, 更新状态为0
-        1. dpStatus=0
-
+    1. 发布成功后:
+        1. 将dp_v_qfg_layer_file中所有dpdf_processtype=delete的记录删除
+        1. 将dp_v_qfg_layer_file中的记录dpdf_object_fp_lastdeploy=dpdf_object_fp
+        1. 将dp_v_qfg_layer中所有dpprocesstype=delete的记录删除
+        1. 将dp_v_qfg记录, 更新状态为0
+            1. dpStatus=0
+    1. 如果发布失败:
+        1. 将dp_v_qfg记录, 更新状态为61
+            1. dpStatus=61
+    
 ##### 服务更新调度
 ###### 服务状态更新
-1. 业务交互系统处理:
-    1. 将dp_v_qfg表中dpStatus改为1
+1. 业务交互系统处理(注意顺序不能错!!!):
     1. 将将dp_v_qfg_layer表中, 该服务下的所有图层的状态dpstatus, 批量更新为1(启动服务检查更新的调度)
+    1. 将dp_v_qfg表中dpStatus改为2
     
 ###### 服务图层数据更新
 1. 名称: job_d2s_service_layer_update
 1. 类型: db_queue
-1. 设计:
+1. 流程:
     1. 抢占dp_v_qfg_layer表中dpStatus=1的记录, 状态更新为2
     1. 读取dp_v_qfg_layer表中的dpLayer_Object属性
         1. 将dp_v_qfg_layer_file表中, 所有Layer下的记录, 状态改为删除
@@ -900,20 +919,35 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
                         1. dpdf_object_date
                         1. dpdf_object_fp
                         1. dpdf_processType=new
-    1. 将处理成功的dp_v_qfg_layer记录, 更新状态为0
-        1. dpStatus=0
-1. 算法:
+        1. 删除dp_v_qfg_layer_file表中, 所有Layer下的记录, dpdf_processType=delete的记录???
+    1. 检查当前layer下, dp_v_qfg_layer_file的记录数
+        1. 如果为0, 则表示当前图层下没有可发布的文件
+            1. 删除dp_v_qfg_layer记录
+        1. 将处理成功的dp_v_qfg_layer记录, 更新状态为0
+            1. dpStatus=0
+    1. 如果期间出现异常, 则将dp_v_qfg_layer记录, 更新状态为21
+        1. dpStatus=21
+        1. dpProcessResult=错误信息
+        1. 重试机制: 
+            1. 将dp_v_qfg_layer记录, 更新状态为1
+                1. dpStatus=1
 
 ###### 服务状态监控
 1. 名称: job_d2s_service_update_monitor
 1. 类型: interval
 1. 定时: 每10-30秒处理一次
 1. 设计:
-    1. 获取dp_v_qfg表中dpStatus=1的服务
+    1. 获取dp_v_qfg表中dpStatus=2的服务
     1. 检查该服务的所有layer的dpStatus是否全部为0
         1. 如果全部为0, 则将dp_v_qfg表中dpStatus改为4(后将在全局调度中设置该默认值, 改为5, 就直接自动触发服务发布动作)
-        1. 如果有状态为1的记录, 则表明还有正在处理的, 继续等待下一次扫描
-        1. 如果没有状态为1的, 但是不是全部为0, 则表明处理完毕, 但有处理错误的图层, 此时将dp_v_qfg表中dpStatus改为11
+        1. 如果有状态为1, 2的记录, 则表明还有正在处理的, 继续等待下一次扫描
+        1. 如果没有状态为1\2的, 但是不是全部为0, 则表明处理完毕, 但有处理错误的图层, 此时将dp_v_qfg表中dpStatus改为11
+    1. 如果期间出现异常, 则将dp_v_qfg记录, 更新状态为21
+        1. dpStatus=21
+        1. dpProcessResult=错误信息
+        1. 重试机制: 
+            1. 将dp_v_qfg记录, 更新状态为2
+                1. dpStatus=2
 
 ##### 服务批量创建
 1. 名称: job_d2s_service_creator

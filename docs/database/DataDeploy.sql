@@ -553,6 +553,7 @@ CREATE TABLE if not exists public.dp_v_qfg_layer
     dpprocesstype character varying(100) COLLATE pg_catalog."default",
     dpstatus integer DEFAULT 1,
     dpprocessid character varying(100) COLLATE pg_catalog."default",
+    dpprocessresult text,
 
     dplayer_id character varying(200) COLLATE pg_catalog."default",
     dplayer_name character varying(200) COLLATE pg_catalog."default",
@@ -601,6 +602,9 @@ COMMENT ON COLUMN public.dp_v_qfg_layer.dpstatus
 
 COMMENT ON COLUMN public.dp_v_qfg_layer.dpprocessid
     IS '并行处理辅助字段';
+
+COMMENT ON COLUMN public.dp_v_qfg_layer.dpprocessresult
+    IS '并行处理结果';
 
 COMMENT ON COLUMN public.dp_v_qfg_layer.dplayer_id
     IS '图层标识';

@@ -88,6 +88,9 @@ class CResource:
 
     DB_Server_ID_Default = '0'
 
+    Name_ON = 'on'
+    Name_OFF = 'off'
+
     Status_Finish = 0
 
     Name_White_List = 'white_list'
@@ -203,6 +206,10 @@ class CResource:
     Name_Bil = 'bil'
     Name_Shp = 'shp'
 
+    Name_Switch = 'switch'
+
+    Switch_Use_Ready_Flag_File_Name = 'use_ready_flag_file_name'
+
     Path_MD_Rule_Type = '/root/type'
     Path_MD_Rule_Plugins_Dir = '/root/plugins/dir/plugin'
     Path_MD_Rule_Plugins_File = '/root/plugins/file/plugin'
@@ -216,6 +223,7 @@ class CResource:
     Path_Setting_MetaData_InBound_Schema = '{0}.schema'.format(Path_Setting_MetaData_InBound)
     Path_Setting_MetaData_InBound_Schema_Default = '{0}.default'.format(Path_Setting_MetaData_InBound_Schema)
     Path_Setting_MetaData_InBound_Schema_Special = '{0}.special'.format(Path_Setting_MetaData_InBound_Schema)
+    Path_Setting_MetaData_InBound_Switch = '{0}.{1}'.format(Path_Setting_MetaData_InBound, Name_Switch)
 
     Path_Storage_Option_Inbound = 'inbound'
     Path_SO_Inbound_Filter = '{0}.{1}'.format(Path_Storage_Option_Inbound, Name_Filter)
@@ -276,9 +284,9 @@ class CResource:
     MetaDataFormat_Text = 0
     MetaDataFormat_Json = 1
     MetaDataFormat_XML = 2
-    DataFormat_Vector_File = 3   # 矢量文件
+    DataFormat_Vector_File = 3  # 矢量文件
     DataFormat_Vector_Dataset = 4  # 矢量数据集
-    DataFormat_Raster_File = 5   # 影像文件
+    DataFormat_Raster_File = 5  # 影像文件
 
     Transformer_DOM_MDB = 'mdb'
     Transformer_DOM_MAT = 'mat'
@@ -296,14 +304,14 @@ class CResource:
     Encoding_GBK = 'GBK'
     Encoding_GBK2312 = 'GBK2312'
 
-    value_type_string = 'string' # 文本类型
+    value_type_string = 'string'  # 文本类型
     value_type_date = 'date'  # 日期类型
     value_type_datetime = 'datetime'  # 日期时间类型
     value_type_date_or_datetime = 'date_or_datetime'  # 日期类型或日期时间类型
     value_type_decimal = 'decimal'  # 小数（包含负数）
     value_type_integer = 'integer'  # 整数（包含负整数）
-    value_type_decimal_or_integer ='decimal_or_integer'  # 小数或整数（包含负数）
-    value_type_decimal_or_integer_positive ='positive_decimal_or_integer'  # 正小数或整数（不包含负数）
+    value_type_decimal_or_integer = 'decimal_or_integer'  # 小数或整数（包含负数）
+    value_type_decimal_or_integer_positive = 'positive_decimal_or_integer'  # 正小数或整数（不包含负数）
 
     ProcStatus_Finished = 0
     ProcStatus_InQueue = 1
@@ -346,3 +354,6 @@ class CResource:
             return '矢量数据集'
         else:
             return None
+
+    def path_switch(self, path_prefix, switch_name: str) -> str:
+        return '{0}.{1}'.format(path_prefix, switch_name)
