@@ -3,8 +3,10 @@
 # @Author : 赵宇飞
 # @File : module_distribution_dom.py
 from imetadata.base.c_result import CResult
-from imetadata.business.metadata.dataaccess.modules.base import \
+from imetadata.business.metadata.dataaccess.modules.base.module_distribution_guotu_object import \
     module_distribution_guotu_object
+from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
 
 
 class module_distribution_dom(module_distribution_guotu_object):
@@ -16,9 +18,6 @@ class module_distribution_dom(module_distribution_guotu_object):
         info = dict()
         info[self.Name_Type] = 'dom'
         return info
-
-    def _do_access(self) -> str:
-        pass
 
     def _do_sync(self) -> str:
         """
