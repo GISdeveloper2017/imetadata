@@ -99,6 +99,16 @@ class CDataBase(CResource):
                     new_params[exe_param_name] = None
             return new_params
 
+    def one_value(self, sql, params=None, default_value=None):
+        object_copy_stat_dataset = self.one_row(sql, params)
+
+        if object_copy_stat_dataset is None:
+            return default_value
+        elif object_copy_stat_dataset.is_empty():
+            return default_value
+        else:
+            return object_copy_stat_dataset.value_by_index(0, 0, default_value)
+
     def one_row(self, sql, params=None) -> CDataSet:
         """
         执行sql, 返回第一行符合要求的记录

@@ -835,4 +835,12 @@ comment on column dm2_storage_obj_na.dson_addtime is '添加时间';
 
 alter table dm2_storage_obj_na owner to postgres;
 
+/*
+    2020-11-13
+    . 为解决对象的更新, 对object表进行扩展
+*/
+
+alter table dm2_storage_object add column dso_obj_lastmodifytime timestamp(6);
+comment on column dm2_storage_object.dso_obj_lastmodifytime is '数管-对象-最后修改时间';
+
 

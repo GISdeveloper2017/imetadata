@@ -171,3 +171,5 @@ class CDMFilePathInfoEx(CFileInfoEx):
                 return not CFile.file_match(self.file_name_without_path, file_filter_black_list)
             else:
                 return True
+        else:
+            return True

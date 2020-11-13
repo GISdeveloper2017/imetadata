@@ -851,12 +851,18 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
     * 类型: jsonb
     * 意义: 图层所需要的数据对象类型
     * 示例:
-```json
-{
-    "": ""  
-}
-```    
-    
+        ```json
+        {
+            "id": ["plugins_3000_gdb"]
+            , "name": ["dom", "dem"]
+            , "type": ["vector"]
+            , "data_type": ["file"]
+            , "group": ["industry_data"]
+        }
+        ```
+        **注意: 大小写不敏感**
+        **上述条件对应为object_def表中的dsodid\dsodname\dsodtype\dsodgroupname**
+        
 ##### dp_v_qfg_layer_file
 
 #### 调度设计
