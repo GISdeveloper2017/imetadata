@@ -858,6 +858,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
             , "type": ["vector"]
             , "data_type": ["file"]
             , "group": ["industry_data"]
+            , "tag": ["aa", "bb"]
         }
         ```
         **注意: 大小写不敏感**

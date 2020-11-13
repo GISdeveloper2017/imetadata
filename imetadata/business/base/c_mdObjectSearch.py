@@ -22,6 +22,8 @@ class CMDObjectSearch(CResource):
         if search_json_obj is None:
             return CDataSet()
 
+        params_search = dict()
+
         sql_search = '''
         select dm2_storage_object.dsoid as object_id
             , dm2_storage_object.dsoobjectname as object_name
@@ -33,14 +35,59 @@ class CMDObjectSearch(CResource):
         from dm2_storage_object 
             left join dm2_storage_object_def on dm2_storage_object.dsoobjecttype = dm2_storage_object_def.dsodid
         where
-            dm2_storage_object_def.dsodid = :dsodid
+            dm2_storage_object_def.dsodtype = :dsodname
+            and dm2_storage_object.dsotags @ (a, b)
+            and 
         '''
 
         sql_where = ''
         condition_id = search_json_obj.xpath_one(self.Name_ID, None)
         if condition_id is not None:
             if isinstance(condition_id, list):
-                condition_id = self.__condition_list_2_sql(condition_id)
-            sql_where = CUtils.str_append(sql_where, '')
+                condition_id = self.__condition_list_2_sql('dm2_storage_object_def.dsodid', condition_id, True)
+            else:
+                condition_id = self.__condition_value_like_2_sql('dm2_storage_object_def.dsodid', condition_id, True)
+
+            sql_where = CUtils.str_append(sql_where, condition_id, ' and ')
+
+        condition_name = search_json_obj.xpath_one(self.Name_ID, None)
+        if condition_name is not None:
+            if isinstance(condition_name, list):
+                condition_name = self.__condition_list_2_sql('dm2_storage_object_def.dsodname', condition_name, True)
+            else:
+                condition_name = self.__condition_value_like_2_sql('dm2_storage_object_def.dsodname', condition_name, True)
+
+            sql_where = CUtils.str_append(sql_where, condition_name, ' and ')
+
+        condition_name = search_json_obj.xpath_one(self.Name_ID, None)
+        if condition_name is not None:
+            if isinstance(condition_name, list):
+                condition_name = self.__condition_list_2_sql('dm2_storage_object_def.dsodname', condition_name, True)
+            else:
+                condition_name = self.__condition_value_like_2_sql('dm2_storage_object_def.dsodname', condition_name, True)
+
+            sql_where = CUtils.str_append(sql_where, condition_name, ' and ')
 
         return CDataSet()
+
+    def __condition_list_2_sql(self, field, value_list, quoted_value):
+        in_sql = ''
+        for value in value_list:
+            if CUtils.equal_ignore_case(value, ''):
+                continue
+
+            if quoted_value:
+                in_sql = CUtils.str_append(in_sql, "'{0}'".format(value))
+            else:
+                in_sql = CUtils.str_append(in_sql, "{0}".format(value))
+
+        if CUtils.equal_ignore_case(in_sql, ''):
+            return ""
+        else:
+            return "{0} in ({1})".format(field, in_sql)
+
+    def __condition_value_like_2_sql(self, field, value):
+        if CUtils.equal_ignore_case(value, ''):
+            return ""
+
+        return "{0} like '{0}'".format(field, value)

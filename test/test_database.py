@@ -4,7 +4,7 @@
 # @File : test_database.py
 
 from sqlalchemy import text
-
+import pytest
 from imetadata.base.exceptions import DBException
 from imetadata.database.base.c_dataset import CDataSet
 from imetadata.database.c_factory import CFactory
@@ -16,8 +16,8 @@ class Test_DataBase:
             factory = CFactory()
             db = factory.give_me_db('0')
 
-            dataset = db.one_row("select * from dm2_storage where dstid = '1'")
-            assert dataset.size() == 1
+            dataset = db.all_row("select * from dm2_storage where dstid in :id", {'id': "'01', '02'"})
+            assert dataset.size() == 2
         except DBException as err:
             assert False
 

@@ -158,6 +158,8 @@ class CResource:
     Name_User = 'user'
     Name_Distribution = 'distribution'
 
+    Module_Distribution = 'module_distribution'
+
     FileExt_Py = 'py'
 
     FileType_Unknown = 'none'
@@ -326,6 +328,7 @@ class CResource:
     DataAccess_Pass = 'pass'
     DataAccess_Wait = 'wait'
     DataAccess_Forbid = 'forbid'
+    DataAccess_Unknown = 'unknown'
 
     Path_21AT_MD_Content_ProductType = '/root/ProductType'
     Path_21AT_MD_Content_ProductName = '/root/DSName'

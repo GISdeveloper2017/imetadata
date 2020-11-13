@@ -157,8 +157,8 @@ where dsi_na_status = 2
                             module_access
                         )
                     )
-                    if not CUtils.equal_ignore_case(module_access, self.DataAccess_Pass):
-                        continue
+                    # if not CUtils.equal_ignore_case(module_access, self.DataAccess_Pass):
+                    #     continue
 
                     result = module_obj.notify()
                     if not CResult.result_success(result):

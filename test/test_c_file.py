@@ -4,7 +4,7 @@
 # @File : test_c_file.py
 
 import allure
-
+import pytest
 from imetadata.base.c_file import CFile
 
 

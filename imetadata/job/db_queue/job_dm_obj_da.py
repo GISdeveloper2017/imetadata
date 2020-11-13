@@ -91,15 +91,22 @@ where dso_da_status = 2
                     result = CUtils.any_2_str(module_obj.access())
                     if CResult.result_success(result):
                         module_access = CResult.result_info(result, self.Name_Access, self.DataAccess_Forbid)
-                        module_obj = {self.Name_Audit: self.Name_System, self.Name_Result: module_access,
-                                      self.Name_Title: module_title}
-                        dso_da_json.set_value_of_name(file_main_name, module_obj)
                     else:
                         CLogger().debug('模块[{0}]解析出现错误, 系统将忽略本模块, 继续处理下一个!'.format(file_main_name))
-                        continue
+                        module_access = self.DataAccess_Unknown
+
+                    module_access_message = CResult.result_message(result)
+                    module_obj = {self.Name_Audit: self.Name_System, self.Name_Result: module_access,
+                                  self.Name_Title: module_title, self.Name_Message: module_access_message}
+                    dso_da_json.set_value_of_name(file_main_name, module_obj)
                 except Exception as error:
                     CLogger().debug('模块[{0}]解析出现异常, 原因为[{1}], 请检查!'.format(file_main_name, error.__str__()))
-                    continue
+
+                    module_access = self.DataAccess_Unknown
+                    module_access_message = '模块[{0}]解析出现异常, 原因为[{1}], 请检查!'.format(file_main_name, error.__str__())
+                    module_obj = {self.Name_Audit: self.Name_System, self.Name_Result: module_access,
+                                  self.Name_Title: module_title, self.Name_Message: module_access_message}
+                    dso_da_json.set_value_of_name(file_main_name, module_obj)
 
             self.db_update_status(
                 dso_id, self.ProcStatus_Finished, dso_da_json.to_json(),
