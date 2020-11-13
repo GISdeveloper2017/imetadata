@@ -137,10 +137,10 @@ class module_distribution(CDAModule):
                 '{0}.{1}'.format(CSys.get_metadata_data_access_modules_root_name(), self.Name_Distribution),
                 file_main_name,
                 self._db_id,
-                self._object_id,
-                self._object_name,
-                self._object_type,
-                None
+                self._obj_id,
+                self._obj_name,
+                self._obj_type,
+                self._quality_info
             )
 
             if module_obj is not None:
