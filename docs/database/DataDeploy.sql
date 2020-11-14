@@ -981,3 +981,24 @@ values('vector_analyse_g1', 'vector_analyse', now(), now(), null
 </process>
 
 */
+
+
+
+/*
+    2020-11-14
+    . 测试数据
+*/
+
+insert into dp_v_qfg(dpid, dptitle, dpname, dpserviceparams)
+values('test_raster', '影像全覆盖', 'raster_service', null);
+
+insert into dp_v_qfg_layer(
+    dpid, dpservice_id, dplayer_id, dplayer_name, dplayer_queryable, dplayer_style, dplayer_object)
+values(
+    'test_raster_layer_1', 'test_raster', 'layer_1', '层1', 'false', null, '{"type": ["raster"]}'::jsonb
+);
+
+
+
+
+

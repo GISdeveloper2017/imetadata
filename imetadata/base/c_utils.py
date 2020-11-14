@@ -2,13 +2,15 @@
 # -*- coding:utf-8 -*-
 
 from __future__ import absolute_import
+
 import re
 import uuid
+from string import Template
+
 import pinyin
+
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_time import CTime
-
-from string import Template
 
 
 class CUtils(CResource):
@@ -82,6 +84,27 @@ class CUtils(CResource):
                 if cls.equal_ignore_case(cls.any_2_str(list_item), name):
                     result_int = result_int + 1
             return result_int
+
+    @classmethod
+    def list_2_str(cls, list_obj: list, prefix: str, seperator: str, suffix: str, ignore_empty: bool = False) -> str:
+        if list_obj is None:
+            return ''
+        elif len(list_obj) == 0:
+            return ''
+        else:
+            result = ''
+            for list_item in list_obj:
+                list_text = cls.any_2_str(list_item)
+                if ignore_empty:
+                    if cls.equal_ignore_case(list_text, ''):
+                        continue
+
+                result = cls.str_append(
+                    result,
+                    '{0}{1}{2}'.format(prefix, list_text, suffix),
+                    seperator
+                )
+            return result
 
     @classmethod
     def any_2_str(cls, obj) -> str:
@@ -400,8 +423,6 @@ class CUtils(CResource):
             return ''
         else:
             return pinyin.get_initial(src_text, delimiter="").lower().strip().replace(' ', '')
-
-
 
 
 if __name__ == '__main__':

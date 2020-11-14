@@ -182,6 +182,7 @@ class CResource:
     Name_Type = 'type'
     Name_Access = 'access'
     Name_Quality = 'quality'
+    Name_Tag = 'tag'
 
     Name_InBound = 'inbound'
     Name_OutBound = 'outbound'
@@ -324,6 +325,11 @@ class CResource:
     ProcStatus_Processing = 2
     ProcStatus_Error = 3
     ProcStatus_WaitConfirm = 9
+
+    ProcType_New = 'new'
+    ProcType_Delete = 'delete'
+    ProcType_Update = 'update'
+    ProcType_Same = 'same'
 
     InBound_Storage_Match_Mode_Auto = 'auto'
     InBound_Storage_Match_Mode_Set = 'set'
