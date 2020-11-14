@@ -146,7 +146,8 @@ where dsi_na_status = 2
                     module_id = file_main_name
                     module_title = CUtils.dict_value_by_name(module_obj.information(), self.Name_Title, '')
 
-                    module_access = object_da_result.xpath_one('{0}.{1}'.format(module_id, self.Name_Result), self.DataAccess_Forbid)
+                    module_access = object_da_result.xpath_one('{0}.{1}'.format(module_id, self.Name_Result),
+                                                               self.DataAccess_Forbid)
                     CLogger().debug(
                         '存储[{0}]下, 批次为[{1}]的目录[{2}]下的对象[{3}], 与模块[{4}]的访问权限为[{5}]!'.format(
                             ds_storage_title,
@@ -157,10 +158,15 @@ where dsi_na_status = 2
                             module_access
                         )
                     )
-                    # if not CUtils.equal_ignore_case(module_access, self.DataAccess_Pass):
-                    #     continue
+                    # todo(王西亚) 仔细考虑这里是否要放开, 是放开pass的, 还是放开pass和wait!!!!!!
+                    if not \
+                            (
+                                    CUtils.equal_ignore_case(module_access, self.DataAccess_Pass)
+                                    or CUtils.equal_ignore_case(module_access, self.DataAccess_Wait)
+                            ):
+                        continue
 
-                    result = module_obj.notify()
+                    result = module_obj.notify(module_access)
                     if not CResult.result_success(result):
                         message = CResult.result_message(result)
                         CLogger().debug(

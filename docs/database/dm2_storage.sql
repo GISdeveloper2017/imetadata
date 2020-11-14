@@ -896,4 +896,11 @@ create index idx_dm2_storage_object_def_name
 create index idx_dm2_storage_object_def_type
 	on dm2_storage_object_def (dsodtype);
 
-
+alter table dm2_storage_obj_na add column dson_object_access varchar(100);
+comment on column dm2_storage_obj_na.dson_object_access is '对象-访问权限';
+alter table dm2_storage_obj_na add column dson_audit_username varchar(100);
+comment on column dm2_storage_obj_na.dson_audit_username is '对象-审批人员';
+alter table dm2_storage_obj_na add column dson_audit_time timestamp(6);
+comment on column dm2_storage_obj_na.dson_audit_time is '对象-审批时间';
+alter table dm2_storage_obj_na add column dson_lastmodify_time timestamp(6) default now();
+comment on column dm2_storage_obj_na.dson_lastmodify_time is '最后修改时间';

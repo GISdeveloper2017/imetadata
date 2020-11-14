@@ -160,6 +160,9 @@ where dsodetailparsestatus = 2
             )
 
             if CResult.result_success(process_result):
+                # 更新父对象的容量和最后修改时间
+                self.__update_object_owner_object_size_and_modifytime(file_info_obj.owner_obj_id)
+
                 self.db_update_object_status(
                     dso_id,
                     self.ProcStatus_Finished,
@@ -216,6 +219,7 @@ where dsodetailparsestatus = 2
                 object_relation_name
             )
 
+            # 更新当前对象的存储大小, 以及最后修改时间
             CFactory().give_me_db(self.get_mission_db_id()).execute(
                 '''
                 update dm2_storage_object 
@@ -403,6 +407,39 @@ where dsodetailparsestatus = 2
             return CResult.merge_result(self.Success, '数据容量统计和数据重复数据分析成功完成! ')
         except Exception as error:
             return CResult.merge_result(self.Failure, '数据容量统计和数据重复数据分析过程出现错误, 详细情况: {0}'.format(error.__str__()))
+
+    def __update_object_owner_object_size_and_modifytime(self, owner_obj_id):
+        if CUtils.equal_ignore_case(owner_obj_id, ''):
+            return
+
+        ds_object_stat = CFactory().give_me_db(self.get_mission_db_id()).one_row(
+            '''
+            select sum(dso_volumn_now), max(dso_obj_lastmodifytime) 
+            from dm2_storage_object 
+            where dsoparentobjid = :object_id
+            ''',
+            {'object_id': owner_obj_id}
+        )
+
+        object_size = None
+        object_last_modify_time = None
+        if not ds_object_stat.is_empty():
+            object_size = ds_object_stat.value_by_index(0, 0, 0)
+            object_last_modify_time = ds_object_stat.value_by_index(0, 1, None)
+
+        CFactory().give_me_db(self.get_mission_db_id()).execute(
+            '''
+            update dm2_storage_object 
+            set dso_volumn_now = :object_size, dso_obj_lastmodifytime = :object_last_modify_time
+            where dsoid = :object_id
+            ''',
+            {
+                'object_id': owner_obj_id,
+                'object_size': object_size,
+                'object_last_modify_time': object_last_modify_time
+            }
+        )
+
 
 
 if __name__ == '__main__':

@@ -12,9 +12,10 @@ class CMDObjectSearch(CResource):
     def __init__(self, db_server_id):
         self.__db_server_id = db_server_id
 
-    def search_object(self, search_json_obj: CJson, other_option: dict = None) -> CDataSet:
+    def search_object(self, module_name: str, search_json_obj: CJson, other_option: dict = None) -> CDataSet:
         """
         根据搜索条件json, 检索符合要求的对象, 并以数据集的方式返回
+        :param module_name: 模块名称
         :param search_json_obj:
         :param other_option:
         :return:

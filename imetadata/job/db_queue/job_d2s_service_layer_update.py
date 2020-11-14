@@ -70,7 +70,10 @@ class job_d2s_service_layer_update(CD2SBaseJob):
         try:
             object_da_result.load_json_text(layer_object)
 
-            object_dataset = CMDObjectSearch(self.get_mission_db_id()).search_object(object_da_result)
+            object_dataset = CMDObjectSearch(self.get_mission_db_id()).search_object(
+                self.ModuleName_Data2Service,
+                object_da_result
+            )
             if object_dataset.is_empty():
                 self.__layer_file_empty(layer_id)
                 result = CResult.merge_result(

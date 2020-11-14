@@ -48,13 +48,14 @@ class CDAModule(CResource):
         )
         return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Forbid)
 
-    def notify(self) -> str:
+    def notify(self, access: str) -> str:
         """
         处理数管中识别的对象, 与第三方模块的通知
         . 如果第三方模块自行处理, 则无需继承本方法
         . 如果第三方模块可以处理, 则在本模块中, 从数据库中提取对象的信息, 写入第三方模块的数据表中, 或者调用第三方模块接口
 
         注意: 在本方法中, 不要用_quality_info属性, 因为外部调用方考虑的效率因素, 没有传入!!!
+        @:param access 当前模块对当前对象的权限
         :return:
         """
         return CResult.merge_result(
