@@ -158,8 +158,6 @@ class CResource:
     Name_User = 'user'
     Name_Distribution = 'distribution'
 
-    Module_Distribution = 'module_distribution'
-
     FileExt_Py = 'py'
 
     FileType_Unknown = 'none'
@@ -272,9 +270,10 @@ class CResource:
     Name_Min = 'min'
     Name_Max = 'max'
 
-    ModuleName_MetaData = 'metadata'
-    ModuleName_DataMining = 'datamining'
-    ModuleName_Data2Service = 'data2service'
+    ModuleName_MetaData = 'module_metadata'
+    ModuleName_Distribution = 'module_distribution'
+    ModuleName_DataMining = 'module_datamining'
+    ModuleName_Data2Service = 'module_data2service'
 
     # 投影坐标信息来源; 1-数据;2-业务元数据;9-人工指定
     Prj_Source_Data = 1

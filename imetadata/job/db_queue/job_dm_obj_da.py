@@ -27,6 +27,9 @@ where dsoid = (
   select dsoid  
   from   dm2_storage_object 
   where  dso_da_status = 1 
+    and dsometadataparsestatus = 0 
+    and dsotagsparsestatus = 0
+    and dsodetailparsestatus = 0
   limit 1
   for update skip locked
 )

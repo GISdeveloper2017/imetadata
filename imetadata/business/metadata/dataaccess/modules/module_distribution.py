@@ -28,15 +28,15 @@ class module_distribution(CDAModule):
         注意: 一定要反馈Access属性
         :return:
         """
-        module_obj_real = self.__find_module_obj()
-        if module_obj_real is None:
-            message = '没有对应的算法, 直接通过!'
-            result = CResult.merge_result(self.Success, message)
-            return result
-        result = module_obj_real.access()
-        return result
-        # result = super().access()
-        # return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Pass)
+        # module_obj_real = self.__find_module_obj()
+        # if module_obj_real is None:
+        #     message = '没有对应的算法, 直接通过!'
+        #     result = CResult.merge_result(self.Success, message)
+        #     return result
+        # result = module_obj_real.access()
+        # return result
+        result = super().access()
+        return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Pass)
 
     def notify(self) -> str:
         """

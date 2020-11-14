@@ -194,8 +194,7 @@ where dsodetailparsestatus = 2
                 '''
                 select sum(dodfilesize), max(dodfilemodifytime) from dm2_storage_obj_detail where dodobjectid = :object_id
                 ''',
-                {'object_id': object_id},
-                0
+                {'object_id': object_id}
             )
 
             object_size = None

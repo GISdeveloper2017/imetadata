@@ -322,11 +322,32 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 这个关系使用json格式
 1. json的一级key为每一个系统的名称, 举例:
     ```json
-   {
-         "module1":  {"audit": "system", "result": "forbid"}
-       , "module2":  {"audit": "system", "result": "wait"}
-       , "module3":  {"audit": "system", "result": "pass"}
-   }
+    {
+        "module_datamining": {
+            "audit": "system",
+            "title": "数据分析挖掘",
+            "result": "wait",
+            "message": "模块[module_datamining.数据分析挖掘]对对象[数据集名称]的访问能力已经分析完毕!"
+        },
+        "module_data2service": {
+            "audit": "system",
+            "title": "数据服务发布",
+            "result": "pass",
+            "message": "模块[module_data2service.数据服务发布]对对象[数据集名称]的访问能力已经分析完毕!"
+        },
+        "module_distribution": {
+            "audit": "system",
+            "title": "数据检索分发",
+            "result": "pass",
+            "message": "模块[module_distribution.数据检索分发]对对象[数据集名称]的访问能力已经分析完毕!"
+        },
+        "module_day_photography": {
+            "audit": "system",
+            "title": "日新图",
+            "result": "forbid",
+            "message": "模块[module_day_photography.日新图]对对象[数据集名称]的访问能力已经分析完毕!"
+        }
+    }
    ```
    其中:
    * module1-3: 为三个子系统的名称
@@ -338,9 +359,32 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 数管的审批, 将在数管的可视化模块中实现, 经过审批的模块, 将会更新关系字段, 内容如下:
     ```json
     {
-         "module1":  {"audit": "system", "result": "forbid"}
-       , "module2":  {"audit": "user", "result": "pass", "username": "管理员...", "datetime": "2020-10-14"}
-       , "module3":  {"audit": "system", "result": "pass"}
+        "module_datamining": {
+            "audit": "user",
+            "title": "数据分析挖掘",
+            "result": "pass", 
+            "username": "管理员...", 
+            "datetime": "2020-10-14",
+            "message": "模块[module_datamining.数据分析挖掘]对对象[数据集名称]的访问能力已经分析完毕!"
+        },
+        "module_data2service": {
+            "audit": "system",
+            "title": "数据服务发布",
+            "result": "pass",
+            "message": "模块[module_data2service.数据服务发布]对对象[数据集名称]的访问能力已经分析完毕!"
+        },
+        "module_distribution": {
+            "audit": "system",
+            "title": "数据检索分发",
+            "result": "pass",
+            "message": "模块[module_distribution.数据检索分发]对对象[数据集名称]的访问能力已经分析完毕!"
+        },
+        "module_day_photography": {
+            "audit": "system",
+            "title": "日新图",
+            "result": "forbid",
+            "message": "模块[module_day_photography.日新图]对对象[数据集名称]的访问能力已经分析完毕!"
+        }
     }
     ```
 1. 上述json中, 每一个子系统的内容, 除了audit和result两个属性外, 可以有规则的扩充
