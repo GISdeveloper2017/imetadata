@@ -225,4 +225,10 @@ if __name__ == '__main__':
     a_list = json_obj.xpath_one('a', None)
     print(a_list)
     print(type(a_list))
+    a_name = CJson.json_attr_value("""
+    {
+        "a": {"name": null}, "b": "other"
+    }
+    """, 'b.name', None)
+    print(a_name)
 

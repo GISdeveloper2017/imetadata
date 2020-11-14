@@ -76,6 +76,15 @@ class CFile:
 
     @classmethod
     def file_or_subpath_of_path(cls, path: str, match_str: str = '*', match_type: int = MatchType_Common) -> SortedList:
+        """
+        获取指定目录下的一级文件和子目录
+        1. 可以支持常规检索和正则表达式检索
+        1. 返回当前目录下的文件和子目录(不包含路径!!!)
+        :param path:
+        :param match_str:
+        :param match_type:
+        :return:
+        """
         list_all_file = os.listdir(path)
         if match_str == '*':
             return SortedList(list_all_file)
@@ -368,8 +377,8 @@ class CFile:
 if __name__ == '__main__':
     # CFile.move_path_to('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios/aa/bb')
     # shutil.move('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios')
-    # for file_or_path in CFile.file_or_subpath_of_path('/Users/wangxiya/Documents/交换'):
-    #     print(file_or_path)
+    for file_or_path in CFile.file_or_subpath_of_path('/Users/wangxiya/Documents/交换'):
+        print(file_or_path)
     # print('*'*10)
     # for file_or_path in CFile.search_file_or_subpath_of_path('/Users/wangxiya/Documents/交换', '*'):
     #     print(file_or_path)
@@ -408,4 +417,4 @@ if __name__ == '__main__':
     #     print('in')
     # else:
     #     print('not in')
-    CFile.str_2_file('1111我们', r'D:\data\wkt\11.wkt')
+    # CFile.str_2_file('1111我们', r'D:\data\wkt\11.wkt')

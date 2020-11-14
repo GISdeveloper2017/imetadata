@@ -153,6 +153,7 @@ class CResource:
     Name_DataAccess = 'dataaccess'
     Name_Modules = 'modules'
     Name_Module = 'module'
+    Name_Notify = 'notify'
     Name_Audit = 'audit'
     Name_System = 'system'
     Name_User = 'user'
@@ -234,6 +235,9 @@ class CResource:
     Path_SO_Inbound_Filter_File = '{0}.{1}'.format(Path_SO_Inbound_Filter, Name_File)
     Path_SO_Inbound_Filter_File_BlackList = '{0}.{1}'.format(Path_SO_Inbound_Filter_File, Name_Black_List)
     Path_SO_Inbound_Filter_File_WhiteList = '{0}.{1}'.format(Path_SO_Inbound_Filter_File, Name_White_List)
+
+    Path_IB_Opt_Notify = Name_Notify
+    Path_IB_Opt_Notify_module = '{0}.{1}'.format(Path_IB_Opt_Notify, Name_Module)
 
     TextMatchType_Common = 'common'
     TextMatchType_Regex = 'regex'

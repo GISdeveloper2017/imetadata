@@ -63,11 +63,22 @@ where dsi_na_status = 2
         ds_ib_id = dataset.value_by_name(0, 'query_ib_id', '')
         ds_ib_directory_name = dataset.value_by_name(0, 'query_ib_relation_dir', '')
         ds_ib_batch_no = dataset.value_by_name(0, 'query_ib_batchno', '')
-        # ds_ib_option = dataset.value_by_name(0, 'query_ib_option', '')
+        ds_ib_option = CUtils.any_2_str(dataset.value_by_name(0, 'query_ib_option', ''))
 
         CLogger().debug('与第三方模块同步的目录为: {0}.{1}'.format(ds_ib_id, ds_ib_directory_name))
         data_count = 0
         try:
+            module_name_list = CJson.json_attr_value(ds_ib_option, self.Path_IB_Opt_Notify_module, None)
+            if module_name_list is None:
+                modules_root_dir = CSys.get_metadata_data_access_modules_root_dir()
+                module_file_list = CFile.file_or_subpath_of_path(
+                    modules_root_dir,
+                    '{0}_*.{1}'.format(self.Name_Module, self.FileExt_Py)
+                )
+                module_name_list = list()
+                for module_file in module_file_list:
+                    module_name_list.append(CFile.file_main_name(module_file))
+
             sql_ib_need_notify_object = '''
             select dsoid, dsoobjecttype, dsoobjectname, dso_da_result
             from dm2_storage_object 
@@ -126,24 +137,17 @@ where dsi_na_status = 2
                 object_da_result = CJson()
                 object_da_result.load_json_text(object_da_result_text)
 
-                modules_root_dir = CSys.get_metadata_data_access_modules_root_dir()
-                modules_file_list = CFile.file_or_subpath_of_path(
-                    modules_root_dir,
-                    '{0}_*.{1}'.format(self.Name_Module, self.FileExt_Py)
-                )
-                for file_name_without_path in modules_file_list:
-                    file_main_name = CFile.file_main_name(file_name_without_path)
-
+                for module_name in module_name_list:
                     module_obj = CObject.create_module_instance(
                         CSys.get_metadata_data_access_modules_root_name(),
-                        file_main_name,
+                        module_name,
                         self.get_mission_db_id(),
                         object_id,
                         object_name,
                         object_type,
                         None
                     )
-                    module_id = file_main_name
+                    module_id = module_name
                     module_title = CUtils.dict_value_by_name(module_obj.information(), self.Name_Title, '')
 
                     module_access = object_da_result.xpath_one('{0}.{1}'.format(module_id, self.Name_Result),
