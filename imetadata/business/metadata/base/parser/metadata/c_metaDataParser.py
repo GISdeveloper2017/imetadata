@@ -312,9 +312,10 @@ class CMetaDataParser(CParser):
         :return:
         """
         mdt_ext_result, mdt_ext_memo, mdt_ext_content = self.metadata.metadata_time()
-        if mdt_ext_result == self.DB_False or mdt_ext_result == self.Exception:
-            #mdt_ext_content = None
-            mdt_ext_content = '{}'  # 当执行SQL语句时，mdt_ext_content的值为None，''时入库会报错
+        if mdt_ext_result == self.DB_False:
+            mdt_ext_content = None
+        if CUtils.equal_ignore_case(mdt_ext_result, ''):
+            mdt_ext_content = None   # None相当于sql中的null，可以插入数据库中，而''不能插入jsonb字段中
 
         # 所有元数据入库
         CFactory().give_me_db(self.file_info.db_server_id).execute(
