@@ -312,7 +312,7 @@ class CMetaDataParser(CParser):
         :return:
         """
         mdt_ext_result, mdt_ext_memo, mdt_ext_content = self.metadata.metadata_time()
-        if mdt_ext_result == self.DB_False:
+        if mdt_ext_result == self.DB_False or mdt_ext_result == self.Exception:
             #mdt_ext_content = None
             mdt_ext_content = '{}'  # 当执行SQL语句时，mdt_ext_content的值为None，''时入库会报错
 
