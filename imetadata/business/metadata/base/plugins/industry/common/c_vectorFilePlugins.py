@@ -17,6 +17,7 @@ class CVectorFilePlugins(CFilePlugins):
         information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
+        information[self.Plugins_Info_SpatialEngine] = self.MetaDataEngine_Vector  # 通用的矢量数据的空间引擎（解析自身元数据json用的）
         information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector
         information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
         return information
