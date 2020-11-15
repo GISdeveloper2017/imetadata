@@ -313,7 +313,8 @@ class CMetaDataParser(CParser):
         """
         mdt_ext_result, mdt_ext_memo, mdt_ext_content = self.metadata.metadata_time()
         if mdt_ext_result == self.DB_False:
-            mdt_ext_content = None
+            #mdt_ext_content = None
+            mdt_ext_content = '{}'  # 当执行SQL语句时，mdt_ext_content的值为None，''时入库会报错
 
         # 所有元数据入库
         CFactory().give_me_db(self.file_info.db_server_id).execute(

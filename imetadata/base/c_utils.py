@@ -11,6 +11,7 @@ import pinyin
 
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_time import CTime
+from datetime import datetime
 
 
 class CUtils(CResource):
@@ -257,6 +258,127 @@ class CUtils(CResource):
             return True
         return False
 
+    def standard_datetime_format(date_text: str) -> datetime:
+        """
+        将日期或日期时间格式化为YYYY-MM-DD HH:MM:SS格式，如20201022,2020/10/22格式化为2020-10-22，
+            20201022 22:22:22.345,2020/10/22 22:22:22.345格式化为2020-10-22 22:22:22.345, 2020-10-22T22:22:22.000007
+        @param switch_text:
+        @return:
+        """
+        default_date = CTime.now()
+        try:
+            time_format_real = '%Y-%m-%d %H:%M:%S'
+            time_format = ["%Y{0}", "%Y{0}%m{1}", "%Y{0}%m{1}%d{2}{3}%H:%M:%S{4}", "%Y{0}%m{1}%d{2}", "%Y",
+                           "%Y{0}%m", "%Y{0}%m{0}%d{1}%H:%M:%S{2}", "%Y{0}%m{0}%d"]
+
+            str_len = len(date_text)
+
+            # 汉字标记
+            ch_flag = 0
+            if ('年' in date_text) or ('月' in date_text) or ('日' in date_text):
+                ch_flag = 1
+
+            # 日期时间标记
+            sign_flag = 0
+            sign_list = ['T', 'CST', ' ']
+            for sign in sign_list:
+                if sign in date_text:
+                    sign_flag = 1
+                    break
+
+            if ch_flag:
+                if str_len == 5:
+                    time_format_real = time_format[0].format('年')
+                    date_value = CTime.from_datetime_str(date_text, default_date, time_format_real)
+                    if CUtils.equal_ignore_case(date_value, default_date):
+                        return default_date
+                    return CTime.format_str(date_value, '%Y')
+                elif (str_len == 7) or (str_len == 8):
+                    time_format_real = time_format[1].format('年', '月')
+                    date_value = CTime.from_datetime_str(date_text, default_date, time_format_real)
+                    if CUtils.equal_ignore_case(date_value, default_date):
+                        return default_date
+                    return CTime.format_str(date_value, '%Y-%m')
+                elif str_len >= 9:
+                    if sign_flag:
+                        sign_real = " "
+                        sign_list = ['CST', 'T']
+                        for sign in sign_list:
+                            if sign in date_text:
+                                sign_real = sign
+                                break
+                        sec_real = ""
+                        if "." in date_text:
+                            sec_real = ".%f"
+                        time_format_real = time_format[2].format('年', '月', '日', sign_real, sec_real)
+                        date_value = CTime.from_datetime_str(date_text, default_date, time_format_real)
+                        if CUtils.equal_ignore_case(date_value, default_date):
+                            return default_date
+                        return CTime.format_str(date_value, '%Y-%m-%d %H:%M:%S')
+                    else:
+                        time_format_real = time_format[3].format('年', '月', '日')
+                    date_value = CTime.from_datetime_str(date_text, default_date, time_format_real)
+                    if CUtils.equal_ignore_case(date_value, default_date):
+                        return default_date
+                    return CTime.format_str(date_value, '%Y-%m-%d')
+            else:
+                if str_len == 4:
+                    time_format_real = time_format[4]
+                    date_value = CTime.from_datetime_str(date_text, default_date, time_format_real)
+                    if CUtils.equal_ignore_case(date_value, default_date):
+                        return default_date
+                    return CTime.format_str(date_value, '%Y')
+                elif (str_len == 6) or (str_len == 7):
+                    sep_real = ""
+                    sep_list = ['-', '/', '.']
+                    for sep in sep_list:
+                        if sep in date_text:
+                            sep_real = sep
+                            break
+                    time_format_real = time_format[5].format(sep_real)
+                    date_value = CTime.from_datetime_str(date_text, default_date, time_format_real)
+                    if CUtils.equal_ignore_case(date_value, default_date):
+                        return default_date
+                    return CTime.format_str(date_value, '%Y-%m')
+                elif str_len >= 8:
+                    if sign_flag:
+                        sign_real = " "
+                        sign_list = ['CST', 'T']
+                        for sign in sign_list:
+                            if sign in date_text:
+                                sign_real = sign
+                                break
+                        date, time = date_text.split(sign_real)
+                        sep_real = ""
+                        sep_list = ['-', '/', '.']
+                        for sep in sep_list:
+                            if sep in date:
+                                sep_real = sep
+                                break
+                        sec_real = ""
+                        if "." in time:
+                            sec_real = ".%f"
+                        time_format_real = time_format[6].format(sep_real, sign_real, sec_real)
+                        date_value = CTime.from_datetime_str(date_text, default_date, time_format_real)
+                        if CUtils.equal_ignore_case(date_value, default_date):
+                            return default_date
+                        return CTime.format_str(date_value, '%Y-%m-%d %H:%M:%S')
+                    else:
+                        sep_real = ""
+                        sep_list = ['-', '/', '.']
+                        for sep in sep_list:
+                            if sep in date_text:
+                                sep_real = sep
+                                break
+                        time_format_real = time_format[7].format(sep_real)
+                        date_value = CTime.from_datetime_str(date_text, default_date, time_format_real)
+                        if CUtils.equal_ignore_case(date_value, default_date):
+                            return default_date
+                        return CTime.format_str(date_value, '%Y-%m-%d')
+
+        except:
+            return default_date
+
     @classmethod
     def text_is_decimal(cls, check_text: str) -> bool:
         """
@@ -377,6 +499,17 @@ class CUtils(CResource):
             return value
         except:
             return default_value
+
+    @classmethod
+    def text_to_lower(cls, text):
+        """
+        文本转小写
+        @param text:
+        @return:
+        """
+        if text is not None:
+            return text.lower()
+        return text
 
     @classmethod
     def split(cls, split_text: str, split_sep_list: list) -> list:
