@@ -20,16 +20,16 @@ application = CSettings(
     {
         'databases': [
             {'id': '0', 'type': 'postgresql',
-             'host': '127.0.0.1', 'port': '5432', 'database': 'test_new', 'username': 'postgres', 'password': 'postgres'}
+             'host': '127.0.0.1', 'port': '5432', 'database': 'test', 'username': 'postgres', 'password': 'postgres'}
         ],
         'directory': {
-            'work': ''
+            'work': '/Users/wangxiya/Documents/交换/9.数管/9.工作目录'
         },
         'metadata': {
             'title': '数管配置',
             'directory': {
                 'title': '数管常规目录设置, 包括元数据存储目录',
-                'view': ''
+                'view': '/Users/wangxiya/Documents/交换/9.数管/0.编目'
             },
             'plugins': {
                 'title': '特殊目录下的文件识别配置',
