@@ -8,11 +8,11 @@ from osgeo import ogr, gdal, osr
 import copy
 import uuid
 import codecs
-import logging
 from imetadata.settings import application
 from imetadata.base.c_json import CJson
 from imetadata.business.data2service.service import c_geo_util as geoUtils
 from imetadata.business.data2service.service import c_mapfileHelper as mapfileHelper
+from imetadata.base.c_logger import CLogger
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -38,7 +38,7 @@ def clear_failure(service_name):
 
 def CreateTIndex(shpname, imgpaths):
     print('img files count:' + str(len(imgpaths)))
-    logging.info('img files count:' + str(len(imgpaths)))
+    CLogger().info('img files count:' + str(len(imgpaths)))
 
     raster_file = ' '.join(imgpaths)
     proj4 = geoUtils.GetProj4(imgpaths[0])
@@ -78,8 +78,7 @@ def CreateTIndex(shpname, imgpaths):
     else:
         os.system(cmd.format(shpname, raster_file))
 
-    print('created tileIndex: ' + shpname)
-    logging.info('created tileIndex: ' + shpname)
+    CLogger().info('created tileIndex: ' + shpname)
 
 
 def RepFile(srcfile, dstfile, kvs):
@@ -157,58 +156,70 @@ def GetAllSources(service_define, lyr_define, tindex) -> list:
     :param tindex 布尔值，是否返回tileIndex矢量
     '''
     shp_path_list = []
+    tindex_dir = application.xpath_one('data2service.tindex_dir', None)
     if lyr_define.type.lower() == 'vector':
         if lyr_define.sourcetype.lower() == 'folder':
-            for folder in lyr_define.sourcepath:
-                linux_folder = ToLinuxPath(folder)
-                shp_path_list.extend(geoUtils.GetShpPaths(linux_folder))
+            for src_key in lyr_define.sourcepath:
+                for folder in lyr_define.sourcepath[src_key]:
+                    linux_folder = ToLinuxPath(folder)
+                    shp_path_list.extend(geoUtils.GetShpPaths(linux_folder))
         elif lyr_define.sourcetype.lower() == 'file':
-            for shp_path in lyr_define.sourcepath:
-                linux_path = ToLinuxPath(shp_path)
-                shp_path_list.append(linux_path)
+            for src_key in lyr_define.sourcepath:
+                for shp_path in lyr_define.sourcepath[src_key]:
+                    linux_path = ToLinuxPath(shp_path)
+                    shp_path_list.append(linux_path)
         else:
-            for gdb in lyr_define.sourcepath:
-                # print(gdb)
-                linux_gdb = ToLinuxPath(gdb)
-                shp_path_list.append(linux_gdb)
+            for src_key in lyr_define.sourcepath:
+                for gdb in lyr_define.sourcepath[src_key]:
+                    # print(gdb)
+                    linux_gdb = ToLinuxPath(gdb)
+                    shp_path_list.append(linux_gdb)
         return shp_path_list
     else:
         raster_files = []
-        if lyr_define.sourcetype.lower() == 'folder':
-            for folder in lyr_define.sourcepath:
-                linux_folder = ToLinuxPath(folder)
-                raster_files.extend(geoUtils.GetImgPaths(linux_folder))
-        else:
-            for raster_path in lyr_define.sourcepath:
-                linux_path = ToLinuxPath(raster_path)
-                linux_path = Link254Limit(service_define, linux_path)
-                raster_files.append(linux_path)
+        group_files = []
+        for src_key in lyr_define.sourcepath:
+            group_files.clear()
+            if lyr_define.sourcetype.lower() == 'folder':
+                for folder in lyr_define.sourcepath[src_key]:
+                    linux_folder = ToLinuxPath(folder)
+                    group_files = geoUtils.GetImgPaths(linux_folder)
+                    raster_files.extend(group_files)
+            else:
+                for raster_path in lyr_define.sourcepath[src_key]:
+                    linux_path = ToLinuxPath(raster_path)
+                    linux_path = Link254Limit(service_define, linux_path)
+                    group_files.append(linux_path)
+                    raster_files.append(linux_path)
+
+            if tindex:
+                lyr_tIndex = os.path.join(tindex_dir, service_define.id + '_' + lyr_define.id + '_' + src_key + '.shp')
+                CreateTIndex(lyr_tIndex, group_files)
+                shp_path_list.append(lyr_tIndex)
 
         if tindex:
-            lyr_tIndex = os.path.join(application.xpath_one('data2service.tindex_dir', None), service_define.id + '_' + lyr_define.id + '.shp')
-            CreateTIndex(lyr_tIndex, raster_files)
-            shp_path_list.append(lyr_tIndex)
             return shp_path_list
         else:
             return raster_files
 
 
 def ReplaceSameTemplate(service_def) -> tuple:
-    '''create mapfile,mapproxy yaml file and wsgi file for service
+    '''创建服务配置文件，包括 mapfile,mapproxy yaml file 和 wsgi file
     :return service extent of geography, all mapproxy cache name, wsgi file path
     '''
     # 比较坐标系，如果同一图层下的坐标系不同，返回错误
+    '''
     for lyr_def in service_def.layers:
         geo_data_paths = GetAllSources(service_def, lyr_def, False)
 
         if not geoUtils.CompareCoords(geo_data_paths):
-            print("geo datas in layer {0} have different spatialreference".format(lyr_def.id))
-            logging.info("geo datas in layer {0} have different spatialreference".format(lyr_def.id))
+            CLogger().info("geo datas in layer {0} have different spatialreference".format(lyr_def.id))
             raise Exception("geo datas in layer {0} have different spatialreference".format(lyr_def.id))
 
         del geo_data_paths
+    '''
 
-    # mapfile = os.path.join(config["map_dir"], service_def.id + '.map')
+    # 配置文件路径
     yamlfile = os.path.join(application.xpath_one('data2service.yaml_dir', None), service_def.id + '.yaml')
     wsgifile = os.path.join(application.xpath_one('data2service.wsgi_dir', None), service_def.id + '.wsgi')
 
@@ -227,24 +238,23 @@ def ReplaceSameTemplate(service_def) -> tuple:
     all_service_yaml_cache = ''
     all_service_yaml_source = ''
     all_service_yaml_cache_name = ''
-    # for shp in shp_path_list:
+    # 逐个图层处理
     for lyr_def in service_def.layers:
         cur_index = 0
         shp_path_list = GetAllSources(service_def, lyr_def, True)
         lyr_geoextent = []
 
         if len(shp_path_list) < 1:
-            print("no vector/raster in layer " + lyr_def.id)
-            logging.info("no vector/raster in layer " + lyr_def.id)
+            CLogger().info("no vector/raster in layer " + lyr_def.id)
             continue
 
         mapHelper = mapfileHelper.MapfileHelper()
         mapHelper.loads(os.path.join(basedir, "template/service_id.map"))
         mapHelper.setvalue("MAP.NAME", '"map_' + service_def.id + '_' + lyr_def.id + '"')
 
-        proj4 = geoUtils.GetProj4(shp_path_list[0])
-        print(proj4)
-        logging.info(proj4)
+        # proj4 = geoUtils.GetProj4(shp_path_list[0])
+        proj4 = "+proj=longlat +datum=WGS84 +no_defs"
+        CLogger().info(proj4)
         proj4 = proj4.replace('+', '')
         map_prj = '\r\n'
         map_unit = 'dd'
@@ -262,11 +272,16 @@ def ReplaceSameTemplate(service_def) -> tuple:
         copy_lyr = copy.deepcopy(ori_lyr)
 
         for shp in shp_path_list:
-            print(shp)
+            shp_prj = '\r\n'
+            shp_proj4 = geoUtils.GetProj4(shp)
+            shp_proj4 = shp_proj4.replace('+', '')
+            for defs in shp_proj4.split():
+                shp_prj += '"' + defs + '"\n'
+            shp_prj += '\r\n'
+
             geoextent, prjextent = geoUtils.GetVectorExtent(shp)
             if prjextent == (0, 0, 0, 0):
-                print(shp + 'is null')
-                logging.info(shp + 'is null')
+                CLogger().info(shp + 'is null')
                 continue
 
             geoextent = ExtendEnvlope(geoextent)
@@ -283,6 +298,7 @@ def ReplaceSameTemplate(service_def) -> tuple:
             print(base_name)
             mapHelper.setvalue("MAP.LAYER.{0}.NAME".format(cur_index), u"'{0}'".format(base_name))
             mapHelper.setvalue("MAP.LAYER.{0}.METADATA.'WMS_TITLE'".format(cur_index), u"'{0}'".format(base_name))
+            mapHelper.setvalue("MAP.LAYER.{0}.PROJECTION", shp_prj)
             # print(lyr_def.classidetify)
             if len(lyr_def.classidetify) > 10:
                 json = CJson()
@@ -330,8 +346,7 @@ def ReplaceSameTemplate(service_def) -> tuple:
         # yaml cache values
         yaml_cache_values = dict({'$cache_source$': cache_source_name, '$lyr_cache$': lyr_cache_name,
                                   '$grids$': service_def.getGrids()})
-        print("the service grids are: " + service_def.getGrids())
-        logging.info("the service grids are: " + service_def.getGrids())
+        CLogger().info("the service grids are: " + service_def.getGrids())
         all_service_yaml_cache = all_service_yaml_cache + '\r\n' + RepString(service_yaml_cache, yaml_cache_values)
 
         # yaml source values
@@ -368,10 +383,7 @@ def ReplaceSameTemplate(service_def) -> tuple:
 
 def ProcessService(service_def):
     try:
-        print("start a service")
-        print("service name:" + service_def.id)
-        logging.info("start a service")
-        logging.info("service name:" + service_def.id)
+        CLogger().info("start a service: " + service_def.id)
 
         repres = ReplaceSameTemplate(service_def)
 
@@ -397,12 +409,10 @@ def ProcessService(service_def):
                 qldfp = open(application.xpath_one('data2service.qld_conf.conf_path', None), 'w')
                 qldfp.write(resqld)
                 qldfp.close()
-                print("WSGIScriptAlias added")
-                logging.info("WSGIScriptAlias added")
+                CLogger().info("WSGIScriptAlias added")
                 os.system("apachectl restart")
 
-        print(service_def.id + ' published\n')
-        logging.info(service_def.id + ' published\n')
+        CLogger().info(service_def.id + ' published\n')
     except Exception as ex:
-        sys.exit(1)
+        CLogger().info(str(ex))
 

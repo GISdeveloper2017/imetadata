@@ -4,12 +4,18 @@ from imetadata import settings
 
 class LayerDef(object):
     def __init__(self):
+        '''
+        todo(张雄雄） 添加标注、标注显示比例尺、矢量显示比例尺、查询字段等属性
+        '''
         self.id = ""
         self.name = ''
+        # Raster/Vector
         self.type = ''
         self.classidetify = ''
+        # File/Folder
         self.sourcetype = ''
-        self.sourcepath = []
+        # self.sourcepath = []
+        self.sourcepath = {}
 
 class ServiceDef(object):
     def __init__(self, sid, sname):
@@ -17,7 +23,9 @@ class ServiceDef(object):
         self.name = sname
         self.cache = False
         self.cachelevel = 16
+        # 服务坐标系
         self.coordinates = []
+        # 服务的图层定义数组
         self.layers = []
 
     def getGrids(self):
