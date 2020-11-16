@@ -314,6 +314,27 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
     1. 可视化
         * 快视图
         * 拇指图
+
+###### 数据库设计
+1. dm2_storage_inbound
+    * dsiOtherOption
+        * 类型: jsonb
+        * 意义: 入库的特殊处理
+        * 示例:
+            ```json
+            {
+                "root": {
+                    "option": {
+                        "check_file_locked": 0,
+                        "check_file_locked_comment": "0=False;-1=True. 是否在入库前, 检查所有文件是否被锁定. 注意: 如果是切片, 这个过程耗时会很长! "
+                    } 
+                },
+                "notify": {
+                    "module_comment": "module属性如果设置内容, 类型为字符串数组, 表明该批次仅仅通知数组中指定的模块标识!!! 如果不设置, 则应将module设置为null!!!",
+                    "module": null
+                }
+            }         
+            ```
     
 ### 数管与第三方系统的发布设计
 #### 发布权限和规则
@@ -322,13 +343,32 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 这个关系使用json格式
 1. json的一级key为每一个系统的名称, 举例:
     ```json
-   {
-         "module1":  {"audit": "system", "result": "forbid"}
-       , "module2":  {"audit": "system", "result": "wait"}
-       , "module3":  {"audit": "system", "result": "pass"}
-   }
-   
-   {"total": "pass", "metadata": {"data": "pass", "business": "pass"},"data": {"items": "pass"}}
+    {
+        "module_datamining": {
+            "audit": "system",
+            "title": "数据分析挖掘",
+            "result": "wait",
+            "message": "模块[module_datamining.数据分析挖掘]对对象[数据集名称]的访问能力已经分析完毕!"
+        },
+        "module_data2service": {
+            "audit": "system",
+            "title": "数据服务发布",
+            "result": "pass",
+            "message": "模块[module_data2service.数据服务发布]对对象[数据集名称]的访问能力已经分析完毕!"
+        },
+        "module_distribution": {
+            "audit": "system",
+            "title": "数据检索分发",
+            "result": "pass",
+            "message": "模块[module_distribution.数据检索分发]对对象[数据集名称]的访问能力已经分析完毕!"
+        },
+        "module_day_photography": {
+            "audit": "system",
+            "title": "日新图",
+            "result": "forbid",
+            "message": "模块[module_day_photography.日新图]对对象[数据集名称]的访问能力已经分析完毕!"
+        }
+    }
    ```
    其中:
    * module1-3: 为三个子系统的名称
@@ -340,9 +380,32 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 数管的审批, 将在数管的可视化模块中实现, 经过审批的模块, 将会更新关系字段, 内容如下:
     ```json
     {
-         "module1":  {"audit": "system", "result": "forbid"}
-       , "module2":  {"audit": "user", "result": "pass", "username": "管理员...", "datetime": "2020-10-14"}
-       , "module3":  {"audit": "system", "result": "pass"}
+        "module_datamining": {
+            "audit": "user",
+            "title": "数据分析挖掘",
+            "result": "pass", 
+            "username": "管理员...", 
+            "datetime": "2020-10-14",
+            "message": "模块[module_datamining.数据分析挖掘]对对象[数据集名称]的访问能力已经分析完毕!"
+        },
+        "module_data2service": {
+            "audit": "system",
+            "title": "数据服务发布",
+            "result": "pass",
+            "message": "模块[module_data2service.数据服务发布]对对象[数据集名称]的访问能力已经分析完毕!"
+        },
+        "module_distribution": {
+            "audit": "system",
+            "title": "数据检索分发",
+            "result": "pass",
+            "message": "模块[module_distribution.数据检索分发]对对象[数据集名称]的访问能力已经分析完毕!"
+        },
+        "module_day_photography": {
+            "audit": "system",
+            "title": "日新图",
+            "result": "forbid",
+            "message": "模块[module_day_photography.日新图]对对象[数据集名称]的访问能力已经分析完毕!"
+        }
     }
     ```
 1. 上述json中, 每一个子系统的内容, 除了audit和result两个属性外, 可以有规则的扩充
@@ -354,14 +417,32 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 如果第三方系统的数据表, 与数管的数据表, 分别在两个数据库中, 可以通过调度, 逐一判断每一个对象是否有更新
 1. 第三方系统在从数管的数据表中提取数据时, 必须根据关系字段中的定义, 判断自己是否有权直接使用某数据
 
-#### 发布通知机制
-##### 被动通知机制
+#### 通知机制
+##### 自动机制
+1. 一个批次数据入库完毕, 将自动启动该批次数据的通知
+
+##### 手动机制
+###### 向所有子系统通知一遍
+1. 将inbound表的dsiOtherOption(jsonb)中的notify.module=None
+1. 将inbound表的dso_na_status设置为1
+1. 后台系统将自动同步该批次的所有对象到全部第三方系统
+
+###### 新增一个子系统后, 可指定批次向特定子系统通知
+1. 将inbound表的dsiOtherOption(jsonb)中的notify.module=["子系统1标识", "子系统2标识"]
+1. 将inbound表的dso_na_status设置为1
+1. 后台系统将自动同步该批次的所有对象到指定第三方系统
+
+#### 发布机制
+##### 被动机制
 1. 第三方系统应查询inbound表, 检查是否有正在入库的数据. 如果有, 则等待入库结束后, 再进行数据发布.
 
-##### 主动通知机制
+##### 主动机制
 1. 在inbound表中, 有一个na调度(notify_app), 在每一个批次数据发布成功结束后, 将触发该调度, 在调度中, 可以主动通知第三方应用, 甚至可以进行该
     批次的编目同步等等!
 1. 这样, 通知机制, 仅仅在一个批次完成后才触发!
+1. 一个批次入库后, notify_app任务启动, 系统将启动每一个模块的通知机制
+    1. 模块的入库将
+1. 目前没有触发单个模块的
 
 #### 说明
 1. 原设计数管中, 对象的版本, 后发现该版本号也需要在第三方系统数据库或数据表中记录, 并且需要判断该记录的更新状态, 这与对象的最后修改时间这个字段的意
@@ -844,6 +925,28 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
     * 意义: 并行处理标识
 
 ##### dp_v_qfg_layer
+###### 简述
+###### 字段
+1. dpid
+    * 类型: varchar
+    * 意义: 标识
+1. dplayer_object
+    * 类型: jsonb
+    * 意义: 图层所需要的数据对象类型
+    * 示例:
+        ```json
+        {
+            "id": ["plugins_3000_gdb"]
+            , "name": ["dom", "dem"]
+            , "type": ["vector"]
+            , "data_type": ["file"]
+            , "group": ["industry_data"]
+            , "tag": ["aa", "bb"]
+        }
+        ```
+        **注意: 大小写不敏感**
+        **上述条件对应为object_def表中的dsodid\dsodname\dsodtype\dsodgroupname**
+        
 ##### dp_v_qfg_layer_file
 
 #### 调度设计
@@ -851,26 +954,32 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 名称: job_d2s_service_deploy
 1. 类型: db_queue
 1. 算法:
-   1. 抢占dp_v_qfg表中dpStatus=5的记录, 状态更新为6
-   1. 获取dp_v_qfg_layer表中, 该服务下的所有图层
+    1. 抢占dp_v_qfg表中dpStatus=5的记录, 状态更新为6
+    1. 获取dp_v_qfg_layer表中, 该服务下的所有图层
         1. 获取dp_v_qfg_layer_file中的dpdf_group_id(记得要distinct)
             1. 获取dp_v_qfg_layer_file中dpdf_group_id下的每一个file
                 1. 根据dpProcessType内容, 处理新增\更新\删除
                 1. 将文件信息, 写入到mapfile文件中
-                1. ...
-   1. 将处理成功的dp_v_qfg记录, 更新状态为0
-        1. dpStatus=0
-
+    1. 发布成功后:
+        1. 将dp_v_qfg_layer_file中所有dpdf_processtype=delete的记录删除
+        1. 将dp_v_qfg_layer_file中的记录dpdf_object_fp_lastdeploy=dpdf_object_fp
+        1. 将dp_v_qfg_layer中所有dpprocesstype=delete的记录删除
+        1. 将dp_v_qfg记录, 更新状态为0
+            1. dpStatus=0
+    1. 如果发布失败:
+        1. 将dp_v_qfg记录, 更新状态为61
+            1. dpStatus=61
+    
 ##### 服务更新调度
 ###### 服务状态更新
-1. 业务交互系统处理:
-    1. 将dp_v_qfg表中dpStatus改为1
+1. 业务交互系统处理(注意顺序不能错!!!):
     1. 将将dp_v_qfg_layer表中, 该服务下的所有图层的状态dpstatus, 批量更新为1(启动服务检查更新的调度)
+    1. 将dp_v_qfg表中dpStatus改为2
     
 ###### 服务图层数据更新
 1. 名称: job_d2s_service_layer_update
 1. 类型: db_queue
-1. 设计:
+1. 流程:
     1. 抢占dp_v_qfg_layer表中dpStatus=1的记录, 状态更新为2
     1. 读取dp_v_qfg_layer表中的dpLayer_Object属性
         1. 将dp_v_qfg_layer_file表中, 所有Layer下的记录, 状态改为删除
@@ -900,20 +1009,35 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
                         1. dpdf_object_date
                         1. dpdf_object_fp
                         1. dpdf_processType=new
-    1. 将处理成功的dp_v_qfg_layer记录, 更新状态为0
-        1. dpStatus=0
-1. 算法:
+        1. 删除dp_v_qfg_layer_file表中, 所有Layer下的记录, dpdf_processType=delete的记录???
+    1. 检查当前layer下, dp_v_qfg_layer_file的记录数
+        1. 如果为0, 则表示当前图层下没有可发布的文件
+            1. 删除dp_v_qfg_layer记录
+        1. 将处理成功的dp_v_qfg_layer记录, 更新状态为0
+            1. dpStatus=0
+    1. 如果期间出现异常, 则将dp_v_qfg_layer记录, 更新状态为21
+        1. dpStatus=21
+        1. dpProcessResult=错误信息
+        1. 重试机制: 
+            1. 将dp_v_qfg_layer记录, 更新状态为1
+                1. dpStatus=1
 
 ###### 服务状态监控
 1. 名称: job_d2s_service_update_monitor
 1. 类型: interval
 1. 定时: 每10-30秒处理一次
 1. 设计:
-    1. 获取dp_v_qfg表中dpStatus=1的服务
+    1. 获取dp_v_qfg表中dpStatus=2的服务
     1. 检查该服务的所有layer的dpStatus是否全部为0
         1. 如果全部为0, 则将dp_v_qfg表中dpStatus改为4(后将在全局调度中设置该默认值, 改为5, 就直接自动触发服务发布动作)
-        1. 如果有状态为1的记录, 则表明还有正在处理的, 继续等待下一次扫描
-        1. 如果没有状态为1的, 但是不是全部为0, 则表明处理完毕, 但有处理错误的图层, 此时将dp_v_qfg表中dpStatus改为11
+        1. 如果有状态为1, 2的记录, 则表明还有正在处理的, 继续等待下一次扫描
+        1. 如果没有状态为1\2的, 但是不是全部为0, 则表明处理完毕, 但有处理错误的图层, 此时将dp_v_qfg表中dpStatus改为11
+    1. 如果期间出现异常, 则将dp_v_qfg记录, 更新状态为21
+        1. dpStatus=21
+        1. dpProcessResult=错误信息
+        1. 重试机制: 
+            1. 将dp_v_qfg记录, 更新状态为2
+                1. dpStatus=2
 
 ##### 服务批量创建
 1. 名称: job_d2s_service_creator

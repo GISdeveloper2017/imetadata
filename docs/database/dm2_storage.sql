@@ -835,4 +835,72 @@ comment on column dm2_storage_obj_na.dson_addtime is '添加时间';
 
 alter table dm2_storage_obj_na owner to postgres;
 
+/*
+    2020-11-13
+    . 为解决对象的更新, 对object表进行扩展
+*/
 
+alter table dm2_storage_object add column dso_obj_lastmodifytime timestamp(6);
+comment on column dm2_storage_object.dso_obj_lastmodifytime is '数管-对象-最后修改时间';
+
+/*
+    2020-11-14
+    . 调整和优化dm2_storage_object_def结构
+*/
+
+drop table if exists dm2_storage_object_def;
+
+create table if not exists dm2_storage_object_def
+(
+	dsodid varchar(100) not null
+		constraint dm2_storage_object_def_pkey
+			primary key,
+    dsodname varchar(100) not null,
+	dsodtitle varchar(1000) not null,
+	dsodcode varchar(100),
+	dsodtype varchar(100),
+	dsodtype_title varchar(300),
+	dsodgroupname varchar(100),
+	dsodgrouptitle varchar(100),
+	dsodcatalog varchar(100)
+);
+
+comment on table dm2_storage_object_def is '数管-存储目录-对象-定义';
+
+comment on column dm2_storage_object_def.dsodid is '对象标识';
+
+comment on column dm2_storage_object_def.dsodname is '对象名称';
+
+comment on column dm2_storage_object_def.dsodtitle is '对象标题';
+
+comment on column dm2_storage_object_def.dsodtype is '大类';
+
+comment on column dm2_storage_object_def.dsodtype_title is '大类标题';
+
+comment on column dm2_storage_object_def.dsodcode is '类型编码';
+
+comment on column dm2_storage_object_def.dsodgroupname is '数管-定义-分组名称';
+
+comment on column dm2_storage_object_def.dsodgrouptitle is '数管-定义-分组标题';
+
+comment on column dm2_storage_object_def.dsodcatalog is '数据类别';
+
+alter table dm2_storage_object_def owner to postgres;
+
+create index idx_dm2_storage_object_def_id
+	on dm2_storage_object_def (dsodid);
+
+create index idx_dm2_storage_object_def_name
+	on dm2_storage_object_def (dsodname);
+
+create index idx_dm2_storage_object_def_type
+	on dm2_storage_object_def (dsodtype);
+
+alter table dm2_storage_obj_na add column dson_object_access varchar(100);
+comment on column dm2_storage_obj_na.dson_object_access is '对象-访问权限';
+alter table dm2_storage_obj_na add column dson_audit_username varchar(100);
+comment on column dm2_storage_obj_na.dson_audit_username is '对象-审批人员';
+alter table dm2_storage_obj_na add column dson_audit_time timestamp(6);
+comment on column dm2_storage_obj_na.dson_audit_time is '对象-审批时间';
+alter table dm2_storage_obj_na add column dson_lastmodify_time timestamp(6) default now();
+comment on column dm2_storage_obj_na.dson_lastmodify_time is '最后修改时间';

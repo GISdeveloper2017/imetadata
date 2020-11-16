@@ -4,6 +4,7 @@
 # @File : c_filePlugins_guoto_dem.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
+from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerDEM import CMDTransformerDEM
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
@@ -14,6 +15,8 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = 'dem'
+        information[self.Plugins_Info_Code] = '02010601' #只有分幅DEM继承于这个类 （非分幅DEM在21at基类中）
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
         return information
 
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
@@ -109,7 +112,7 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
         :param parser:
         :return:
         """
-        transformer_type = self.metadata_bus_transformer_type.lower()
+        transformer_type = CUtils.text_to_lower(self.metadata_bus_transformer_type)
         if transformer_type == 'mdb':
             return self.__metadata_bus_mdb_list__()
         elif transformer_type == 'mat':
@@ -118,6 +121,19 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
             return self.__metadata_bus_xls_list__()
         else:
             return []
+
+        # if self.metadata_bus_transformer_type is not None:
+        #     transformer_type = self.metadata_bus_transformer_type.lower()
+        #     if transformer_type == 'mdb':
+        #         return self.__metadata_bus_mdb_list__()
+        #     elif transformer_type == 'mat':
+        #         return self.__metadata_bus_mat_list__()
+        #     elif transformer_type == 'xls' or transformer_type == 'xlsx':
+        #         return self.__metadata_bus_xls_list__()
+        #     else:
+        #         return []
+        # else:
+        #     return []
 
     def __metadata_bus_mdb_list__(self) -> list:
         """
@@ -645,8 +661,11 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
         """
         标准模式的提取时间信息的列表
+        完成 负责人 李宪
+        :param parser:
+        :return:
         """
-        transformer_type = self.metadata_bus_transformer_type.lower()
+        transformer_type = CUtils.text_to_lower(self.metadata_bus_transformer_type)
         if transformer_type == 'mdb':
             return self.__metadata_time_mdb_list()
         elif transformer_type == 'mat':
@@ -655,6 +674,19 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
             return self.__metadata_time_xls_list()
         else:
             return []
+
+        # if self.metadata_bus_transformer_type is not None:
+        #     transformer_type = self.metadata_bus_transformer_type.lower()
+        #     if transformer_type == 'mdb':
+        #         return self.__metadata_time_mdb_list()
+        #     elif transformer_type == 'mat':
+        #         return self.__metadata_time_mat_list()
+        #     elif transformer_type == 'xls' or transformer_type == 'xlsx':
+        #         return self.__metadata_time_xls_list()
+        #     else:
+        #         return []
+        # else:
+        #     return []
 
     def __metadata_time_mdb_list(self) -> list:
         """

@@ -79,8 +79,13 @@ where dsdscanfilestatus = 2
         order by dsddirectory desc
         limit 1
         '''.format(CFile.sep())
-        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {'dsdStorageID': ds_storage_id,
-                                                                                         'dsdDirectory': ds_subpath})
+        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(
+            sql_get_rule,
+            {
+                'dsdStorageID': ds_storage_id,
+                'dsdDirectory': ds_subpath
+            }
+        )
         ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
 
         if ds_subpath == '':
@@ -88,15 +93,27 @@ where dsdscanfilestatus = 2
         else:
             ds_subpath = CFile.join_file(ds_root_path, ds_subpath)
 
-        check_inbound_subpath_enabled = False
-        if CUtils.equal_ignore_case(ds_storage_type, self.Storage_Type_InBound):
-            check_inbound_subpath_enabled = CUtils.equal_ignore_case(ds_id, ds_storage_id)
+        check_inbound_subpath_ready_flag_file = CUtils.equal_ignore_case(
+            settings.application.xpath_one(
+                self.path_switch(
+                    self.Path_Setting_MetaData_InBound_Switch,
+                    self.Switch_Use_Ready_Flag_File_Name
+                ),
+                self.Name_OFF
+            ),
+            self.Name_ON
+        )
+        inbound_subpath = CUtils.equal_ignore_case(
+            ds_storage_type,
+            self.Storage_Type_InBound) and CUtils.equal_ignore_case(ds_id,
+                                                                    ds_storage_id)
 
         CLogger().debug('处理的目录为: {0}'.format(ds_subpath))
         try:
             self.parser_file_or_subpath_of_path(
                 dataset, ds_id, ds_subpath, ds_rule_content,
-                check_inbound_subpath_enabled
+                check_inbound_subpath_ready_flag_file,
+                inbound_subpath
             )
             return CResult.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_subpath))
         except:
@@ -104,10 +121,14 @@ where dsdscanfilestatus = 2
         finally:
             self.exchange_file_or_subpath_valid_unknown2invalid(ds_id)
 
-    def parser_file_or_subpath_of_path(self, dataset, ds_id, ds_path, ds_rule_content, check_inbound_subpath):
+    # check_inbound_subpath_ready_flag_file,
+    # inbound_subpath
+    def parser_file_or_subpath_of_path(self, dataset, ds_id, ds_path, ds_rule_content,
+                                       check_inbound_subpath_ready_flag_file, inbound_subpath):
         """
         处理目录(完整路径)下的子目录和文件
-        :param check_inbound_subpath: 是否检查入库子目录
+        :param inbound_subpath:
+        :param check_inbound_subpath_ready_flag_file: 是否检查入库子目录
         :param ds_rule_content:
         :param dataset: 数据集
         :param ds_id: 路径标识
@@ -129,11 +150,12 @@ where dsdscanfilestatus = 2
                     CLogger().debug('子目录: {0}在指定的忽略入库名单中, 将不入库! '.format(file_name))
                     continue
 
-                inbound_subpath = True
-                if check_inbound_subpath:
-                    inbound_subpath = self.check_inbound_subpath_ready(file_name_with_full_path)
+                path_shoule_inbound = True
+                if path_shoule_inbound:
+                    if check_inbound_subpath_ready_flag_file:
+                        path_shoule_inbound = self.check_inbound_subpath_ready(file_name_with_full_path)
 
-                if inbound_subpath:
+                if path_shoule_inbound:
                     path_obj = CDMPathInfo(
                         self.FileType_Dir,
                         file_name_with_full_path,
@@ -144,7 +166,7 @@ where dsdscanfilestatus = 2
                         self.get_mission_db_id(),
                         ds_rule_content
                     )
-                    if check_inbound_subpath:
+                    if inbound_subpath:
                         # 注册到待入库请单中
                         self.register_2_inbound_list(
                             ds_storage_id,

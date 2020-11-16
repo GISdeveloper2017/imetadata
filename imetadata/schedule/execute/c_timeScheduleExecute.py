@@ -29,10 +29,12 @@ class CTimeScheduleExecute(CScheduleExecute):
 
     def get_or_create_sch_job(self) -> CTimeJob:
         if self.__schedule__ is None:
-            self.__schedule__ = super().default_create_sch_job(self.__schedule_trigger__,
-                                                               self.__schedule_algorithm__,
-                                                               self.__schedule_id__,
-                                                               self.__schedule_params__)
+            self.__schedule__ = super().default_create_sch_job(
+                self.__schedule_trigger__,
+                self.__schedule_algorithm__,
+                self.__schedule_id__,
+                self.__schedule_params__
+            )
 
         return self.__schedule__
 

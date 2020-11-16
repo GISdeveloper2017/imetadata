@@ -11,13 +11,18 @@ from imetadata.base.c_result import CResult
 
 
 class CJob(CResource):
-    __id__: str = None
-    __params__: str = None
+    __id = None
+    __mission_db_id = None
+    __params = None
 
     def __init__(self, job_id: str, job_params: str):
-        self.__id__ = job_id
-        self.__params__ = job_params
+        self.__id = job_id
+        self.__params = job_params
+        self.__mission_db_id = str(self.params_value_by_name(self.Job_Params_DB_Server_ID, self.DB_Server_ID_Default))
         self.custom_init()
+
+    def get_mission_db_id(self) -> str:
+        return self.__mission_db_id
 
     def params_value_by_name(self, attr_name: str, default_value):
         """
@@ -26,10 +31,10 @@ class CJob(CResource):
         :param default_value:
         :return:
         """
-        if self.__params__ is None:
+        if self.__params is None:
             return default_value
         else:
-            return CJson().json_attr_value(self.__params__, '{0}.{1}'.format(self.NAME_JOB, attr_name), default_value)
+            return CJson.json_attr_value(self.__params, '{0}.{1}'.format(self.NAME_JOB, attr_name), default_value)
 
     @abstractmethod
     def execute(self) -> str:

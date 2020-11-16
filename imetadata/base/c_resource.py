@@ -88,6 +88,9 @@ class CResource:
 
     DB_Server_ID_Default = '0'
 
+    Name_ON = 'on'
+    Name_OFF = 'off'
+
     Status_Finish = 0
 
     Name_White_List = 'white_list'
@@ -150,9 +153,11 @@ class CResource:
     Name_DataAccess = 'dataaccess'
     Name_Modules = 'modules'
     Name_Module = 'module'
+    Name_Notify = 'notify'
     Name_Audit = 'audit'
     Name_System = 'system'
     Name_User = 'user'
+    Name_Distribution = 'distribution'
 
     FileExt_Py = 'py'
 
@@ -177,6 +182,7 @@ class CResource:
     Name_Type = 'type'
     Name_Access = 'access'
     Name_Quality = 'quality'
+    Name_Tag = 'tag'
 
     Name_InBound = 'inbound'
     Name_OutBound = 'outbound'
@@ -203,6 +209,10 @@ class CResource:
     Name_Bil = 'bil'
     Name_Shp = 'shp'
 
+    Name_Switch = 'switch'
+
+    Switch_Use_Ready_Flag_File_Name = 'use_ready_flag_file_name'
+
     Path_MD_Rule_Type = '/root/type'
     Path_MD_Rule_Plugins_Dir = '/root/plugins/dir/plugin'
     Path_MD_Rule_Plugins_File = '/root/plugins/file/plugin'
@@ -216,6 +226,7 @@ class CResource:
     Path_Setting_MetaData_InBound_Schema = '{0}.schema'.format(Path_Setting_MetaData_InBound)
     Path_Setting_MetaData_InBound_Schema_Default = '{0}.default'.format(Path_Setting_MetaData_InBound_Schema)
     Path_Setting_MetaData_InBound_Schema_Special = '{0}.special'.format(Path_Setting_MetaData_InBound_Schema)
+    Path_Setting_MetaData_InBound_Switch = '{0}.{1}'.format(Path_Setting_MetaData_InBound, Name_Switch)
 
     Path_Storage_Option_Inbound = 'inbound'
     Path_SO_Inbound_Filter = '{0}.{1}'.format(Path_Storage_Option_Inbound, Name_Filter)
@@ -225,6 +236,9 @@ class CResource:
     Path_SO_Inbound_Filter_File = '{0}.{1}'.format(Path_SO_Inbound_Filter, Name_File)
     Path_SO_Inbound_Filter_File_BlackList = '{0}.{1}'.format(Path_SO_Inbound_Filter_File, Name_Black_List)
     Path_SO_Inbound_Filter_File_WhiteList = '{0}.{1}'.format(Path_SO_Inbound_Filter_File, Name_White_List)
+
+    Path_IB_Opt_Notify = Name_Notify
+    Path_IB_Opt_Notify_module = '{0}.{1}'.format(Path_IB_Opt_Notify, Name_Module)
 
     TextMatchType_Common = 'common'
     TextMatchType_Regex = 'regex'
@@ -261,9 +275,10 @@ class CResource:
     Name_Min = 'min'
     Name_Max = 'max'
 
-    ModuleName_MetaData = 'metadata'
-    ModuleName_DataMining = 'datamining'
-    ModuleName_Data2Service = 'data2service'
+    ModuleName_MetaData = 'module_metadata'
+    ModuleName_Distribution = 'module_distribution'
+    ModuleName_DataMining = 'module_datamining'
+    ModuleName_Data2Service = 'module_data2service'
 
     # 投影坐标信息来源; 1-数据;2-业务元数据;9-人工指定
     Prj_Source_Data = 1
@@ -276,9 +291,9 @@ class CResource:
     MetaDataFormat_Text = 0
     MetaDataFormat_Json = 1
     MetaDataFormat_XML = 2
-    DataFormat_Vector_File = 3   # 矢量文件
+    DataFormat_Vector_File = 3  # 矢量文件
     DataFormat_Vector_Dataset = 4  # 矢量数据集
-    DataFormat_Raster_File = 5   # 影像文件
+    DataFormat_Raster_File = 5  # 影像文件
 
     Transformer_DOM_MDB = 'mdb'
     Transformer_DOM_MAT = 'mat'
@@ -296,14 +311,14 @@ class CResource:
     Encoding_GBK = 'GBK'
     Encoding_GBK2312 = 'GBK2312'
 
-    value_type_string = 'string' # 文本类型
+    value_type_string = 'string'  # 文本类型
     value_type_date = 'date'  # 日期类型
     value_type_datetime = 'datetime'  # 日期时间类型
     value_type_date_or_datetime = 'date_or_datetime'  # 日期类型或日期时间类型
     value_type_decimal = 'decimal'  # 小数（包含负数）
     value_type_integer = 'integer'  # 整数（包含负整数）
-    value_type_decimal_or_integer ='decimal_or_integer'  # 小数或整数（包含负数）
-    value_type_decimal_or_integer_positive ='positive_decimal_or_integer'  # 正小数或整数（不包含负数）
+    value_type_decimal_or_integer = 'decimal_or_integer'  # 小数或整数（包含负数）
+    value_type_decimal_or_integer_positive = 'positive_decimal_or_integer'  # 正小数或整数（不包含负数）
 
     ProcStatus_Finished = 0
     ProcStatus_InQueue = 1
@@ -311,12 +326,18 @@ class CResource:
     ProcStatus_Error = 3
     ProcStatus_WaitConfirm = 9
 
+    ProcType_New = 'new'
+    ProcType_Delete = 'delete'
+    ProcType_Update = 'update'
+    ProcType_Same = 'same'
+
     InBound_Storage_Match_Mode_Auto = 'auto'
     InBound_Storage_Match_Mode_Set = 'set'
 
     DataAccess_Pass = 'pass'
     DataAccess_Wait = 'wait'
     DataAccess_Forbid = 'forbid'
+    DataAccess_Unknown = 'unknown'
 
     Path_21AT_MD_Content_ProductType = '/root/ProductType'
     Path_21AT_MD_Content_ProductName = '/root/DSName'
@@ -346,3 +367,10 @@ class CResource:
             return '矢量数据集'
         else:
             return None
+
+    def path_switch(self, path_prefix, switch_name: str) -> str:
+        return '{0}.{1}'.format(path_prefix, switch_name)
+
+    Object_Def_Catalog_Common = 0  # 普通文件
+    Object_Def_Catalog_Object = 1  # 独立对象类型
+    Object_Def_Catalog_Dataset = 2  # 数据集类型

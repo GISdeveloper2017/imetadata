@@ -32,6 +32,8 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
         information[self.Plugins_Info_Title] = '国情影像-整景纠正'
         information[self.Plugins_Info_Name] = 'guoqing_scene_block'
         information[self.Plugins_Info_Type] = 'guoqing_scene'
+        information[self.Plugins_Info_Code] = '02010302'
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
         return information
 
     def classified(self):

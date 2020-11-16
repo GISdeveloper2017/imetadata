@@ -553,6 +553,7 @@ CREATE TABLE if not exists public.dp_v_qfg_layer
     dpprocesstype character varying(100) COLLATE pg_catalog."default",
     dpstatus integer DEFAULT 1,
     dpprocessid character varying(100) COLLATE pg_catalog."default",
+    dpprocessresult text,
 
     dplayer_id character varying(200) COLLATE pg_catalog."default",
     dplayer_name character varying(200) COLLATE pg_catalog."default",
@@ -601,6 +602,9 @@ COMMENT ON COLUMN public.dp_v_qfg_layer.dpstatus
 
 COMMENT ON COLUMN public.dp_v_qfg_layer.dpprocessid
     IS '并行处理辅助字段';
+
+COMMENT ON COLUMN public.dp_v_qfg_layer.dpprocessresult
+    IS '并行处理结果';
 
 COMMENT ON COLUMN public.dp_v_qfg_layer.dplayer_id
     IS '图层标识';
@@ -977,3 +981,24 @@ values('vector_analyse_g1', 'vector_analyse', now(), now(), null
 </process>
 
 */
+
+
+
+/*
+    2020-11-14
+    . 测试数据
+*/
+
+insert into dp_v_qfg(dpid, dptitle, dpname, dpserviceparams)
+values('test_raster', '影像全覆盖', 'raster_service', null);
+
+insert into dp_v_qfg_layer(
+    dpid, dpservice_id, dplayer_id, dplayer_name, dplayer_queryable, dplayer_style, dplayer_object)
+values(
+    'test_raster_layer_1', 'test_raster', 'layer_1', '层1', 'false', null, '{"type": ["raster"]}'::jsonb
+);
+
+
+
+
+

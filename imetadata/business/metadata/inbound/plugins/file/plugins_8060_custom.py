@@ -24,6 +24,8 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
         information[self.Plugins_Info_Title] = '自定义影像'
         information[self.Plugins_Info_Name] = 'custom'
         information[self.Plugins_Info_Type] = 'custom'
+        information[self.Plugins_Info_Code] = '020107'
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
         return information
 
     def classified(self):

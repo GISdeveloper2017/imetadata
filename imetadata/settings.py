@@ -113,6 +113,11 @@ application = CSettings(
                     'title': '入库需要忽略的文件或目录',
                     'file': ['.DS_Store', 'ready.21at', 'metadata.21at'],
                     'dir': ['.git']
+                },
+                'switch': {
+                    'title': '开关配置',
+                    'title_use_ready_flag_file_name': '开关-使用ready.21at标识文件判断一个目录是否可以入库',
+                    'use_ready_flag_file_name': 'off'
                 }
             },
             'outbound': {

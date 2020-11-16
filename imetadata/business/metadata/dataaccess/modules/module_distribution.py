@@ -2,7 +2,10 @@
 # @Time : 2020/10/28 15:58 
 # @Author : 王西亚 
 # @File : module_distribution.py
+from imetadata.base.c_file import CFile
+from imetadata.base.c_object import CObject
 from imetadata.base.c_result import CResult
+from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.dataaccess.base.c_daModule import CDAModule
 from imetadata.database.c_factory import CFactory
@@ -25,10 +28,17 @@ class module_distribution(CDAModule):
         注意: 一定要反馈Access属性
         :return:
         """
+        # module_obj_real = self.__find_module_obj()
+        # if module_obj_real is None:
+        #     message = '没有对应的算法, 直接通过!'
+        #     result = CResult.merge_result(self.Success, message)
+        #     return result
+        # result = module_obj_real.access()
+        # return result
         result = super().access()
         return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Pass)
 
-    def notify(self) -> str:
+    def notify(self, access: str) -> str:
         """
         处理数管中识别的对象, 与第三方模块的同步
         . 如果第三方模块自行处理, 则无需继承本方法
@@ -47,6 +57,9 @@ class module_distribution(CDAModule):
                 'object_id': self._obj_id
             }
         )
+        target_notify_status = self.ProcStatus_InQueue
+        if CUtils.equal_ignore_case(access, self.DataAccess_Wait):
+            target_notify_status = self.ProcStatus_Finished
         if not ds_na.is_empty():
             na_id = CUtils.any_2_str(ds_na.value_by_name(0, 'dsonid', 0))
             if ds_na.value_by_name(0, 'dson_notify_status', self.ProcStatus_Finished) == self.ProcStatus_Finished:
@@ -54,19 +67,21 @@ class module_distribution(CDAModule):
                     '''
                     update dm2_storage_obj_na
                     set dson_notify_status = :status
+                        , dson_object_access = :object_access
                     where dsonid = :id 
                     ''',
-                    {'id': na_id, 'status': self.ProcStatus_InQueue}
+                    {'id': na_id, 'status': target_notify_status, 'object_access': access}
                 )
         else:
             CFactory().give_me_db(self._db_id).execute(
                 '''
-                insert into dm2_storage_obj_na(dson_app_id, dson_object_id) 
-                values(:app_id, :object_id)
+                insert into dm2_storage_obj_na(dson_app_id, dson_object_access, dson_object_id) 
+                values(:app_id, :object_access, :object_id)
                 ''',
                 {
                     'app_id': CUtils.dict_value_by_name(self.information(), self.Name_ID, ''),
-                    'object_id': self._obj_id
+                    'object_id': self._obj_id,
+                    'object_access': access
                 }
             )
 
@@ -78,6 +93,7 @@ class module_distribution(CDAModule):
             )
         )
 
+
     def sync(self) -> str:
         """
         处理数管中识别的对象, 与第三方模块的同步
@@ -87,11 +103,55 @@ class module_distribution(CDAModule):
         注意: 在本方法中, 不要用_quality_info属性, 因为外部调用方考虑的效率因素, 没有传入!!!
         :return:
         """
-        return CResult.merge_result(
-            self.Success,
-            '在[{0}]里写对象[{1}]向模块[{2}]中同步的算法! '.format(
-                CUtils.dict_value_by_name(self.information(), self.Name_ID, ''),
+        # 根据objecttype类型查找distribution文件夹下对应的类文件（识别通过objecttype找object_def表中的dsodtype字段与类对象中的info[self.Name_Type]值相同）
+        module_obj_real = self.__find_module_obj()
+        if module_obj_real is None:
+            message = '没有对应的算法, 直接通过!'
+            result = CResult.merge_result(self.Success, message)
+            return result
+        result = module_obj_real.sync()
+        return result
+
+        # return CResult.merge_result(
+        #     self.Success,
+        #     '在[{0}]里写对象[{1}]向模块[{2}]中同步的算法! '.format(
+        #         CUtils.dict_value_by_name(self.information(), self.Name_ID, ''),
+        #         self._obj_name,
+        #         CUtils.dict_value_by_name(self.information(), self.Name_Title, '')
+        #     )
+        # )
+
+
+    def __find_module_obj(self) -> CDAModule:
+        sql_get_def_type = '''
+                select dsodtype from dm2_storage_object_def where dsodid = '{0}'
+                '''.format(self._obj_type)
+        ds_def_type = CFactory().give_me_db(self._db_id).one_row(sql_get_def_type)
+        def_type = ds_def_type.value_by_name(0, 'dsodtype', '')
+
+        access_modules_root_dir = CSys.get_metadata_data_access_modules_root_dir()
+        access_modules_distribution_root_dir = CFile.join_file(access_modules_root_dir, self.Name_Distribution)
+        plugins_file_list = CFile.file_or_subpath_of_path(access_modules_distribution_root_dir,
+                                                          '{0}_*.{1}'.format(self.Name_Module,
+                                                                             self.FileExt_Py))
+        module_obj_real = None
+        # 从目录下的py文件中查找满足要求的同步算法文件
+        for file_name_without_path in plugins_file_list:
+            file_main_name = CFile.file_main_name(file_name_without_path)
+            module_obj = CObject.create_module_instance(
+                '{0}.{1}'.format(CSys.get_metadata_data_access_modules_root_name(), self.Name_Distribution),
+                file_main_name,
+                self._db_id,
+                self._obj_id,
                 self._obj_name,
-                CUtils.dict_value_by_name(self.information(), self.Name_Title, '')
+                self._obj_type,
+                self._quality_info
             )
-        )
+
+            if module_obj is not None:
+                module_info = module_obj.get_information()
+                module_type = module_info[self.Name_Type]
+                if CUtils.equal_ignore_case(module_type, def_type):
+                    module_obj_real = module_obj
+                    break
+        return module_obj_real
