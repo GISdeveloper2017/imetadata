@@ -13,18 +13,16 @@ class distribution_dom_dataset(distribution_guotu_dataset):
     """
 
     def information(self) -> dict:
-        info = dict()
+        info = super().information()
         info[self.Name_Type] = 'business_data_set_dom'
         return info
 
-    def _do_access(self) -> str:
-        pass
-
-    def _do_sync(self) -> str:
+    def get_sync_dict(self) -> dict:
         """
-        todo DOM类型的数据更新到即时服务系统库数据集表ap3_Product_RSP_SDom_whole中，不存在插入，存在则更新
+        本方法的写法为强规则，字典key为字段名，字典value为对应的值或者sql语句，在写时需要加语句号，子查询语句加(),值加‘’
+        子查询：sync_dict['字段名']=“(select 字段 from 表 where id=‘1’)”
+        值：sync_dict['字段名']=“‘值’”
+        同时，配置插件方法时请在information()方法中添加info['table_name'] = '表名'的字段
         """
-        return CResult.merge_result(
-            self.Success,
-            '数据集对象[{0}]同步到第三方即时服务系统数据库成功! '.format(self._obj_name)
-        )
+        sync_dict = dict()
+        return sync_dict

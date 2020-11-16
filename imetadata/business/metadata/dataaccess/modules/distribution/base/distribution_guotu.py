@@ -15,7 +15,7 @@ class distribution_guotu(distribution_base):
     _dict_sync = {}  # 构建通用sql的字段结果值，在_before_sync中处理获取
 
     def information(self) -> dict:
-        info = dict()
+        info = super().information()
         info['table_name'] = ''
         return info
 

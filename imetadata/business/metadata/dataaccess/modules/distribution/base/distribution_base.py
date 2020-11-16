@@ -11,19 +11,19 @@ from imetadata.database.base.c_dataset import CDataSet
 
 class distribution_base(CResource):
     _db_id: str
-    # _obj_id: str
-    # _obj_name: str
-    _obj_type: str
+    _obj_id: str
+    _obj_name: str
+    # _obj_type: str
     _quality_info: CXml
     _dataset: CDataSet
 
-    def __init__(self, db_id, obj_id, quality, dataset):
+    def __init__(self, db_id, obj_id, obj_name, quality, dataset):
         self._db_id = db_id
         self._obj_id = obj_id
-        # self._obj_name = obj_name
+        self._obj_name = obj_name
         # self._obj_type = obj_type
         self._quality_info = quality
-        self._dataset = CDataSet
+        self._dataset = dataset
 
     def information(self) -> dict:
         info = dict()

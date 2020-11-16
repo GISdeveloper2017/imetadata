@@ -17,6 +17,7 @@ class module_distribution(CDAModule):
     """
     数据检索分发模块对数管编目的质检要求
     """
+
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '数据检索分发'
@@ -95,7 +96,6 @@ class module_distribution(CDAModule):
             )
         )
 
-
     def sync(self) -> str:
         """
         处理数管中识别的对象, 与第三方模块的同步
@@ -123,7 +123,6 @@ class module_distribution(CDAModule):
         #     )
         # )
 
-
     def __find_module_obj(self) -> distribution_base:
         sql_get_def_type = '''
                 select dsodtype from dm2_storage_object_def where dsodid = '{0}'
@@ -150,6 +149,7 @@ class module_distribution(CDAModule):
                 file_main_name,
                 self._db_id,
                 self._obj_id,
+                self._obj_name,
                 self._quality_info,
                 dataset
             )
