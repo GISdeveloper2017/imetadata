@@ -598,8 +598,8 @@ class CRasterMDReader(CMDReader):
 if __name__ == '__main__':
     # CRasterMDReader('/aa/bb/cc.img').get_metadata_2_file('/aa/bb/cc.json')
     # CRasterMDReader(r'D:\App\test\镶嵌影像\石嘴山市-3.img').get_metadata_2_file(r'D:\test\raster_test\石嘴山市-3.json')
-    # CRasterMDReader(r'D:\test\wsiearth-tif\wsiearth.tif').get_metadata_2_file(
-    #     r'D:\test\raster_test\wsiearth.json')
+    CRasterMDReader(r'D:\data\云南高分影像\F47\F47E001007BJ210M2017A.TIF').get_metadata_2_file(
+        r'D:\data\云南高分影像\F47\F47E001007BJ210M2017A.json')
     # CRasterMDReader(r'D:\test\DOM\广西影像数据\2772.0-509.0\2772.0-509.0.img').get_metadata_2_file(
     #     r'D:\test\raster_test\2772.0-509.0-1.json')
     # CRasterMDReader(r'D:\test\DOM\湖北单个成果数据\H49G001026\H49G001026.tif').get_metadata_2_file(
@@ -625,17 +625,17 @@ if __name__ == '__main__':
     #     mem_size = pRasterMDReader.get_Memory_Size(process_id)
     #     print("完成第{0}个数据！,python.exe【process_id:{1}】的内存大小:{2}MB".format(i, process_id, mem_size))
 
-    # 进程调用模式
-    start_time = time.time()
-    process_id = CSys.get_execute_process_id()
-    print("process_id:{0}".format(process_id))
-    out_metadata_file_fullname = CFile.join_file(r'D:\test\raster_test', 'wsiearth.json')
-    raster_mdreader = CRasterMDReader(r'D:\test\wsiearth-tif\wsiearth.tif')
-    p_one = Process(target=raster_mdreader.get_metadata_2_file, args=(out_metadata_file_fullname,))
-    p_one.start()
-    p_one.join()
-    mem_size = raster_mdreader.get_Memory_Size(process_id)
-    print("完成第{0}个数据！,python.exe【process_id:{1}】的内存大小:{2}MB".format(1, process_id, mem_size))
-    end_time = time.time()
-    print('time=%.4lfs'%(end_time-start_time))
+    # # 进程调用模式
+    # start_time = time.time()
+    # process_id = CSys.get_execute_process_id()
+    # print("process_id:{0}".format(process_id))
+    # out_metadata_file_fullname = CFile.join_file(r'D:\test\raster_test', 'wsiearth.json')
+    # raster_mdreader = CRasterMDReader(r'D:\test\wsiearth-tif\wsiearth.tif')
+    # p_one = Process(target=raster_mdreader.get_metadata_2_file, args=(out_metadata_file_fullname,))
+    # p_one.start()
+    # p_one.join()
+    # mem_size = raster_mdreader.get_Memory_Size(process_id)
+    # print("完成第{0}个数据！,python.exe【process_id:{1}】的内存大小:{2}MB".format(1, process_id, mem_size))
+    # end_time = time.time()
+    # print('time=%.4lfs'%(end_time-start_time))
 

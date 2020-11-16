@@ -370,3 +370,7 @@ class CResource:
 
     def path_switch(self, path_prefix, switch_name: str) -> str:
         return '{0}.{1}'.format(path_prefix, switch_name)
+
+    Object_Def_Catalog_Common = 0  # 普通文件
+    Object_Def_Catalog_Object = 1  # 独立对象类型
+    Object_Def_Catalog_Dataset = 2  # 数据集类型

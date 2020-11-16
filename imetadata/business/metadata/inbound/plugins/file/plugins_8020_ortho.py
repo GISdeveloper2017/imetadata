@@ -15,6 +15,8 @@ class plugins_8020_ortho(CFilePlugins_GUOTU_21AT):
         information[self.Plugins_Info_Title] = '单景正射'
         information[self.Plugins_Info_Name] = 'ortho'
         information[self.Plugins_Info_Type] = 'ortho'
+        information[self.Plugins_Info_Code] = '020101'
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
         return information
 
     def classified(self):

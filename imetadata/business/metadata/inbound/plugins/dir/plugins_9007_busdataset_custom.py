@@ -12,4 +12,6 @@ class plugins_9007_busdataset_custom(C21ATBusDataSetPlugins):
         information[self.Plugins_Info_Title] = '业务数据集-自定义影像'
         information[self.Plugins_Info_Name] = '自定义影像'
         information[self.Plugins_Info_Type] = 'business_data_set_custom'
+        information[self.Plugins_Info_Code] = '020107'
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
         return information

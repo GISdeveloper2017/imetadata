@@ -6,6 +6,9 @@ from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
 from imetadata.business.data2service.base.job.c_d2sBaseJob import CD2SBaseJob
 from imetadata.database.c_factory import CFactory
+from imetadata.business.data2service.service.c_service_def import ServiceDef, LayerDef
+from imetadata.business.data2service.service.c_service_publish import ProcessService
+from imetadata.base.c_json import CJson
 
 
 class job_d2s_service_deploy(CD2SBaseJob):
@@ -56,6 +59,40 @@ where dpStatus = 6
         deploy_s_name = dataset.value_by_name(0, 'dpname', '')
         CLogger().debug('即将发布服务为: {0}.{1}.{2}'.format(deploy_id, deploy_s_name, deploy_s_title))
         try:
+            # 获取服务设置
+            serdef = ServiceDef(deploy_s_name, deploy_s_title)
+            service_params = dataset.value_by_name(0, 'dpserviceparams', '')
+            if service_params == '' or service_params == None:
+                raise Exception("缺少服务参数")
+
+            service_params_json = CJson()
+            service_params_json.load_json_text(service_params)
+            serdef.coordinates = service_params_json.xpath_one("coordinates", ['EPSG:4326'])
+            serdef.cache = service_params_json.xpath_one("cache", False)
+            serdef.cachelevel = service_params_json.xpath_one("cachelevel", 16)
+
+            # 获取相关图层设置
+            factory = CFactory()
+            db = factory.give_me_db(self.get_mission_db_id())
+            layer_rows = db.all_row("select dpid,dplayer_id,dplayer_name,dplayer_datatype,dplayer_queryable,"
+                                    "dplayer_resultfields,dplayer_style from dp_v_qfg_layer where dpservice_id = '{0}'".format(deploy_id))
+            for row in layer_rows:
+                ser_lyrdef = LayerDef()
+                ser_lyrdef.id = row[1]
+                ser_lyrdef.name = row[2]
+                ser_lyrdef.type = [3]
+                ser_lyrdef.sourcetype = 'File'
+                ser_lyrdef.classidetify = row[6]
+
+                layer_file_rows = db.all_row("select dpdf_group_id,dpdf_object_fullname from dp_v_qfg_layer_file where dpdf_layer_id = '{0}'".format(row[0]))
+                for file_row in layer_file_rows:
+                    if file_row[0] not in ser_lyrdef.sourcepath:
+                        ser_lyrdef.sourcepath[file_row[0]] = []
+                    ser_lyrdef.sourcepath[file_row[0]].append(file_row[1])
+
+                serdef.layers.append(ser_lyrdef)
+
+            ProcessService(serdef)
 
             result = CResult.merge_result(
                 self.Success,

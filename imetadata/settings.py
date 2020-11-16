@@ -10,6 +10,7 @@
     . 项目: 数据库的配置
 . directory: 目录
     . work: 工作目录, 也是临时目录
+. data2service: 服务发布配置
 . metadata: 数管.元数据管理
     . directory: 目录
         . view: 数管的快视图存储的目录
@@ -24,6 +25,32 @@ application = CSettings(
         ],
         'directory': {
             'work': '/Users/wangxiya/Documents/交换/9.数管/9.工作目录'
+        },
+        'data2service': {
+            'local_dir': '/home/geocube/local',
+            "update_cache": "mapproxy-seed  -f  $yaml_file$  -s  $seed_yaml$  -c  20 -q",
+            "tindex_dir": "/home/geocube/map/tileIndex",
+            "map_dir": "/home/geocube/map/mapfile",
+            "yaml_dir": "$local_dir$/geocube_mapproxy",
+            "seed_dir": "$local_dir$/geocube_mapproxy",
+            "wsgi_dir": "$local_dir$/geocube_wsgi",
+            "conf_dir": "$local_dir$/httpd-2.4.43/conf",
+            "service_yaml": {
+                "server_bin": "$local_dir$/mapserver-7.6.0/bin/mapserv",
+                "server_dir": "$local_dir$/mapserver-7.6.0/bin",
+                "cache_dir": "/home/extendStore/service_cache_$orderid$/"
+            },
+            "seed_yaml": {
+                "min_level": "1",
+                "max_level": "18",
+                "refresh_time": "2030-9-25T22:55:00",
+                "coverages": "  $kid$:\n    bbox: [$seed_bbox$]\n    srs: \"EPSG:4326\"\n"
+            },
+            "qld_conf": {
+                "conf_path": "/home/geocube/local/httpd-2.4.43/conf/geocube.conf",
+                "wsgi_script": "WSGIScriptAlias /$aliasname$ $wsgi_file$"
+            },
+            "multiapp": "true"
         },
         'metadata': {
             'title': '数管配置',
