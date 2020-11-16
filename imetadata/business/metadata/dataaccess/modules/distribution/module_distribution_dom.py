@@ -17,14 +17,15 @@ class module_distribution_dom(module_distribution_guotu_object):
     def information(self) -> dict:
         info = dict()
         info[self.Name_Type] = 'dom'
+        info['table_name'] = 'ap3_product_rsp_sdom_detail'
         return info
 
-    def _do_sync(self) -> str:
+    def get_sync_dict(self) -> dict:
         """
-        todo DOM类型的数据更新到即时服务系统库对象表ap3_product_rsp_sdom_detail中，不存在插入，存在则更新
+        本方法的写法为强规则，字典key为字段名，字典value为对应的值或者sql语句，在写时需要加语句号，子查询语句加(),值加‘’
+        子查询：sync_dict['字段名']=“(select 字段 from 表 where id=‘1’)”
+        值：sync_dict['字段名']=“‘值’”
+        同时，配置插件方法时请在information()方法中添加info['table_name'] = '表名'的字段
         """
-
-        return CResult.merge_result(
-            self.Success,
-            '对象[{0}]同步到第三方即时服务系统数据库成功! '.format(self._obj_name)
-        )
+        sync_dict = dict()
+        return sync_dict
