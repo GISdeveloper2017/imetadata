@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/11/11 18:24
 # @Author : 赵宇飞
-# @File : module_distribution_guotu_object.py
+# @File : distribution_guotu_object.py
 
-from imetadata.business.metadata.dataaccess.modules.base.module_distribution_guotu import \
-    module_distribution_guotu
+from imetadata.business.metadata.dataaccess.modules.distribution.base import \
+    distribution_guotu
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 
 
-class module_distribution_guotu_object(module_distribution_guotu):
+class distribution_guotu_object(distribution_guotu):
     """
     对象的处理基类（即时服务）
     """

@@ -8,6 +8,8 @@ from imetadata.base.c_result import CResult
 from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.dataaccess.base.c_daModule import CDAModule
+from imetadata.business.metadata.dataaccess.modules.distribution.base import distribution_base
+from imetadata.database.base.c_dataset import CDataSet
 from imetadata.database.c_factory import CFactory
 
 
@@ -104,12 +106,12 @@ class module_distribution(CDAModule):
         :return:
         """
         # 根据objecttype类型查找distribution文件夹下对应的类文件（识别通过objecttype找object_def表中的dsodtype字段与类对象中的info[self.Name_Type]值相同）
-        module_obj_real = self.__find_module_obj()
-        if module_obj_real is None:
+        distribution_obj_real = self.__find_module_obj()
+        if distribution_obj_real is None:
             message = '没有对应的算法, 直接通过!'
             result = CResult.merge_result(self.Success, message)
             return result
-        result = module_obj_real.sync()
+        result = distribution_obj_real.sync()
         return result
 
         # return CResult.merge_result(
@@ -122,36 +124,42 @@ class module_distribution(CDAModule):
         # )
 
 
-    def __find_module_obj(self) -> CDAModule:
+    def __find_module_obj(self) -> distribution_base:
         sql_get_def_type = '''
                 select dsodtype from dm2_storage_object_def where dsodid = '{0}'
                 '''.format(self._obj_type)
-        ds_def_type = CFactory().give_me_db(self._db_id).one_row(sql_get_def_type)
-        def_type = ds_def_type.value_by_name(0, 'dsodtype', '')
+        # todo sql语句查询（暂预留）
+        dataset = CFactory().give_me_db(self._db_id).one_row(sql_get_def_type)
+        def_type = dataset.value_by_name(0, 'dsodtype', '')
+        # _obj_id
+        # _quality_info
 
         access_modules_root_dir = CSys.get_metadata_data_access_modules_root_dir()
         access_modules_distribution_root_dir = CFile.join_file(access_modules_root_dir, self.Name_Distribution)
         plugins_file_list = CFile.file_or_subpath_of_path(access_modules_distribution_root_dir,
                                                           '{0}_*.{1}'.format(self.Name_Module,
                                                                              self.FileExt_Py))
-        module_obj_real = None
+        distribution_obj_real = None
         # 从目录下的py文件中查找满足要求的同步算法文件
         for file_name_without_path in plugins_file_list:
+            if CFile.is_dir(file_name_without_path):
+                continue
             file_main_name = CFile.file_main_name(file_name_without_path)
-            module_obj = CObject.create_module_instance(
+            distribution_obj = CObject.create_module_distribution_instance(
                 '{0}.{1}'.format(CSys.get_metadata_data_access_modules_root_name(), self.Name_Distribution),
                 file_main_name,
                 self._db_id,
                 self._obj_id,
-                self._obj_name,
-                self._obj_type,
-                self._quality_info
+                self._quality_info,
+                dataset
             )
 
-            if module_obj is not None:
-                module_info = module_obj.get_information()
-                module_type = module_info[self.Name_Type]
-                if CUtils.equal_ignore_case(module_type, def_type):
-                    module_obj_real = module_obj
+            if distribution_obj is not None:
+                distribution_info = distribution_obj.get_information()
+                distribution_type = distribution_info[self.Name_Type]
+                if CUtils.equal_ignore_case(distribution_type, def_type):
+                    distribution_obj_real = distribution_obj
                     break
-        return module_obj_real
+        # if distribution_obj_real is None:
+        #     pass    # TODO 采用默认的处理方式（分对象，数据集）
+        return distribution_obj_real

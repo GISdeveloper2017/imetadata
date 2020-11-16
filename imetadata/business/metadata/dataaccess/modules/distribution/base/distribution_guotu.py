@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/11/11 18:21
 # @Author : 赵宇飞
-# @File : module_distribution_guotu.py
+# @File : distribution_guotu.py
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
-from imetadata.business.metadata.dataaccess.base.c_daModule import CDAModule
+from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_base import distribution_base
 from imetadata.database.c_factory import CFactory
 
 
-class module_distribution_guotu(CDAModule):
+class distribution_guotu(distribution_base):
     """
     国土即时服务的基础类
     """

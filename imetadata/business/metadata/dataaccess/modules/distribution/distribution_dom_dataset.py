@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/11/11 18:25
 # @Author : 赵宇飞
-# @File : module_distribution_dom_dataset.py
+# @File : distribution_dom_dataset.py
 from imetadata.base.c_result import CResult
-from imetadata.business.metadata.dataaccess.modules.base.module_distribution_guotu_dataset import \
-    module_distribution_guotu_dataset
+from imetadata.business.metadata.dataaccess.modules.distribution.base import \
+    distribution_guotu_dataset
 
 
-class module_distribution_dom_dataset(module_distribution_guotu_dataset):
+class distribution_dom_dataset(distribution_guotu_dataset):
     """
     数据检索分发模块对数DOM数据集类型数据
     """
