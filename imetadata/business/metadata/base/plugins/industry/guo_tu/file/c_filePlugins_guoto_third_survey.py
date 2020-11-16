@@ -17,6 +17,8 @@ class CFilePlugins_GUOTU_Third_Survey(CFilePlugins_GUOTU):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = 'third_survey'
+        information[self.Plugins_Info_Code] = '020104'
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
         return information
 
     def qa_file_custom(self, parser: CMetaDataParser):

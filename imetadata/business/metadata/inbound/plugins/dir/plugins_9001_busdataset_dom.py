@@ -12,4 +12,6 @@ class plugins_9001_busdataset_dom(C21ATBusDataSetPlugins):
         information[self.Plugins_Info_Title] = '业务数据集-DOM'
         information[self.Plugins_Info_Name] = 'DOM'
         information[self.Plugins_Info_Type] = 'business_data_set_dom'
+        information[self.Plugins_Info_Code] = '020105'
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
         return information

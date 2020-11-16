@@ -15,6 +15,8 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
         information[self.Plugins_Info_Title] = '镶嵌影像'
         information[self.Plugins_Info_Name] = 'mosaic'
         information[self.Plugins_Info_Type] = 'mosaic'
+        information[self.Plugins_Info_Code] = '020102'
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
         return information
 
     def classified(self):

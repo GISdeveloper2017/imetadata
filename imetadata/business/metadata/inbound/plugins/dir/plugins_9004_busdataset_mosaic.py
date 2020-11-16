@@ -12,4 +12,6 @@ class plugins_9004_busdataset_mosaic(C21ATBusDataSetPlugins):
         information[self.Plugins_Info_Title] = '业务数据集-镶嵌影像'
         information[self.Plugins_Info_Name] = '镶嵌影像'
         information[self.Plugins_Info_Type] = 'business_data_set_mosaic'
+        information[self.Plugins_Info_Code] = '020102'
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
         return information
