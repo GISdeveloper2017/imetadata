@@ -12,4 +12,6 @@ class plugins_9006_busdataset_guoqing(C21ATBusDataSetPlugins):
         information[self.Plugins_Info_Title] = '业务数据集-国情影像'
         information[self.Plugins_Info_Name] = '国情影像'
         information[self.Plugins_Info_Type] = 'business_data_set_guoqing'
+        information[self.Plugins_Info_Code] = '020103'
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
         return information

@@ -15,6 +15,8 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = 'dom'
+        information[self.Plugins_Info_Code] = '020105'
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
         return information
 
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
