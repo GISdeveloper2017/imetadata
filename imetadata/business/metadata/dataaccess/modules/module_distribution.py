@@ -128,10 +128,15 @@ class module_distribution(CDAModule):
         sql_query = '''
             SELECT
                 dm2_storage_object_def.dsodtype,
+                dm2_storage_object_def.dsodcode,
+                dm2_storage_file.dsfid as query_file_id,
+                dm2_storage_directory.dsdid as query_directory_id,
                 dm2_storage_object.* 
             FROM
                 dm2_storage_object
-                LEFT JOIN dm2_storage_object_def ON dm2_storage_object.dsoobjecttype = dm2_storage_object_def.dsodid 
+                LEFT JOIN dm2_storage_object_def ON dm2_storage_object.dsoobjecttype = dm2_storage_object_def.dsodid
+                LEFT JOIN dm2_storage_file on dm2_storage_file.dsf_object_id = dm2_storage_object.dsoid
+                LEFT JOIN dm2_storage_directory on dm2_storage_file.dsfdirectoryid = dm2_storage_directory.dsdid
             WHERE
                 dm2_storage_object.dsoid = '{0}'
         '''.format(self._obj_type)
