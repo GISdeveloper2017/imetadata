@@ -28,7 +28,7 @@ class CFilePlugins_GUOTU(CFilePlugins):
         information[self.Plugins_Info_Code] = '000001'
         information[self.Plugins_Info_Catalog] = '行业数据'
         information[self.Plugins_Info_Type_Title] = '国土行业数据'
-        information[self.Plugins_Info_Type] = '国土'
+        # information[self.Plugins_Info_Type] = '国土'
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Raster
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName

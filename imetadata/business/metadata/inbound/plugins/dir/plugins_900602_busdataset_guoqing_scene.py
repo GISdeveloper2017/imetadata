@@ -11,7 +11,8 @@ class plugins_900602_busdataset_guoqing_scene(C21ATBusDataSetPlugins):
         information = super().get_information()
         information[self.Plugins_Info_Title] = '业务数据集-国情影像_整景纠正'
         information[self.Plugins_Info_Name] = '国情影像_整景纠正'
-        information[self.Plugins_Info_Type] = 'business_data_set_guoqing_scene'
+        # information[self.Plugins_Info_Type] = 'business_data_set_guoqing_scene'
+        information[self.Plugins_Info_Type] = self.Object_Def_Type_DataSet_Guoqing_Scene
         information[self.Plugins_Info_Code] = '02010302'
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
         return information

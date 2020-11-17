@@ -11,7 +11,8 @@ class plugins_900202_busdataset_dem_noframe(C21ATBusDataSetPlugins):
         information = super().get_information()
         information[self.Plugins_Info_Title] = '业务数据集-DEM_非分幅'
         information[self.Plugins_Info_Name] = 'DEM_非分幅'
-        information[self.Plugins_Info_Type] = 'business_data_set_dem_noframe'
+        # information[self.Plugins_Info_Type] = 'business_data_set_dem_noframe'
+        information[self.Plugins_Info_Type] = self.Object_Def_Type_DataSet_DEM_NoFrame
         information[self.Plugins_Info_Code] = '02010602'
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
         return information

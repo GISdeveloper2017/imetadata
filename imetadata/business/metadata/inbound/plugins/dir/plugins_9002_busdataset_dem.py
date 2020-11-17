@@ -11,7 +11,8 @@ class plugins_9002_busdataset_dem(C21ATBusDataSetPlugins):
         information = super().get_information()
         information[self.Plugins_Info_Title] = '业务数据集-DEM'
         information[self.Plugins_Info_Name] = 'DEM'
-        information[self.Plugins_Info_Type] = 'business_data_set_dem'
+        # information[self.Plugins_Info_Type] = 'business_data_set_dem'
+        information[self.Plugins_Info_Type] = self.Object_Def_Type_DataSet_DEM
         information[self.Plugins_Info_Code] = '020106'
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
         return information

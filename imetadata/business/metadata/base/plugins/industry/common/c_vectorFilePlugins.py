@@ -13,7 +13,8 @@ class CVectorFilePlugins(CFilePlugins):
         information[self.Plugins_Info_Code] = None
         # information[self.Plugins_Info_Catalog] = '矢量'
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Common
-        information[self.Plugins_Info_Type] = 'vector'
+        # information[self.Plugins_Info_Type] = 'vector'
+        information[self.Plugins_Info_Type] = self.Object_Def_Type_Vector
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Vector
         information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName

@@ -374,3 +374,31 @@ class CResource:
     Object_Def_Catalog_Common = 0  # 普通文件
     Object_Def_Catalog_Object = 1  # 独立对象类型
     Object_Def_Catalog_Dataset = 2  # 数据集类型
+
+    # 通用类型
+    Object_Def_Type_Raster = 'raster'
+    Object_Def_Type_Vector = 'vector'
+
+    # 即时服务独立对象类型
+    Object_Def_Type_DOM = 'dom'
+    Object_Def_Type_DEM = 'dem'
+    Object_Def_Type_DEM_NoFrame = 'dem_noframe'  # dem非分幅
+    Object_Def_Type_Ortho = 'ortho'  # 单景正射
+    Object_Def_Type_Mosaic = 'mosaic'   # 镶嵌影像
+    Object_Def_Type_Third_Survey = 'third_survey'  # 三调影像
+    Object_Def_Type_Guoqing_Scene = 'guoqing_scene'  # 国情影像-整景纠正
+    Object_Def_Type_Guoqing_Frame = 'guoqing_frame'  # 国情影像-分幅影像
+    Object_Def_Type_Custom = 'custom'  # 自定义影像
+
+    # 即时服务数据集类型
+    Object_Def_Type_DataSet_DOM = 'business_data_set_dom'  # dom数据集
+    Object_Def_Type_DataSet_DEM = 'business_data_set_dem'  # dem数据集
+    Object_Def_Type_DataSet_DEM_Frame = 'business_data_set_dem_frame'  # dem分幅数据集
+    Object_Def_Type_DataSet_DEM_NoFrame = 'business_data_set_dem_noframe' # dem非分幅数据集
+    Object_Def_Type_DataSet_Ortho = 'business_data_set_ortho'  # 单景正射数据集
+    Object_Def_Type_DataSet_Mosaic = 'business_data_set_mosaic'   # 镶嵌影像数据集
+    Object_Def_Type_DataSet_Third_Survey = 'business_data_set_third_survey'  # 三调影像数据集
+    Object_Def_Type_DataSet_Guoqing = 'business_data_set_guoqing'  # 国情影像数据集
+    Object_Def_Type_DataSet_Guoqing_Scene = 'business_data_set_guoqing_scene'  # 国情影像-整景纠正数据集
+    Object_Def_Type_DataSet_Guoqing_Frame = 'business_data_set_guoqing_frame'  # 国情影像-分幅影像数据集
+    Object_Def_Type_DataSet_Custom = 'business_data_set_custom'  # 自定义影像数据集

@@ -23,7 +23,8 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
         information = super().get_information()
         information[self.Plugins_Info_Title] = 'DEM数据'
         information[self.Plugins_Info_Name] = 'dem_noframe'
-        information[self.Plugins_Info_Type] = 'dem_noframe'
+        # information[self.Plugins_Info_Type] = 'dem_noframe'
+        information[self.Plugins_Info_Type] = self.Object_Def_Type_DEM_NoFrame
         information[self.Plugins_Info_Code] = '02010602'
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
         return information

@@ -22,7 +22,8 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         information = super().get_information()
         information[self.Plugins_Info_Title] = '国情影像-分幅影像'
         information[self.Plugins_Info_Name] = 'guoqing_frame'
-        information[self.Plugins_Info_Type] = 'guoqing_frame'
+        # information[self.Plugins_Info_Type] = 'guoqing_frame'
+        information[self.Plugins_Info_Type] = self.Object_Def_Type_Guoqing_Frame
         information[self.Plugins_Info_Code] = '02010301'
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
         return information
