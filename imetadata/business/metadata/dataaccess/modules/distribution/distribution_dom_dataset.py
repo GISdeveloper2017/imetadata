@@ -9,11 +9,12 @@ from imetadata.business.metadata.dataaccess.modules.distribution.base import \
 
 class distribution_dom_dataset(distribution_guotu_dataset):
     """
-    数据检索分发模块对数DOM数据集类型数据
+    todo 李宪 数据检索分发模块对DOM数据集类型数据
     """
 
     def information(self) -> dict:
         info = super().information()
+        info[self.Name_Title] = 'DOM数据集'
         info[self.Name_Type] = 'business_data_set_dom'
         return info
 

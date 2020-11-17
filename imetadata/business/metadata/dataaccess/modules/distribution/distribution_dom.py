@@ -8,11 +8,12 @@ from imetadata.business.metadata.dataaccess.modules.distribution.base.distributi
 
 class distribution_dom(distribution_guotu_object):
     """
-    数据检索分发模块对数DOM类型数据
+    todo 李宪 数据检索分发模块对DOM类型数据
     """
 
     def information(self) -> dict:
         info = super().information()
+        info[self.Name_Title] = 'DOM'
         info[self.Name_Type] = 'dom'
         info['table_name'] = 'ap3_product_rsp_sdom_detail'
         return info
