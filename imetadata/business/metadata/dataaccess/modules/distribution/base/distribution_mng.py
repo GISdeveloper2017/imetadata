@@ -4,6 +4,8 @@
 # @File : distribution_mng.py
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.dataaccess.modules.distribution.guotu_dataset.distribution_custom_dataset import \
+    distribution_custom_dataset
 from imetadata.business.metadata.dataaccess.modules.distribution.guotu_dataset.distribution_dem_dataset import \
     distribution_dem_dataset
 from imetadata.business.metadata.dataaccess.modules.distribution.guotu_dataset.distribution_dom_dataset import \
@@ -82,6 +84,8 @@ class distribution_mng(CResource):
             return distribution_ortho_dataset(db_id, object_id, object_name, quality, dataset)
         elif CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_Third_Survey):
             return distribution_third_survey_dataset(db_id, object_id, object_name, quality, dataset)
+        elif CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_Custom):
+            return distribution_custom_dataset(db_id, object_id, object_name, quality, dataset)
         # 3.通用影像对象raster ——即时服务中被认为是自定义影像
         elif CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_Raster):
             return distribution_custom(db_id, object_id, object_name, quality, dataset)
