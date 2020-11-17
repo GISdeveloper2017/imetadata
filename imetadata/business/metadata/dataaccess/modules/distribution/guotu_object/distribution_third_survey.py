@@ -14,6 +14,5 @@ class distribution_third_survey(distribution_guotu_object):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '三调影像'
-        info[self.Name_Type] = 'third_survey'
         info['table_name'] = ''
         return info

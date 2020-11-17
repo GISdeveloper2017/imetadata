@@ -14,6 +14,5 @@ class distribution_mosaic(distribution_guotu_object):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '镶嵌影像'
-        info[self.Name_Type] = 'mosaic'
         info['table_name'] = ''
         return info

@@ -14,7 +14,6 @@ class distribution_dom(distribution_guotu_object):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = 'DOM'
-        info[self.Name_Type] = 'dom'
         info['table_name'] = 'ap3_product_rsp_sdom_detail'
         return info
 

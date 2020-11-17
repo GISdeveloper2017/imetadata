@@ -14,6 +14,5 @@ class distribution_dem(distribution_guotu_object):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = 'DEM'
-        info[self.Name_Type] = 'dem'
         info['table_name'] = 'ap3_product_rsp_sdem_detail'
         return info

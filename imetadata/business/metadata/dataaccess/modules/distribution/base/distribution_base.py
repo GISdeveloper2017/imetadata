@@ -29,7 +29,7 @@ class distribution_base(CResource):
         info = dict()
         info[self.Name_ID] = type(self).__name__
         info[self.Name_Title] = None
-        info[self.Name_Type] = None
+        # info[self.Name_Type] = None
         return info
 
     def access(self) -> str:

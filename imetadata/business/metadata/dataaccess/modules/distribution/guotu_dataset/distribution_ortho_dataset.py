@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*- 
-# @Time : 2020/11/11 18:25
+# @Time : 2020/11/17 17:02
 # @Author : 赵宇飞
-# @File : distribution_dom_dataset.py
+# @File : distribution_ortho_dataset.py
 from imetadata.base.c_result import CResult
 from imetadata.business.metadata.dataaccess.modules.distribution.base import \
     distribution_guotu_dataset
 
 
-class distribution_dom_dataset(distribution_guotu_dataset):
+class distribution_ortho_dataset(distribution_guotu_dataset):
     """
-    todo 李宪 数据检索分发模块对DOM数据集类型数据
+    todo 邢凯 数据检索分发模块对单景正射数据集类型数据
     """
 
     def information(self) -> dict:
         info = super().information()
-        info[self.Name_Title] = 'DOM数据集'
+        info[self.Name_Title] = '单景正射数据集'
         info['table_name'] = ''
         return info
 

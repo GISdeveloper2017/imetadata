@@ -14,6 +14,5 @@ class distribution_custom(distribution_guotu_object):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '自定义影像'
-        info[self.Name_Type] = 'custom'
         info['table_name'] = ''
         return info
