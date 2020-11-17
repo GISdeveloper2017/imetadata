@@ -37,11 +37,11 @@ from imetadata.business.metadata.dataaccess.modules.distribution.guotu_object.di
     distribution_third_survey
 
 
-
 class distribution_mng(CResource):
     """
     同步第三方系统（即时服务系统数据库）的工厂处理，根据对象对应object_def表中的类型区分
     """
+
     @classmethod
     def give_me_distribution(cls, db_id: str, object_def_type: str, object_id: str, object_name: str,
                              quality: str, dataset: CDataSet):
@@ -68,12 +68,12 @@ class distribution_mng(CResource):
         # 2.数据集对象（6个）
         elif CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_DOM):
             return distribution_dom_dataset(db_id, object_id, object_name, quality, dataset)
-        elif CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_DEM)\
-               or CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_DEM_Frame)\
+        elif CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_DEM) \
+                or CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_DEM_Frame) \
                 or CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_DEM_NoFrame):
             return distribution_dem_dataset(db_id, object_id, object_name, quality, dataset)
-        elif CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_Guoqing)\
-                or CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_Guoqing_Frame)\
+        elif CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_Guoqing) \
+                or CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_Guoqing_Frame) \
                 or CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_Guoqing_Scene):
             return distribution_guoqing_dataset(db_id, object_id, object_name, quality, dataset)
         elif CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_DataSet_Mosaic):
