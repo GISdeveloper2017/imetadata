@@ -256,21 +256,35 @@ class CPlugins(CResource):
                 1. XML元数据数据项检测
         :return: 返回
         """
-        parser.process()
+        try:
+            result = parser.process()
 
-        # 首先要判断和验证与数据质量相关的核心内容
-        self.parser_metadata_with_qa(parser)
+            # 首先要判断和验证与数据质量相关的核心内容
+            if CResult.result_success(result):
+                self.parser_metadata_with_qa(parser)
+            else:
+                return result
 
-        # 其次, 根据合法的数据\元数据\业务元数据内容, 提取其他元数据内容, 如果其中出现异常, 则写入质检结果中
-        self.parser_metadata_after_qa(parser)
+            # 其次, 根据合法的数据\元数据\业务元数据内容, 提取其他元数据内容, 如果其中出现异常, 则写入质检结果中
+            if CResult.result_success(result):
+                self.parser_metadata_after_qa(parser)
+            else:
+                return result
 
-        # 这里应该永远都是成功信息
-        return CResult.merge_result(
-            self.Success,
-            '数据[{0}]的全部元数据解析完毕! '.format(
-                self.file_info.file_name_with_full_path,
+            return CResult.merge_result(
+                self.Success,
+                '数据[{0}]的全部元数据解析完毕! '.format(
+                    self.file_info.file_name_with_full_path,
+                )
             )
-        )
+        except Exception as error:
+            return CResult.merge_result(
+                self.Failure,
+                '数据[{0}]的元数据解析过程出现错误! 详细信息为: [{1}]'.format(
+                    self.file_info.file_name_with_full_path,
+                    error.__str__()
+                )
+            )
 
     def parser_last_process(self, parser: CParser) -> str:
         """
