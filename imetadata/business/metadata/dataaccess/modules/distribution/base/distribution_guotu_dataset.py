@@ -2,7 +2,7 @@
 # @Time : 2020/11/11 18:23
 # @Author : 赵宇飞
 # @File : distribution_guotu_dataset.py
-from imetadata.business.metadata.dataaccess.modules.distribution.base import \
+from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu import \
     distribution_guotu
 
 
@@ -10,6 +10,10 @@ class distribution_guotu_dataset(distribution_guotu):
     """"
     数据集对象处理基类（即时服务）
     """
+    def information(self) -> dict:
+        info = super().information()
+        return info
+
     def _before_access(self):
         pass
 

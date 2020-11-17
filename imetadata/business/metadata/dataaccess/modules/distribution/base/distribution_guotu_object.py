@@ -3,7 +3,7 @@
 # @Author : 赵宇飞
 # @File : distribution_guotu_object.py
 
-from imetadata.business.metadata.dataaccess.modules.distribution.base import \
+from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu import \
     distribution_guotu
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
@@ -14,6 +14,9 @@ class distribution_guotu_object(distribution_guotu):
     """
     对象的处理基类（即时服务）
     """
+    def information(self) -> dict:
+        info = super().information()
+        return info
 
     def _do_access(self):
         try:
