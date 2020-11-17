@@ -64,7 +64,7 @@ class distribution_guotu(distribution_base):
                 sql_temporary_1 = sql_temporary_1 + ",'{0}'".format(column_name)
                 sql_temporary_2 = sql_temporary_2 + ",{0}".format(column_value)
             sql_all_archived = '''
-            INSERT INTO {0}('aprid'{2}) VALUES ('{1}'{3})
+            INSERT INTO {0}(aprid{2}) VALUES ('{1}'{3})
             '''.format(table_name, self._obj_id, sql_temporary_1, sql_temporary_2)
         else:
             sql_temporary = ''
