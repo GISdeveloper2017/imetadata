@@ -29,16 +29,16 @@ application = CSettings(
         'data2service': {
             'local_dir': '/home/geocube/local',
             "update_cache": "mapproxy-seed  -f  $yaml_file$  -s  $seed_yaml$  -c  20 -q",
-            "tindex_dir": "/home/geocube/map/tileIndex",
-            "map_dir": "/home/geocube/map/mapfile",
-            "yaml_dir": "$local_dir$/geocube_mapproxy",
-            "seed_dir": "$local_dir$/geocube_mapproxy",
-            "wsgi_dir": "$local_dir$/geocube_wsgi",
-            "conf_dir": "$local_dir$/httpd-2.4.43/conf",
+            "tindex_dir": "F:/work/debug/tileIndex",
+            "map_dir": "F:/work/debug/tileIndex",
+            "yaml_dir": "F:/work/debug/tileIndex",
+            "seed_dir": "F:/work/debug/tileIndex",
+            "wsgi_dir": "F:/work/debug/tileIndex",
+            "conf_dir": "F:/work/debug/tileIndex",
             "service_yaml": {
-                "server_bin": "$local_dir$/mapserver-7.6.0/bin/mapserv",
-                "server_dir": "$local_dir$/mapserver-7.6.0/bin",
-                "cache_dir": "/home/extendStore/service_cache_$orderid$/"
+                "server_bin": "F:/work/debug/tileIndex",
+                "server_dir": "F:/work/debug/tileIndex",
+                "cache_dir": "F:/work/debug/tileIndex/service_cache_$orderid$"
             },
             "seed_yaml": {
                 "min_level": "1",
@@ -47,7 +47,7 @@ application = CSettings(
                 "coverages": "  $kid$:\n    bbox: [$seed_bbox$]\n    srs: \"EPSG:4326\"\n"
             },
             "qld_conf": {
-                "conf_path": "/home/geocube/local/httpd-2.4.43/conf/geocube.conf",
+                "conf_path": "F:/work/debug/tileIndex/geocube.conf",
                 "wsgi_script": "WSGIScriptAlias /$aliasname$ $wsgi_file$"
             },
             "multiapp": "true"

@@ -37,7 +37,6 @@ def clear_failure(service_name):
 
 
 def CreateTIndex(shpname, imgpaths):
-    print('img files count:' + str(len(imgpaths)))
     CLogger().info('img files count:' + str(len(imgpaths)))
 
     raster_file = ' '.join(imgpaths)
@@ -295,10 +294,10 @@ def ReplaceSameTemplate(service_def) -> tuple:
                 mapHelper.setvalue("MAP.LAYER.{0}".format(cur_index), cur_lyr)
 
             base_name = lyr_def.id + str(cur_index)
-            print(base_name)
+            CLogger().info(base_name + '正在准备创建')
             mapHelper.setvalue("MAP.LAYER.{0}.NAME".format(cur_index), u"'{0}'".format(base_name))
             mapHelper.setvalue("MAP.LAYER.{0}.METADATA.'WMS_TITLE'".format(cur_index), u"'{0}'".format(base_name))
-            mapHelper.setvalue("MAP.LAYER.{0}.PROJECTION", shp_prj)
+            mapHelper.setvalue("MAP.LAYER.{0}.PROJECTION".format(cur_index), shp_prj)
             # print(lyr_def.classidetify)
             if len(lyr_def.classidetify) > 10:
                 json = CJson()
@@ -373,7 +372,7 @@ def ReplaceSameTemplate(service_def) -> tuple:
     # wsgi
     logfile = os.path.join(application.xpath_one('data2service.wsgi_dir', None), 'service_' + service_def.id + '.log')
     wsgivalues = dict({'$log_file$': logfile, '$yaml_file$': yamlfile})
-    RepFile(os.path.join(sys.path[0], "template/service_id.wsgi"), wsgifile, wsgivalues)
+    RepFile(os.path.join(basedir, "template/service_id.wsgi"), wsgifile, wsgivalues)
 
     res_all_geoextent = geoUtils.UnionExt(all_geoextent)
     ext_yaml_lyr = "{0},{1},{2},{3}".format(res_all_geoextent[0], res_all_geoextent[2], res_all_geoextent[1],
@@ -382,37 +381,33 @@ def ReplaceSameTemplate(service_def) -> tuple:
 
 
 def ProcessService(service_def):
-    try:
-        CLogger().info("start a service: " + service_def.id)
+    CLogger().info("start a service: " + service_def.id)
 
-        repres = ReplaceSameTemplate(service_def)
+    repres = ReplaceSameTemplate(service_def)
 
-        cache_area = application.xpath_one('data2service.seed_yaml.coverages', None).replace('$kid$', 'kall').replace('$seed_bbox$', repres[0])
-        seedvalues = dict({'$refresh_time$': datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"),
-                           '$cache_area$': cache_area, '$kn$': 'kall', '$all_cache$': repres[1],
-                           '$grids$': service_def.getGrids()})
-        seedfile = os.path.join(application.xpath_one('data2service.seed_dir', None), 'service_seed_' + service_def.id + '.yaml')
-        RepFile(os.path.join(sys.path[0], "template/service_seed_id.yaml"), seedfile, seedvalues)
+    cache_area = application.xpath_one('data2service.seed_yaml.coverages', None).replace('$kid$', 'kall').replace('$seed_bbox$', repres[0])
+    seedvalues = dict({'$refresh_time$': datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"),
+                       '$cache_area$': cache_area, '$kn$': 'kall', '$all_cache$': repres[1],
+                       '$grids$': service_def.getGrids()})
+    seedfile = os.path.join(application.xpath_one('data2service.seed_dir', None), 'service_seed_' + service_def.id + '.yaml')
+    RepFile(os.path.join(basedir, "template/service_seed_id.yaml"), seedfile, seedvalues)
 
-        qldfp = open(application.xpath_one('data2service.qld_conf.conf_path', None), 'r')
-        qldcontent = qldfp.read()
-        qldfp.close()
+    qldfp = open(application.xpath_one('data2service.qld_conf.conf_path', None), 'r')
+    qldcontent = qldfp.read()
+    qldfp.close()
 
-        wsgi_index = qldcontent.index('WSGIScriptAlias')
-        wsgiscript = application.xpath_one('data2service.qld_conf.wsgi_script',
-                                           None).replace("$aliasname$", service_def.id).replace('$wsgi_file$', repres[2])
+    wsgi_index = qldcontent.index('WSGIScriptAlias')
+    wsgiscript = application.xpath_one('data2service.qld_conf.wsgi_script',
+                                       None).replace("$aliasname$", service_def.id).replace('$wsgi_file$', repres[2])
 
-        if "multiapp" not in application.xpath_one('data2service', None) \
-                or application.xpath_one('data2service.multiapp', None) == "false":
-            if wsgiscript not in qldcontent:
-                resqld = qldcontent[0:wsgi_index] + wsgiscript + '\n' + qldcontent[wsgi_index:]
-                qldfp = open(application.xpath_one('data2service.qld_conf.conf_path', None), 'w')
-                qldfp.write(resqld)
-                qldfp.close()
-                CLogger().info("WSGIScriptAlias added")
-                os.system("apachectl restart")
+    if "multiapp" not in application.xpath_one('data2service', None) \
+            or application.xpath_one('data2service.multiapp', None) == "false":
+        if wsgiscript not in qldcontent:
+            resqld = qldcontent[0:wsgi_index] + wsgiscript + '\n' + qldcontent[wsgi_index:]
+            qldfp = open(application.xpath_one('data2service.qld_conf.conf_path', None), 'w')
+            qldfp.write(resqld)
+            qldfp.close()
+            CLogger().info("WSGIScriptAlias added")
+            os.system("apachectl restart")
 
-        CLogger().info(service_def.id + ' published\n')
-    except Exception as ex:
-        CLogger().info(str(ex))
-
+    CLogger().info(service_def.id + ' published\n')

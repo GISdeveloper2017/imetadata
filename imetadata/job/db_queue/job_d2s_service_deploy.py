@@ -76,16 +76,20 @@ where dpStatus = 6
             db = factory.give_me_db(self.get_mission_db_id())
             layer_rows = db.all_row("select dpid,dplayer_id,dplayer_name,dplayer_datatype,dplayer_queryable,"
                                     "dplayer_resultfields,dplayer_style from dp_v_qfg_layer where dpservice_id = '{0}'".format(deploy_id))
-            for row in layer_rows:
+            # for row in layer_rows:
+            for i in range(layer_rows.size()):
+                row = layer_rows.record(i)
                 ser_lyrdef = LayerDef()
                 ser_lyrdef.id = row[1]
                 ser_lyrdef.name = row[2]
-                ser_lyrdef.type = [3]
+                ser_lyrdef.type = row[3]
                 ser_lyrdef.sourcetype = 'File'
                 ser_lyrdef.classidetify = row[6]
 
                 layer_file_rows = db.all_row("select dpdf_group_id,dpdf_object_fullname from dp_v_qfg_layer_file where dpdf_layer_id = '{0}'".format(row[0]))
-                for file_row in layer_file_rows:
+                # for file_row in layer_file_rows:
+                for k in range(layer_file_rows.size()):
+                    file_row = layer_file_rows.record(k)
                     if file_row[0] not in ser_lyrdef.sourcepath:
                         ser_lyrdef.sourcepath[file_row[0]] = []
                     ser_lyrdef.sourcepath[file_row[0]].append(file_row[1])
@@ -103,7 +107,7 @@ where dpStatus = 6
         except Exception as error:
             result = CResult.merge_result(
                 self.Failure,
-                '服务: {0}.{1}.{2}发布失败, 错误原因为: {4}'.format(deploy_id, deploy_s_name, deploy_s_title, error.__str__())
+                '服务: {0}.{1}.{2}发布失败, 错误原因为: {3}'.format(deploy_id, deploy_s_name, deploy_s_title, error.__str__())
             )
             self.update_deploy_result(deploy_id, result)
             return result
@@ -133,3 +137,4 @@ if __name__ == '__main__':
     创建时, 以sch_center_mission表的scmid, scmParams的内容初始化即可, 调用其execute方法, 即是一次并行调度要运行的主要过程
     """
     job_d2s_service_deploy('', '').execute()
+

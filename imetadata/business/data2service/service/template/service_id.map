@@ -1,0 +1,58 @@
+MAP
+  NAME "$map_name$"
+  SIZE 1000 800
+  UNITS $map_unit$
+  EXTENT $map_extent$                    
+  PROJECTION
+    $map_prj$
+  END
+  IMAGECOLOR 255 255 255
+  IMAGEQUALITY 95
+  IMAGETYPE png
+
+  OUTPUTFORMAT
+    NAME "png24"
+    MIMETYPE "image/png"
+    DRIVER "AGG/PNG"
+    EXTENSION "png"
+    IMAGEMODE RGBA
+    TRANSPARENT TRUE
+  END # OUTPUTFORMAT
+
+  WEB
+    METADATA
+      'wms_title'           '$map_name$'
+      'wms_srs'             ' EPSG:4326 EPSG:3857 EPSG:4490 EPSG:4610 EPSG:4203 EPSG:4283 EPSG:28354 EPSG:28355 EPSG:28356 EPSG:102100 '
+      'wms_enable_request' 	'*'
+      'gml_include_items' 'all'
+      'ows_include_items' 'all'
+      'WMS_FEATURE_INFO_MIME_TYPE'  'application/vnd.ogc.gml'
+    END
+    TEMPLATE 'fooOnlyForWMSGetFeatureInfo'
+  END
+
+  LAYER
+    NAME '$lyr_name$'
+    TYPE POLYGON
+    STATUS ON            
+    TILEITEM 'location'
+    METADATA
+      "wms_title"  "$wms_title$"
+      'wms_enable_request' '*'
+      'ows_enable_request' '*'
+      'wms_exceptions_format'  'application/vnd.ogc.se_xml'
+      "wms_include_items"   "all"
+    END # METADATA
+    CLASS
+      STYLE
+        COLOR "#FFAA00"
+        OUTLINECOLOR "#FFAA00"
+        SIZE 7
+      END # STYLE
+    END # CLASS
+    OFFSITE 0 0 0
+    PROCESSING "NODATA=0"
+    TEMPLATE "change-template.html"
+  END
+
+END

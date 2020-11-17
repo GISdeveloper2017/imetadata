@@ -1,0 +1,450 @@
+services:
+  demo:
+  tms:
+    use_grid_names: true
+    origin: 'nw'
+  kml:
+      use_grid_names: true
+  wmts:
+    #restful: true
+    #kvp: false
+    md:
+      title: WMTS Proxy
+      abstract: WMTS Proxy  
+  wms:
+    srs: ['EPSG:4490','EPSG:3857','CRS:84','EPSG:4326','EPSG:4283','EPSG:28354','EPSG:28355','EPSG:28356','EPSG:102100']
+    versions: ['1.1.0','1.1.1','1.3.0']
+    image_formats: ['image/png', 'image/jpeg']
+    on_source_errors: raise
+    strict: true    
+    md:
+      title: WMS Proxy
+      abstract: WMS Proxy
+
+layers:
+  - name: root
+    title: root layer
+    layers:
+$yaml_layer$
+
+caches:
+$yaml_cache$
+
+sources:
+$yaml_source$
+
+grids:
+    webmercator:
+       base: GLOBAL_WEBMERCATOR
+    cgcs2000:
+       srs: 'EPSG:4490'
+       #bbox: [73.62, 16.7, 134.77, 53.56]
+       bbox: [-180, -90, 180, 90]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    wgs84:
+       srs: 'EPSG:4326'       
+       bbox: [-180, -90, 180, 90]
+       bbox_srs: 'EPSG:4326'
+       #res: [0.000010728836060,0.000021457672119,0.000042915344238,0.000085830688477,0.000171661376953, 0.000343322753906, 0.000686645507812, 0.00137329101562, 0.00274658203125, 0.0054931640625, 0.010986328125, 0.02197265625, 0.0439453125, 0.087890625, 0.17578125, 0.3515625, 0.703125]
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4491:
+       srs: 'EPSG:4491'
+       bbox: [73.62, 35.42, 78.01, 41.07]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4492:
+       srs: 'EPSG:4492'
+       bbox: [77.98, 29.16, 84.0, 47.23]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4493:
+       srs: 'EPSG:4493'
+       bbox: [84.0, 27.32, 90.0, 49.18]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4494:
+       srs: 'EPSG:4494'
+       bbox: [90.0, 27.71, 96.01, 47.9]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4495:
+       srs: 'EPSG:4495'
+       bbox: [96.0, 21.13, 102.01, 43.18]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4496:
+       srs: 'EPSG:4496'
+       bbox: [102.0, 17.75, 108.0, 42.47]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4497:
+       srs: 'EPSG:4497'
+       bbox: [108.0, 16.7, 114.0, 45.11]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4498:
+       srs: 'EPSG:4498'
+       bbox: [114.0, 19.02, 120.0, 51.52]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4499:
+       srs: 'EPSG:4499'
+       bbox: [120.0, 24.64, 126.0, 53.56]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4500:
+       srs: 'EPSG:4500'
+       bbox: [126.0, 29.7, 132.0, 52.79]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4501:
+       srs: 'EPSG:4501'
+       bbox: [132.0, 45.02, 134.77, 48.4]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4502:
+       srs: 'EPSG:4502'
+       bbox: [73.62, 35.42, 78.01, 41.07]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4503:
+       srs: 'EPSG:4503'
+       bbox: [77.98, 29.16, 84.0, 47.23]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4504:
+       srs: 'EPSG:4504'
+       bbox: [84.0, 27.32, 90.0, 49.18]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4505:
+       srs: 'EPSG:4505'
+       bbox: [90.0, 27.71, 96.01, 47.9]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4506:
+       srs: 'EPSG:4506'
+       bbox: [96.0, 21.13, 102.01, 43.18]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4507:
+       srs: 'EPSG:4507'
+       bbox: [102.0, 17.75, 108.0, 42.47]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4508:
+       srs: 'EPSG:4508'
+       bbox: [108.0, 16.7, 114.0, 45.11]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4509:
+       srs: 'EPSG:4509'
+       bbox: [114.0, 19.02, 120.0, 51.52]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4510:
+       srs: 'EPSG:4510'
+       bbox: [120.0, 24.64, 126.0, 53.56]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4511:
+       srs: 'EPSG:4511'
+       bbox: [126.0, 29.7, 132.0, 52.79]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4512:
+       srs: 'EPSG:4512'
+       bbox: [132.0, 45.02, 134.77, 48.4]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4513:
+       srs: 'EPSG:4513'
+       bbox: [73.62, 35.81, 76.5, 40.65]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4514:
+       srs: 'EPSG:4514'
+       bbox: [76.5, 31.03, 79.5, 41.83]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4515:
+       srs: 'EPSG:4515'
+       bbox: [79.5, 29.95, 82.51, 45.88]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4516:
+       srs: 'EPSG:4516'
+       bbox: [82.5, 28.26, 85.5, 47.23]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4517:
+       srs: 'EPSG:4517'
+       bbox: [85.5, 27.8, 88.5, 49.18]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4518:
+       srs: 'EPSG:4518'
+       bbox: [88.49, 27.32, 91.51, 48.42]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4519:
+       srs: 'EPSG:4519'
+       bbox: [91.5, 27.71, 94.5, 45.13]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4520:
+       srs: 'EPSG:4520'
+       bbox: [94.5, 28.23, 97.51, 44.5]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4521:
+       srs: 'EPSG:4521'
+       bbox: [97.5, 21.43, 100.5, 42.76]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4522:
+       srs: 'EPSG:4522'
+       bbox: [100.5, 21.13, 103.5, 42.69]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4523:
+       srs: 'EPSG:4523'
+       bbox: [103.5, 22.5, 106.5, 42.21]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4524:
+       srs: 'EPSG:4524'
+       bbox: [106.5, 18.19, 109.5, 42.47]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4525:
+       srs: 'EPSG:4525'
+       bbox: [109.5, 18.11, 112.5, 45.11]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4526:
+       srs: 'EPSG:4526'
+       bbox: [112.5, 21.52, 115.5, 45.45]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4527:
+       srs: 'EPSG:4527'
+       bbox: [115.5, 22.6, 118.5, 49.88]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4528:
+       srs: 'EPSG:4528'
+       bbox: [118.5, 24.43, 121.5, 53.33]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4529:
+       srs: 'EPSG:4529'
+       bbox: [121.5, 28.22, 124.5, 53.56]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4530:
+       srs: 'EPSG:4530'
+       bbox: [124.5, 40.19, 127.5, 53.2]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4531:
+       srs: 'EPSG:4531'
+       bbox: [127.5, 41.37, 130.5, 50.25]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4532:
+       srs: 'EPSG:4532'
+       bbox: [130.5, 42.42, 133.5, 48.88]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4533:
+       srs: 'EPSG:4533'
+       bbox: [133.5, 45.85, 134.77, 48.4]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4534:
+       srs: 'EPSG:4534'
+       bbox: [73.62, 35.81, 76.5, 40.65]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4535:
+       srs: 'EPSG:4535'
+       bbox: [76.5, 31.03, 79.5, 41.83]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4536:
+       srs: 'EPSG:4536'
+       bbox: [79.5, 29.95, 82.51, 45.88]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4537:
+       srs: 'EPSG:4537'
+       bbox: [82.5, 28.26, 85.5, 47.23]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4538:
+       srs: 'EPSG:4538'
+       bbox: [85.5, 27.8, 88.5, 49.18]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4539:
+       srs: 'EPSG:4539'
+       bbox: [88.49, 27.32, 91.51, 48.42]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4540:
+       srs: 'EPSG:4540'
+       bbox: [91.5, 27.71, 94.5, 45.13]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4541:
+       srs: 'EPSG:4541'
+       bbox: [94.5, 28.23, 97.51, 44.5]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4542:
+       srs: 'EPSG:4542'
+       bbox: [97.5, 21.43, 100.5, 42.76]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4543:
+       srs: 'EPSG:4543'
+       bbox: [100.5, 21.13, 103.5, 42.69]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4544:
+       srs: 'EPSG:4544'
+       bbox: [103.5, 22.5, 106.5, 42.21]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4545:
+       srs: 'EPSG:4545'
+       bbox: [106.5, 18.19, 109.5, 42.47]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4546:
+       srs: 'EPSG:4546'
+       bbox: [109.5, 18.11, 112.5, 45.11]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4547:
+       srs: 'EPSG:4547'
+       bbox: [112.5, 21.52, 115.5, 45.45]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4527:
+       srs: 'EPSG:4548'
+       bbox: [115.5, 22.6, 118.5, 49.88]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4528:
+       srs: 'EPSG:4528'
+       bbox: [118.5, 24.43, 121.5, 53.33]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4529:
+       srs: 'EPSG:4529'
+       bbox: [121.5, 28.22, 124.5, 53.56]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4530:
+       srs: 'EPSG:4530'
+       bbox: [124.5, 40.19, 127.5, 53.2]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4531:
+       srs: 'EPSG:4531'
+       bbox: [127.5, 41.37, 130.5, 50.25]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4532:
+       srs: 'EPSG:4532'
+       bbox: [130.5, 42.42, 133.5, 48.88]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+    cgcs4533:
+       srs: 'EPSG:4533'
+       bbox: [133.5, 45.85, 134.77, 48.4]
+       bbox_srs: 'EPSG:4326'
+       tile_size: [256, 256]
+       origin: 'nw'
+
+globals:
+  image:
+    formats:
+      image/png:
+        encoding_options:
+          quantizer: fastoctree
+        mode: RGBA
+        transparent: true
+    paletted: false
+  cache:
+    base_dir: $cache_dir$
+    type: file
+    directory_layout: tms
