@@ -138,9 +138,9 @@ class distribution_guotu_object(distribution_guotu):
         dso_time = object_table_data.value_by_name(0, 'dso_time', '')
         dso_time_json = CJson()
         dso_time_json.load_obj(dso_time)
-        sync_dict['begdate'] = "'{0}'".format(dso_time_json.xpath_one('end_time', '1970-01-01'))
-        sync_dict['enddate'] = "'{0}'".format(dso_time_json.xpath_one('start_time', '1970-01-01'))
-        sync_dict['imagedate'] = "'{0}'".format(dso_time_json.xpath_one('time', '1970-01-01'))
+        sync_dict['begdate'] = "'{0}'".format(dso_time_json.xpath_one('end_time', ''))
+        sync_dict['enddate'] = "'{0}'".format(dso_time_json.xpath_one('start_time', ''))
+        sync_dict['imagedate'] = "'{0}'".format(dso_time_json.xpath_one('time', ''))
         # sync_dict['datacount'] = "'{0}'".format('')  # 数据数量
         # sync_dict['secrecylevel'] = "'{0}'".format('')  # 密级
         # sync_dict['regioncode'] = "'{0}'".format('')  # 行政区码
@@ -167,13 +167,12 @@ class distribution_guotu_object(distribution_guotu):
             .format(object_table_id)
         sync_dict['thumbimg'] = "(select dso_thumb from dm2_storage_object where dsoid='{0}')" \
             .format(object_table_id)
-        sync_dict['producetime'] = "'{0}'".format(dso_time_json.xpath_one('time', '1970-01-01'))  # 生产日期
+        sync_dict['producetime'] = "'{0}'".format(dso_time_json.xpath_one('time', ''))  # 生产日期
         now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
         sync_dict['addtime'] = "'{0}'".format(now_time)
         # sync_dict['resolution'] = "'{0}'".format('')  # 分辨率，交插件处理
         sync_dict['imgsize'] = "(select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail " \
-                               "where dodobjectid='{0}')" \
-            .format('')
+                               "where dodobjectid='{0}')".format(object_table_id)
         # sync_dict['colormodel'] = "'{0}'".format('')  # 交插件处理
         # sync_dict['piexldepth'] = "'{0}'".format('')  # 交插件处理
         sync_dict['isdel'] = "'0'"
@@ -191,7 +190,7 @@ class distribution_guotu_object(distribution_guotu):
         query_file_id = object_table_data.value_by_name(0, 'query_file_id', '')
         sync_dict['dsfid'] = "'{0}'".format(query_file_id)
         sync_dict['imagedatetag'] = "'{0}'".format(
-            CUtils.any_2_str(dso_time_json.xpath_one('time', '1970-01-01'))
+            CUtils.any_2_str(dso_time_json.xpath_one('time', ''))
         )
 
         return sync_dict
