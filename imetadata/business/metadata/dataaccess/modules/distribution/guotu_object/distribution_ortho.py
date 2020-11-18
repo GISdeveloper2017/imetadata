@@ -14,5 +14,5 @@ class distribution_ortho(distribution_guotu_object):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '单景正射'
-        info['table_name'] = ''
+        info['table_name'] = 'ap3_product_rsp_os_detail'
         return info

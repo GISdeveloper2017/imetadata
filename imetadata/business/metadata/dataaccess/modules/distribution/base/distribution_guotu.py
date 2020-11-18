@@ -61,6 +61,8 @@ class distribution_guotu(distribution_base):
             sql_temporary_1 = ''
             sql_temporary_2 = ''
             for column_name, column_value in self.get_sync_dict().items():
+                if CUtils.equal_ignore_case(column_value, ''):
+                    continue
                 sql_temporary_1 = sql_temporary_1 + ",{0}".format(column_name)
                 sql_temporary_2 = sql_temporary_2 + ",{0}".format(column_value)
             sql_all_archived = '''
@@ -69,21 +71,32 @@ class distribution_guotu(distribution_base):
         else:
             sql_temporary = ''
             for column_name, column_value in self.get_sync_dict().items():
+                if CUtils.equal_ignore_case(column_value, ''):
+                    continue
                 sql_temporary = sql_temporary + "{0}={1},".format(column_name, column_value)
             sql_temporary = sql_temporary[:-1]
             sql_all_archived = '''
             UPDATE {0} SET {2} WHERE aprid='{1}'
             '''.format(table_name, self._obj_id, sql_temporary)
-
-        if CFactory().give_me_db(self._db_id).execute(sql_all_archived):
-            return CResult.merge_result(
-                self.Success,
-                '对象[{0}]的同步成功! '.format(self._obj_name)
-            )
-        else:
+        try:
+            if CFactory().give_me_db(self._db_id).execute(sql_all_archived):
+                return CResult.merge_result(
+                    self.Success,
+                    '对象[{0}]的同步成功! '.format(self._obj_name)
+                )
+            else:
+                return CResult.merge_result(
+                    self.Failure,
+                    '对象[{0}]的同步错误!,请检查配置.'.format(self._obj_name)
+                )
+        except Exception as error:
             return CResult.merge_result(
                 self.Failure,
-                '对象[{0}]的同步错误!,请检查配置.'.format(self._obj_name)
+                '数据检索分发模块在进行数据同步时出现错误:同步的对象[{0}]在录入数据库时出现异常, '
+                '可能是业务元数据或空间信息存在问题,详细情况: [{1}]!'.format(
+                    self._obj_name,
+                    error.__str__()
+                )
             )
 
     def get_sync_dict(self) -> dict:
