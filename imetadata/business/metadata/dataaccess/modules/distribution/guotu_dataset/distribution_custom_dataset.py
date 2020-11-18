@@ -2,7 +2,7 @@
 # @Time : 2020/11/17 19:32
 # @Author : 赵宇飞
 # @File : distribution_custom_dataset.py
-from imetadata.business.metadata.dataaccess.modules.distribution.base import \
+from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_dataset import \
     distribution_guotu_dataset
 
 

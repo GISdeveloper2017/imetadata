@@ -4,6 +4,7 @@
 # @File : distribution_mng.py
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
+from imetadata.database.base.c_dataset import CDataSet
 from imetadata.business.metadata.dataaccess.modules.distribution.guotu_dataset.distribution_custom_dataset import \
     distribution_custom_dataset
 from imetadata.business.metadata.dataaccess.modules.distribution.guotu_dataset.distribution_dem_dataset import \
@@ -20,7 +21,6 @@ from imetadata.business.metadata.dataaccess.modules.distribution.guotu_dataset.d
     distribution_third_survey_dataset
 from imetadata.business.metadata.dataaccess.modules.distribution.guotu_object.distribution_default import \
     distribution_default
-from imetadata.database.base.c_dataset import CDataSet
 from imetadata.business.metadata.dataaccess.modules.distribution.guotu_object.distribution_custom import \
     distribution_custom
 from imetadata.business.metadata.dataaccess.modules.distribution.guotu_object.distribution_dem import distribution_dem

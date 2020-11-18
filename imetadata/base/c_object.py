@@ -56,7 +56,8 @@ class CObject:
             class_meta_one = class_meta
             obj = class_meta_one(db_id, obj_id, obj_name, obj_type, quality)
             return obj
-        except:
+        except Exception as error:
+            print(error.__str__())
             return None
 
     @classmethod

@@ -2,8 +2,7 @@
 # @Time : 2020/11/17 17:03
 # @Author : 赵宇飞
 # @File : distribution_guoqing_dataset.py
-from imetadata.base.c_result import CResult
-from imetadata.business.metadata.dataaccess.modules.distribution.base import \
+from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_dataset import \
     distribution_guotu_dataset
 
 
