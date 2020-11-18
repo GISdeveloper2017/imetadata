@@ -14,7 +14,7 @@ class distribution_ortho_dataset(distribution_guotu_dataset):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '单景正射数据集'
-        info['table_name'] = ''
+        info['table_name'] = 'ap3_product_rsp_os_whole'
         return info
 
     def get_sync_dict(self) -> dict:

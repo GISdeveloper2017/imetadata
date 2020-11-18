@@ -137,7 +137,7 @@ class distribution_guotu_object(distribution_guotu):
         sync_dict['dsodatatype'] = "'{0}'".format(dsodatatype)
         dso_time = object_table_data.value_by_name(0, 'dso_time', '')
         dso_time_json = CJson()
-        dso_time_json.load_json_text(dso_time)
+        dso_time_json.load_obj(dso_time)
         sync_dict['begdate'] = "'{0}'".format(dso_time_json.xpath_one('//end_time', '1970-01-01'))
         sync_dict['enddate'] = "'{0}'".format(dso_time_json.xpath_one('//start_time', '1970-01-01'))
         sync_dict['imagedate'] = "'{0}'".format(dso_time_json.xpath_one('//time', '1970-01-01'))

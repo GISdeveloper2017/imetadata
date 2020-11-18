@@ -139,7 +139,7 @@ class module_distribution(CDAModule):
                 LEFT JOIN dm2_storage_directory on dm2_storage_file.dsfdirectoryid = dm2_storage_directory.dsdid
             WHERE
                 dm2_storage_object.dsoid = '{0}'
-        '''.format(self._obj_type)
+        '''.format(self._obj_id)
 
         dataset = CFactory().give_me_db(self._db_id).one_row(sql_query)
         object_def_type = dataset.value_by_name(0, 'dsodtype', '')
