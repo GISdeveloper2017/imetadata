@@ -14,7 +14,7 @@ class distribution_guoqing_dataset(distribution_guotu_dataset):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '国情影像数据集'
-        info['table_name'] = ''
+        info['table_name'] = 'ap3_product_rsp_gq_whole'
         return info
 
     def get_sync_dict(self) -> dict:

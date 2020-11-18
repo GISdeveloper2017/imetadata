@@ -14,5 +14,5 @@ class distribution_third_survey(distribution_guotu_object):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '三调影像'
-        info['table_name'] = ''
+        info['table_name'] = 'ap3_product_rsp_th3sur_detail'
         return info

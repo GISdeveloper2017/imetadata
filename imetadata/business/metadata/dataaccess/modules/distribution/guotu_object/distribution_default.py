@@ -14,5 +14,5 @@ class distribution_default(distribution_guotu_object):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '默认'
-        info['table_name'] = ''
+        info['table_name'] = 'ap3_product_rsp'
         return info

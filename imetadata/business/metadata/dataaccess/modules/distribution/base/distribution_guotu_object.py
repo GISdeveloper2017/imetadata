@@ -11,6 +11,7 @@ from imetadata.base.c_json import CJson
 from imetadata.base.c_xml import CXml
 import datetime
 
+
 class distribution_guotu_object(distribution_guotu):
     """
     对象的处理基类（即时服务）
@@ -106,6 +107,15 @@ class distribution_guotu_object(distribution_guotu):
         """
         pass
 
+    def get_sync_dict(self) -> dict:
+        """
+        本方法的写法为强规则，字典key为字段名，字典value为对应的值或者sql语句，在写时需要加语句号，子查询语句加(),值加‘’
+        子查询：sync_dict['字段名']=“(select 字段 from 表 where id=‘1’)”
+        值：sync_dict['字段名']=“‘值’”
+        同时，配置插件方法时请在information()方法中添加info['table_name'] = '表名'的字段
+        """
+        return self.get_sync_predefined_dict()
+
     def get_sync_predefined_dict(self) -> dict:
         """
         本方法的写法为强规则，字典key为字段名，字典value为对应的值或者sql语句，在写时需要加语句号，子查询语句加(),值加‘’
@@ -128,9 +138,9 @@ class distribution_guotu_object(distribution_guotu):
         dso_time = object_table_data.value_by_name(0, 'dso_time', '')
         dso_time_json = CJson()
         dso_time_json.load_json_text(dso_time)
-        sync_dict['begdate'] = "'{0}'".format(dso_time_json.xpath_one('//end_time', ''))
-        sync_dict['enddate'] = "'{0}'".format(dso_time_json.xpath_one('//start_time', ''))
-        sync_dict['imagedate'] = "'{0}'".format(dso_time_json.xpath_one('//time', ''))
+        sync_dict['begdate'] = "'{0}'".format(dso_time_json.xpath_one('//end_time', '1970-01-01'))
+        sync_dict['enddate'] = "'{0}'".format(dso_time_json.xpath_one('//start_time', '1970-01-01'))
+        sync_dict['imagedate'] = "'{0}'".format(dso_time_json.xpath_one('//time', '1970-01-01'))
         # sync_dict['datacount'] = "'{0}'".format('')  # 数据数量
         # sync_dict['secrecylevel'] = "'{0}'".format('')  # 密级
         # sync_dict['regioncode'] = "'{0}'".format('')  # 行政区码
@@ -151,25 +161,25 @@ class distribution_guotu_object(distribution_guotu):
                                "(select dso_geo_wgs84 from dm2_storage_object " \
                                "where dsoid='{0}')" \
                                ")".format(object_table_id)
-        sync_dict['geomobj'] = "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"\
+        sync_dict['geomobj'] = "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')" \
             .format(object_table_id)
-        sync_dict['browserimg'] = "(select dso_browser from dm2_storage_object where dsoid='{0}')"\
+        sync_dict['browserimg'] = "(select dso_browser from dm2_storage_object where dsoid='{0}')" \
             .format(object_table_id)
-        sync_dict['thumbimg'] = "(select dso_thumb from dm2_storage_object where dsoid='{0}')"\
+        sync_dict['thumbimg'] = "(select dso_thumb from dm2_storage_object where dsoid='{0}')" \
             .format(object_table_id)
-        sync_dict['producetime'] = "'{0}'".format(dso_time_json.xpath_one('//time', ''))  # 生产日期
+        sync_dict['producetime'] = "'{0}'".format(dso_time_json.xpath_one('//time', '1970-01-01'))  # 生产日期
         now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
         sync_dict['addtime'] = "'{0}'".format(now_time)
         # sync_dict['resolution'] = "'{0}'".format('')  # 分辨率，交插件处理
         sync_dict['imgsize'] = "(select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail " \
-                               "where dodobjectid='{0}')"\
+                               "where dodobjectid='{0}')" \
             .format('')
         # sync_dict['colormodel'] = "'{0}'".format('')  # 交插件处理
         # sync_dict['piexldepth'] = "'{0}'".format('')  # 交插件处理
         sync_dict['isdel'] = "'0'"
-        sync_dict['extent'] = "(select dso_geo_bb_native from dm2_storage_object where dsoid='{0}')"\
+        sync_dict['extent'] = "(select dso_geo_bb_native from dm2_storage_object where dsoid='{0}')" \
             .format(object_table_id)
-        sync_dict['proj'] = "(select dso_prj_coordinate from dm2_storage_object where dsoid='{0}')"\
+        sync_dict['proj'] = "(select dso_prj_coordinate from dm2_storage_object where dsoid='{0}')" \
             .format(object_table_id)
         # sync_dict['remark'] = "'{0}'".format('')  # 暂时为空
         # sync_dict['ispublishservice'] = "'{0}'".format('')   # 暂时为空
@@ -181,7 +191,7 @@ class distribution_guotu_object(distribution_guotu):
         query_file_id = object_table_data.value_by_name(0, 'query_file_id', '')
         sync_dict['dsfid'] = "'{0}'".format(query_file_id)
         sync_dict['imagedatetag'] = "'{0}'".format(
-            CUtils.any_2_str(dso_time_json.xpath_one('//time', ''))
+            CUtils.any_2_str(dso_time_json.xpath_one('//time', '1970-01-01'))
         )
 
         return sync_dict

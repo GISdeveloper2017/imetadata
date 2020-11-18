@@ -14,5 +14,5 @@ class distribution_guoqing_scene(distribution_guotu_object):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '国情影像-整景纠正'
-        info['table_name'] = ''
+        info['table_name'] = 'ap3_product_rsp_gqos_detail'
         return info

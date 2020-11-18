@@ -16,7 +16,7 @@ class distribution_guotu(distribution_base):
 
     def information(self) -> dict:
         info = super().information()
-        info['table_name'] = ''
+        info['table_name'] = 'ap3_product_rsp'
         return info
 
     def access(self) -> str:
@@ -52,7 +52,7 @@ class distribution_guotu(distribution_base):
 
     def _do_sync(self) -> str:
         sql_all_archived = ''
-        table_name = CUtils.dict_value_by_name(self.information(), 'table_name', '')
+        table_name = CUtils.dict_value_by_name(self.information(), 'table_name', 'ap3_product_rsp')
         sql_check = '''
         select aprid from {0} where aprid='{1}'
         '''.format(table_name, self._obj_id)
@@ -60,15 +60,15 @@ class distribution_guotu(distribution_base):
         if record_cheak == 0:
             sql_temporary_1 = ''
             sql_temporary_2 = ''
-            for column_name, column_value in self.get_sync_dict():
-                sql_temporary_1 = sql_temporary_1 + ",'{0}'".format(column_name)
+            for column_name, column_value in self.get_sync_dict().items():
+                sql_temporary_1 = sql_temporary_1 + ",{0}".format(column_name)
                 sql_temporary_2 = sql_temporary_2 + ",{0}".format(column_value)
             sql_all_archived = '''
             INSERT INTO {0}(aprid{2}) VALUES ('{1}'{3})
             '''.format(table_name, self._obj_id, sql_temporary_1, sql_temporary_2)
         else:
             sql_temporary = ''
-            for column_name, column_value in self.get_sync_dict():
+            for column_name, column_value in self.get_sync_dict().items():
                 sql_temporary = sql_temporary + "{0}={1},".format(column_name, column_value)
             sql_temporary = sql_temporary[:-1]
             sql_all_archived = '''
