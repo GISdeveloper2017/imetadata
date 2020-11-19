@@ -51,33 +51,16 @@ class distribution_guotu(distribution_base):
         pass
 
     def _do_sync(self) -> str:
-        sql_all_archived = ''
-        table_name = CUtils.dict_value_by_name(self.information(), 'table_name', 'ap3_product_rsp')
+        table_name = CUtils.dict_value_by_name(self.information(), 'table_name', '')
         sql_check = '''
         select aprid from {0} where aprid='{1}'
         '''.format(table_name, self._obj_id)
         record_cheak = CFactory().give_me_db(self._db_id).one_row(sql_check).size()  # 查找记录数
         if record_cheak == 0:
-            sql_temporary_1 = ''
-            sql_temporary_2 = ''
-            for column_name, column_value in self.get_sync_dict().items():
-                if CUtils.equal_ignore_case(column_value, ''):
-                    continue
-                sql_temporary_1 = sql_temporary_1 + ",{0}".format(column_name)
-                sql_temporary_2 = sql_temporary_2 + ",{0}".format(column_value)
-            sql_all_archived = '''
-            INSERT INTO {0}(aprid{2}) VALUES ('{1}'{3})
-            '''.format(table_name, self._obj_id, sql_temporary_1, sql_temporary_2)
+            sql_all_archived = self.process_insert_sql(table_name, self.get_sync_dict_list(self.DB_True))
         else:
-            sql_temporary = ''
-            for column_name, column_value in self.get_sync_dict().items():
-                if CUtils.equal_ignore_case(column_value, ''):
-                    continue
-                sql_temporary = sql_temporary + "{0}={1},".format(column_name, column_value)
-            sql_temporary = sql_temporary[:-1]
-            sql_all_archived = '''
-            UPDATE {0} SET {2} WHERE aprid='{1}'
-            '''.format(table_name, self._obj_id, sql_temporary)
+            sql_all_archived = self.process_updata_sql(table_name, self.get_sync_dict_list(self.DB_False)
+                                                       , self._obj_id)
         try:
             if CFactory().give_me_db(self._db_id).execute(sql_all_archived):
                 return CResult.merge_result(
@@ -99,12 +82,65 @@ class distribution_guotu(distribution_base):
                 )
             )
 
-    def get_sync_dict(self) -> dict:
+    def get_sync_dict_list(self, insert_or_updata) -> list:
         """
-        本方法的写法为强规则，字典key为字段名，字典value为对应的值或者sql语句，在写时需要加语句号，子查询语句加(),值加‘’
-        子查询：sync_dict['字段名']=“(select 字段 from 表 where id=‘1’)”
-        值：sync_dict['字段名']=“‘值’”
-        同时，配置插件方法时请在information()方法中添加info['table_name'] = '表名'的字段
+        insert_or_updata 中 self.DB_True为insert，DB_False为updata
+        本方法的写法为强规则，调用add_value_to_sync_dict_list配置
+        第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
         """
-        sync_dict = dict()
-        return sync_dict
+        sync_dict_list = list()
+        # sync_dict_list = self.add_value_to_sync_dict_list(sync_dict_list,'name','value',self.DB_True)
+        return sync_dict_list
+
+    def process_insert_sql(self, table_name, field_dict_list):
+
+        """
+        本方法构建插入语句
+        """
+        sql_temporary_1 = ''  # 拼表名
+        sql_temporary_2 = ''  # 拼值
+        for field_dict in field_dict_list:
+            field_name = CUtils.dict_value_by_name(field_dict, 'field_name', '')
+            field_value = CUtils.dict_value_by_name(field_dict, 'field_value', '')
+            field_type = CUtils.dict_value_by_name(field_dict, 'field_type', '')
+            if not CUtils.equal_ignore_case(field_value, ''):
+                sql_temporary_1 = sql_temporary_1 + '{0},'.format(field_name)
+                if field_type:
+                    sql_temporary_2 = sql_temporary_2 + "'{0}',".format(field_value)
+                else:
+                    sql_temporary_2 = sql_temporary_2 + "{0},".format(field_value)
+        insert_sql = '''
+        INSERT INTO {0}({1}) VALUES ({2})
+        '''.format(table_name, sql_temporary_1[:-1], sql_temporary_2[:-1])
+        return insert_sql
+
+    def process_updata_sql(self, table_name, field_dict_list, oid):
+        """
+        本方法构建更新
+        """
+        sql_temporary = ''
+        for field_dict in field_dict_list:
+            field_name = CUtils.dict_value_by_name(field_dict, 'field_name', '')
+            field_value = CUtils.dict_value_by_name(field_dict, 'field_value', '')
+            field_type = CUtils.dict_value_by_name(field_dict, 'field_type', '')
+            if not CUtils.equal_ignore_case(field_value, ''):
+                if field_type:
+                    sql_temporary = sql_temporary + "{0}='{1}',".format(field_name, field_value)
+                else:
+                    sql_temporary = sql_temporary + "{0}={1},".format(field_name, field_value)
+        updata_sql = '''
+        UPDATE {0} SET {1} WHERE aprid='{2}'
+        '''.format(table_name, sql_temporary[:-1], oid)
+        return updata_sql
+
+    def add_value_to_sync_dict_list(self, sync_dict_list, field_name, field_value, field_type):
+        """
+        本方法构建同步用的配置列表
+         """
+        sync_dict_list.extend([
+            {
+                'field_name': field_name,
+                'field_value': field_value,
+                'field_type': field_type
+            }
+        ])

@@ -98,99 +98,101 @@ class distribution_guotu_object(distribution_guotu):
         check_list.extend(['ysjwjm', 'sjmc'])  # 配置的业务元数据质检的id
         return check_list
 
-    def _before_access(self):
-        pass
+    def get_sync_dict_list(self, insert_or_updata) -> list:
+        """
+        本方法的写法为强规则，调用add_value_to_sync_dict_list配置
+        第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
+        """
+        return self.get_sync_predefined_dict_list(insert_or_updata)
 
-    def _before_sync(self):
+    def get_sync_predefined_dict_list(self, insert_or_updata) -> list:
         """
-        查询数据库，设置通常的字段值到self._dict_sync中，用于子类个性化构建sql字段值用
+        本方法的写法为强规则，调用add_value_to_sync_dict_list配置
+        第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
         """
-        pass
-
-    def get_sync_dict(self) -> dict:
-        """
-        本方法的写法为强规则，字典key为字段名，字典value为对应的值或者sql语句，在写时需要加语句号，子查询语句加(),值加‘’
-        子查询：sync_dict['字段名']=“(select 字段 from 表 where id=‘1’)”
-        值：sync_dict['字段名']=“‘值’”
-        同时，配置插件方法时请在information()方法中添加info['table_name'] = '表名'的字段
-        """
-        return self.get_sync_predefined_dict()
-
-    def get_sync_predefined_dict(self) -> dict:
-        """
-        本方法的写法为强规则，字典key为字段名，字典value为对应的值或者sql语句，在写时需要加语句号，子查询语句加(),值加‘’
-        子查询：sync_dict['字段名']=“(select 字段 from 表 where id=‘1’)”
-        值：sync_dict['字段名']=“‘值’”
-        同时，配置插件方法时请在information()方法中添加info['table_name'] = '表名'的字段
-        本方法处理公共部分
-        datacount:数据量 secrecylevel:密级 regioncode:行政区码 regionname:行政区 resolution:分辨率
-        colormodel:色彩模式 iexldepth:像素位数 scale:比例尺分母 mainrssource:主要星源  交插件去处理
-        """
-        sync_dict = dict()
+        sync_dict_list = list()
         object_table_id = self._obj_id
         object_table_data = self._dataset
-        dsoobjectname = object_table_data.value_by_name(0, 'dsoobjectname', '')
-        sync_dict['productname'] = "'{0}'".format(dsoobjectname)
-        dsodcode = object_table_data.value_by_name(0, 'dsodcode', '')
-        sync_dict['producttype'] = "'{0}'".format(dsodcode)
-        dsodatatype = object_table_data.value_by_name(0, 'dsodatatype', '')
-        sync_dict['dsodatatype'] = "'{0}'".format(dsodatatype)
+        if insert_or_updata:
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'aprid', object_table_id, self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'productname', object_table_data.value_by_name(0, 'dsoobjectname', ''), self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'producttype', object_table_data.value_by_name(0, 'dsodcode', ''), self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'dsodatatype', object_table_data.value_by_name(0, 'dsodatatype', ''), self.DB_True)
         dso_time = object_table_data.value_by_name(0, 'dso_time', '')
         dso_time_json = CJson()
         dso_time_json.load_obj(dso_time)
-        sync_dict['begdate'] = "'{0}'".format(dso_time_json.xpath_one('end_time', ''))
-        sync_dict['enddate'] = "'{0}'".format(dso_time_json.xpath_one('start_time', ''))
-        sync_dict['imagedate'] = "'{0}'".format(dso_time_json.xpath_one('time', ''))
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'begdate', dso_time_json.xpath_one('start_time', ''), self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'enddate', dso_time_json.xpath_one('end_time', ''), self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'imagedate', dso_time_json.xpath_one('time', ''), self.DB_True)
         # sync_dict['datacount'] = "'{0}'".format('')  # 数据数量
         # sync_dict['secrecylevel'] = "'{0}'".format('')  # 密级
         # sync_dict['regioncode'] = "'{0}'".format('')  # 行政区码
         # sync_dict['regionname'] = "'{0}'".format('')  # 行政区  上面四个字段交插件处理
-        sync_dict['centerx'] = "st_x(" \
-                               "st_centroid(" \
-                               "(select dso_geo_wgs84 from dm2_storage_object " \
-                               "where dsoid='{0}')" \
-                               ")" \
-                               ")".format(object_table_id)
-        sync_dict['centery'] = "st_y(" \
-                               "st_centroid(" \
-                               "(select dso_geo_wgs84 from dm2_storage_object " \
-                               "where dsoid='{0}')" \
-                               ")" \
-                               ")".format(object_table_id)
-        sync_dict['geomwkt'] = "st_astext(" \
-                               "(select dso_geo_wgs84 from dm2_storage_object " \
-                               "where dsoid='{0}')" \
-                               ")".format(object_table_id)
-        sync_dict['geomobj'] = "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')" \
-            .format(object_table_id)
-        sync_dict['browserimg'] = "(select dso_browser from dm2_storage_object where dsoid='{0}')" \
-            .format(object_table_id)
-        sync_dict['thumbimg'] = "(select dso_thumb from dm2_storage_object where dsoid='{0}')" \
-            .format(object_table_id)
-        sync_dict['producetime'] = "'{0}'".format(dso_time_json.xpath_one('time', ''))  # 生产日期
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'centerx',
+            "st_x(st_centroid("
+            "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
+            "))".format(object_table_id), self.DB_False)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'centery',
+            "st_y(st_centroid("
+            "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
+            "))".format(object_table_id), self.DB_False)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'geomwkt',
+            "st_astext("
+            "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
+            ")".format(object_table_id), self.DB_False)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'geomobj',
+            "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')".format(object_table_id),
+            self.DB_False)
+
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'browserimg', object_table_data.value_by_name(0, 'dso_browser', ''), self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'thumbimg', object_table_data.value_by_name(0, 'dso_thumb', ''), self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'producetime', dso_time_json.xpath_one('time', ''), self.DB_True)
         now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
-        sync_dict['addtime'] = "'{0}'".format(now_time)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'addtime', now_time, self.DB_True)
         # sync_dict['resolution'] = "'{0}'".format('')  # 分辨率，交插件处理
-        sync_dict['imgsize'] = "(select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail " \
-                               "where dodobjectid='{0}')".format(object_table_id)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'imgsize',
+            "(select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail "
+            "where dodobjectid='{0}')".format(object_table_id),
+            self.DB_False)
         # sync_dict['colormodel'] = "'{0}'".format('')  # 交插件处理
         # sync_dict['piexldepth'] = "'{0}'".format('')  # 交插件处理
-        sync_dict['isdel'] = "'0'"
-        sync_dict['extent'] = "(select dso_geo_bb_native from dm2_storage_object where dsoid='{0}')" \
-            .format(object_table_id)
-        sync_dict['proj'] = "(select dso_prj_coordinate from dm2_storage_object where dsoid='{0}')" \
-            .format(object_table_id)
+        if insert_or_updata:
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'isdel', '0', self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'extent',
+            "(select dso_geo_bb_native from dm2_storage_object where dsoid='{0}')".format(object_table_id),
+            self.DB_False)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'proj', object_table_data.value_by_name(0, 'dso_prj_coordinate', ''), self.DB_True)
         # sync_dict['remark'] = "'{0}'".format('')  # 暂时为空
         # sync_dict['ispublishservice'] = "'{0}'".format('')   # 暂时为空
-        sync_dict['queryable'] = "'1'"
+        if insert_or_updata:
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'queryable', '1', self.DB_True)
         # sync_dict['scale'] = "'{0}'".format('')  # 交插件处理
         # sync_dict['mainrssource'] = "'{0}'".format('')  # 交插件处理
-        query_directory_id = object_table_data.value_by_name(0, 'query_directory_id', '')
-        sync_dict['dsdid'] = "'{0}'".format(query_directory_id)
-        query_file_id = object_table_data.value_by_name(0, 'query_file_id', '')
-        sync_dict['dsfid'] = "'{0}'".format(query_file_id)
-        sync_dict['imagedatetag'] = "'{0}'".format(
-            CUtils.any_2_str(dso_time_json.xpath_one('time', ''))
-        )
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'dsdid', object_table_data.value_by_name(0, 'query_directory_id', ''), self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'dsfid', object_table_data.value_by_name(0, 'query_file_id', ''), self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'imagedatetag', dso_time_json.xpath_one('time', ''), self.DB_True)
 
-        return sync_dict
+        return sync_dict_list
