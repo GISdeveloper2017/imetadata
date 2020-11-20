@@ -251,6 +251,16 @@ class CXml:
         else:
             return element.text
 
+    def get_element_text_by_xpath_one(self, query: str):
+        """
+        根据xpath路径获取对应节点的文本
+        :param query:
+        :return:
+        """
+        node_element = self.xpath_one(query)
+        node_text = self.get_element_text(node_element)
+        return node_text
+
     @classmethod
     def get_element_xml(cls, element) -> str:
         """
