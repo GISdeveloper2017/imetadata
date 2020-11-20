@@ -377,7 +377,81 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 定期检查
     * 系统将检查库中已有的对象, 对对象的数据(对象的文件, 对象的附属文件)存在性进行检查和核实
     
-#### 数管算法设计
+#### 数管交互式系统数据入库内容设计
+##### 存储管理
+1. 功能: 对dm2_storage表进行维护
+1. 维护内容:
+    1. dm2_storage
+        1. dstid: 标识
+        1. dsttitle: 标题
+        1. dstunipath: 
+            1. 网络存储路径
+            1. 一般为//ip/共享目录名称
+        1. dstwatch:
+            1. 默认值: 0
+        1. dstwatchperiod
+            1. 默认值: 2
+        1. dstscanlasttime
+            1. 保持为Null
+        1. dstscanstatus
+            1. 保持为0
+        1. dstmemo
+            1. 按需存储文档
+        1. dstotheroption
+            1. 保留字段, 用于对存储进行特殊设置
+            1. Json格式
+        1. dsttype
+            1. 数据存储类型
+            1. 可选:
+                1. core: 数管专用存储, 支持集中式入库
+                1. inbound: 入库专用存储, 支持集中式入库
+                1. mix: 混合存储, 数管和入库通用, 支持离散式入库
+        1. dstuserid
+            1. 管理员标识
+        1. dstownerpath
+            1. 数管系统的路径
+            1. 一般linux的本地mount后的路径
+            1. 如果是windows运行环境, 本字段可以不填
+
+##### 入库前质检管理
+1. 功能: 对dm2_storage_inbound表进行维护
+1. 维护内容:
+    1. dm2_storage_inbound
+        1. dsiid
+            1. 序列
+            1. 自动生成
+        1. dsistorageid
+            1. 存储标识
+        1. dsidirectory
+            1. 相对路径: 不包含storage根目录部分
+            1. 斜线开头, 示例: /广西影像数据
+        1. dsidirectoryid
+            1. 一个uuid
+        1. dsibatchno
+            1. 批次标识
+            1. 需要有算法支持
+            1. 格式: yyyy-mm-dd-xxx
+            1. 一天内的批次, xxx为从001开始的自增序列
+        1. dsiotheroption
+            1. 保留字段, 用于对待入库数据进行特殊设置
+            1. Json格式
+        1. dsimemo
+            1. 备注
+        1. dsiuserid
+            1. 操作人标识
+1. 注意:
+    1. 如果需要在用户选择质检后提交入库, 无需人工再次审批, 可以由UI交互界面将dsiStatus的值:
+        1. 从  IB_Status_QI_Finished = 4  改为  IB_Status_IB_Wait_Audit = 8
+            
+##### 审批入库管理
+1. 功能: 对dm2_storage_inbound表进行维护
+1. 维护内容:
+    1. dm2_storage_inbound
+        1. dsistatus
+            1. 状态
+            1. 设置为: IB_Status_IB_InQueue = 5
+
+
 ***
 
 ##### 全面盘点
@@ -1410,41 +1484,3 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 说明:
 
 
-# 2020-09-05
-扩展trigger的类型为
-1. 数据库队列触发器
-1. 时间触发器
-   * 指定时间触发一次
-   * 间隔指定秒数触发一次(注意:是从上次执行结束时间开始, 重新计时)
-   * 根据cron语法, 定时触发(cron语法中有每隔n秒执行一次, 这里的计算, 将不考虑执行中所损耗的时间, 但中间积累的任务将被忽略)
-1. 重新调整体系架构目录, 对重要的对象, 目录名称都进行了重新定义, 使结构更加清晰
-1. 修改了数据表结构, 将数据库队列中的配置信息, 如并行个数等等, 都移到scmParams这个json字段中
-调度执行器execute和调度工人job都可以访问这个参数, 进行个性化的处理
-系统进行了基础测试, 主体架构基本成型.
-
-# 2020-09-03
-1. 不再使用Celery并行框架, 改为自己设计开发并行框架, 与原dm2数据库的并行架构思路统一, 以便平滑升级
-1. 确定并行引擎为以scheduleBase基类派生的子类
-   * 子类的类名称, 要求与其python文件名相同!!!
-   * 子类必须放在imetadata\business子目录下!!!
-1. 每一个子类, 处理一个并行, 具体模式参考样例sch_dm2_storage_parser.py
-1. 调度表为: sch_center_mission, 每一条记录, 是一个并行, 根据scmTrigger的不同, 可以分类为:
-   * db_queue: 数据表队列
-   * cron: 基于cron语法的时间调度
-   * interval: 基于每隔特定时间的时间调度
-   * date: 基于特定时间启动一次的时间调度
-   * mem_queue: 暂未实现, 后续可能会与rabbitmq, 或者redis等内存队列对接
-   * other: 其他, 暂未扩展. 
-1. 调度表sch_center_mission中的scmCommand和scmStatus配合, 完成并行的控制, 目前提供如下调度控制:
-   * scmCommand=start&scmStatus=1: 启动调度
-   * scmCommand=stop&scmStatus=1: 停止调度
-   如果需要加速或减速, 只能停止调度->修改调度配置->启动调度
-1. 调度表sch_center_mission中的scmCommand和scmStatus配合, 完成并行系统的退出:
-   * 所有scmStatus=0&scmCommand=shutdown: 调度系统关闭退出
-
-# 2020-06-02
-1. 完成项目目录结构设计
-1. 完成数据库操作基础框架的设计
-1. 可以通过配置文件, 设置数据库的访问
-1. 以工厂设计模式, 获取匹配的数据库, 实现postgresql数据库接口, 其他数据库接口未实现
-1. 工厂为单例模式, 一次性初始化, 不再重复建立
