@@ -131,10 +131,10 @@ class distribution_guotu_object(distribution_guotu):
             sync_dict_list, 'enddate', dso_time_json.xpath_one('end_time', ''), self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedate', dso_time_json.xpath_one('time', ''), self.DB_True)
-        # sync_dict['datacount'] = "'{0}'".format('')  # 数据数量
-        # sync_dict['secrecylevel'] = "'{0}'".format('')  # 密级
-        # sync_dict['regioncode'] = "'{0}'".format('')  # 行政区码
-        # sync_dict['regionname'] = "'{0}'".format('')  # 行政区  上面四个字段交插件处理
+        # datacount:数据数量
+        # secrecylevel:密级
+        # regioncode:行政区码
+        # regionname:行政区  上面四个字段交插件处理
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'centerx',
             "st_x(st_centroid("
@@ -164,14 +164,14 @@ class distribution_guotu_object(distribution_guotu):
         now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'addtime', now_time, self.DB_True)
-        # sync_dict['resolution'] = "'{0}'".format('')  # 分辨率，交插件处理
+        # resolution:分辨率，交插件处理
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imgsize',
             "(select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail "
             "where dodobjectid='{0}')".format(object_table_id),
             self.DB_False)
-        # sync_dict['colormodel'] = "'{0}'".format('')  # 交插件处理
-        # sync_dict['piexldepth'] = "'{0}'".format('')  # 交插件处理
+        # colormodel:交插件处理
+        # piexldepth:交插件处理
         if insert_or_updata:
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'isdel', '0', self.DB_True)
@@ -181,13 +181,13 @@ class distribution_guotu_object(distribution_guotu):
             self.DB_False)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'proj', object_table_data.value_by_name(0, 'dso_prj_coordinate', ''), self.DB_True)
-        # sync_dict['remark'] = "'{0}'".format('')  # 暂时为空
-        # sync_dict['ispublishservice'] = "'{0}'".format('')   # 暂时为空
+        # remark:暂时为空
+        # ispublishservice:暂时为空
         if insert_or_updata:
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'queryable', '1', self.DB_True)
-        # sync_dict['scale'] = "'{0}'".format('')  # 交插件处理
-        # sync_dict['mainrssource'] = "'{0}'".format('')  # 交插件处理
+        # scale:交插件处理
+        # mainrssource:交插件处理
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsdid', object_table_data.value_by_name(0, 'query_directory_id', ''), self.DB_True)
         self.add_value_to_sync_dict_list(

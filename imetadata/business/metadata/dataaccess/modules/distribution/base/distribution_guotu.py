@@ -99,11 +99,14 @@ class distribution_guotu(distribution_base):
         """
         sql_temporary_1 = ''  # 拼表名
         sql_temporary_2 = ''  # 拼值
+        duplicate_removal_set = set()  # 用于去重判断
+        field_dict_list.reverse()  # 倒序进行循环，用于去重
         for field_dict in field_dict_list:
             field_name = CUtils.dict_value_by_name(field_dict, 'field_name', '')
             field_value = CUtils.dict_value_by_name(field_dict, 'field_value', '')
             field_type = CUtils.dict_value_by_name(field_dict, 'field_type', '')
-            if not CUtils.equal_ignore_case(field_value, ''):
+            if not CUtils.equal_ignore_case(field_value, '') and field_name not in duplicate_removal_set:
+                duplicate_removal_set.add(field_name)
                 sql_temporary_1 = sql_temporary_1 + '{0},'.format(field_name)
                 if field_type:
                     sql_temporary_2 = sql_temporary_2 + "'{0}',".format(field_value)
@@ -119,11 +122,14 @@ class distribution_guotu(distribution_base):
         本方法构建更新
         """
         sql_temporary = ''
+        duplicate_removal_set = set()  # 用于去重判断
+        field_dict_list.reverse()  # 倒序进行循环，用于去重
         for field_dict in field_dict_list:
             field_name = CUtils.dict_value_by_name(field_dict, 'field_name', '')
             field_value = CUtils.dict_value_by_name(field_dict, 'field_value', '')
             field_type = CUtils.dict_value_by_name(field_dict, 'field_type', '')
-            if not CUtils.equal_ignore_case(field_value, ''):
+            if not CUtils.equal_ignore_case(field_value, '') and field_name not in duplicate_removal_set:
+                duplicate_removal_set.add(field_name)
                 if field_type:
                     sql_temporary = sql_temporary + "{0}='{1}',".format(field_name, field_value)
                 else:
