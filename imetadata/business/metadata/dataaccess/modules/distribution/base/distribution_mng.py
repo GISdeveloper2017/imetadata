@@ -4,6 +4,8 @@
 # @File : distribution_mng.py
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.dataaccess.modules.distribution.guotu_object.distribution_vector import \
+    distribution_vector
 from imetadata.database.base.c_dataset import CDataSet
 from imetadata.business.metadata.dataaccess.modules.distribution.guotu_dataset.distribution_custom_dataset import \
     distribution_custom_dataset
@@ -89,6 +91,8 @@ class distribution_mng(CResource):
         # 3.通用影像对象raster ——即时服务中被认为是自定义影像
         elif CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_Raster):
             return distribution_custom(db_id, object_id, object_name, quality, dataset)
+        elif CUtils.equal_ignore_case(input_object_def_type, cls.Object_Def_Type_Vector):
+            return distribution_vector(db_id, object_id, object_name, quality, dataset)
         else:
             # 注意, 这里默认为默认处理的同步插件，先预留
             return distribution_default(db_id, object_id, object_name, quality, dataset)

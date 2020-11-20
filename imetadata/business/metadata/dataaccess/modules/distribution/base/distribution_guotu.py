@@ -56,13 +56,13 @@ class distribution_guotu(distribution_base):
         select aprid from {0} where aprid='{1}'
         '''.format(table_name, self._obj_id)
         record_cheak = CFactory().give_me_db(self._db_id).one_row(sql_check).size()  # 查找记录数
-        if record_cheak == 0:
+        if record_cheak == 0:  # 记录数为0则拼接插入语句
             sql_all_archived = self.process_insert_sql(table_name, self.get_sync_dict_list(self.DB_True))
-        else:
+        else:  # 记录数不为0则拼接更新语句
             sql_all_archived = self.process_updata_sql(table_name, self.get_sync_dict_list(self.DB_False)
                                                        , self._obj_id)
         try:
-            if CFactory().give_me_db(self._db_id).execute(sql_all_archived):
+            if CFactory().give_me_db(self._db_id).execute(sql_all_archived):  # 执行拼好的语句
                 return CResult.merge_result(
                     self.Success,
                     '对象[{0}]的同步成功! '.format(self._obj_name)
@@ -99,19 +99,22 @@ class distribution_guotu(distribution_base):
         """
         sql_temporary_1 = ''  # 拼表名
         sql_temporary_2 = ''  # 拼值
+        duplicate_removal_set = set()  # 用于去重判断
+        field_dict_list.reverse()  # 倒序进行循环，用于去重
         for field_dict in field_dict_list:
-            field_name = CUtils.dict_value_by_name(field_dict, 'field_name', '')
-            field_value = CUtils.dict_value_by_name(field_dict, 'field_value', '')
-            field_type = CUtils.dict_value_by_name(field_dict, 'field_type', '')
-            if not CUtils.equal_ignore_case(field_value, ''):
-                sql_temporary_1 = sql_temporary_1 + '{0},'.format(field_name)
-                if field_type:
+            field_name = CUtils.dict_value_by_name(field_dict, 'field_name', '')  # 获取字段名
+            field_value = CUtils.dict_value_by_name(field_dict, 'field_value', '')  # 获取字段值
+            field_type = CUtils.dict_value_by_name(field_dict, 'field_type', '')  # 获取字段类型
+            if not CUtils.equal_ignore_case(field_value, '') and field_name not in duplicate_removal_set:
+                duplicate_removal_set.add(field_name)  # 如果没有拼接过这个字段，这加入set集合，用于查重
+                sql_temporary_1 = sql_temporary_1 + '{0},'.format(field_name)  # 拼接字段部分的sql
+                if field_type:  # 拼接values部分的sql field_type判断是否需要加''
                     sql_temporary_2 = sql_temporary_2 + "'{0}',".format(field_value)
                 else:
                     sql_temporary_2 = sql_temporary_2 + "{0},".format(field_value)
         insert_sql = '''
         INSERT INTO {0}({1}) VALUES ({2})
-        '''.format(table_name, sql_temporary_1[:-1], sql_temporary_2[:-1])
+        '''.format(table_name, sql_temporary_1[:-1], sql_temporary_2[:-1])  # 记得截取后面的逗号
         return insert_sql
 
     def process_updata_sql(self, table_name, field_dict_list, oid):
@@ -119,11 +122,14 @@ class distribution_guotu(distribution_base):
         本方法构建更新
         """
         sql_temporary = ''
+        duplicate_removal_set = set()  # 用于去重判断
+        field_dict_list.reverse()  # 倒序进行循环，用于去重
         for field_dict in field_dict_list:
             field_name = CUtils.dict_value_by_name(field_dict, 'field_name', '')
             field_value = CUtils.dict_value_by_name(field_dict, 'field_value', '')
             field_type = CUtils.dict_value_by_name(field_dict, 'field_type', '')
-            if not CUtils.equal_ignore_case(field_value, ''):
+            if not CUtils.equal_ignore_case(field_value, '') and field_name not in duplicate_removal_set:
+                duplicate_removal_set.add(field_name)
                 if field_type:
                     sql_temporary = sql_temporary + "{0}='{1}',".format(field_name, field_value)
                 else:
