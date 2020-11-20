@@ -100,6 +100,7 @@ class distribution_guotu_object(distribution_guotu):
 
     def get_sync_dict_list(self, insert_or_updata) -> list:
         """
+        insert_or_updata 指明配置的是更新还是插入，-1时为插入，0为更新
         本方法的写法为强规则，调用add_value_to_sync_dict_list配置
         第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
         """
@@ -107,13 +108,17 @@ class distribution_guotu_object(distribution_guotu):
 
     def get_sync_predefined_dict_list(self, insert_or_updata) -> list:
         """
+        insert_or_updata 指明配置的是更新还是插入，-1时为插入，0为更新
         本方法的写法为强规则，调用add_value_to_sync_dict_list配置
         第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
+        本方法处理公共部分
+        datacount:数据量 secrecylevel:密级 regioncode:行政区码 regionname:行政区 resolution:分辨率
+        colormodel:色彩模式 piexldepth:像素位数 scale:比例尺分母 mainrssource:主要星源  交插件去处理
         """
         sync_dict_list = list()
-        object_table_id = self._obj_id
+        object_table_id = self._obj_id  # 获取oid
         object_table_data = self._dataset
-        if insert_or_updata:
+        if insert_or_updata:  # 如果为更新，则不需要主键
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'aprid', object_table_id, self.DB_True)
         self.add_value_to_sync_dict_list(
@@ -135,7 +140,7 @@ class distribution_guotu_object(distribution_guotu):
         # secrecylevel:密级
         # regioncode:行政区码
         # regionname:行政区  上面四个字段交插件处理
-        self.add_value_to_sync_dict_list(
+        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
             sync_dict_list, 'centerx',
             "st_x(st_centroid("
             "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
