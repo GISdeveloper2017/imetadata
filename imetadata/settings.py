@@ -103,8 +103,8 @@ application = CSettings(
                 'title': 'quality inspection 质量检验',
                 'switch': {
                     'title': '开关配置',
-                    'title_inbound_after_qi_immediately': '开关-使用ready.21at标识文件判断一个目录是否可以入库',
-                    'inbound_after_qi_immediately': 'on'
+                    'title_inbound_after_qi_immediately': '开关-提交质检后, 系统不论质检是否有无有问题的数据, 都自动入库',
+                    'inbound_after_qi_immediately': 'off'
                 }
             },
             'inbound': {

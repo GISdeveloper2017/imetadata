@@ -345,6 +345,7 @@ class CResource:
     IB_Status_IB_InQueue = 5
     IB_Status_IB_Processing = 6
     IB_Status_IB_Error = 61
+    IB_Status_IB_Wait_Audit = 8
 
     ProcType_New = 'new'
     ProcType_Delete = 'delete'
