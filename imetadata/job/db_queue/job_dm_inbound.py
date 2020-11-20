@@ -14,23 +14,20 @@ from imetadata.database.c_factory import CFactory
 
 
 class job_dm_inbound(CDMBaseJob):
-    Path_IB_Root = 'root'
-    Path_IB_Option = '{0}.option'.format(Path_IB_Root)
-    Path_IB_Option_CheckFileLocked = '{0}.check_file_locked'.format(Path_IB_Option)
 
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage_inbound 
-set dsiprocid = '{0}', dsistatus = 2
+set dsiprocid = '{0}', dsistatus = {1}
 where dsiid = (
   select dsiid  
   from   dm2_storage_inbound 
-  where  dsistatus = 1  
+  where  dsistatus = {2}  
   order by dsiaddtime
   limit 1
   for update skip locked
 )
-        '''.format(self.SYSTEM_NAME_MISSION_ID)
+        '''.format(self.SYSTEM_NAME_MISSION_ID, self.IB_Status_IB_Processing, self.IB_Status_IB_InQueue)
 
     def get_mission_info_sql(self) -> str:
         return '''
@@ -40,6 +37,7 @@ select
   , dm2_storage_inbound.dsibatchno as query_ib_batchno
   , dm2_storage_inbound.dsiotheroption as query_ib_option
   , dm2_storage.dstid as query_storage_id
+  , dm2_storage.dsttype as query_storage_type
   , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as query_rootpath
   , dm2_storage_directory.dsdid as query_ib_dir_id 
 from dm2_storage_inbound 
@@ -52,9 +50,9 @@ where dm2_storage_inbound.dsiprocid = '{0}'
     def get_abnormal_mission_restart_sql(self) -> str:
         return '''
 update dm2_storage_inbound 
-set dsistatus = 1, dsiprocid = null 
-where dsistatus = 2
-        '''
+set dsistatus = {0}, dsiprocid = null 
+where dsistatus = {1}
+        '''.format(self.IB_Status_IB_InQueue, self.IB_Status_IB_Processing)
 
     def process_mission(self, dataset) -> str:
         """
@@ -63,6 +61,7 @@ where dsistatus = 2
         :return:
         """
         ds_src_storage_id = dataset.value_by_name(0, 'query_storage_id', '')
+        ds_src_storage_type = dataset.value_by_name(0, 'query_storage_type', self.Storage_Type_Mix)
         ds_src_root_path = dataset.value_by_name(0, 'query_rootpath', '')
         ds_src_dir_id = dataset.value_by_name(0, 'query_ib_dir_id', '')
 
@@ -77,11 +76,25 @@ where dsistatus = 2
 
         CLogger().debug('入库的目录为: {0}.{1}'.format(ds_ib_id, ds_ib_directory_name))
         try:
-            all_ib_file_or_path_existed = self.check_all_ib_file_or_path_existed(ds_src_storage_id,
-                                                                                 ds_ib_directory_name)
+            # 检查所有文件与元数据是否相符
+            all_ib_file_or_path_existed = self.check_all_ib_file_or_path_existed(
+                ds_src_storage_id,
+                ds_ib_directory_name
+            )
             if not CResult.result_success(all_ib_file_or_path_existed):
                 self.update_ib_result(ds_ib_id, all_ib_file_or_path_existed)
                 return all_ib_file_or_path_existed
+
+            # 如果是在核心存储或混合存储中直接入库, 则仅仅改变元数据状态即可
+            if CUtils.equal_ignore_case(ds_src_storage_type, self.Storage_Type_Mix) \
+                    or CUtils.equal_ignore_case(ds_src_storage_type, self.Storage_Type_Core):
+                result_ib_in_core_or_mix_storage = self.update_ib_data_status_in_core_or_mix_storage(
+                    ds_src_storage_id,
+                    ds_ib_directory_name,
+                    ds_src_dir_id
+                )
+                self.update_ib_result(ds_ib_id, result_ib_in_core_or_mix_storage)
+                return result_ib_in_core_or_mix_storage
 
             # 加载目录下的待入库数据集的元数据文件
             src_dataset_xml = CXml()
@@ -467,13 +480,14 @@ where dsistatus = 2
         update dm2_storage_file
         set dsfstorageid = :dest_storage_id
             , dsffilerelationname = '{0}'||dsffilerelationname
+            , dsf_bus_status = '{1}'
         where dsfdirectoryid in (
             select dsdid
             from dm2_storage_directory
             where dsdstorageid = :src_storage_id
                 and position(:src_directory in dsddirectory) = 1
         )
-        '''.format(dest_ib_subpath)
+        '''.format(dest_ib_subpath, self.IB_Bus_Status_Online)
         params_move_file = {
             'dest_storage_id': dest_ib_storage_id,
             'src_storage_id': src_storage_id,
@@ -485,9 +499,10 @@ where dsistatus = 2
         update dm2_storage_directory
         set dsdstorageid = :dest_storage_id
             , dsddirectory = '{0}'||dsddirectory
+            , dsd_bus_status = '{1}'
         where dsdstorageid = :src_storage_id
             and position(:src_directory in dsddirectory) = 1
-        '''.format(dest_ib_subpath)
+        '''.format(dest_ib_subpath, self.IB_Bus_Status_Online)
         params_move_directory_metadata = {
             'dest_storage_id': dest_ib_storage_id,
             'src_storage_id': src_storage_id,
@@ -498,8 +513,9 @@ where dsistatus = 2
         sql_link_parent_dir_to_root = '''
         update dm2_storage_directory
         set dsdparentid = :storage_root_id
+            , dsd_bus_status = '{0}'
         where dsdid = :src_root_dir_id
-        '''
+        '''.format(self.IB_Bus_Status_Online)
         params_link_parent_dir_to_root = {
             'storage_root_id': dest_ib_storage_id,
             'src_root_dir_id': src_dir_id
@@ -521,20 +537,31 @@ where dsistatus = 2
             CFactory().give_me_db(self.get_mission_db_id()).execute(
                 '''
                 update dm2_storage_inbound 
-                set dsistatus = 0, dsiprocmemo = :ib_message
+                set dsistatus = {0}, dsiprocmemo = :ib_message
                 where dsiid = :ib_id   
-                ''', {'ib_id': ib_id, 'ib_message': CResult.result_message(result)}
+                '''.format(self.ProcStatus_Finished),
+                {'ib_id': ib_id, 'ib_message': CResult.result_message(result)}
             )
         else:
             CFactory().give_me_db(self.get_mission_db_id()).execute(
                 '''
                 update dm2_storage_inbound 
-                set dsistatus = 3, dsiprocmemo = :ib_message
+                set dsistatus = {0}, dsiprocmemo = :ib_message
                 where dsiid = :ib_id   
-                ''', {'ib_id': ib_id, 'ib_message': CResult.result_message(result)}
+                '''.format(self.IB_Status_IB_Error),
+                {'ib_id': ib_id, 'ib_message': CResult.result_message(result)}
             )
 
     def check_all_ib_file_or_path_existed(self, storage_id, directory_name):
+        """
+        判断待入库数据的元数据, 与实体数据是否相符
+        . 返回CResult
+            . 如果全部相符, 则返回True
+            . 如果有任何一个不符, 则返回False, 且把不符的文件名通过信息返回
+        :param storage_id:
+        :param directory_name:
+        :return:
+        """
         invalid_file_list = []
         more_failure_file = False
         sql_all_ib_file = '''
@@ -617,6 +644,107 @@ where dsistatus = 2
             return CResult.merge_result(self.Success, '日志记录登记完成!')
         except Exception as error:
             return CResult.merge_result(self.Failure, '日志记录登记出错, 详细原因为: [{0}]'.format(error.__str__()))
+
+    def update_ib_data_status_in_core_or_mix_storage(self, storage_id, ib_directory_name, ib_dir_id):
+        """
+        如果是在线存储或混合存储, 直接将业务状态修改即可
+        :param ib_dir_id:
+        :param storage_id:
+        :param ib_directory_name:
+        :return:
+        """
+        sql_update_file = '''
+        update dm2_storage_file
+        set dsf_bus_status = '{0}'
+        where dsfdirectoryid in (
+            select dsdid
+            from dm2_storage_directory
+            where dsdstorageid = :storage_id
+                and position(:src_directory in dsddirectory) = 1
+        )
+        '''.format(self.IB_Bus_Status_Online)
+        params_update_file = {
+            'storage_id': storage_id,
+            'src_directory': ib_directory_name
+        }
+
+        # 更新子目录状态
+        sql_update_directory = '''
+        update dm2_storage_directory
+        set dsd_bus_status = '{0}'
+        where dsdstorageid = :storage_id
+            and (
+                position(:src_directory in dsddirectory) = 1
+                or 
+                dsdid = :src_root_dir_id
+            )
+        '''.format(self.IB_Bus_Status_Online)
+        params_update_directory = {
+            'storage_id': storage_id,
+            'src_directory': CFile.join_file(ib_directory_name, ''),
+            'src_root_dir_id': ib_dir_id
+        }
+
+        # 更新对象状态
+        sql_update_object_in_directory = '''
+        update dm2_storage_object
+        set dso_bus_status = '{0}'
+        where dsoid in (
+            select dsd_object_id
+            from dm2_storage_directory
+            where dsdstorageid = :storage_id
+                and (
+                    position(:src_directory in dsddirectory) = 1
+                    or 
+                    dsdid = :src_root_dir_id
+                )
+                and dsd_object_id is not null
+        )
+        '''.format(self.IB_Bus_Status_Online)
+        params_update_object_in_directory = {
+            'storage_id': storage_id,
+            'src_directory': CFile.join_file(ib_directory_name, ''),
+            'src_root_dir_id': ib_dir_id
+        }
+        # 更新对象状态
+        sql_update_object_of_file = '''
+        update dm2_storage_object
+        set dso_bus_status = '{0}'
+        where dsoid in (
+            select dsf_object_id
+            from dm2_storage_file
+            where dsfdirectoryid in (
+                select dsdid
+                from dm2_storage_directory
+                where dsdstorageid = :storage_id
+                    and position(:src_directory in dsddirectory) = 1
+            )
+            and dsf_object_id is not null
+        )
+        '''.format(self.IB_Bus_Status_Online)
+        params_update_object_of_file = {
+            'storage_id': storage_id,
+            'src_directory': CFile.join_file(ib_directory_name, ''),
+            'src_root_dir_id': ib_dir_id
+        }
+
+        commands = [
+            (sql_update_file, params_update_file)
+            , (sql_update_directory, params_update_directory)
+            , (sql_update_object_in_directory, params_update_object_in_directory)
+            , (sql_update_object_of_file, params_update_object_of_file)
+        ]
+        try:
+            CFactory().give_me_db(self.get_mission_db_id()).execute_batch(commands)
+            return CResult.merge_result(
+                self.Success,
+                '存储[{0}]下的数据[{1}]入库成功!'.format(storage_id, ib_directory_name)
+            )
+        except Exception as error:
+            return CResult.merge_result(
+                self.Failure,
+                '存储[{0}]下的数据[{1}]入库成功失败, 错误原因为: [{2}]!'.format(storage_id, ib_directory_name, error.__str__())
+            )
 
 
 if __name__ == '__main__':

@@ -42,9 +42,11 @@ class job_dm_inbound_qi_monitor(CTimeJob):
             # 需要时再开启
             # ds_ib_option = CUtils.any_2_str(inbound_qi_list.value_by_name(data_index, 'query_ib_option', ''))
 
-            CLogger().debug('正在检查存储[{0}]下的目录[{1}]质检进度...'.format(
-                ds_storage_title,
-                CFile.join_file(ds_storage_root_dir, ds_ib_directory_name))
+            CLogger().debug(
+                '正在检查存储[{0}]下的目录[{1}]质检进度...'.format(
+                    ds_storage_title,
+                    ds_ib_directory_name
+                )
             )
 
             try:
@@ -97,7 +99,7 @@ class job_dm_inbound_qi_monitor(CTimeJob):
                     CLogger().debug(
                         '存储[{0}]下的目录[{1}]质检任务正在进行, 目录还未扫描完毕! '.format(
                             ds_storage_title,
-                            CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+                            ds_ib_directory_name
                         )
                     )
                     continue
@@ -135,7 +137,7 @@ class job_dm_inbound_qi_monitor(CTimeJob):
                     CLogger().debug(
                         '存储[{0}]下的目录[{1}]质检任务正在进行, 文件还未扫描完毕! '.format(
                             ds_storage_title,
-                            CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+                            ds_ib_directory_name
                         )
                     )
                     continue
@@ -220,10 +222,21 @@ class job_dm_inbound_qi_monitor(CTimeJob):
                     CLogger().debug(
                         '存储[{0}]下的目录[{1}]质检任务正在进行, 识别的数据还未分析处理完毕! '.format(
                             ds_storage_title,
-                            CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+                            ds_ib_directory_name
                         )
                     )
                     continue
+
+                self.update_inbound_qi_result(
+                    ds_ib_id,
+                    CResult.merge_result(
+                        self.Success,
+                        '存储[{0}]下的目录[{1}]质检任务已经完成! '.format(
+                            ds_storage_title,
+                            ds_ib_directory_name
+                        )
+                    )
+                )
 
             except Exception as error:
                 self.update_inbound_qi_result(
@@ -232,7 +245,7 @@ class job_dm_inbound_qi_monitor(CTimeJob):
                         self.Failure,
                         '存储[{0}]下的目录[{1}]质检任务检查过程出现异常情况, 详细错误信息为: [{2}]'.format(
                             ds_storage_title,
-                            CFile.join_file(ds_storage_root_dir, ds_ib_directory_name),
+                            ds_ib_directory_name,
                             error.__str__()
                         )
                     )

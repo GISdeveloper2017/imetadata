@@ -172,6 +172,10 @@ class CResource:
 
     Storage_Type_Core = 'core'
     Storage_Type_InBound = 'inbound'
+    Storage_Type_Mix = 'mix'
+
+    IB_Bus_Status_InBound = 'inbound'
+    IB_Bus_Status_Online = 'online'
 
     Name_ID = 'id'
     Name_Name = 'name'
@@ -365,6 +369,10 @@ class CResource:
     DataGroup_Raster_DataSet = 'raster_dataset'
     DataGroup_Vector = 'vector'
     DataGroup_Vector_DataSet = 'vector_dataset'
+
+    Path_IB_Root = 'root'
+    Path_IB_Option = '{0}.option'.format(Path_IB_Root)
+    Path_IB_Option_CheckFileLocked = '{0}.check_file_locked'.format(Path_IB_Option)
 
     def data_group_title(self, group_name: str):
         if group_name.lower() == self.DataGroup_Sat_raster:
