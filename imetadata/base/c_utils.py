@@ -163,6 +163,9 @@ class CUtils(CResource):
         @param check_text:
         @return:
         """
+        # 日期格式最低8位
+        if CUtils.len_of_text(check_text) < 8:
+            return False
         time_format = "%Y{0}%m{0}%d"
         sep_real = ""
         sep_list = ['-', '/']
