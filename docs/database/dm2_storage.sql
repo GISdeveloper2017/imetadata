@@ -904,3 +904,16 @@ alter table dm2_storage_obj_na add column dson_audit_time timestamp(6);
 comment on column dm2_storage_obj_na.dson_audit_time is '对象-审批时间';
 alter table dm2_storage_obj_na add column dson_lastmodify_time timestamp(6) default now();
 comment on column dm2_storage_obj_na.dson_lastmodify_time is '最后修改时间';
+
+
+/*
+    2020-11-17
+    . 对元数据中心进行业务化封装
+*/
+alter table dm2_storage_directory add column dsd_bus_status varchar(100) default 'inbound';
+comment on column dm2_storage_directory.dsd_bus_status is '业务状态';
+alter table dm2_storage_file add column dsf_bus_status varchar(100) default 'inbound';
+comment on column dm2_storage_file.dsf_bus_status is '业务状态';
+alter table dm2_storage_object add column dso_bus_status varchar(100) default 'inbound';
+comment on column dm2_storage_object.dso_bus_status is '业务状态';
+

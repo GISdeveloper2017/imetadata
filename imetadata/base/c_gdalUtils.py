@@ -7,9 +7,12 @@ from osgeo import gdal, ogr
 from imetadata.base.c_file import CFile
 from imetadata.base.c_processUtils import CProcessUtils
 # import numpy
+from imetadata.base.c_resource import CResource
+from imetadata.base.c_sys import CSys
+from imetadata.base.c_utils import CUtils
 
 
-class CGdalUtils:
+class CGdalUtils(CResource):
     @classmethod
     def is_vector_file_can_read(cls, vector_file_with_path: str) -> bool:
         """
@@ -58,33 +61,36 @@ class CGdalUtils:
         @param raster_file_with_path:
         @return:
         """
+        sample_width = 6
+        sample_height = 3
         try:
             if not cls.is_raster_file_integrity(raster_file_with_path):
                 return False
             raster_ds = gdal.Open(raster_file_with_path, gdal.GA_ReadOnly)
             if raster_ds is None:
                 return False
-            else:
-                """测试需要numpy的包，没有安装则会band.ReadAsArray读取异常"""
+            elif not CUtils.equal_ignore_case(CSys.get_os_name(), cls.OS_MacOS):
+                """测试需要numpy的包，同时需要检验gdal安装环境的正确性, 没有安装则会band.ReadAsArray读取异常"""
                 band_count = raster_ds.RasterCount
                 if band_count > 0:
                     band = raster_ds.GetRasterBand(band_count)
-                    data1 = band.ReadAsArray(xoff=0, yoff=0, win_xsize=6, win_ysize=3)
+                    data1 = band.ReadAsArray(xoff=1, yoff=1, win_xsize=sample_width, win_ysize=sample_height)
                     image_size_x = raster_ds.RasterXSize
                     image_size_y = raster_ds.RasterYSize
-                    block_size_x = image_size_x - 6
-                    block_size_y = image_size_y - 3
-                    data2 = band.ReadAsArray(xoff=block_size_x, yoff=block_size_y, win_xsize=6, win_ysize=3)
+                    block_size_x = image_size_x - sample_width
+                    block_size_y = image_size_y - sample_height
+                    data2 = band.ReadAsArray(xoff=block_size_x, yoff=block_size_y, win_xsize=sample_width, win_ysize=sample_height)
                     band = None
                     raster_ds = None
                     if data1 is not None and data2 is not None:
                         return True
                     else:
                         return False
+            else:
+                return True
         except Exception as error:
             print(error.__str__())
             return False
-        return True
 
     @classmethod
     def is_raster_file_can_read_process(cls, raster_file_with_path: str) -> bool:
@@ -121,5 +127,5 @@ if __name__ == '__main__':
     Job对象的简洁测试模式
     创建时, 以sch_center_mission表的scmid, scmParams的内容初始化即可, 调用其execute方法, 即是一次并行调度要运行的主要过程
     """
-    file_src = r'E:\图片\使用\IMG_6277大.JPG'
+    file_src = r'/Users/wangxiya/Documents/我的测试数据/11.入库存储/湖南标准分幅成果数据/G49G001030/G49G001030.tif'
     print(CGdalUtils.is_raster_file_can_read(file_src))

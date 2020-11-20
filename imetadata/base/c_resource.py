@@ -46,6 +46,7 @@ class CResource:
     Host_LocalHost = '127.0.0.1'
     OS_Windows = 'windows'
     OS_Linux = 'linux'
+    OS_MacOS = 'Darwin'
 
     Name_Application = 'imetadata'
     SYSTEM_NAME_MISSION_ID = '{system.mission.id}'
@@ -212,6 +213,7 @@ class CResource:
     Name_Switch = 'switch'
 
     Switch_Use_Ready_Flag_File_Name = 'use_ready_flag_file_name'
+    Switch_Inbound_After_QI_Immediately = 'inbound_after_qi_immediately'
 
     Path_MD_Rule_Type = '/root/type'
     Path_MD_Rule_Plugins_Dir = '/root/plugins/dir/plugin'
@@ -219,7 +221,8 @@ class CResource:
 
     Path_Setting_MetaData = 'metadata'
     Path_Setting_MetaData_Plugins_Dir = '{0}.plugins.dir'.format(Path_Setting_MetaData)
-    Path_Setting_MetaData_InBound = '{0}.inbound'.format(Path_Setting_MetaData)
+
+    Path_Setting_MetaData_InBound = '{0}.{1}'.format(Path_Setting_MetaData, Name_InBound)
     Path_Setting_MetaData_InBound_ignore = '{0}.ignore'.format(Path_Setting_MetaData_InBound)
     Path_Setting_MetaData_InBound_ignore_file = '{0}.file'.format(Path_Setting_MetaData_InBound_ignore)
     Path_Setting_MetaData_InBound_ignore_dir = '{0}.dir'.format(Path_Setting_MetaData_InBound_ignore)
@@ -227,6 +230,10 @@ class CResource:
     Path_Setting_MetaData_InBound_Schema_Default = '{0}.default'.format(Path_Setting_MetaData_InBound_Schema)
     Path_Setting_MetaData_InBound_Schema_Special = '{0}.special'.format(Path_Setting_MetaData_InBound_Schema)
     Path_Setting_MetaData_InBound_Switch = '{0}.{1}'.format(Path_Setting_MetaData_InBound, Name_Switch)
+
+    Name_QI = 'qi'
+    Path_Setting_MetaData_QI = '{0}.{1}'.format(Path_Setting_MetaData, Name_QI)
+    Path_Setting_MetaData_QI_Switch = '{0}.{1}'.format(Path_Setting_MetaData_QI, Name_Switch)
 
     Path_Storage_Option_Inbound = 'inbound'
     Path_SO_Inbound_Filter = '{0}.{1}'.format(Path_Storage_Option_Inbound, Name_Filter)
@@ -325,6 +332,15 @@ class CResource:
     ProcStatus_Processing = 2
     ProcStatus_Error = 3
     ProcStatus_WaitConfirm = 9
+
+    IB_Status_QI_InQueue = 1
+    IB_Status_QI_Dir_Scan_Creating = 2
+    IB_Status_QI_Error = 21
+    IB_Status_QI_Processing = 3
+    IB_Status_QI_Finished = 4
+    IB_Status_IB_InQueue = 5
+    IB_Status_IB_Processing = 6
+    IB_Status_IB_Error = 61
 
     ProcType_New = 'new'
     ProcType_Delete = 'delete'

@@ -99,6 +99,14 @@ application = CSettings(
                     {'plugin': ['plugins_8060_custom'], 'keyword': '自定义影像'}
                 ]
             },
+            'qi': {
+                'title': 'quality inspection 质量检验',
+                'switch': {
+                    'title': '开关配置',
+                    'title_inbound_after_qi_immediately': '开关-使用ready.21at标识文件判断一个目录是否可以入库',
+                    'inbound_after_qi_immediately': 'on'
+                }
+            },
             'inbound': {
                 'title': '入库配置',
                 'schema': {

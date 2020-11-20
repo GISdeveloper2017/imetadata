@@ -126,7 +126,7 @@ if __name__ == '__main__':
     print(CSys.get_job_root_dir())
     print(CSys.get_work_root_dir())
     print(CSys.get_execute_os_name())
-    print(platform.system())
+    print('操作系统:{0}'.format(CSys.get_os_name()))
 
     if platform.system() == 'Windows':
         print('Windows系统')

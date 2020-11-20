@@ -83,8 +83,11 @@ class CDMPathInfo(CDMFilePathInfoEx):
         :return:
         """
         db_object_id = CUtils.one_id()
-        db_object_confirm = self.ds_file_or_path.value_by_name(0, 'dsd_object_confirm',
-                                                                   self.Object_Confirm_IUnKnown)
+        db_object_confirm = self.ds_file_or_path.value_by_name(
+            0,
+            'dsd_object_confirm',
+            self.Object_Confirm_IUnKnown
+        )
 
         if (db_object_confirm == self.Object_Confirm_IKnown) or (db_object_confirm == self.Object_Confirm_Maybe):
             db_path_modify_time = self.ds_file_or_path.value_by_name(0, 'dsddirlastmodifytime', '')
@@ -118,9 +121,9 @@ class CDMPathInfo(CDMFilePathInfoEx):
                 where dsdid = :dsdid
                 '''
             CFactory().give_me_db(self.db_server_id).execute(sql_update_path_object, {'dsdid': self.my_id,
-                                                                                          'dsd_object_confirm': object_confirm,
-                                                                                          'fileModifyTime': CUtils.any_2_str(
-                                                                                              self.file_modify_time)})
+                                                                                      'dsd_object_confirm': object_confirm,
+                                                                                      'fileModifyTime': CUtils.any_2_str(
+                                                                                          self.file_modify_time)})
         else:
             sql_insert_object = '''
                 insert into dm2_storage_object(dsoid, dsoobjectname, dsoobjecttype, dsodatatype, dsoalphacode, dsoaliasname, dsoparentobjid) 
@@ -129,7 +132,8 @@ class CDMPathInfo(CDMFilePathInfoEx):
 
             new_dso_id = db_object_id
             scan_file_and_subdir = 0
-            if CUtils.dict_value_by_name(classified_obj.get_information(), classified_obj.Plugins_Info_HasChildObj, self.DB_False) == self.DB_True:
+            if CUtils.dict_value_by_name(classified_obj.get_information(), classified_obj.Plugins_Info_HasChildObj,
+                                         self.DB_False) == self.DB_True:
                 scan_file_and_subdir = 1
 
             sql_update_path_object = '''

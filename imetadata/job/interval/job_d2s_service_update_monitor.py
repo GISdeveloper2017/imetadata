@@ -19,7 +19,7 @@ class job_d2s_service_update_monitor(CTimeJob):
             '''
         )
         if service_list.is_empty():
-            return CResult.merge_result(CResult.Success, '任务执行成功结束！')
+            return CResult.merge_result(CResult.Success, '本次没有需要检查的服务！')
 
         for data_index in range(service_list.size()):
             record_index = data_index
@@ -106,3 +106,11 @@ class job_d2s_service_update_monitor(CTimeJob):
                 )
 
         return CResult.merge_result(CResult.Success, '服务发布监控任务执行成功结束！')
+
+
+if __name__ == '__main__':
+    """
+    Job对象的简洁测试模式
+    创建时, 以sch_center_mission表的scmid, scmParams的内容初始化即可, 调用其execute方法, 即是一次并行调度要运行的主要过程
+    """
+    job_d2s_service_update_monitor('', '').execute()
