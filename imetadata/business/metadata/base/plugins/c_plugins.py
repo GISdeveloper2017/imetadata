@@ -537,11 +537,14 @@ class CPlugins(CResource):
             time_json = parser.metadata.time_information
             time_text = time_json.xpath_one(self.Name_Time, '')
             # 监测time_text是否是合法的日期...
-            if not CUtils.text_is_date_or_datetime(time_text):
+            if (not CUtils.text_is_datetime(time_text)) \
+                    and (not CUtils.text_is_date_day(time_text)):
+                # 从数据库中查询为标准格式，如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
+                time_text_temp = time_text.replace('-', '').replace('/', '').replace('\\', '').replace('.', '').replace('年', '').replace('月', '')
                 # 从ro_global_dim_time表中识别是否有记录，如果有，则获取对应的开始时间、结束时间
                 sql = '''
                 select starttime, endtime from ro_global_dim_time where gdtquickcode ='{0}'
-                '''.format(time_text)
+                '''.format(time_text_temp)
                 ds_time = CFactory().give_me_db(self.file_info.db_server_id).one_row(sql)
                 starttime = ds_time.value_by_name(0, 'starttime', None)
                 endtime = ds_time.value_by_name(0, 'endtime', None)
