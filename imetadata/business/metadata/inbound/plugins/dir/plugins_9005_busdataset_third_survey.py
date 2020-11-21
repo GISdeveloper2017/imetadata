@@ -15,4 +15,5 @@ class plugins_9005_busdataset_third_survey(C21ATBusDataSetPlugins):
         information[self.Plugins_Info_Type] = self.Object_Def_Type_DataSet_Third_Survey
         information[self.Plugins_Info_Code] = '020104'
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_third_survey'
         return information

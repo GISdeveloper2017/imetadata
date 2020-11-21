@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*- 
-# @Time : 2020/11/17 19:32
+# @Time : 2020/11/17 16:30
 # @Author : 赵宇飞
-# @File : distribution_custom_dataset.py
+# @File : distribution_dataset_dem.py
+from imetadata.base.c_result import CResult
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_dataset import \
     distribution_guotu_dataset
 
 
-class distribution_custom_dataset(distribution_guotu_dataset):
+class distribution_dataset_dem(distribution_guotu_dataset):
     """
-    todo 李宪 数据检索分发模块对自定义数据集类型数据
+    todo 李宪 数据检索分发模块对DEM数据集类型数据
     """
 
     def information(self) -> dict:
         info = super().information()
-        info[self.Name_Title] = '自定义数据集'
+        info[self.Name_Title] = 'DEM数据集'
         info['table_name'] = ''
         return info
 

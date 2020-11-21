@@ -20,6 +20,7 @@ class CFilePlugins_GUOTU_Third_Survey(CFilePlugins_GUOTU):
         information[self.Plugins_Info_Type] = self.Object_Def_Type_Third_Survey
         information[self.Plugins_Info_Code] = '020104'
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_third_survey'
         return information
 
     def qa_file_custom(self, parser: CMetaDataParser):

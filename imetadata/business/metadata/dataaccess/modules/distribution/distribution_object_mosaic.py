@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/11/17 10:59
 # @Author : 赵宇飞
-# @File : distribution_mosaic.py
+# @File : distribution_object_mosaic.py
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_object import \
     distribution_guotu_object
 
 
-class distribution_mosaic(distribution_guotu_object):
+class distribution_object_mosaic(distribution_guotu_object):
     """
     邢凯凯 数据检索分发模块对镶嵌类型数据
     """

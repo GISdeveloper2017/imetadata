@@ -427,3 +427,5 @@ class CResource:
     Object_Def_Type_DataSet_Guoqing_Scene = 'business_data_set_guoqing_scene'  # 国情影像-整景纠正数据集
     Object_Def_Type_DataSet_Guoqing_Frame = 'business_data_set_guoqing_frame'  # 国情影像-分幅影像数据集
     Object_Def_Type_DataSet_Custom = 'business_data_set_custom'  # 自定义影像数据集
+
+    Plugins_Info_Module_Distribute_Engine = 'module.distribute.engine'

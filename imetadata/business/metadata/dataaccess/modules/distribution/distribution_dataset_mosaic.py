@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*- 
-# @Time : 2020/11/17 16:30
+# @Time : 2020/11/17 17:00
 # @Author : 赵宇飞
-# @File : distribution_dem_dataset.py
-from imetadata.base.c_result import CResult
+# @File : distribution_dataset_mosaic.py
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_dataset import \
     distribution_guotu_dataset
 
 
-class distribution_dem_dataset(distribution_guotu_dataset):
+class distribution_dataset_mosaic(distribution_guotu_dataset):
     """
-    todo 李宪 数据检索分发模块对DEM数据集类型数据
+    todo 邢凯 数据检索分发模块对镶嵌影像数据集类型数据
     """
 
     def information(self) -> dict:
         info = super().information()
-        info[self.Name_Title] = 'DEM数据集'
+        info[self.Name_Title] = '镶嵌影像数据集'
         info['table_name'] = ''
         return info
 

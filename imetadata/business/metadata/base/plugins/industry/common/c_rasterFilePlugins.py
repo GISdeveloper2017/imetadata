@@ -22,6 +22,7 @@ class CRasterFilePlugins(CFilePlugins):
         information[self.Plugins_Info_SpatialEngine] = self.MetaDataEngine_Raster  # 通用的影像数据的空间引擎（解析自身元数据json用的）
         information[self.Plugins_Info_Group_Name] = self.DataGroup_Raster
         information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_custom'  # 即时服务中通用影像被认为自定义影像
         return information
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
