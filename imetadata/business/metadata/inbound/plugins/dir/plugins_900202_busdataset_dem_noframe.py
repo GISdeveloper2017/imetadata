@@ -15,4 +15,5 @@ class plugins_900202_busdataset_dem_noframe(C21ATBusDataSetPlugins):
         information[self.Plugins_Info_Type] = self.Object_Def_Type_DataSet_DEM_NoFrame
         information[self.Plugins_Info_Code] = '02010602'
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_dem'
         return information

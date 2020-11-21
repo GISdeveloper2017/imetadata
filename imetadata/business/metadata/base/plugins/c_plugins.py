@@ -175,7 +175,7 @@ class CPlugins(CResource):
         information[self.Plugins_Info_HasChildObj] = self.DB_False
         information[self.Plugins_Info_Group_Name] = None
         information[self.Plugins_Info_Group_Title] = None
-
+        information[self.Plugins_Info_Module_Distribute_Engine] = None # 同步的引擎，值是发布同步用的类的名字
         return information
 
     def get_id(self) -> str:

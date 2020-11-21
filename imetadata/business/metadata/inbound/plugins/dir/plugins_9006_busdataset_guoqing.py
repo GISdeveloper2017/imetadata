@@ -15,4 +15,5 @@ class plugins_9006_busdataset_guoqing(C21ATBusDataSetPlugins):
         information[self.Plugins_Info_Type] = self.Object_Def_Type_DataSet_Guoqing
         information[self.Plugins_Info_Code] = '020103'
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_guoqing'
         return information

@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*- 
-# @Time : 2020/11/17 17:02
+# @Time : 2020/11/17 17:03
 # @Author : 赵宇飞
-# @File : distribution_ortho_dataset.py
+# @File : distribution_dataset_guoqing.py
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_dataset import \
     distribution_guotu_dataset
 
 
-class distribution_ortho_dataset(distribution_guotu_dataset):
+class distribution_dataset_guoqing(distribution_guotu_dataset):
     """
-    todo 邢凯 数据检索分发模块对单景正射数据集类型数据
+    todo 邢凯 数据检索分发模块对国情影像数据集类型数据
     """
 
     def information(self) -> dict:
         info = super().information()
-        info[self.Name_Title] = '单景正射数据集'
-        info['table_name'] = 'ap3_product_rsp_os_whole'
+        info[self.Name_Title] = '国情影像数据集'
+        info['table_name'] = 'ap3_product_rsp_gq_whole'
         return info
 
     def get_sync_dict(self) -> dict:

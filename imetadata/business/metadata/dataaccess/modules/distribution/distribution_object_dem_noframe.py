@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/11/17 10:53
 # @Author : 赵宇飞
-# @File : distribution_dem_noframe.py
+# @File : distribution_object_dem_noframe.py
 from imetadata.base.c_json import CJson
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_object import \
     distribution_guotu_object
 
 
-class distribution_dem_noframe(distribution_guotu_object):
+class distribution_object_dem_noframe(distribution_guotu_object):
     """
     李宪 数据检索分发模块对DEM非分幅类型数据
     """

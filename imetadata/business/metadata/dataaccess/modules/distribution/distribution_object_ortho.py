@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/11/17 11:07
 # @Author : 赵宇飞
-# @File : distribution_ortho.py
+# @File : distribution_object_ortho.py
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_object import \
     distribution_guotu_object
 
 
-class distribution_ortho(distribution_guotu_object):
+class distribution_object_ortho(distribution_guotu_object):
     """
     邢凯凯 数据检索分发模块对单景正射类型数据
     """

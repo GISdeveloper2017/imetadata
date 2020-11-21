@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*- 
-# @Time : 2020/11/17 10:51
+# @Time : 2020/11/11 15:30
 # @Author : 赵宇飞
-# @File : distribution_dem.py
+# @File : distribution_object_dom.py
 from imetadata.base.c_json import CJson
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_object import \
     distribution_guotu_object
+from imetadata.database.c_factory import CFactory
 
 
-class distribution_dem(distribution_guotu_object):
+class distribution_object_dom(distribution_guotu_object):
     """
-    李宪 数据检索分发模块对DEM类型数据
+    李宪 数据检索分发模块对DOM类型数据
     """
 
     def information(self) -> dict:
         info = super().information()
-        info[self.Name_Title] = 'DEM'
-        info['table_name'] = 'ap3_product_rsp_sdem_detail'
+        info[self.Name_Title] = 'DOM'
+        info['table_name'] = 'ap3_product_rsp_sdom_detail'
         return info
 
     def get_sync_dict_list(self, insert_or_updata) -> list:
@@ -67,10 +68,10 @@ class distribution_dem(distribution_guotu_object):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'fno', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='th']"), self.DB_True)
         if CUtils.text_is_alpha(object_name[0:1]):
-            # self.add_value_to_sync_dict_list(
-            #     sync_dict_list, 'hrowno', object_name[0:1], self.DB_False)
-            # self.add_value_to_sync_dict_list(
-            #     sync_dict_list, 'hcolno', object_name[1:3], self.DB_False)
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'hrowno', object_name[0:1], self.DB_True)
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'hcolno', object_name[1:3], self.DB_True)
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'scalecode', object_name[3:4], self.DB_True)
             self.add_value_to_sync_dict_list(
@@ -100,30 +101,6 @@ class distribution_dem(distribution_guotu_object):
         # sync_dict['scale']  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'mainrssource', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='wxmc']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'metafilename', self._dataset.value_by_name(0, 'dsometadataxml', ''), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'networksize',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据生产单位名']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'projinfo',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据版权单位名']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'zonetype',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据出版单位名']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'centerline', self._dataset.value_by_name(0, 'dsometadataxml', ''), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'zoneno',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据生产单位名']"), self.DB_False)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'coordinateunit',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据版权单位名']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'demname',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据出版单位名']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'demstandard', self._dataset.value_by_name(0, 'dsometadataxml', ''), self.DB_True)
         # 插件处理字段
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''), self.DB_False)
@@ -162,10 +139,10 @@ class distribution_dem(distribution_guotu_object):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'fno', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='图号']"), self.DB_True)
         if CUtils.text_is_alpha(object_name[0:1]):
-            # self.add_value_to_sync_dict_list(
-            #     sync_dict_list, 'hrowno', object_name[0:1], self.DB_True)
-            # self.add_value_to_sync_dict_list(
-            #     sync_dict_list, 'hcolno', object_name[1:3], self.DB_True)
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'hrowno', object_name[0:1], self.DB_True)
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'hcolno', object_name[1:3], self.DB_True)
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'scalecode', object_name[3:4], self.DB_True)
             self.add_value_to_sync_dict_list(
@@ -234,10 +211,10 @@ class distribution_dem(distribution_guotu_object):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'fno', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='图号']"), self.DB_True)
         if CUtils.text_is_alpha(object_name[0:1]):
-            # self.add_value_to_sync_dict_list(
-            #     sync_dict_list, 'hrowno', object_name[0:1], self.DB_True)
-            # self.add_value_to_sync_dict_list(
-            #     sync_dict_list, 'hcolno', object_name[1:3], self.DB_True)
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'hrowno', object_name[0:1], self.DB_True)
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'hcolno', object_name[1:3], self.DB_True)
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'scalecode', object_name[3:4], self.DB_True)
             self.add_value_to_sync_dict_list(
@@ -245,10 +222,10 @@ class distribution_dem(distribution_guotu_object):
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'colno', object_name[7:10], self.DB_True)
         # sync_dict['expandextent']  # 为空
-        # DATE数据未进行质检，可能会错误#sync_dict['pupdatedate'] = "'{0}'".format(metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='产品更新日期']"))
+        # 数据未进行质检，可能会错误#sync_dict['pupdatedate'] = "'{0}'".format(metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='产品更新日期']"))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'pversion', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='产品的版本']"), self.DB_True)
-        # DATE数据未进行质检，可能会错误#sync_dict['publishdate'] = "'{0}'".format(metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='出版日期']"))
+        # 数据未进行质检，可能会错误#sync_dict['publishdate'] = "'{0}'".format(metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='出版日期']"))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dataformat', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据格式']"), self.DB_True)
         self.add_value_to_sync_dict_list(

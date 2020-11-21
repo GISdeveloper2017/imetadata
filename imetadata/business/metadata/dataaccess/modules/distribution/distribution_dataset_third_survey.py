@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/11/17 17:02
 # @Author : 赵宇飞
-# @File : distribution_third_survey_dataset.py
+# @File : distribution_dataset_third_survey.py
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_dataset import \
     distribution_guotu_dataset
 
 
-class distribution_third_survey_dataset(distribution_guotu_dataset):
+class distribution_dataset_third_survey(distribution_guotu_dataset):
     """
     todo 邢凯 数据检索分发模块对三调影像数据集类型数据
     """
