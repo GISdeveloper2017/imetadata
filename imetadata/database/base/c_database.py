@@ -35,15 +35,18 @@ class CDataBase(CResource):
     DATABASE_POSTGRESQL = 'postgresql'
     DATABASE_MYSQL = 'mysql'
 
-    __db_conn_id__ = ''
-    __db_conn_type__ = ''
+    _db_conn_id = ''
+    _db_conn_type = ''
 
-    __db_conn_host__ = ''
-    __db_conn_port__ = ''
-    __db_conn_name__ = ''
-    __db_conn_username__ = ''
-    __db_conn_password_native__ = ''
-    __db_conn_password__ = ''
+    _db_conn_host = ''
+    _db_conn_port = ''
+    _db_conn_database = ''
+    _db_conn_schema: str = ''
+    _db_conn_username = ''
+    _db_conn_password_native = ''
+    _db_conn_password = ''
+
+    _db_column_list_define = None
 
     def __init__(self, database_option):
         """
@@ -51,29 +54,40 @@ class CDataBase(CResource):
         :param database_option:
         """
         self.__sql = self._create_default_sql()
+        self._db_column_list_define = list()
 
-        self.__db_conn_id__ = CUtils.dict_value_by_name(database_option, self.Name_ID, self.DB_Server_ID_Default)
-        self.__db_conn_type__ = CUtils.dict_value_by_name(database_option, self.Name_Type, self.DB_Type_Postgresql)
-        self.__db_conn_host__ = CUtils.dict_value_by_name(database_option, CResource.Name_Host, self.Host_LocalHost)
-        self.__db_conn_port__ = CUtils.dict_value_by_name(database_option, CResource.Name_Port,
-                                                          CResource.Port_Postgresql_Default)
-        self.__db_conn_name__ = CUtils.dict_value_by_name(database_option, CResource.Name_DataBase, '')
-        self.__db_conn_username__ = CUtils.dict_value_by_name(database_option, CResource.Name_UserName, '')
-        self.__db_conn_password_native__ = CUtils.dict_value_by_name(database_option, CResource.Name_Password, '')
-        self.__db_conn_password__ = urllib.parse.quote_plus(self.__db_conn_password_native__)
-        self.__init_db__(database_option)
+        self._db_conn_id = CUtils.dict_value_by_name(database_option, self.Name_ID, self.DB_Server_ID_Default)
+        self._db_conn_type = CUtils.dict_value_by_name(database_option, self.Name_Type, self.DB_Type_Postgresql)
+        self._db_conn_host = CUtils.dict_value_by_name(database_option, CResource.Name_Host, self.Host_LocalHost)
+        self._db_conn_port = CUtils.dict_value_by_name(database_option, CResource.Name_Port,
+                                                       CResource.Port_Postgresql_Default)
+        self._db_conn_database = CUtils.dict_value_by_name(database_option, CResource.Name_DataBase, '')
+        self._db_conn_schema = CUtils.dict_value_by_name(database_option, CResource.Name_Schema, CResource.Name_Public)
+        self._db_conn_username = CUtils.dict_value_by_name(database_option, CResource.Name_UserName, '')
+        self._db_conn_password_native = CUtils.dict_value_by_name(database_option, CResource.Name_Password, '')
+        self._db_conn_password = urllib.parse.quote_plus(self._db_conn_password_native)
+        self._init_db(database_option)
 
-    def __init_db__(self, database_option):
+    def _init_db(self, database_option):
+        """
+        在这里对数据库常见的字段进行初始化
+        :param database_option:
+        :return:
+        """
         pass
 
-    def db_connection(self):
+    def _db_connection(self):
         return ''
+
+    @property
+    def db_column_list_define(self) -> list:
+        return self._db_column_list_define
 
     @property
     def sql(self) -> CSql:
         return self.__sql
 
-    def __prepare_params_of_execute_sql__(self, engine, sql, params):
+    def _prepare_params_of_execute_sql(self, engine, sql, params):
         """
         处理和优化传入的参数
         todo 还不支持blob字段的入库, 在需要时去实现
@@ -99,6 +113,9 @@ class CDataBase(CResource):
                     new_params[exe_param_name] = None
             return new_params
 
+    def table_info(self, table_name: str) -> dict:
+        return None
+
     def one_value(self, sql, params=None, default_value=None):
         object_copy_stat_dataset = self.one_row(sql, params)
 
@@ -121,7 +138,7 @@ class CDataBase(CResource):
             session_maker = sessionmaker(bind=eng)
             session = session_maker()
             try:
-                cursor = session.execute(sql, self.__prepare_params_of_execute_sql__(eng, sql, params))
+                cursor = session.execute(sql, self._prepare_params_of_execute_sql(eng, sql, params))
                 data = cursor.fetchone()
                 if data is None:
                     return CDataSet()
@@ -145,11 +162,11 @@ class CDataBase(CResource):
             session_maker = sessionmaker(bind=eng)
             session = session_maker()
             try:
-                cursor = session.execute(sql, self.__prepare_params_of_execute_sql__(eng, sql, params))
+                cursor = session.execute(sql, self._prepare_params_of_execute_sql(eng, sql, params))
                 data = cursor.fetchall()
                 return CDataSet(data)
             except:
-                raise DBSQLExecuteException(self.__db_conn_id__, sql)
+                raise DBSQLExecuteException(self._db_conn_id, sql)
             finally:
                 session.close()
         finally:
@@ -167,7 +184,7 @@ class CDataBase(CResource):
             session_maker = sessionmaker(bind=eng)
             session = session_maker()
             try:
-                cursor = session.execute(sql, self.__prepare_params_of_execute_sql__(eng, sql, params))
+                cursor = session.execute(sql, self._prepare_params_of_execute_sql(eng, sql, params))
                 session.commit()
                 return True
             except Exception as ee:
@@ -196,9 +213,9 @@ class CDataBase(CResource):
         :return:
         """
         try:
-            return create_engine(self.db_connection(), echo=True, max_overflow=5)
+            return create_engine(self._db_connection(), echo=True, max_overflow=5)
         except:
-            raise DBLinkException(self.__db_conn_id__)
+            raise DBLinkException(self._db_conn_id)
 
     def give_me_session(self, engine_obj: Engine = None):
         """
@@ -233,7 +250,7 @@ class CDataBase(CResource):
         :param params:
         :return:
         """
-        session.execute(sql, self.__prepare_params_of_execute_sql__(session.get_bind(), sql, params))
+        session.execute(sql, self._prepare_params_of_execute_sql(session.get_bind(), sql, params))
 
     def session_commit(self, session: Session):
         """

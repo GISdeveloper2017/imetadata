@@ -105,6 +105,8 @@ class CResource:
     Name_Total = 'total'
     Name_Data = 'data'
     Name_DataBase = 'database'
+    Name_Schema = 'schema'
+    Name_Public = 'public'
     Name_DataBases = 'databases'
     Name_Item = 'item'
     Name_Items = 'items'
@@ -192,10 +194,15 @@ class CResource:
     Name_InBound = 'inbound'
     Name_OutBound = 'outbound'
 
+    Name_Columns = 'columns'
+    Name_PrimaryKey = 'primarykey'
     Name_DataType = 'datatype'
     Name_Width = 'width'
     Name_SQL = 'sql'
     Name_NotNull = 'notnull'
+
+    Name_Get = 'get'
+    Name_Set = 'set'
 
     Name_XPath = 'xpath'
     Name_Attr_Name = 'attr_name'
@@ -370,6 +377,42 @@ class CResource:
     DataGroup_Raster_DataSet = 'raster_dataset'
     DataGroup_Vector = 'vector'
     DataGroup_Vector_DataSet = 'vector_dataset'
+
+    DataType_String = 1
+    DataType_DateTime = 2
+    DataType_Numeric = 3
+    DataType_Bool = 4
+    DataType_Integer = 5
+
+    DataType_Text = 21
+    DataType_Binary = 22
+
+    DataType_Geometry = 30
+    DataType_Point = 31
+    DataType_PolyLine = 32
+    # ...
+
+    DataType_Other = 40
+    DataType_XML = 41
+    DataType_Json = 42
+    DataType_Array = 43
+    # ...
+
+    DataValueType_Value = 1
+    DataValueType_File = 2
+    DataValueType_SQL = 3
+    DataValueType_Array = 4
+    DataValueType_Array_String = 41
+    DataValueType_Array_DateTime = 42
+    # ...
+    DataValueType_Geometry = 5
+    DataValueType_Geometry_Srid = 51
+    DataValueType_Geometry_NoSrid = 52
+
+    FileFormat_XML = 'xml'
+    FileFormat_Json = 'json'
+    FileFormat_TXT = 'txt'
+    FileFormat_Binary = 'bin'
 
     Path_IB_Root = 'root'
     Path_IB_Option = '{0}.option'.format(Path_IB_Root)
