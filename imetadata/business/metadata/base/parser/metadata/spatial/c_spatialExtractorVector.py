@@ -2,13 +2,14 @@
 # @Time : 2020/10/2 20:35 
 # @Author : 王西亚 
 # @File : c_mdExtractorVector.py
+from osgeo import osr
+
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.spatial.c_spatialExtractor import CSpatialExtractor
-from osgeo import osr
 
 
 class CSpatialExtractorVector(CSpatialExtractor):

@@ -8,7 +8,6 @@ from abc import abstractmethod
 from imetadata.base.c_file import CFile
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
-from imetadata.base.c_time import CTime
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.base.exceptions import FileContentWapperNotExistException

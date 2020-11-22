@@ -2,10 +2,7 @@
 # @Time : 2020/9/21 17:35 
 # @Author : 王西亚 
 # @File : c_filePlugins_guotu.py
-from abc import abstractmethod
 
-from imetadata.base.c_file import CFile
-from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.c_filePlugins import CFilePlugins
 

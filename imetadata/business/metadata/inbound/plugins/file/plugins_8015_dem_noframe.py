@@ -8,7 +8,6 @@ from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_21at import \
     CFilePlugins_GUOTU_21AT
-from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_dem import CFilePlugins_GUOTU_DEM
 
 
 class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):

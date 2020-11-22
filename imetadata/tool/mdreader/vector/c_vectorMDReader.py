@@ -2,7 +2,6 @@
 # @Time : 2020/9/18 09:56 
 # @Author : 王西亚 
 # @File : c_vectorMDReader.py
-import time
 
 import gdal
 import psutil
@@ -12,7 +11,6 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
-from imetadata.base.c_sys import CSys
 from imetadata.tool.mdreader.c_mdreader import CMDReader
 
 

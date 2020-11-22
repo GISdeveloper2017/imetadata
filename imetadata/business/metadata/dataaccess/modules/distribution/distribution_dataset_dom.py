@@ -2,7 +2,6 @@
 # @Time : 2020/11/11 18:25
 # @Author : 赵宇飞
 # @File : distribution_dataset_dom.py
-from imetadata.base.c_result import CResult
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_dataset import \
     distribution_guotu_dataset
 

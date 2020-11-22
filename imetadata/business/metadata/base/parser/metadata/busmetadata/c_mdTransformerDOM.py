@@ -3,15 +3,17 @@
 # @Author : 王西亚
 # @File : c_mdTransformerDOM.py
 
-from imetadata.base.c_result import CResult
-from imetadata.base.c_utils import CUtils
-from imetadata.base.c_xml import CXml
-from imetadata.base.c_file import CFile
-from imetadata.base.c_sys import CSys
-from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformer import CMDTransformer
+import re
+
 import pypyodbc
 import xlrd
-import re
+
+from imetadata.base.c_file import CFile
+from imetadata.base.c_result import CResult
+from imetadata.base.c_sys import CSys
+from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
+from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformer import CMDTransformer
 
 
 class CMDTransformerDOM(CMDTransformer):

@@ -2,9 +2,7 @@
 # @Time : 2020/10/17 13:14 
 # @Author : 王西亚 
 # @File : c_mdTransformer.py
-from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
-from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.c_parser import CParser

@@ -2,6 +2,8 @@
 # @Time : 2020/9/27 10:15 
 # @Author : 王西亚 
 # @File : c_audit.py
+import copy
+
 from imetadata.base.c_file import CFile
 from imetadata.base.c_gdalUtils import CGdalUtils
 from imetadata.base.c_json import CJson
@@ -9,7 +11,6 @@ from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.database.c_factory import CFactory
-import copy
 
 
 class CAudit(CResource):

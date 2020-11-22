@@ -1,18 +1,19 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
 
-import os
-import sys
-import datetime
-from osgeo import ogr, gdal, osr
-import copy
-import uuid
 import codecs
-from imetadata.settings import application
+import copy
+import datetime
+import os
+import uuid
+
+from osgeo import ogr, gdal, osr
+
 from imetadata.base.c_json import CJson
+from imetadata.base.c_logger import CLogger
 from imetadata.business.data2service.service import c_geo_util as geoUtils
 from imetadata.business.data2service.service import c_mapfileHelper as mapfileHelper
-from imetadata.base.c_logger import CLogger
+from imetadata.settings import application
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 

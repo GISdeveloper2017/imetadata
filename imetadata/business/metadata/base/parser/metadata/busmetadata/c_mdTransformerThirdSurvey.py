@@ -2,12 +2,13 @@
 # @Time : 2020/10/27 14:39
 # @Author : 赵宇飞
 # @File : c_mdTransformerThirdSurvey.py
+import pypyodbc
+
 from imetadata.base.c_result import CResult
+from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
-from imetadata.base.c_sys import CSys
 from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformer import CMDTransformer
-import pypyodbc
 
 
 class CMDTransformerThirdSurvey(CMDTransformer):

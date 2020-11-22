@@ -4,7 +4,6 @@
 # @File : c_pluginsMng.py
 from imetadata import settings
 from imetadata.base.c_file import CFile
-from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_object import CObject
 from imetadata.base.c_resource import CResource

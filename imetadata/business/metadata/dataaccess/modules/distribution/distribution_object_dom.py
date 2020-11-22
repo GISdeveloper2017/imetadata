@@ -7,7 +7,6 @@ from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_object import \
     distribution_guotu_object
-from imetadata.database.c_factory import CFactory
 
 
 class distribution_object_dom(distribution_guotu_object):

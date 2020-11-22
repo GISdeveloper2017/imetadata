@@ -4,17 +4,16 @@
 # @File : c_rasterMDReader.py
 
 
-from osgeo import gdal, osr
 import math
-import time
+
 import psutil
-from imetadata.base.c_sys import CSys
+from osgeo import gdal, osr
+
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
 from imetadata.tool.mdreader.c_mdreader import CMDReader
-from multiprocessing import Process
 
 
 class CRasterMDReader(CMDReader):

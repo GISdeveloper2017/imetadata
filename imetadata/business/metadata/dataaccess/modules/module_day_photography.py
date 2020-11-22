@@ -2,7 +2,6 @@
 # @Time : 2020/10/28 15:58 
 # @Author : 王西亚 
 # @File : module_distribution.py
-from imetadata.base.c_result import CResult
 from imetadata.business.metadata.dataaccess.base.c_daModule import CDAModule
 
 

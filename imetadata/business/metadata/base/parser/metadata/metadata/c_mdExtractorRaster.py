@@ -7,7 +7,6 @@ from imetadata.base.c_processUtils import CProcessUtils
 from imetadata.base.c_result import CResult
 from imetadata.business.metadata.base.parser.metadata.metadata.c_mdExtractor import CMDExtractor
 from imetadata.tool.mdreader.raster.c_rasterMDReader import CRasterMDReader
-from multiprocessing import Process
 
 
 class CMDExtractorRaster(CMDExtractor):

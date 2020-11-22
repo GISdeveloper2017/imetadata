@@ -4,9 +4,7 @@
 # @File : c_satFilePlugins_gf1_wfv.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
-from imetadata.base.c_time import CTime
 from imetadata.base.c_utils import CUtils
-from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
 

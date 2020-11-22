@@ -2,12 +2,13 @@
 # @Time : 2020/10/25 15:21
 # @Author : 赵宇飞
 # @File : plugins_8050_guoqing_scene_noblock.py
+import re
+
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_guoqing import \
     CFilePlugins_GUOTU_GuoQing
-from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
-import re
 
 
 class plugins_8050_guoqing_scene_noblock(CFilePlugins_GUOTU_GuoQing):

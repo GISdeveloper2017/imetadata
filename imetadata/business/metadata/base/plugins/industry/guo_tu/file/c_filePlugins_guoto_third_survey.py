@@ -2,13 +2,13 @@
 # @Time : 2020/10/20 11:21
 # @Author : 赵宇飞
 # @File : c_filePlugins_guoto_third_survey.py
+from imetadata.base.c_file import CFile
+from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerThirdSurvey import \
     CMDTransformerThirdSurvey
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.guo_tu.c_filePlugins_guotu import CFilePlugins_GUOTU
-from imetadata.base.c_file import CFile
-from imetadata.base.c_result import CResult
 from imetadata.database.c_factory import CFactory
 
 

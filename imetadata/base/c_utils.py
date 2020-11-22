@@ -5,13 +5,13 @@ from __future__ import absolute_import
 
 import re
 import uuid
+from datetime import datetime
 from string import Template
 
 import pinyin
 
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_time import CTime
-from datetime import datetime
 
 
 class CUtils(CResource):
