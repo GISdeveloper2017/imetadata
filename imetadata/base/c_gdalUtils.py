@@ -8,8 +8,6 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_processUtils import CProcessUtils
 # import numpy
 from imetadata.base.c_resource import CResource
-from imetadata.base.c_sys import CSys
-from imetadata.base.c_utils import CUtils
 
 
 class CGdalUtils(CResource):
@@ -69,8 +67,16 @@ class CGdalUtils(CResource):
             raster_ds = gdal.Open(raster_file_with_path, gdal.GA_ReadOnly)
             if raster_ds is None:
                 return False
-            elif not CUtils.equal_ignore_case(CSys.get_os_name(), cls.OS_MacOS):
-                """测试需要numpy的包，同时需要检验gdal安装环境的正确性, 没有安装则会band.ReadAsArray读取异常"""
+            else:
+                """
+                测试发现: 安装gdal for python包时, 要注意如下事项:
+                1. gdal for python的版本, 要与本机安装的GDAL版本统一
+                1. 在安装gdal for python前, 按如下顺序安装包:
+                    1. numpy
+                    1. wheel
+                1. 上述安装顺序如果有误, 可能会导致band.ReadAsArray读取异常
+                1. 出现异常后, 卸载上述包, 重新按顺序安装可解决问题
+                """
                 band_count = raster_ds.RasterCount
                 if band_count > 0:
                     band = raster_ds.GetRasterBand(band_count)
@@ -79,15 +85,14 @@ class CGdalUtils(CResource):
                     image_size_y = raster_ds.RasterYSize
                     block_size_x = image_size_x - sample_width
                     block_size_y = image_size_y - sample_height
-                    data2 = band.ReadAsArray(xoff=block_size_x, yoff=block_size_y, win_xsize=sample_width, win_ysize=sample_height)
+                    data2 = band.ReadAsArray(xoff=block_size_x, yoff=block_size_y, win_xsize=sample_width,
+                                             win_ysize=sample_height)
                     band = None
                     raster_ds = None
                     if data1 is not None and data2 is not None:
                         return True
                     else:
                         return False
-            else:
-                return True
         except Exception as error:
             print(error.__str__())
             return False
