@@ -69,6 +69,7 @@ class CGdalUtils(CResource):
                 return False
             else:
                 """
+                王西亚提示: 要将该内容加入到系统的test中
                 测试发现: 安装gdal for python包时, 要注意如下事项:
                 1. gdal for python的版本, 要与本机安装的GDAL版本统一
                 1. 在安装gdal for python前, 按如下顺序安装包:
