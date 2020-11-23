@@ -74,6 +74,7 @@ class module_distribution(CDAModule):
                 --dm2_storage_object_def.dsodtype,
                 dm2_storage_object_def.dsodcode,
                 dm2_storage_file.dsfid as query_file_id,
+                dm2_storage_directory.dsddirlastmodifytime as query_directory_lastmodifytime,
                 dm2_storage_directory.dsdid as query_directory_id,
                 dm2_storage_object.* 
             FROM

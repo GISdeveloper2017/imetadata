@@ -136,7 +136,9 @@ class distribution_guotu_object(distribution_guotu):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'enddate', dso_time_json.xpath_one('end_time', ''), self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'imagedate', dso_time_json.xpath_one('time', ''), self.DB_True)
+            sync_dict_list, 'imagedate',
+            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),
+            self.DB_True)
         # datacount:数据数量
         # secrecylevel:密级
         # regioncode:行政区码
@@ -166,7 +168,9 @@ class distribution_guotu_object(distribution_guotu):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'thumbimg', object_table_data.value_by_name(0, 'dso_thumb', ''), self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'producetime', dso_time_json.xpath_one('time', ''), self.DB_True)
+            sync_dict_list, 'producetime',
+            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),
+            self.DB_True)
         now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'addtime', now_time, self.DB_True)
@@ -199,6 +203,9 @@ class distribution_guotu_object(distribution_guotu):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsfid', object_table_data.value_by_name(0, 'query_file_id', ''), self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'imagedatetag', dso_time_json.xpath_one('time', ''), self.DB_True)
+            sync_dict_list, 'imagedatetag',
+            CUtils.to_day_format(dso_time_json.xpath_one('time', ''),
+                                 dso_time_json.xpath_one('time', '')).replace(r'[-/\.年月日]', '')[:8]
+            , self.DB_True)
 
         return sync_dict_list

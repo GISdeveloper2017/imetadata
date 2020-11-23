@@ -145,7 +145,7 @@ class distribution_guotu_dataset(distribution_guotu):
             sync_dict_list, 'dsfid', object_table_data.value_by_name(0, 'query_file_id', ''), self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedatetag',
-            dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date'),
+            dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date').replace(r'[-/\.年月日]', '')[:8],
             self.DB_True)
 
         return sync_dict_list

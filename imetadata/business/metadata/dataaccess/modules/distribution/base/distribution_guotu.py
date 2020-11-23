@@ -139,10 +139,10 @@ class distribution_guotu(distribution_base):
         '''.format(table_name, sql_temporary[:-1], oid)
         return updata_sql
 
-    def add_value_to_sync_dict_list(self, sync_dict_list, field_name, field_value, field_type):
+    def add_value_to_sync_dict_list(self, sync_dict_list, field_name, field_value, field_type=True):
         """
         本方法构建同步用的配置列表
-         """
+        """
         sync_dict_list.extend([
             {
                 'field_name': field_name,

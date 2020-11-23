@@ -261,14 +261,15 @@ class CUtils(CResource):
             return True
         return False
 
-    def standard_datetime_format(date_text: str) -> datetime:
+    def standard_datetime_format(date_text: str, default_date) -> datetime:
         """
         将日期或日期时间格式化为YYYY-MM-DD HH:MM:SS格式，如20201022,2020/10/22格式化为2020-10-22，
             20201022 22:22:22.345,2020/10/22 22:22:22.345格式化为2020-10-22 22:22:22.345, 2020-10-22T22:22:22.000007
-        @param switch_text:
+        @param date_text:
+        @param default_date:  CTime.now()
         @return:
         """
-        default_date = CTime.now()
+        # default_date = CTime.now()
         try:
             time_format_real = '%Y-%m-%d %H:%M:%S'
             time_format = ["%Y{0}", "%Y{0}%m{1}", "%Y{0}%m{1}%d{2}{3}%H:%M:%S{4}", "%Y{0}%m{1}%d{2}", "%Y",
@@ -515,6 +516,30 @@ class CUtils(CResource):
         return text
 
     @classmethod
+    def to_day_format(cls, text, default_value):
+        """
+        文本转日（只对年、月转换），日不用转，只会格式化,
+            2020  2020年  转为 20200101
+            202009 2020-09 2020/09  2020年9月   转为20200901
+        @param text:
+        @param default_value:
+        @return:
+        """
+        # default_date = CTime.now()
+        date_value = cls.standard_datetime_format(text, default_value)
+        if CUtils.equal_ignore_case(date_value, default_value):
+            return default_value
+        date_value = date_value.replace('-', '')
+        day_format = ''
+        if CUtils.len_of_text(date_value) == 4:
+            day_format = '{0}0101'.format(date_value)
+        elif CUtils.len_of_text(date_value) == 6:
+            day_format = '{0}01'.format(date_value)
+        else:
+            day_format = date_value
+        return day_format
+
+    @classmethod
     def split(cls, split_text: str, split_sep_list: list) -> list:
         """
         根据指定的分隔符数组, 对指定文本进行分割
@@ -562,4 +587,12 @@ class CUtils(CResource):
 
 
 if __name__ == '__main__':
+    text = '2020年3月'
+    text = '2020年3月12日'
+    # text = '2020.3'
+    # text = '2020Q1'
+    # text = '2020/3/1 12:12:12'
+    text_format = CUtils.to_day_format(text, text)
+    # text_format = CUtils.standard_datetime_format(text, text).replace('-', '')
+    print(text_format)
     pass
