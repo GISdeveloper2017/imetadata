@@ -3,6 +3,11 @@
 # @Author : 赵宇飞
 # @File : distribution_dataset_gdb.py
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu import distribution_guotu
+import datetime
+from imetadata.base.c_json import CJson
+from imetadata.base.c_result import CResult
+from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
 
 
 class distribution_dataset_gdb(distribution_guotu):
@@ -13,15 +18,114 @@ class distribution_dataset_gdb(distribution_guotu):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = 'GDB数据集'
-        info['table_name'] = ''
+        info['table_name'] = 'ap3_product_rsp_vp_ds'
         return info
 
-    def get_sync_dict(self) -> dict:
+    def get_sync_dict_list(self, insert_or_updata) -> list:
         """
-        本方法的写法为强规则，字典key为字段名，字典value为对应的值或者sql语句，在写时需要加语句号，子查询语句加(),值加‘’
-        子查询：sync_dict['字段名']=“(select 字段 from 表 where id=‘1’)”
-        值：sync_dict['字段名']=“‘值’”
-        同时，配置插件方法时请在information()方法中添加info['table_name'] = '表名'的字段
+        insert_or_updata 中 self.DB_True为insert，DB_False为updata
+        本方法的写法为强规则，调用add_value_to_sync_dict_list配置
+        第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
         """
-        sync_dict = dict()
-        return sync_dict
+        sync_dict_list = list()
+        object_table_id = self._obj_id  # 获取oid
+        object_table_data = self._dataset
+        if insert_or_updata:  # 如果为更新，则不需要主键
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'aprid', object_table_id)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'productname', object_table_data.value_by_name(0, 'dsoobjectname', ''))
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'producttype', object_table_data.value_by_name(0, 'dsodcode', ''))
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'dsodatatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
+        now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'addtime', now_time)
+        if insert_or_updata:
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'queryable', '1')
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'isdel', '0')
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'aprvdid1', object_table_id)
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'dstype', '1')
+
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'dsnamed', object_table_data.value_by_name(0, 'dsoobjectname', ''))
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'busitype', object_table_data.value_by_name(0, 'dsoobjecttype', ''))
+
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'dsdid', object_table_data.value_by_name(0, 'query_directory_id', ''))
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'dsfid', object_table_data.value_by_name(0, 'query_file_id', ''))
+
+        # 时间信息
+        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
+            sync_dict_list, 'begdate', object_table_data.value_by_name(0, 'query_directory_lastmodifytime', ''))
+
+        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
+            sync_dict_list, 'enddate', object_table_data.value_by_name(0, 'query_directory_lastmodifytime', ''))
+
+        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
+            sync_dict_list, 'imagedate', object_table_data.value_by_name(0, 'query_directory_lastmodifytime', ''))
+
+        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
+            sync_dict_list, 'producetime', object_table_data.value_by_name(0, 'query_directory_lastmodifytime', ''))
+
+        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
+            sync_dict_list, 'imagedatetag',
+            object_table_data.value_by_name(0, 'query_directory_lastmodifytime', '').replace(r'[-/\.年月日]', '')[:8])
+
+        # 空间信息
+        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
+            sync_dict_list, 'geomobj',
+            '''
+            (SELECT st_union (
+            (select dso_geo_bb_native from dm2_storage_object where dsoparentobjid='{0}' limit 1)
+            ))
+            '''.format(object_table_id), self.DB_False)
+
+        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
+            sync_dict_list, 'extent',
+            '''
+            (SELECT st_union( 
+            (select dso_geo_bb_native from dm2_storage_object where dsoparentobjid='{0}' limit 1)
+            ))
+            '''.format(object_table_id), self.DB_False)
+
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'centerx',
+            '''
+            (SELECT st_x ( st_centroid ( st_union ( 
+            (select dso_geo_bb_native from dm2_storage_object where dsoparentobjid='{0}' limit 1)
+            ) ) ) )
+            '''.format(object_table_id), self.DB_False)
+
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'centery',
+            '''
+            (SELECT st_y ( st_centroid ( st_union ( 
+            (select dso_geo_bb_native from dm2_storage_object where dsoparentobjid='{0}' limit 1)
+            ) ) ) )
+            '''.format(object_table_id), self.DB_False)
+
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'geomwkt',
+            '''
+            (SELECT st_astext ( st_union ( 
+            (select dso_geo_bb_native from dm2_storage_object where dsoparentobjid='{0}' limit 1)
+            ) ) )
+            '''.format(object_table_id), self.DB_False)
+
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'imgsize',
+            '''
+            (select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail 
+            where dodobjectid in 
+            (select dsoid FROM dm2_storage_object WHERE dsoparentobjid='{0}'))
+            '''.format(object_table_id), self.DB_False)
+
+        return sync_dict_list

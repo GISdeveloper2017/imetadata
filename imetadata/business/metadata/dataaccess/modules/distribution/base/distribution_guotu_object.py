@@ -199,6 +199,7 @@ class distribution_guotu_object(distribution_guotu):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsfid', object_table_data.value_by_name(0, 'query_file_id', ''), self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'imagedatetag', dso_time_json.xpath_one('time', ''), self.DB_True)
+            sync_dict_list, 'imagedatetag', dso_time_json.xpath_one('time', '').replace(r'[-/\.年月日]', '')[:8]
+            , self.DB_True)
 
         return sync_dict_list
