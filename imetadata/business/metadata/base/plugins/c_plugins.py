@@ -538,8 +538,9 @@ class CPlugins(CResource):
             # 监测time_text是否是合法的日期...
             if (not CUtils.text_is_datetime(time_text)) \
                     and (not CUtils.text_is_date_day(time_text)):
-                # 从数据库中查询为标准格式，如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
-                time_text_temp = time_text.replace('-', '').replace('/', '').replace('\\', '').replace('.', '').replace('年', '').replace('月', '')
+                # 从数据库中查询为标准格式（2020，202009，2020Q1），如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
+                # time_text_temp = time_text.replace('-', '').replace('/', '').replace('\\', '').replace('.', '').replace('年', '').replace('月', '')
+                time_text_temp = CUtils.standard_datetime_format(time_text, time_text).replace('-', '')
                 # 从ro_global_dim_time表中识别是否有记录，如果有，则获取对应的开始时间、结束时间
                 sql = '''
                 select starttime, endtime from ro_global_dim_time where gdtquickcode ='{0}'

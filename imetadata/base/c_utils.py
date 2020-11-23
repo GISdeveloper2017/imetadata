@@ -527,7 +527,7 @@ class CUtils(CResource):
         """
         # default_date = CTime.now()
         date_value = cls.standard_datetime_format(text, default_value)
-        if CUtils.equal_ignore_case(date_value,default_value):
+        if CUtils.equal_ignore_case(date_value, default_value):
             return default_value
         date_value = date_value.replace('-', '')
         day_format = ''
@@ -588,9 +588,11 @@ class CUtils(CResource):
 
 if __name__ == '__main__':
     text = '2020年3月'
-    text = '2020.3'
-    # text = '2020/3/1'
+    text = '2020年3月12日'
+    # text = '2020.3'
+    # text = '2020Q1'
     # text = '2020/3/1 12:12:12'
-    text_format = CUtils.to_day_format(text, '-1')
+    text_format = CUtils.to_day_format(text, text)
+    # text_format = CUtils.standard_datetime_format(text, text).replace('-', '')
     print(text_format)
     pass
