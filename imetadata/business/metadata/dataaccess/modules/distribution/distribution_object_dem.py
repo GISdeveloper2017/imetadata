@@ -22,10 +22,9 @@ class distribution_object_dem(distribution_guotu_object):
 
     def get_sync_dict_list(self, insert_or_updata) -> list:
         """
-        本方法的写法为强规则，字典key为字段名，字典value为对应的值或者sql语句，在写时需要加语句号，子查询语句加(),值加‘’
-        子查询：sync_dict['字段名']=“(select 字段 from 表 where id=‘1’)”
-        值：sync_dict['字段名']=“‘值’”
-        同时，配置插件方法时请在information()方法中添加info['table_name'] = '表名'的字段
+        insert_or_updata 中 self.DB_True为insert，DB_False为updata
+        本方法的写法为强规则，调用add_value_to_sync_dict_list配置
+        第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
         """
 
         # object_id = self._obj_id
@@ -134,11 +133,17 @@ class distribution_object_dem(distribution_guotu_object):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'resolution', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='dmfbl']"), self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'imagedate', dso_time_json.xpath_one('time', ''), self.DB_True)
+            sync_dict_list, 'imagedate',
+            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),
+            self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'begdate', dso_time_json.xpath_one('start_time', ''), self.DB_True)
+            sync_dict_list, 'begdate',
+            CUtils.to_day_format(dso_time_json.xpath_one('start_time', ''), dso_time_json.xpath_one('start_time', '')),
+            self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'enddate', dso_time_json.xpath_one('end_time', ''), self.DB_True)
+            sync_dict_list, 'enddate',
+            CUtils.to_day_format(dso_time_json.xpath_one('end_time', ''), dso_time_json.xpath_one('end_time', '')),
+            self.DB_True)
         return sync_dict_list
 
     def get_sync_mat_dict_list(self, insert_or_updata) -> list:
@@ -206,11 +211,17 @@ class distribution_object_dem(distribution_guotu_object):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'resolution', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='地面分辨率']"), self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'imagedate', dso_time_json.xpath_one('time', ''), self.DB_True)
+            sync_dict_list, 'imagedate',
+            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),
+            self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'begdate', dso_time_json.xpath_one('start_time', ''), self.DB_True)
+            sync_dict_list, 'begdate',
+            CUtils.to_day_format(dso_time_json.xpath_one('start_time', ''), dso_time_json.xpath_one('start_time', '')),
+            self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'enddate', dso_time_json.xpath_one('end_time', ''), self.DB_True)
+            sync_dict_list, 'enddate',
+            CUtils.to_day_format(dso_time_json.xpath_one('end_time', ''), dso_time_json.xpath_one('end_time', '')),
+            self.DB_True)
         return sync_dict_list
 
     def get_sync_xls_dict_list(self, insert_or_updata) -> list:
@@ -278,9 +289,15 @@ class distribution_object_dem(distribution_guotu_object):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'resolution', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='影像地面分辨率']"), self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'imagedate', dso_time_json.xpath_one('time', ''), self.DB_True)
+            sync_dict_list, 'imagedate',
+            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),
+            self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'begdate', dso_time_json.xpath_one('start_time', ''), self.DB_True)
+            sync_dict_list, 'begdate',
+            CUtils.to_day_format(dso_time_json.xpath_one('start_time', ''), dso_time_json.xpath_one('start_time', '')),
+            self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'enddate', dso_time_json.xpath_one('end_time', ''), self.DB_True)
+            sync_dict_list, 'enddate',
+            CUtils.to_day_format(dso_time_json.xpath_one('end_time', ''), dso_time_json.xpath_one('end_time', '')),
+            self.DB_True)
         return sync_dict_list
