@@ -7,6 +7,7 @@ from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
+from imetadata.database.c_factory import CFactory
 
 
 class CDAModule(CResource):
@@ -58,9 +59,56 @@ class CDAModule(CResource):
         @:param access 当前模块对当前对象的权限
         :return:
         """
+        ds_na = CFactory().give_me_db(self._db_id).one_row(
+            '''
+            select dsonid, dson_notify_status
+            from dm2_storage_obj_na
+            where dson_app_id = :app_id 
+                and dson_object_id = :object_id
+            ''',
+            {
+                'app_id': CUtils.dict_value_by_name(self.information(), self.Name_ID, ''),
+                'object_id': self._obj_id
+            }
+        )
+        target_notify_status = self.ProcStatus_InQueue
+        if not CUtils.equal_ignore_case(access, self.DataAccess_Pass):
+            target_notify_status = self.ProcStatus_Finished
+        if not ds_na.is_empty():
+            na_id = CUtils.any_2_str(ds_na.value_by_name(0, 'dsonid', 0))
+            if ds_na.value_by_name(0, 'dson_notify_status', self.ProcStatus_Finished) == self.ProcStatus_Finished:
+                CFactory().give_me_db(self._db_id).execute(
+                    '''
+                    update dm2_storage_obj_na
+                    set dson_notify_status = :status
+                        , dson_object_access = :object_access
+                    where dsonid = :id 
+                    ''',
+                    {
+                        'id': na_id,
+                        'status': target_notify_status,
+                        'object_access': access
+                    }
+                )
+        else:
+            CFactory().give_me_db(self._db_id).execute(
+                '''
+                insert into dm2_storage_obj_na(dson_app_id, dson_object_access, dson_object_id) 
+                values(:app_id, :object_access, :object_id)
+                ''',
+                {
+                    'app_id': CUtils.dict_value_by_name(self.information(), self.Name_ID, ''),
+                    'object_id': self._obj_id,
+                    'object_access': access
+                }
+            )
+
         return CResult.merge_result(
             self.Success,
-            '对象[{0}]的提醒机制无效, 第三方系统将自行从数据中心查询并发现最新数据变化! '.format(self._obj_name)
+            '对象[{0}]已经推送给模块[{1}]队列! '.format(
+                self._obj_name,
+                CUtils.dict_value_by_name(self.information(), self.Name_Title, '')
+            )
         )
 
     def sync(self) -> str:

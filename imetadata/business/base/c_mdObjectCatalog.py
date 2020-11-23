@@ -37,11 +37,14 @@ class CMDObjectCatalog(CResource):
             return CDataSet()
 
         params_search = dict()
+        sql_from = ''
         sql_where = ''
 
         if (not CUtils.equal_ignore_case(module_name, self.ModuleName_MetaData)) and \
                 (not CUtils.equal_ignore_case(module_name, '')):
-            sql_where = "dm2_storage_object.dso_da_result#>>'{{{0},result}}'='pass'".format(module_name)
+            # sql_where = "dm2_storage_object.dso_da_result#>>'{{{0},result}}'='pass'".format(module_name)
+            sql_from = ', dm2_storage_obj_na '
+            sql_where = " dm2_storage_obj_na.dson_app_id = 'module_name' and dm2_storage_obj_na.dson_object_access = 'pass' "
 
         condition_tag = search_json_obj.xpath_one(self.Name_Tag, None)
         if condition_tag is not None:
@@ -91,7 +94,7 @@ class CMDObjectCatalog(CResource):
             sql_where = CUtils.str_append(sql_where, condition, ' and ')
 
         if not CUtils.equal_ignore_case(sql_where, ''):
-            sql_where = 'where {0}'.format(sql_where)
+            sql_where = ' and {0}'.format(sql_where)
 
         sql_search = '''
         select dm2_storage_object.dsoid as object_id
@@ -101,10 +104,11 @@ class CMDObjectCatalog(CResource):
             , dm2_storage_object.dsoparentobjid as object_parent_id
             , dm2_storage_object.dso_volumn_now as object_size
             , dm2_storage_object.dso_obj_lastmodifytime as object_lastmodifytime
-        from dm2_storage_object 
-            left join dm2_storage_object_def on dm2_storage_object.dsoobjecttype = dm2_storage_object_def.dsodid
-        {0}
-        '''.format(sql_where)
+        from dm2_storage_object, dm2_storage_object_def {0} 
+        where dm2_storage_object.dsoobjecttype = dm2_storage_object_def.dsodid
+            and dm2_storage_object.dsoid = dm2_storage_obj_na.dson_object_id
+        {1}
+        '''.format(sql_from, sql_where)
 
         return CFactory().give_me_db(self.db_server_id).all_row(sql_search)
 

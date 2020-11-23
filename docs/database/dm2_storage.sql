@@ -835,6 +835,7 @@ comment on column dm2_storage_obj_na.dson_addtime is '添加时间';
 
 alter table dm2_storage_obj_na owner to postgres;
 
+
 /*
     2020-11-13
     . 为解决对象的更新, 对object表进行扩展
@@ -916,4 +917,20 @@ alter table dm2_storage_file add column dsf_bus_status varchar(100) default 'inb
 comment on column dm2_storage_file.dsf_bus_status is '业务状态';
 alter table dm2_storage_object add column dso_bus_status varchar(100) default 'inbound';
 comment on column dm2_storage_object.dso_bus_status is '业务状态';
+
+/*
+    2020-11-23
+    . 对dm2_storage_obj_na表的数据进行索引, 提高效率
+*/
+
+drop index if exists idx_dson_object_access_object_id CASCADE;
+create index if not exists idx_dm2_storage_obj_na_object_id on dm2_storage_obj_na(dson_object_id);
+drop index if exists idx_dm2_storage_obj_na_app_id CASCADE;
+create index if not exists idx_dm2_storage_obj_na_app_id on dm2_storage_obj_na(dson_app_id);
+drop index if exists idx_dm2_storage_obj_na_proc_id CASCADE;
+create index if not exists idx_dm2_storage_obj_na_proc_id on dm2_storage_obj_na(dson_notify_proc_id);
+drop index if exists idx_dm2_storage_obj_na_status CASCADE;
+create index if not exists idx_dm2_storage_obj_na_status on dm2_storage_obj_na(dson_notify_status);
+drop index if exists idx_dm2_storage_obj_na_access CASCADE;
+create index if not exists idx_dm2_storage_obj_na_access on dm2_storage_obj_na(dson_object_access);
 

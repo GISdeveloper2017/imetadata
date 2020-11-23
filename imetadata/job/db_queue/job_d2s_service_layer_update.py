@@ -14,22 +14,38 @@ from imetadata.database.c_factory import CFactory
 class job_d2s_service_layer_update(CD2SBaseJob):
     """
     数据服务发布-服务数据更新-调度
-    1. 解析dp_v_qfg\dp_v_qfg_layer, 获取数据需求, 检查数据对象变化情况, 更新dp_v_qfg_layer_file表
+    1. 解析dp_v_qfg, dp_v_qfg_layer, 获取数据需求, 检查数据对象变化情况, 更新dp_v_qfg_layer_file表
+update dp_v_qfg_schema set dpprocessid = '$missionid$', dpstatus = 2
+where dpID = (
+select dpID from dp_v_qfg_schema
+where dpstatus = 1 and dpid not in
+(
+  select dpschemaid
+  from
+  (
+    select dpschemaid, count(*) from dp_v_qfg where dpstatus <> 0  group by dpschemaid
+   ) schema_stat
+)
+order by dplastmodifytime limit 1 for update skip locked)
+
     """
 
     def get_mission_seize_sql(self) -> str:
         return '''
         update dp_v_qfg_layer 
-        set dpprocessid = '{0}', dpStatus = 2
+        set dpprocessid = '{0}', dpStatus = {2}
         where dpid = (
           select dpid  
-          from   dp_v_qfg_layer 
-          where  dpStatus = 1  
+          from   dp_v_qfg_layer  
+          where  dpStatus = {1}  and dpservice_id in 
+          (
+              select dpid from dp_v_qfg where dpstatus = {2} 
+          )
           order by dpaddtime
           limit 1
           for update skip locked
         )        
-        '''.format(self.SYSTEM_NAME_MISSION_ID)
+        '''.format(self.SYSTEM_NAME_MISSION_ID, self.ProcStatus_InQueue, self.ProcStatus_Processing)
 
     def get_mission_info_sql(self) -> str:
         return '''
@@ -43,9 +59,9 @@ class job_d2s_service_layer_update(CD2SBaseJob):
     def get_abnormal_mission_restart_sql(self) -> str:
         return '''
         update dp_v_qfg_layer 
-        set dpStatus = 1, dpprocessid = null 
-        where dpStatus = 2
-        '''
+        set dpStatus = {0}, dpprocessid = null 
+        where dpStatus = {1}
+        '''.format(self.ProcStatus_InQueue, self.ProcStatus_Processing)
 
     def process_mission(self, dataset) -> str:
         """

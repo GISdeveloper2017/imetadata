@@ -163,12 +163,12 @@ where dsi_na_status = 2
                         )
                     )
                     # todo(王西亚) 仔细考虑这里是否要放开, 是放开pass的, 还是放开pass和wait!!!!!!
-                    if not \
-                            (
-                                    CUtils.equal_ignore_case(module_access, self.DataAccess_Pass)
-                                    or CUtils.equal_ignore_case(module_access, self.DataAccess_Wait)
-                            ):
-                        continue
+                    # if not \
+                    #         (
+                    #                 CUtils.equal_ignore_case(module_access, self.DataAccess_Pass)
+                    #                 or CUtils.equal_ignore_case(module_access, self.DataAccess_Wait)
+                    #         ):
+                    #     continue
 
                     result = module_obj.notify(module_access)
                     if not CResult.result_success(result):
@@ -229,17 +229,31 @@ where dsi_na_status = 2
             CFactory().give_me_db(self.get_mission_db_id()).execute(
                 '''
                 update dm2_storage_inbound 
-                set dsi_na_status = 0, dsi_na_proc_id = null, dsi_na_proc_memo = :notify_message
+                set dsi_na_status = {0}
+                    , dsi_na_proc_id = null
+                    , dsi_na_proc_memo = :notify_message
+                    , dsiproctime = now()
                 where dsiid = :notify_id   
-                ''', {'notify_id': notify_id, 'notify_message': CResult.result_message(result)}
+                '''.format(self.ProcStatus_Finished),
+                {
+                    'notify_id': notify_id,
+                    'notify_message': CResult.result_message(result)
+                }
             )
         else:
             CFactory().give_me_db(self.get_mission_db_id()).execute(
                 '''
                 update dm2_storage_inbound 
-                set dsi_na_status = 3, dsi_na_proc_id = null, dsi_na_proc_memo = :notify_message
+                set dsi_na_status = {0}
+                    , dsi_na_proc_id = null
+                    , dsi_na_proc_memo = :notify_message
+                    , dsiproctime = now()
                 where dsiid = :notify_id   
-                ''', {'notify_id': notify_id, 'notify_message': CResult.result_message(result)}
+                '''.format(self.ProcStatus_Error),
+                {
+                    'notify_id': notify_id,
+                    'notify_message': CResult.result_message(result)
+                }
             )
 
 

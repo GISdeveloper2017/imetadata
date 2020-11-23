@@ -109,10 +109,9 @@ class CJson:
     def json_path(cls, json_text, json_path_str: str) -> list:
         """
         获取一个属性的值, 如果属性不存在, 则返回默认值
-
+        1. 如果json_text不是合法的json格式, 将反馈空列表, 而不是None
         :param json_path_str:
         :param json_text:
-        :param attr_value_default:
         :return:
         """
         if json_text is None:

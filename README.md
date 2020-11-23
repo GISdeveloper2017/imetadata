@@ -1180,16 +1180,33 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 ##### 数据入库后通知第三方应用调度-job_dm_inbound_notify
 1. 名称: job_dm_inbound_notify
 1. 类型: db_queue
-
-#### 服务发布部分
-##### 服务发布-更新-进度监控调度-job_d2s_service_update_monitor
-1. 名称: job_d2s_service_update_monitor
-1. 类型: interval
-
-##### 服务发布-更新-调度-job_d2s_service_layer_update
-1. 名称: job_d2s_service_layer_update
-1. 类型: db_queue
-
+1. 算法:
+    1. 抢占dm2_storage_inbound表中已经入库成功的, 等待通知的待入库批次
+        1. dsiStatus=0 已经入库成功
+        1. dsi_na_status=1 等待通知 -> 2 正在处理通知
+    1. 从dm2_storage_inbound表的dsiotheroption中加载入库通知的特殊要求
+        1. 获取本次通知的子系统列表
+            1. 可以通过此特性, 针对指定子系统进行通知
+        1. 如果特殊要求为空
+            1. 则通知所有的子系统
+    1. 获取本批次的所有待通知对象列表, 分别处理
+        1. 循环所有子系统通知对象:
+            1. 判断当前的对象是否允许通知该子系统
+            1. 如果当前的对象对该子系统的通知状态为Pass或Wait
+                1. 判断dm2_storage_obj_na表中该对象通知的记录是否已经存在
+                    1. 如果不存在
+                        1. 在dm2_storage_obj_na表中注册该记录
+                    1. 判断dm2_storage_obj_na表中该对象是否正在通知给子系统
+                        1. 如果正在通知
+                            下次通知
+                        1. 如果已经通知完毕
+                            1. 更新dm2_storage_obj_na表该记录的状态为重新通知
+    1. 标识通知成功结束, 更新dm2_storage_inbound表的通知状态:
+        1. dsi_na_status=2 -> 0 完成通知
+    1. 过程出现异常:
+        1. dsi_na_status=2 -> 3 通知过程出现错误
+        1. dsi_na_proc_memo 错误详细信息
+        
 ***
 ## 数据发布
 ### 场景
@@ -1362,16 +1379,20 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
             1. dpStatus=61
     
 ##### 服务更新调度
-###### 服务状态更新
+###### 服务状态更新(人机交互)
 1. 业务交互系统处理(注意顺序不能错!!!):
-    1. 将将dp_v_qfg_layer表中, 该服务下的所有图层的状态dpstatus, 批量更新为1(启动服务检查更新的调度)
+    1. 将dp_v_qfg_layer表中, 该服务下的所有图层的状态dpstatus, 批量更新为1(启动服务检查更新的调度)
     1. 将dp_v_qfg表中dpStatus改为2
     
-###### 服务图层数据更新
+###### 服务图层数据更新-job_d2s_service_layer_update
 1. 名称: job_d2s_service_layer_update
 1. 类型: db_queue
 1. 流程:
-    1. 抢占dp_v_qfg_layer表中dpStatus=1的记录, 状态更新为2
+    1. 抢占dp_v_qfg_layer表中待处理的记录:
+        1. dp_v_qfg.dpStatus=2
+        1. dp_v_qfg_layer.dpStatus=1
+        将符合上述条件的记录, 状态更新为2
+        1. dp_v_qfg_layer.dpStatus=2
     1. 读取dp_v_qfg_layer表中的dpLayer_Object属性
         1. 将dp_v_qfg_layer_file表中, 所有Layer下的记录, 状态改为删除
             1. dpdf_processType=delete
@@ -1401,6 +1422,8 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
                         1. dpdf_object_fp
                         1. dpdf_processType=new
         1. 删除dp_v_qfg_layer_file表中, 所有Layer下的记录, dpdf_processType=delete的记录???
+        1. 根据dp_v_qfg_layer_file表中对象的投影坐标信息, 重新计算dp_v_qfg_layer_file.dpdf_group_id字段, 该字段记录着dp_v_qfg_layer
+            中应该发布的物理层
     1. 检查当前layer下, dp_v_qfg_layer_file的记录数
         1. 如果为0, 则表示当前图层下没有可发布的文件
             1. 删除dp_v_qfg_layer记录
@@ -1413,7 +1436,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
             1. 将dp_v_qfg_layer记录, 更新状态为1
                 1. dpStatus=1
 
-###### 服务状态监控
+###### 服务状态监控-job_d2s_service_update_monitor
 1. 名称: job_d2s_service_update_monitor
 1. 类型: interval
 1. 定时: 每10-30秒处理一次
@@ -1430,10 +1453,27 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
             1. 将dp_v_qfg记录, 更新状态为2
                 1. dpStatus=2
 
-##### 服务批量创建
+###### 服务批量创建-job_d2s_service_creator
 1. 名称: job_d2s_service_creator
 1. 类型: db_queue
-
+1. 算法:
+    1. 获取dp_v_qfg_schema表中等待更新的模板:
+        1. dpstatus = 1
+        1. 对应的dp_v_qfg表中dpStatus = 0, 表明与此模板相关的服务, 都已经发布结束, 此时方可更新服务列表
+        将符合要求的模板, 状态改为正在处理:
+        1. dpstatus = 2
+    1. 根据dpbatchdeploy属性, 进行批量服务创建
+        1. 注意: dpbatchdeploy将改为jsonb格式!!!
+        1. 如果对应的dp_v_qfg.dpname已经存在, 则忽略!!!
+            1. 这表明, 如果模板的配置更新了, 需要删除已经发布的服务重建!!!
+        1. 新建服务, 此时服务的状态为0
+            1. dp_v_qfg.dpStatus = 0
+            1. 根据模板, 在dp_v_qfg_layer表中创建服务的每一个层, 状态为待处理:
+                1. dp_v_qfg_layer.dpStatus = 1
+                1. 由于layer所属的dp_v_qfg的状态为0, 此时layer的更新不会启动, 见job_d2s_service_layer_update
+        1. 启动服务数据更新
+            1. 将dp_v_qfg表中dpStatus改为2
+                1. dp_v_qfg.dpStatus = 2
 
 
 ***
