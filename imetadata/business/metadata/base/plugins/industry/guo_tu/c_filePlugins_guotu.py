@@ -34,6 +34,7 @@ class CFilePlugins_GUOTU(CFilePlugins):
         information[self.Plugins_Info_Group_Name] = self.DataGroup_Industry_Data
         information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_default'
+        information[self.Plugins_Info_ViewEngine] = self.BrowseEngine_Raster # 抽取快视图都是影像类型
         return information
 
     def classified(self):
