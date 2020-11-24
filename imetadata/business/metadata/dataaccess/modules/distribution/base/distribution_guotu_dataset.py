@@ -134,10 +134,13 @@ class distribution_guotu_dataset(distribution_guotu):
         if insert_or_updata:
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'queryable', '1', self.DB_True)
-        # scale:交插件处理
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'mainrssource',
             dsometadataxml_xml.get_element_text_by_xpath_one('/root/MajorSource'),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'scale',
+            dsometadataxml_xml.get_element_text_by_xpath_one('/root/ScaleDenominator'),
             self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsdid', object_table_data.value_by_name(0, 'query_directory_id', ''), self.DB_True)

@@ -18,7 +18,7 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
         information[self.Plugins_Info_Type] = self.Object_Def_Type_Mosaic
         information[self.Plugins_Info_Code] = '020102'
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
-        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_mosaic'
+        # information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_mosaic'
         return information
 
     def classified(self):
