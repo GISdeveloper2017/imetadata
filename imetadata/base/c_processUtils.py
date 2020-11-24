@@ -66,14 +66,32 @@ class CProcessUtils:
         pool.join()
         return res[0]
 
+    @classmethod
+    def processing_method_params(cls, method_name, parameter_list):
+        '''
+        多参数调用模式
+        '''
+        str_sign = ','
+        params_str = str_sign.join(parameter_list)
+        return cls.processing_method(method_name, params_str)
+
 
 if __name__ == "__main__":
+    str = ','
+    list = []
+    list.append('a')
+    list.append('b')
+    list.append('c')
+    join_str = str.join(list)
+    print(join_str)
+
     # for p in psutil.process_iter():
     #     print("{0}.{1} is running, status is {2}".format(p.pid, p.name, p.status()))
 
-    subprocess_list = ['physics', 'chemistry', '1997', '2000']
-    print(subprocess_list)
-    for subprocess_index in range(len(subprocess_list), 0, -1):
-        print(subprocess_list[subprocess_index - 1])
-        subprocess_list.pop(subprocess_index - 1)
-    print(subprocess_list)
+    # subprocess_list = ['physics', 'chemistry', '1997', '2000']
+    # print(subprocess_list)
+    # for subprocess_index in range(len(subprocess_list), 0, -1):
+    #     print(subprocess_list[subprocess_index - 1])
+    #     subprocess_list.pop(subprocess_index - 1)
+    # print(subprocess_list)
+    pass

@@ -60,6 +60,7 @@ class CResource:
 
     Name_Browse = 'browse'
     Name_Thumb = 'thumb'
+    Name_Browse_GeoTiff = 'browse_geotiff'
 
     CMD_START = 'start'
     CMD_STOP = 'stop'
