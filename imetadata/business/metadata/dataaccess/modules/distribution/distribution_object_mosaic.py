@@ -15,15 +15,14 @@ class distribution_object_mosaic(distribution_guotu_object):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '镶嵌影像'
-        info['table_name'] = 'ap3_product_rsp_nmosaic_detail'
+        info['table_name'] = 'ap3_product_rsp_mosaic_whole'
         return info
 
     def get_sync_dict_list(self, insert_or_updata) -> list:
         """
-        本方法的写法为强规则，字典key为字段名，字典value为对应的值或者sql语句，在写时需要加语句号，子查询语句加(),值加‘’
-        子查询：sync_dict['字段名']=“(select 字段 from 表 where id=‘1’)”
-        值：sync_dict['字段名']=“‘值’”
-        同时，配置插件方法时请在information()方法中添加info['table_name'] = '表名'的字段
+                insert_or_updata 中 self.DB_True为insert，DB_False为updata
+                本方法的写法为强规则，调用add_value_to_sync_dict_list配置
+                第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
         """
         sync_dict = self.get_sync_predefined_dict_list(insert_or_updata)
         object_table_id = self._obj_id
@@ -35,22 +34,25 @@ class distribution_object_mosaic(distribution_guotu_object):
         xml.load_xml(dsometadataxml_bus)
 
         # 后处理流程介文档中的字段
-        self.add_value_to_sync_dict_list(sync_dict, 'aprndid', object_table_id, self.DB_True)
-
-        self.add_value_to_sync_dict_list(sync_dict, 'aprnwid', object_table_data.value_by_name(0, 'dsoparentobjid', ''),
-                                         self.DB_True)
-
-        # sync_dict['dataformat'] = "'{0}'".format()
-        # sync_dict['project'] = "'{0}'".format()
-        # sync_dict['zonationtype'] = "'{0}'".format()
-        # sync_dict['centralmeridian'] = "'{0}'".format()
-        # sync_dict['projectbandno'] = "'{0}'".format()
+        if insert_or_updata:
+            self.add_value_to_sync_dict_list(sync_dict, 'aprmwid', object_table_id, self.DB_True)
+        # sync_dict['datatype'] = "'{0}'".format()
+        # sync_dict['projinfo'] = "'{0}'".format()
+        # sync_dict['zonetype'] = "'{0}'".format()
+        # sync_dict['centerline'] = "'{0}'".format()
+        # int4
+        # sync_dict['zoneno'] = "'{0}'".format()
         # sync_dict['coordinateunit'] = "'{0}'".format()
         # sync_dict['demname'] = "'{0}'".format()
-        # sync_dict['elevationdatum'] = "'{0}'".format()
-
-        self.add_value_to_sync_dict_list(sync_dict, 'dsometadatajson',
-                                         object_table_data.value_by_name(0, 'dsometadataxml', ''), self.DB_True)
+        # sync_dict['demstandard'] = "'{0}'".format()
+        self.add_value_to_sync_dict_list(sync_dict, 'mosaiclinefilename', object_table_data.value_by_name(0,'dsoobjectname',''))
+        # sync_dict['sensors'] = "'{0}'".format()
+        # sync_dict['iscuted'] = "'{0}'".format()
+        # numeric
+        # sync_dict['productsize'] = "'{0}'".format()
+        self.add_value_to_sync_dict_list(sync_dict, 'imagesource',xml.get_element_text_by_xpath_one('/Metadatafile/BasicDataContent/ImageSource'))
+        self.add_value_to_sync_dict_list(sync_dict, 'dsometadataxml',
+                                         object_table_data.value_by_name(0, 'dsometadataxml_bus', ''), self.DB_True)
         # 数据量
         # sync_dict['datacount'] = "''"
         # 密级
@@ -67,12 +69,13 @@ class distribution_object_mosaic(distribution_guotu_object):
                                          xml.get_element_text_by_xpath_one('/Metadatafile/BasicDataContent/Resolution'),
                                          self.DB_True)
         # 色彩模式
-        # sync_dict['colormodel'] = "''"
+        # self.add_value_to_sync_dict_list(sync_dict, 'colormodel',xml.get_element_text_by_xpath_one(''))
         # 像素位数
-        # sync_dict['piexldepth'] = "''"
+        # self.add_value_to_sync_dict_list(sync_dict, 'piexldepth',xml.get_element_text_by_xpath_one(''))
         # 比例尺分母
-        # sync_dict['scale'] = "''"
+        # self.add_value_to_sync_dict_list(sync_dict, 'scale',xml.get_element_text_by_xpath_one(''))
         # 主要星源
-        # sync_dict['mainrssource'] = "''"
-
+        # self.add_value_to_sync_dict_list(sync_dict, 'mainrssource', xml.get_element_text_by_xpath_one(''))
+        # 备注
+        self.add_value_to_sync_dict_list(sync_dict, 'remark', xml.get_element_text_by_xpath_one('/Metadatafile/BasicDataContent/Description'))
         return sync_dict
