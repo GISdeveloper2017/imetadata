@@ -8,7 +8,7 @@ from imetadata.business.metadata.dataaccess.modules.distribution.base.distributi
 
 class distribution_dataset_guoqing(distribution_guotu_dataset):
     """
-    todo 邢凯 数据检索分发模块对国情影像数据集类型数据
+    完成 数据检索分发模块对国情影像数据集类型数据
     """
 
     def information(self) -> dict:
@@ -28,10 +28,10 @@ class distribution_dataset_guoqing(distribution_guotu_dataset):
         object_table_data = self._dataset
         if insert_or_updata:
             self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprgdid', object_table_id, self.DB_True)
+                sync_dict_list, 'aprgdid', object_table_id)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'datatype', object_table_data.value_by_name(0, 'dsodatatype', ''), self.DB_True)
+            sync_dict_list, 'datatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'dsometadataxml', object_table_data.value_by_name(0, 'dsometadataxml_bus', ''), self.DB_True)
+            sync_dict_list, 'dsometadataxml', object_table_data.value_by_name(0, 'dsometadataxml_bus', ''))
 
         return sync_dict_list

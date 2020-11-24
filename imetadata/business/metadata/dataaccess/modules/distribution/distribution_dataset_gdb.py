@@ -12,7 +12,7 @@ from imetadata.base.c_xml import CXml
 
 class distribution_dataset_gdb(distribution_guotu):
     """
-    todo 王学谦 数据检索分发模块对gdb数据集类型数据
+    完成 王学谦 数据检索分发模块对gdb数据集类型数据
     """
 
     def information(self) -> dict:
