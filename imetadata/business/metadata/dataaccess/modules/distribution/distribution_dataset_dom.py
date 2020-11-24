@@ -47,6 +47,6 @@ class distribution_dataset_dom(distribution_guotu_dataset):
             sync_dict_list, 'datatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'publishDate',
-            dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date'))
+            CUtils.to_day_format(dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date'), ''))
         self.add_value_to_sync_dict_list(sync_dict_list, 'dsometadatajson', dsometadataxml)
         return sync_dict_list

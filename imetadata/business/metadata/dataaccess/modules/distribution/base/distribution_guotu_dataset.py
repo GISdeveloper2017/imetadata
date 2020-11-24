@@ -42,7 +42,7 @@ class distribution_guotu_dataset(distribution_guotu):
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'aprid', object_table_id)
 
-        dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml', '')
+        dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml_bus', '')
         dsometadataxml_xml = CXml()
         dsometadataxml_xml.load_xml(dsometadataxml)  # 加载查询出来的xml
         self.add_value_to_sync_dict_list(  # 通过本方法配置需要的字典集合
@@ -52,16 +52,15 @@ class distribution_guotu_dataset(distribution_guotu):
             sync_dict_list, 'producttype', object_table_data.value_by_name(0, 'dsodcode', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsodatatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
-
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'begdate',
-            dsometadataxml_xml.get_element_text_by_xpath_one('/root/BeginDate'))
+            CUtils.to_day_format(dsometadataxml_xml.get_element_text_by_xpath_one('/root/BeginDate'), ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'enddate',
-            dsometadataxml_xml.get_element_text_by_xpath_one('/root/EndDate'))
+            CUtils.to_day_format(dsometadataxml_xml.get_element_text_by_xpath_one('/root/EndDate'), ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedate',
-            dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date'))
+            CUtils.to_day_format(dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date'), ''))
         # datacount:数据数量
         # secrecylevel:密级
         regioncode = dsometadataxml_xml.get_element_text_by_xpath_one('/root/RegionCode')
@@ -73,12 +72,14 @@ class distribution_guotu_dataset(distribution_guotu):
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'centerx',
-            "(select centerx from ro_global_dim_space "
-            "where gdscode='{0}')".format(regioncode), self.DB_False)
+            '''
+            (select centerx::decimal(8,2) from ro_global_dim_space where gdscode='{0}')
+            '''.format(regioncode), self.DB_False)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'centery',
-            "(select centery from ro_global_dim_space "
-            "where gdscode='{0}')".format(regioncode), self.DB_False)
+            '''
+            (select centery::decimal(8,2) from ro_global_dim_space where gdscode='{0}')
+            '''.format(regioncode), self.DB_False)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'geomwkt',
             "st_astext("
@@ -95,7 +96,7 @@ class distribution_guotu_dataset(distribution_guotu):
             sync_dict_list, 'thumbimg', object_table_data.value_by_name(0, 'dso_thumb', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'producetime',
-            dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date'))
+            CUtils.to_day_format(dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date'), ''))
         now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'addtime', now_time)
