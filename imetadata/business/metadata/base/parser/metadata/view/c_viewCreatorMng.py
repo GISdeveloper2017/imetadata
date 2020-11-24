@@ -20,9 +20,9 @@ class CViewCreatorMng(CResource):
 
         if CUtils.equal_ignore_case(input_parser_type, cls.BrowseEngine_Raster):
             return CViewCreatorRaster(object_id, object_name, file_info, file_content)
-        elif CUtils.equal_ignore_case(input_parser_type, cls.MetaDataEngine_Vector):
+        elif CUtils.equal_ignore_case(input_parser_type, cls.BrowseEngine_Vector):
             return CViewCreatorVector(object_id, object_name, file_info, file_content)
-        elif CUtils.equal_ignore_case(input_parser_type, cls.MetaDataEngine_Document):
+        elif CUtils.equal_ignore_case(input_parser_type, cls.BrowseEngine_Document):
             return CViewCreatorDocument(object_id, object_name, file_info, file_content)
         else:
             return CParserCustom(object_id, object_name, file_info)
