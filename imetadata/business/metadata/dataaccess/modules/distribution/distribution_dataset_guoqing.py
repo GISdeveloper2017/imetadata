@@ -32,6 +32,6 @@ class distribution_dataset_guoqing(distribution_guotu_dataset):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'datatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'dsometadataxml', object_table_data.value_by_name(0, 'dsometadataxml_bus', ''))
+            sync_dict_list, 'dsometadatajson', object_table_data.value_by_name(0, 'dsometadataxml_bus', ''))
 
         return sync_dict_list

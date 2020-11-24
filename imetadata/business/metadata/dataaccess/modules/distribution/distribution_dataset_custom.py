@@ -4,6 +4,7 @@
 # @File : distribution_dataset_custom.py
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_dataset import \
     distribution_guotu_dataset
+from imetadata.base.c_xml import CXml
 
 
 class distribution_dataset_custom(distribution_guotu_dataset):
@@ -32,9 +33,10 @@ class distribution_dataset_custom(distribution_guotu_dataset):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'datatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
 
-        dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml', '')
-        dsometadataxml_xml = CXml.load_xml(dsometadataxml)  # 加载查询出来的xml
-        self.add_value_to_sync_dict_list(sync_dict_list, dsometadataxml)
+        dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml_bus', '')
+        dsometadataxml_xml = CXml()
+        dsometadataxml_xml.load_xml(dsometadataxml)  # 加载查询出来的xml
+        self.add_value_to_sync_dict_list(sync_dict_list, 'dsometadatajson', dsometadataxml)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'sensors',
             dsometadataxml_xml.get_element_text_by_xpath_one('/root/MajorSource'))

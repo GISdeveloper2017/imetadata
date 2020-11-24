@@ -43,7 +43,8 @@ class distribution_guotu_dataset(distribution_guotu):
                 sync_dict_list, 'aprid', object_table_id)
 
         dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml', '')
-        dsometadataxml_xml = CXml.load_xml(dsometadataxml)  # 加载查询出来的xml
+        dsometadataxml_xml = CXml()
+        dsometadataxml_xml.load_xml(dsometadataxml)  # 加载查询出来的xml
         self.add_value_to_sync_dict_list(  # 通过本方法配置需要的字典集合
             sync_dict_list, 'productname',  # 配置字段名
             dsometadataxml_xml.get_element_text_by_xpath_one('/root/DSName'))  # 配置字段值
