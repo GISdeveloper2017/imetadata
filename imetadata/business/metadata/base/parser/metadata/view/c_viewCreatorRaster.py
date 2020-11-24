@@ -180,7 +180,7 @@ class CViewCreatorRaster(CViewCreator):
         """
         cols = target_ds.RasterXSize
         rows = target_ds.RasterYSize
-        band_count = target_ds.GetRasterBand
+        band_count = target_ds.RasterCount
 
         # 检查影像波段数并读取
         if band_count > 3:
