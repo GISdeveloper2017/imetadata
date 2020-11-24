@@ -39,5 +39,5 @@ class distribution_dataset_third_survey(distribution_guotu_dataset):
         self.add_value_to_sync_dict_list(sync_dict_list, 'dsometadatajson', dsometadataxml)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'sensors',
-            dsometadataxml_xml.get_element_text_by_xpath_one('/root/MajorSource'))
+            '{{0}}'.format(dsometadataxml_xml.get_element_text_by_xpath_one('/root/MajorSource')))
         return sync_dict_list
