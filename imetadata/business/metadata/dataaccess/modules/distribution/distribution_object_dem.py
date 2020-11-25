@@ -74,10 +74,10 @@ class distribution_object_dem(distribution_guotu_object):
                 object_name[7:10]   图幅列号为数字
                 '''
         if CUtils.text_is_alpha(object_name[0:1]):
-            # self.add_value_to_sync_dict_list(
-            #     sync_dict_list, 'hrowno', object_name[0:1], self.DB_False)
-            # self.add_value_to_sync_dict_list(
-            #     sync_dict_list, 'hcolno', object_name[1:3], self.DB_False)
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'hrowno', object_name[0:1], self.DB_True)
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'hcolno', object_name[1:3], self.DB_True)
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'scalecode', object_name[3:4], self.DB_True)
             self.add_value_to_sync_dict_list(
@@ -109,28 +109,28 @@ class distribution_object_dem(distribution_guotu_object):
             sync_dict_list, 'mainrssource', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='wxmc']"), self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'metafilename', '{0}.mdb'.format(object_name), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'networksize',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据生产单位名']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'projinfo',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据版权单位名']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'zonetype',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据出版单位名']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'centerline', self._dataset.value_by_name(0, 'dsometadataxml', ''), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'zoneno',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据生产单位名']"), self.DB_False)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'coordinateunit',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据版权单位名']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'demname',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据出版单位名']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'demstandard', self._dataset.value_by_name(0, 'dsometadataxml', ''), self.DB_True)
+        # sync_dict_list, 'networksize'  # 为空
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'projinfo', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='dtty']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+        sync_dict_list, 'zonetype', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='zyzwx']"),
+        self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'centerline', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='fdfs']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+        sync_dict_list, 'zoneno', CUtils.to_integer(metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='gsklgtydh']"), None),
+        self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'coordinateunit', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='zbdw']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'demname', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='gcxtm']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'demstandard', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='gcjz']"),
+            self.DB_True)
         # 插件处理字段
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''), self.DB_False)
@@ -186,10 +186,10 @@ class distribution_object_dem(distribution_guotu_object):
                 object_name[7:10]   图幅列号为数字
                 '''
         if CUtils.text_is_alpha(object_name[0:1]):
-            # self.add_value_to_sync_dict_list(
-            #     sync_dict_list, 'hrowno', object_name[0:1], self.DB_True)
-            # self.add_value_to_sync_dict_list(
-            #     sync_dict_list, 'hcolno', object_name[1:3], self.DB_True)
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'hrowno', object_name[0:1], self.DB_True)
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'hcolno', object_name[1:3], self.DB_True)
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'scalecode', object_name[3:4], self.DB_True)
             self.add_value_to_sync_dict_list(
@@ -222,6 +222,28 @@ class distribution_object_dem(distribution_guotu_object):
             sync_dict_list, 'mainrssource', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='卫星名称']"), self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'metafilename', '{0}.mat'.format(object_name), self.DB_True)
+        # sync_dict_list, 'networksize'  # 为空
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'projinfo', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='地图投影']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'zonetype', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='中央子午线']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'centerline', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='分带方式']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'zoneno', CUtils.to_integer(metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='高斯-克吕格投影带号']"), None),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'coordinateunit', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='坐标单位']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'demname', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='高程系统名']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'demstandard', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='高程基准']"),
+            self.DB_True)
         # 插件处理字段
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''), self.DB_False)
@@ -296,8 +318,6 @@ class distribution_object_dem(distribution_guotu_object):
             sync_dict_list, 'dataformat', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据格式']"), self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'maindatasource', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='主要数据源']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'metafilename', '{0}.xls'.format(object_name), self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsometadatajson', self._dataset.value_by_name(0, 'dsometadataxml_bus', ''), self.DB_True)
         self.add_value_to_sync_dict_list(
@@ -313,6 +333,31 @@ class distribution_object_dem(distribution_guotu_object):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'scale', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='比例尺分母']"), self.DB_True)
         # sync_dict['mainrssource']   # 为空
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'metafilename', '{0}.{1}'.format(object_name, metadataxml_bus_xml.xpath_one("/root/@type")),
+            self.DB_True)
+        # sync_dict_list, 'networksize'  # 为空
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'projinfo', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='地图投影名称']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'zonetype', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='中央子午线']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'centerline', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='分带方式']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'zoneno', CUtils.to_integer(metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='高斯-克吕格投影带号']"), None),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'coordinateunit', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='坐标单位']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'demname', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='高程系统名']"),
+            self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'demstandard', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='高程基准']"),
+            self.DB_True)
         # 插件处理字段
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''), self.DB_False)

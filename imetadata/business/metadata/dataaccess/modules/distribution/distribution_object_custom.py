@@ -47,30 +47,20 @@ class distribution_object_custom(distribution_guotu_object):
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'aprndid', object_id, self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'aprnwid', self._dataset.value_by_name(0, 'dsoparentobjid', ''), self.DB_True)
+            sync_dict_list, 'aprnwid', self._dataset.value_by_name(0, 'dsoparentobjid', ''),
+            self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dataformat', self._dataset.value_by_name(0, 'dsodatatype', ''),
             self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'project', self._dataset.value_by_name(0, 'dso_prj_project', ''),
             self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'zonationtype', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='zonationtype']"),
-        #     self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'centralmeridian',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='centralmeridian']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'projectbandno', self._dataset.value_by_name(0, 'projectbandno', ''), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'coordinateunit',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='coordinateunit']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'demname',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='demname']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'elevationdatum',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one('/root/elevationdatum'), self.DB_True)
+        # sync_dict_list, 'zonationtype'  # 为空
+        # sync_dict_list, 'centralmeridian'  # 为空
+        # sync_dict_list, 'projectbandno'  # 为空
+        # sync_dict_list, 'coordinateunit'  # 为空
+        # sync_dict_list, 'demname'  # 为空
+        # sync_dict_list, 'elevationdatum'  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsometadatajson',
             self._dataset.value_by_name(0, 'dsometadataxml_bus', ''),
@@ -78,14 +68,10 @@ class distribution_object_custom(distribution_guotu_object):
         # 插件处理字段
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''), self.DB_False)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'secrecylevel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='密级']"),
-        #     self.DB_True)
+        # sync_dict_list, 'secrecylevel'  # 为空
         # sync_dict['regioncode']  # 为空
         # sync_dict['regionname']  # 为空
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'resolution', metadataxml_bus_xml.get_element_text_by_xpath_one('Metadatafile/BasicDataContent/Resolution'),
-        #     self.DB_True)
+        # sync_dict_list, 'resolution'  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedate',
             CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),

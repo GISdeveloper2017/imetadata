@@ -55,54 +55,30 @@ class distribution_object_dem_noframe(distribution_guotu_object):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'projinfo', self._dataset.value_by_name(0, 'dso_prj_project', ''),
             self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'createrorganize', metadataxml_bus_xml.get_element_text_by_xpath_one(‘/root/zonationtype’),
-        #     self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'submitorganize',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one(‘/root/centralmeridian’), self.DB_False)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'copyrightorgnize', metadataxml_bus_xml.get_element_text_by_xpath_one(‘/root/projectbandno’), self.DB_False)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'supplyorganize',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one(‘/root/coordinateunit’), self.DB_True)
+        # sync_dict_list, 'createrorganize'  # 为空
+        # sync_dict_list, 'submitorganize'  # 为空
+        # sync_dict_list, 'copyrightorgnize'  # 为空
+        # sync_dict_list, 'supplyorganize'  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'metafilename',
             '{0}_21at.xml'.format(object_name), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'networksize',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one('/root/elevationdatum'), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'zonetype', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='zonationtype']"),
-        #     self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'centerline',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='centralmeridian']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'zoneno', self._dataset.value_by_name(0, 'projectbandno', ''), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'coordinateunit',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='coordinateunit']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'demname',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='demname']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'demstandard',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one('/root/elevationdatum'), self.DB_True)
+        # sync_dict_list, 'networksize'  # 为空
+        # sync_dict_list, 'zonetype'  # 为空
+        # sync_dict_list, 'centerline'  # 为空
+        # sync_dict_list, 'zoneno'  # 为空
+        # sync_dict_list, 'coordinateunit'  # 为空
+        # sync_dict_list, 'demname'  # 为空
+        # sync_dict_list, 'demstandard'  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsometadatajson', self._dataset.value_by_name(0, 'dsometadataxml_bus', ''),
             self.DB_True)
         # 插件处理字段
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'secrecylevel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='secrecylevel']"),
-        #     self.DB_True)    # 为空
+        # sync_dict_list, 'secrecylevel'  # 为空
         # sync_dict['regioncode']  # 为空
         # sync_dict['regionname']  # 为空
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'resolution', metadataxml_bus_xml.get_element_text_by_xpath_one('/root/resolution'),
-        #     self.DB_True)    # 为空
+        # sync_dict_list, 'resolution'  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedate',
             CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),

@@ -51,7 +51,7 @@ class distribution_object_mosaic(distribution_guotu_object):
         # numeric
         # sync_dict['productsize'] = "'{0}'".format()
         self.add_value_to_sync_dict_list(sync_dict, 'imagesource',xml.get_element_text_by_xpath_one('/Metadatafile/BasicDataContent/ImageSource'))
-        self.add_value_to_sync_dict_list(sync_dict, 'dsometadataxml',
+        self.add_value_to_sync_dict_list(sync_dict, 'dsometadatajson',
                                          object_table_data.value_by_name(0, 'dsometadataxml_bus', ''), self.DB_True)
         # 数据量
         # sync_dict['datacount'] = "''"

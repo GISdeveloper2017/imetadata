@@ -64,7 +64,7 @@ class distribution_object_dom(distribution_guotu_object):
                 sync_dict_list,'aprsdid', object_id,self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'aprswid', self._dataset.value_by_name(0, 'dsoparentobjid', ''), self.DB_True)
-        # sync_dict['fname']     #为空
+        # sync_dict['fname']   #为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'fno', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='th']"), self.DB_True)
         '''
@@ -152,7 +152,7 @@ class distribution_object_dom(distribution_guotu_object):
                 sync_dict_list, 'aprsdid', object_id, self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'aprswid', self._dataset.value_by_name(0, 'dsoparentobjid', ''), self.DB_True)
-        # sync_dict['fname']     # 为空
+        # sync_dict['fname']  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'fno', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='图号']"), self.DB_True)
         '''
@@ -235,7 +235,7 @@ class distribution_object_dom(distribution_guotu_object):
                 sync_dict_list, 'aprsdid', object_id, self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'aprswid', self._dataset.value_by_name(0, 'dsoparentobjid', ''), self.DB_True)
-        # sync_dict['fname']     # 为空
+        # sync_dict['fname']   # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'fno', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='图号']"), self.DB_True)
         '''
@@ -286,10 +286,10 @@ class distribution_object_dom(distribution_guotu_object):
         # sync_dict['supplyorganize']  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'colormodel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='影像色彩']"), self.DB_True)
-        # sync_dict['piexldepth']    # 为空
+        # sync_dict['piexldepth']  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'scale', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='比例尺分母']"), self.DB_True)
-        # sync_dict['mainrssource']   # 为空
+        # sync_dict['mainrssource']  # 为空
         # 插件处理字段
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''), self.DB_False)

@@ -77,6 +77,10 @@ class distribution_object_guoqing_frame(distribution_guotu_object):
         # int4
         self.add_value_to_sync_dict_list(sync_dict, 'zoneno', xml.get_element_text_by_xpath_one(
             '/Metadatafile/BasicDataContent/Mathfoundation/GaussKrugerZoneNo'))
+        self.add_value_to_sync_dict_list(sync_dict, 'demstandard', xml.get_element_text_by_xpath_one(
+            '/Metadatafile/BasicDataContent/Mathfoundation/HeightDatum'))
+        self.add_value_to_sync_dict_list(sync_dict, 'demname', xml.get_element_text_by_xpath_one(
+            '/Metadatafile/BasicDataContent/Mathfoundation/HeightSystem'))
         # self.add_value_to_sync_dict_list(sync_dict, 'sensor', xml.get_element_text_by_xpath_one(''))
         # self.add_value_to_sync_dict_list(sync_dict, 'sensorscode', xml.get_element_text_by_xpath_one(''))
         # self.add_value_to_sync_dict_list(sync_dict, 'cloudpercent', xml.get_element_text_by_xpath_one(''))
@@ -86,7 +90,7 @@ class distribution_object_guoqing_frame(distribution_guotu_object):
         # self.add_value_to_sync_dict_list(sync_dict, 'imagesource', xml.get_element_text_by_xpath_one(''))
         self.add_value_to_sync_dict_list(sync_dict, 'metafilename', xml.get_element_text_by_xpath_one(
             '/Metadatafile/BasicDataContent/MetaDataFileName'))
-        self.add_value_to_sync_dict_list(sync_dict, 'dsometadataxml',
+        self.add_value_to_sync_dict_list(sync_dict, 'dsometadatajson',
                                          object_table_data.value_by_name(0, 'dsometadataxml_bus', ''))
         # 数据量
         # self.add_value_to_sync_dict_list(sync_dict, 'datacount',xml.get_element_text_by_xpath_one(''),self.DB_False)
@@ -113,7 +117,7 @@ class distribution_object_guoqing_frame(distribution_guotu_object):
         # self.add_value_to_sync_dict_list(sync_dict, 'scale', xml.get_element_text_by_xpath_one(''))
         # 主要星源
         self.add_value_to_sync_dict_list(sync_dict, 'mainrssource',
-                                         xml.get_element_text_by_xpath_one('/Metadatafile/ImgSource/SateName'))
+                                         xml.get_element_text_by_xpath_one('/Metadatafile/SATEIMGSOURCE/SateName'))
         # 备注
         # self.add_value_to_sync_dict_list(sync_dict, 'remark', xml.get_element_text_by_xpath_one(''))
 
