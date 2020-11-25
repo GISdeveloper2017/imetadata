@@ -66,14 +66,14 @@ class CProcessUtils:
         pool.join()
         return res[0]
 
-    @classmethod
-    def processing_method_params(cls, method_name, parameter_list):
-        '''
-        多参数调用模式
-        '''
-        str_sign = ','
-        params_str = str_sign.join(parameter_list)
-        return cls.processing_method(method_name, params_str)
+    # @classmethod
+    # def processing_method_params(cls, method_name, parameter_list):
+    #     '''
+    #     多参数调用模式
+    #     '''
+    #     str_sign = ','
+    #     params_str = str_sign.join(parameter_list)
+    #     return cls.processing_method(method_name, params_str)
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ import numpy as np
 from PIL import Image
 from osgeo import gdal, gdalconst
 
+from imetadata.base.c_json import CJson
 from imetadata.base.c_processUtils import CProcessUtils
 from imetadata.base.c_time import CTime
 from imetadata.base.c_file import CFile
@@ -53,14 +54,16 @@ class CViewCreatorRaster(CViewCreator):
         geotiff_full_path = CFile.join_file(self.file_content.view_root_dir, view_relative_path_geotiff)
 
         # 进程调用模式
-        out_list = []
-        out_list.append(self.file_info.file_name_with_full_path)
-        out_list.append(browse_full_path)
-        out_list.append(thumb_full_path)
-        out_list.append(geotiff_full_path)
-        # result_view = CProcessUtils.processing_method(self.create_view, out_list)
-        result_view = self.create_view(self.file_info.file_name_with_full_path, browse_full_path, thumb_full_path,
-                                       geotiff_full_path)
+        json_out_view = CJson()
+        json_out_view.set_value_of_name('image_path', self.file_info.file_name_with_full_path)
+        json_out_view.set_value_of_name('browse_full_path', browse_full_path)
+        json_out_view.set_value_of_name('thumb_full_path', thumb_full_path)
+        json_out_view.set_value_of_name('geotiff_full_path', geotiff_full_path)
+
+        result_view = CProcessUtils.processing_method(self.create_view_json, json_out_view)
+        # result_view = self.create_view(self.file_info.file_name_with_full_path, browse_full_path, thumb_full_path,
+        #                                geotiff_full_path)
+        # result_view = self.create_view_json(json_out_view)
         if CResult.result_success(result_view):
             result = CResult.merge_result(self.Success, '处理完毕!')
             result = CResult.merge_result_info(result, self.Name_Browse, view_relative_path_browse)
@@ -68,6 +71,17 @@ class CViewCreatorRaster(CViewCreator):
             result = CResult.merge_result_info(result, self.Name_Browse_GeoTiff, view_relative_path_geotiff)
         else:
             result = CResult.merge_result(self.Failure, CResult.result_message(result_view))
+        return result
+
+    def create_view_json(self, params_json: CJson):
+        '''
+        设置为一个参数，供进程调用
+        '''
+        image_path = params_json.xpath_one('image_path', None)
+        browse_full_path = params_json.xpath_one('browse_full_path', None)
+        thumb_full_path = params_json.xpath_one('thumb_full_path', None)
+        geotiff_full_path = params_json.xpath_one('geotiff_full_path', None)
+        result = self.create_view(image_path,browse_full_path,thumb_full_path,geotiff_full_path)
         return result
 
     def create_view(self, image_path: str, browse_path: str, thumb_path: str, geotiff_path: str):
@@ -185,7 +199,7 @@ class CViewCreatorRaster(CViewCreator):
         band_count = target_ds.RasterCount
 
         # 检查影像波段数并读取
-        if band_count > 3:
+        if band_count >= 3:
             bandsOrder = [3, 2, 1]
             data = np.empty([rows, cols, 3], dtype=float)
             for i in range(3):
