@@ -682,13 +682,13 @@ class CPlugins(CResource):
                     parser.metadata.set_metadata_view(
                         self.DB_True,
                         '文件[{0}]的预览图成功加载! '.format(self.file_info.file_name_with_full_path),
-                        self.Name_Browse,
+                        self.View_MetaData_Type_Browse,
                         metadata_view_browse
                     )
                     parser.metadata.set_metadata_view(
                         self.DB_True,
                         '文件[{0}]的拇指图成功加载! '.format(self.file_info.file_name_with_full_path),
-                        self.Name_Thumb,
+                        self.View_MetaData_Type_Thumb,
                         metadata_view_thumb
                     )
                     return CResult.merge_result(
