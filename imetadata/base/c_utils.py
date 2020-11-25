@@ -484,7 +484,7 @@ class CUtils(CResource):
         @param default_value:
         @return:
         """
-        if obj is None:
+        if CUtils.equal_ignore_case(obj, ''):
             return default_value
         try:
             value = float(obj)
@@ -500,7 +500,7 @@ class CUtils(CResource):
         @param default_value:
         @return:
         """
-        if obj is None:
+        if CUtils.equal_ignore_case(obj, ''):
             return default_value
         try:
             value = int(obj)
