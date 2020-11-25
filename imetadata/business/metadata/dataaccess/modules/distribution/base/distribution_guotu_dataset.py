@@ -18,6 +18,20 @@ class distribution_guotu_dataset(distribution_guotu):
         info = super().information()
         return info
 
+    def access_check_dict(self) -> dict:  # 预留的方法，sync写完后再调
+        check_dict = dict()  # 如果有其他需要，则可以升级为json
+        check_dict['DSName'] = 'DSName'
+        check_dict['BeginDate'] = 'BeginDate'
+        check_dict['EndDate'] = 'EndDate'
+        check_dict['Date'] = 'Date'
+        check_dict['RegionCode'] = 'RegionCode'
+        check_dict['RegionName'] = 'RegionName'
+        check_dict['Resolution'] = 'Resolution'
+        check_dict['Remark'] = 'Remark'
+        check_dict['MajorSource'] = 'MajorSource'
+        check_dict['ScaleDenominator'] = 'ScaleDenominator'
+        return check_dict
+
     def get_sync_dict_list(self, insert_or_updata) -> list:
         """
         insert_or_updata 指明配置的是更新还是插入，-1时为插入，0为更新
@@ -120,7 +134,9 @@ class distribution_guotu_dataset(distribution_guotu):
             self.DB_False)
         # self.add_value_to_sync_dict_list(
         #     sync_dict_list, 'proj', object_table_data.value_by_name(0, 'dso_prj_coordinate', ''), self.DB_True)
-        # remark:暂时为空
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'remark',
+            dsometadataxml_xml.get_element_text_by_xpath_one('/root/Remark'))
         # ispublishservice:暂时为空
         if insert_or_updata:
             self.add_value_to_sync_dict_list(sync_dict_list, 'queryable', '1')
@@ -131,9 +147,7 @@ class distribution_guotu_dataset(distribution_guotu):
             sync_dict_list, 'scale',
             dsometadataxml_xml.get_element_text_by_xpath_one('/root/ScaleDenominator'))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'dsdid', object_table_data.value_by_name(0, 'query_directory_id', ''))
-        self.add_value_to_sync_dict_list(
-            sync_dict_list, 'dsfid', object_table_data.value_by_name(0, 'query_file_id', ''))
+            sync_dict_list, 'dsdid', object_table_data.value_by_name(0, 'query_dataset_directory_id', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedatetag',
             dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date').replace(r'[-/\.年月日]', '')[:8])

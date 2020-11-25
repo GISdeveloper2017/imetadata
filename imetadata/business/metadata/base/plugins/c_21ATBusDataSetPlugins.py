@@ -115,7 +115,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_string,
-                self.Name_Width: 100
+                self.Name_Width: 20
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -179,6 +179,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
                 self.Name_Title: 'Resolution',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_string,
                 self.Name_Width: 10
             },
@@ -189,8 +190,9 @@ class C21ATBusDataSetPlugins(CDirPlugins):
                 self.Name_Title: 'MajorSource',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_string,
-                self.Name_Width: 50
+                self.Name_Width: 38
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -199,7 +201,29 @@ class C21ATBusDataSetPlugins(CDirPlugins):
                 self.Name_Title: 'ScaleDenominator',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_string,
-                self.Name_Width: 50
+                self.Name_Width: 38
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//ProductType",
+                self.Name_ID: 'ProductType',
+                self.Name_Title: 'ProductType',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 38
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//Remark",
+                self.Name_ID: 'Remark',
+                self.Name_Title: 'Remark',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 500
             }
         ]
