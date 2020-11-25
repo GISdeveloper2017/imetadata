@@ -18,6 +18,7 @@ class CMDExtractorRaster(CMDExtractor):
         """
         out_metadata_file_fullname = CFile.join_file(self.file_content.work_root_dir, self.FileName_MetaData)
         raster_mdreader = CRasterMDReader(self.file_info.file_name_with_full_path)
+        # result = raster_mdreader.get_metadata_2_file(out_metadata_file_fullname)
         result = CProcessUtils.processing_method(raster_mdreader.get_metadata_2_file, out_metadata_file_fullname)
         # 进程调用模式
         # p_one = Process(target=raster_mdreader.get_metadata_2_file, args=(out_metadata_file_fullname,))

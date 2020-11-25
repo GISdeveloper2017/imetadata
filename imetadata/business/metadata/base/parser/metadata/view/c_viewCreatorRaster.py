@@ -22,6 +22,7 @@ class CViewCreatorRaster(CViewCreator):
     """
     单个影像抽取快视图、拇指图，生成重采样后的geotiff文件（可用于数据集（多个影像）抽取快视图）
     """
+
     def process(self) -> str:
         """
         完成 负责人 张源博、赵宇飞 在这里提取影像数据的快视图, 将元数据文件存储在self.file_content.view_root_dir下
@@ -42,12 +43,11 @@ class CViewCreatorRaster(CViewCreator):
         year = CTime.format_str(create_time, '%Y')
         month = CTime.format_str(create_time, '%m')
         day = CTime.format_str(create_time, '%d')
-        view_relative_path_browse = r'\{0}\{1}\{2}\{3}\{4}_browse.png'.format(object_def_type, year, month, day,
-                                                                             self.object_id)
-        view_relative_path_thumb = r'\{0}\{1}\{2}\{3}\{4}_thumb.jpg'.format(object_def_type, year, month, day,
-                                                                           self.object_id)
-        view_relative_path_geotiff = r'\{0}\{1}\{2}\{3}\{4}_browse.tiff'.format(object_def_type, year, month, day,
-                                                                               self.object_id)
+        relative_path_part = r'{0}\{1}\{2}\{3}'.format(object_def_type, year, month, day)  # 相对路径格式
+        view_relative_path_browse = r'\{0}\{1}_browse.png'.format(relative_path_part, self.object_id)
+        view_relative_path_thumb = r'\{0}\{1}_thumb.jpg'.format(relative_path_part, self.object_id)
+        view_relative_path_geotiff = r'\{0}\{1}_browse.tiff'.format(relative_path_part, self.object_id)
+
         browse_full_path = CFile.join_file(self.file_content.view_root_dir, view_relative_path_browse)
         thumb_full_path = CFile.join_file(self.file_content.view_root_dir, view_relative_path_thumb)
         geotiff_full_path = CFile.join_file(self.file_content.view_root_dir, view_relative_path_geotiff)
@@ -59,7 +59,8 @@ class CViewCreatorRaster(CViewCreator):
         out_list.append(thumb_full_path)
         out_list.append(geotiff_full_path)
         # result_view = CProcessUtils.processing_method(self.create_view, out_list)
-        result_view = self.create_view(self.file_info.file_name_with_full_path, browse_full_path, thumb_full_path, geotiff_full_path)
+        result_view = self.create_view(self.file_info.file_name_with_full_path, browse_full_path, thumb_full_path,
+                                       geotiff_full_path)
         if CResult.result_success(result_view):
             result = CResult.merge_result(self.Success, '处理完毕!')
             result = CResult.merge_result_info(result, self.Name_Browse, view_relative_path_browse)
@@ -140,8 +141,9 @@ class CViewCreatorRaster(CViewCreator):
             if os.path.exists(geotiff_path) and os.path.isfile(geotiff_path):  # 如果已存在同名影像
                 os.remove(geotiff_path)
             # 配置快视图内存临时文件browse_ds
-            CFile.check_and_create_directory(geotiff_path) # 创建目录
-            browse_ds = driver_source.Create(geotiff_path, xsize=browse_cols, ysize=browse_rows, bands=band_count, eType=data_type)
+            CFile.check_and_create_directory(geotiff_path)  # 创建目录
+            browse_ds = driver_source.Create(geotiff_path, xsize=browse_cols, ysize=browse_rows, bands=band_count,
+                                             eType=data_type)
             browse_ds.SetProjection(projection)
             browse_ds.SetGeoTransform(geo_transform)
             for index in range(band_count):
@@ -241,4 +243,3 @@ if __name__ == "__main__":
     out_list.append(r'D:\test\view\F47E001007BJ210M2017A_browse.tiff')
     view_creator = CViewCreatorRaster(r'D:\test\云南高分影像\F47\F47E001007BJ210M2017A.TIF')
     result = CProcessUtils.processing_method(view_creator.process(), out_list)
-
