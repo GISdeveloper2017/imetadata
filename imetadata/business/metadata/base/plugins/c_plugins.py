@@ -581,6 +581,12 @@ class CPlugins(CResource):
                         self.Name_End_Time,
                         endtime)
             # 将time, start_time和end_time进行格式化到日的修正处理（如2020变为20200101，202009变为20200901，其他的不变）
+            # 再次从json中获取（可能从ro_global_dim_time取值过了）
+            time_json = parser.metadata.time_information
+            time_text = time_json.xpath_one(self.Name_Time, '')
+            start_time_text = time_json.xpath_one(self.Name_Start_Time, '')
+            end_time_text = time_json.xpath_one(self.Name_End_Time, '')
+            # 格式化处理
             time_text_day = CUtils.to_day_format(time_text, time_text)
             start_time_text_day = CUtils.to_day_format(start_time_text, start_time_text)
             end_time_text_day = CUtils.to_day_format(end_time_text, end_time_text)
