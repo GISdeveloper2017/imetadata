@@ -35,8 +35,7 @@ class distribution_object_third_survey(distribution_guotu_object):
         xml.load_xml(dsometadataxml_bus)
 
         # 后处理流程介绍文档中的字段
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(sync_dict, 'aprtdid', object_table_id)
+        self.add_value_to_sync_dict_list(sync_dict, 'aprtdid', object_table_id)
         self.add_value_to_sync_dict_list(sync_dict, 'aprtwid', object_table_data.value_by_name(0, 'dsoparentobjid', ''))
         self.add_value_to_sync_dict_list(sync_dict, 'datatype', xml.get_element_text_by_xpath_one(
             '/root/property[@tablename="mbii"]/item[@name="sjgs"]'))
@@ -46,7 +45,7 @@ class distribution_object_third_survey(distribution_guotu_object):
             '/root/property[@tablename="mbii"]/item[@name="ysjwjm"]'))
         # numeric
         self.add_value_to_sync_dict_list(sync_dict, 'isfull', xml.get_element_text_by_xpath_one(
-            '/root/property[@tablename="mbii"]/item[@name="mfqk"]'), self.DB_False)
+            '/root/property[@tablename="mbii"]/item[@name="mfqk"]'))
         self.add_value_to_sync_dict_list(sync_dict, 'ellipsoidtype', xml.get_element_text_by_xpath_one(
             '/root/property[@tablename="mbii"]/item[@name="tqlx"]'))
         self.add_value_to_sync_dict_list(sync_dict, 'projinfo', xml.get_element_text_by_xpath_one(
@@ -57,7 +56,7 @@ class distribution_object_third_survey(distribution_guotu_object):
             '/root/property[@tablename="mbii"]/item[@name="fdfs"]'))
         # int4
         self.add_value_to_sync_dict_list(sync_dict, 'zoneno', CUtils().to_integer(xml.get_element_text_by_xpath_one(
-            '/root/property[@tablename="mbii"]/item[@name="gsklgtydh"]')), self.DB_False)
+            '/root/property[@tablename="mbii"]/item[@name="gsklgtydh"]')))
         self.add_value_to_sync_dict_list(sync_dict, 'coordinateunit', xml.get_element_text_by_xpath_one(
             '/root/property[@tablename="mbii"]/item[@name="zbdw"]'))
         self.add_value_to_sync_dict_list(sync_dict, 'dsometadatajson',
@@ -74,8 +73,7 @@ class distribution_object_third_survey(distribution_guotu_object):
         # 数据量
         self.add_value_to_sync_dict_list(sync_dict, 'datacount',
                                          xml.get_element_text_by_xpath_one(
-                                             '/root/property[@tablename="mbii"]/item[@name="sjl"]'),
-                                         self.DB_False)
+                                             '/root/property[@tablename="mbii"]/item[@name="sjl"]'))
         # 密级
         self.add_value_to_sync_dict_list(sync_dict, 'secrecylevel',
                                          xml.get_element_text_by_xpath_one(

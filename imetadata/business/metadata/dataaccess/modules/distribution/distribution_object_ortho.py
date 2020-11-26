@@ -35,8 +35,7 @@ class distribution_object_ortho(distribution_guotu_object):
         xml.load_xml(dsometadataxml_bus)
 
         # 后处理流程介绍文档中的字段
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(sync_dict, 'aprodid', object_table_id, self.DB_True)
+        self.add_value_to_sync_dict_list(sync_dict, 'aprodid', object_table_id, self.DB_True)
         self.add_value_to_sync_dict_list(sync_dict, 'aprowid', object_table_data.value_by_name(0, 'dsoparentobjid', ''),
                                          self.DB_True)
         self.add_value_to_sync_dict_list(sync_dict, 'sataname', xml.get_element_text_by_xpath_one(

@@ -59,9 +59,8 @@ class distribution_object_dom(distribution_guotu_object):
         metadataxml_bus_xml.load_xml(dsometadataxml_bus)
 
         sync_dict_list = self.get_sync_predefined_dict_list(insert_or_updata)
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(
-                sync_dict_list,'aprsdid', object_id,self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list,'aprsdid', object_id,self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'aprswid', self._dataset.value_by_name(0, 'dsoparentobjid', ''), self.DB_True)
         # sync_dict['fname']   #为空
@@ -110,7 +109,7 @@ class distribution_object_dom(distribution_guotu_object):
             sync_dict_list, 'mainrssource', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='wxmc']"), self.DB_True)
         # 插件处理字段
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''), self.DB_False)
+            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'secrecylevel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='mj']"), self.DB_True)
         # sync_dict['regioncode']  # 为空
@@ -147,9 +146,8 @@ class distribution_object_dom(distribution_guotu_object):
         metadataxml_bus_xml.load_xml(dsometadataxml_bus)
 
         sync_dict_list = self.get_sync_predefined_dict_list(insert_or_updata)
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprsdid', object_id, self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'aprsdid', object_id, self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'aprswid', self._dataset.value_by_name(0, 'dsoparentobjid', ''), self.DB_True)
         # sync_dict['fname']  # 为空
@@ -199,7 +197,7 @@ class distribution_object_dom(distribution_guotu_object):
             sync_dict_list, 'mainrssource', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='卫星名称']"), self.DB_True)
         # 插件处理字段
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''), self.DB_False)
+            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'secrecylevel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='密级']"), self.DB_True)
         # sync_dict['regioncode']  # 为空
@@ -230,9 +228,8 @@ class distribution_object_dom(distribution_guotu_object):
         metadataxml_bus_xml.load_xml(dsometadataxml_bus)
 
         sync_dict_list = self.get_sync_predefined_dict_list(insert_or_updata)
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprsdid', object_id, self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'aprsdid', object_id, self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'aprswid', self._dataset.value_by_name(0, 'dsoparentobjid', ''), self.DB_True)
         # sync_dict['fname']   # 为空
@@ -292,7 +289,7 @@ class distribution_object_dom(distribution_guotu_object):
         # sync_dict['mainrssource']  # 为空
         # 插件处理字段
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''), self.DB_False)
+            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'secrecylevel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='密级']"), self.DB_True)
         # sync_dict['regioncode']  # 为空

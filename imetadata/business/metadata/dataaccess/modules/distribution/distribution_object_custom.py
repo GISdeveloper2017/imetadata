@@ -43,9 +43,8 @@ class distribution_object_custom(distribution_guotu_object):
         metadataxml_bus_xml.load_xml(dsometadataxml_bus)
 
         sync_dict_list = self.get_sync_predefined_dict_list(insert_or_updata)
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprndid', object_id, self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'aprndid', object_id, self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'aprnwid', self._dataset.value_by_name(0, 'dsoparentobjid', ''),
             self.DB_True)
@@ -67,7 +66,7 @@ class distribution_object_custom(distribution_guotu_object):
             self.DB_True)
         # 插件处理字段
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''), self.DB_False)
+            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''))
         # sync_dict_list, 'secrecylevel'  # 为空
         # sync_dict['regioncode']  # 为空
         # sync_dict['regionname']  # 为空

@@ -34,8 +34,7 @@ class distribution_object_guoqing_frame(distribution_guotu_object):
         xml.load_xml(dsometadataxml_bus)
 
         # 后处理流程介绍文档中的字段
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(sync_dict, 'aprgdid', object_table_id)
+        self.add_value_to_sync_dict_list(sync_dict, 'aprgdid', object_table_id)
         # self.add_value_to_sync_dict_list(sync_dict, 'rowno', xml.get_element_text_by_xpath_one(''))
         # self.add_value_to_sync_dict_list(sync_dict, 'colno', xml.get_element_text_by_xpath_one(''))
         self.add_value_to_sync_dict_list(sync_dict, 'sfno', xml.get_element_text_by_xpath_one(
@@ -70,11 +69,6 @@ class distribution_object_guoqing_frame(distribution_guotu_object):
         self.add_value_to_sync_dict_list(sync_dict, 'submitorganize', xml.get_element_text_by_xpath_one(
             '/Metadatafile/BasicDataContent/Owner'))
         # int4
-        self.add_value_to_sync_dict_list(sync_dict, 'bandcount', xml.get_element_text_by_xpath_one(
-            '/Metadatafile/ImgSource/MultiBand/MultiBandNum'), self.DB_False)
-        self.add_value_to_sync_dict_list(sync_dict, 'bandname', xml.get_element_text_by_xpath_one(
-            '/Metadatafile/ImgSource/MultiBand/MultiBandName'))
-        # int4
         self.add_value_to_sync_dict_list(sync_dict, 'zoneno', xml.get_element_text_by_xpath_one(
             '/Metadatafile/BasicDataContent/Mathfoundation/GaussKrugerZoneNo'))
         self.add_value_to_sync_dict_list(sync_dict, 'demstandard', xml.get_element_text_by_xpath_one(
@@ -93,7 +87,7 @@ class distribution_object_guoqing_frame(distribution_guotu_object):
         self.add_value_to_sync_dict_list(sync_dict, 'dsometadatajson',
                                          object_table_data.value_by_name(0, 'dsometadataxml_bus', ''))
         # 数据量
-        # self.add_value_to_sync_dict_list(sync_dict, 'datacount',xml.get_element_text_by_xpath_one(''),self.DB_False)
+        # self.add_value_to_sync_dict_list(sync_dict, 'datacount',xml.get_element_text_by_xpath_one(''))
         # 密级
         self.add_value_to_sync_dict_list(sync_dict, 'secrecylevel',
                                          xml.get_element_text_by_xpath_one(

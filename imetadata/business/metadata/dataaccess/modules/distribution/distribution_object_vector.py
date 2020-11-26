@@ -30,9 +30,10 @@ class distribution_object_vector(distribution_guotu):
         sync_dict_list = list()
         object_table_id = self._obj_id  # 获取oid
         object_table_data = self._dataset
-        if insert_or_updata:  # 如果为更新，则不需要主键
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprid', object_table_id)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'aprid', object_table_id)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'apvid', object_table_id)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'productname', object_table_data.value_by_name(0, 'dsoobjectname', ''))
         self.add_value_to_sync_dict_list(
@@ -42,13 +43,11 @@ class distribution_object_vector(distribution_guotu):
         now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'addtime', now_time)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'queryable', '0')
         if insert_or_updata:
             self.add_value_to_sync_dict_list(
-                sync_dict_list, 'queryable', '0')
-            self.add_value_to_sync_dict_list(
                 sync_dict_list, 'isdel', '0')
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'apvid', object_table_id)
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsno', object_table_data.value_by_name(0, 'dsoparentobjid', ''))

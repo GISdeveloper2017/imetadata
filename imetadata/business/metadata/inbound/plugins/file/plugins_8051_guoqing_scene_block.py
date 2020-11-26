@@ -36,7 +36,7 @@ class plugins_8051_guoqing_scene_block(CFilePlugins_GUOTU_GuoQing):
         information[self.Plugins_Info_Type] = self.Object_Def_Type_Guoqing_Scene
         information[self.Plugins_Info_Code] = '02010302'
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
-        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_scene'
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_guoqing_scene'
         return information
 
     def classified(self):

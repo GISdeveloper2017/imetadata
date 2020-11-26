@@ -51,9 +51,8 @@ class distribution_guotu_dataset(distribution_guotu):
         sync_dict_list = list()
         object_table_id = self._obj_id
         object_table_data = self._dataset
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprid', object_table_id)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'aprid', object_table_id)
 
         dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml_bus', '')
         dsometadataxml_xml = CXml()
@@ -138,8 +137,7 @@ class distribution_guotu_dataset(distribution_guotu):
             sync_dict_list, 'remark',
             dsometadataxml_xml.get_element_text_by_xpath_one('/root/Remark'))
         # ispublishservice:暂时为空
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(sync_dict_list, 'queryable', '1')
+        self.add_value_to_sync_dict_list(sync_dict_list, 'queryable', '1')
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'mainrssource',
             dsometadataxml_xml.get_element_text_by_xpath_one('/root/MajorSource'))

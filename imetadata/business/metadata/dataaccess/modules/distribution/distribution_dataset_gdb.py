@@ -27,9 +27,10 @@ class distribution_dataset_gdb(distribution_guotu):
         sync_dict_list = list()
         object_table_id = self._obj_id  # 获取oid
         object_table_data = self._dataset
-        if insert_or_updata:  # 如果为更新，则不需要主键
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprid', object_table_id)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'aprid', object_table_id)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'aprvdid1', object_table_id)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'productname', object_table_data.value_by_name(0, 'dsoobjectname', ''))
         self.add_value_to_sync_dict_list(
@@ -39,15 +40,13 @@ class distribution_dataset_gdb(distribution_guotu):
         now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'addtime', now_time)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'queryable', '1')
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'dstype', '1')
         if insert_or_updata:
             self.add_value_to_sync_dict_list(
-                sync_dict_list, 'queryable', '1')
-            self.add_value_to_sync_dict_list(
                 sync_dict_list, 'isdel', '0')
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprvdid1', object_table_id)
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'dstype', '1')
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsnamed', object_table_data.value_by_name(0, 'dsoobjectname', ''))

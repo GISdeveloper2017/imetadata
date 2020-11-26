@@ -34,8 +34,7 @@ class distribution_object_guoqing_scene(distribution_guotu_object):
         xml.load_xml(dsometadataxml_bus)
 
         # 后处理流程介绍文档中的字段
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(sync_dict, 'aprgdid', object_table_id)
+        self.add_value_to_sync_dict_list(sync_dict, 'aprgdid', object_table_id)
         self.add_value_to_sync_dict_list(sync_dict, 'aprgwid', object_table_data.value_by_name(0, 'dsoparentobjid', ''))
         self.add_value_to_sync_dict_list(sync_dict, 'datatype', xml.get_element_text_by_xpath_one(
             '/Metadatafile/BasicDataContent/DataFormat'))
@@ -45,7 +44,7 @@ class distribution_object_guoqing_scene(distribution_guotu_object):
             '/Metadatafile/ImgSource/PanBand/PBandSensorType'))
         # numeric
         self.add_value_to_sync_dict_list(sync_dict, 'panresolution', xml.get_element_text_by_xpath_one(
-            '/Metadatafile/ImgSource/PanBand/SateResolution'), self.DB_False)
+            '/Metadatafile/ImgSource/PanBand/SateResolution'))
         self.add_value_to_sync_dict_list(sync_dict, 'pantraceno', xml.get_element_text_by_xpath_one(
             '/Metadatafile/ImgSource/PanBand/PBandOribitCode'))
         # self.add_value_to_sync_dict_list(sync_dict, 'panimagedate', xml.get_element_text_by_xpath_one(''))
@@ -57,12 +56,12 @@ class distribution_object_guoqing_scene(distribution_guotu_object):
         self.add_value_to_sync_dict_list(sync_dict, 'mssensorname', xml.get_element_text_by_xpath_one(
             '/Metadatafile/ImgSource/MultiBand/MultiBandSensorType'))
         self.add_value_to_sync_dict_list(sync_dict, 'msresolution', xml.get_element_text_by_xpath_one(
-            '/Metadatafile/ImgSource/MultiBand/MultiBandResolution'), self.DB_False)
+            '/Metadatafile/ImgSource/MultiBand/MultiBandResolution'))
         self.add_value_to_sync_dict_list(sync_dict, 'mstraceno', xml.get_element_text_by_xpath_one(
             '/Metadatafile/ImgSource/MultiBand/MultiBandOrbitCode'))
         # self.add_value_to_sync_dict_list(sync_dict, 'msimagedate', xml.get_element_text_by_xpath_one(''))
         self.add_value_to_sync_dict_list(sync_dict, 'bandcount', xml.get_element_text_by_xpath_one(
-            '/Metadatafile/ImgSource/MultiBand/MultiBandNum'), self.DB_False)
+            '/Metadatafile/ImgSource/MultiBand/MultiBandNum'))
         self.add_value_to_sync_dict_list(sync_dict, 'bandname', xml.get_element_text_by_xpath_one(
             '/Metadatafile/ImgSource/MultiBand/MultiBandName'))
         # self.add_value_to_sync_dict_list(sync_dict, 'bandide', xml.get_element_text_by_xpath_one(''))

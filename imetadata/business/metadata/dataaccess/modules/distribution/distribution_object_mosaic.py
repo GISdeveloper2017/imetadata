@@ -34,8 +34,7 @@ class distribution_object_mosaic(distribution_guotu_object):
         xml.load_xml(dsometadataxml_bus)
 
         # 后处理流程介文档中的字段
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(sync_dict, 'aprmwid', object_table_id, self.DB_True)
+        self.add_value_to_sync_dict_list(sync_dict, 'aprmwid', object_table_id, self.DB_True)
         # sync_dict['datatype'] = "'{0}'".format()
         # sync_dict['projinfo'] = "'{0}'".format()
         # sync_dict['zonetype'] = "'{0}'".format()
