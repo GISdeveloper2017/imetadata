@@ -109,9 +109,6 @@ class distribution_guotu_dataset(distribution_guotu):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'producetime',
             CUtils.to_day_format(dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date'), ''))
-        now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
-        self.add_value_to_sync_dict_list(
-            sync_dict_list, 'addtime', now_time)
         self.add_value_to_sync_dict_list(  # resolution:分辨率
             sync_dict_list, 'resolution',
             dsometadataxml_xml.get_element_text_by_xpath_one('/root/Resolution'))
@@ -127,6 +124,9 @@ class distribution_guotu_dataset(distribution_guotu):
         # piexldepth:交插件处理
         if insert_or_updata:
             self.add_value_to_sync_dict_list(sync_dict_list, 'isdel', '0')
+            now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'addtime', now_time)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'extent',
             "(select gds_geo_bbox from ro_global_dim_space where gdscode='{0}')".format(regioncode),

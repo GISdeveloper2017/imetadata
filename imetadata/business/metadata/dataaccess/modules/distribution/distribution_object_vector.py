@@ -4,10 +4,7 @@
 # @File : distribution_object_vector.py
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu import distribution_guotu
 import datetime
-from imetadata.base.c_json import CJson
-from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
-from imetadata.base.c_xml import CXml
 
 
 class distribution_object_vector(distribution_guotu):
@@ -40,14 +37,14 @@ class distribution_object_vector(distribution_guotu):
             sync_dict_list, 'producttype', object_table_data.value_by_name(0, 'dsodcode', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsodatatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
-        now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
-        self.add_value_to_sync_dict_list(
-            sync_dict_list, 'addtime', now_time)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'queryable', '0')
         if insert_or_updata:
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'isdel', '0')
+            now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'addtime', now_time)
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsno', object_table_data.value_by_name(0, 'dsoparentobjid', ''))
@@ -93,23 +90,23 @@ class distribution_object_vector(distribution_guotu):
             sync_dict_list, 'dsfid', object_table_data.value_by_name(0, 'query_file_id', ''))
 
         # 时间信息
-        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
+        self.add_value_to_sync_dict_list(
             sync_dict_list, 'begdate', object_table_data.value_by_name(0, 'query_directory_lastmodifytime', ''))
 
-        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
+        self.add_value_to_sync_dict_list(
             sync_dict_list, 'enddate', object_table_data.value_by_name(0, 'query_directory_lastmodifytime', ''))
 
-        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
+        self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedate', object_table_data.value_by_name(0, 'query_directory_lastmodifytime', ''))
 
-        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
+        self.add_value_to_sync_dict_list(
             sync_dict_list, 'producetime', object_table_data.value_by_name(0, 'query_directory_lastmodifytime', ''))
 
-        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
+        self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedatetag',
             object_table_data.value_by_name(0, 'query_directory_lastmodifytime', '').replace(r'[-/\.年月日]', '')[:8])
 
-        self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
+        self.add_value_to_sync_dict_list(
             sync_dict_list, 'centerx',
             "st_x(st_centroid("
             "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"

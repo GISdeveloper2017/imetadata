@@ -37,9 +37,6 @@ class distribution_dataset_gdb(distribution_guotu):
             sync_dict_list, 'producttype', object_table_data.value_by_name(0, 'dsodcode', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsodatatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
-        now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
-        self.add_value_to_sync_dict_list(
-            sync_dict_list, 'addtime', now_time)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'queryable', '1')
         self.add_value_to_sync_dict_list(
@@ -47,9 +44,19 @@ class distribution_dataset_gdb(distribution_guotu):
         if insert_or_updata:
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'isdel', '0')
+            now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'addtime', now_time)
 
+        # self.add_value_to_sync_dict_list(
+        #     sync_dict_list, 'dsnamed', object_table_data.value_by_name(0, 'dsoobjectname', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'dsnamed', object_table_data.value_by_name(0, 'dsoobjectname', ''))
+            sync_dict_list, 'dsnamed',
+            '''
+            (select array_to_string(array_agg(dsoobjectname), '/') 
+            from dm2_storage_object where dsoparentobjid='{0}')
+            '''.format(object_table_id),
+            self.DB_False)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'busitype', object_table_data.value_by_name(0, 'dsoobjecttype', ''))
 

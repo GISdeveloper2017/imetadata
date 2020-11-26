@@ -110,9 +110,6 @@ class distribution_guotu_object(distribution_guotu):
             sync_dict_list, 'producetime',
             CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),
             self.DB_True)
-        now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
-        self.add_value_to_sync_dict_list(
-            sync_dict_list, 'addtime', now_time, self.DB_True)
         # resolution:分辨率，交插件处理
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imgsize',
@@ -124,6 +121,9 @@ class distribution_guotu_object(distribution_guotu):
         if insert_or_updata:
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'isdel', '0')
+            now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'addtime', now_time, self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'extent',
             "(select dso_geo_bb_native from dm2_storage_object where dsoid='{0}')".format(object_table_id),
