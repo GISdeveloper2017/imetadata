@@ -2,6 +2,7 @@
 # @Time : 2020/9/25 08:05 
 # @Author : 王西亚 
 # @File : c_tagsParser.py
+from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.c_parser import CParser
@@ -147,7 +148,10 @@ class CTagsParser(CParser):
             sql_tag_update_tuple = (sql_temp, params)
             sql_tag_update_list.append(sql_tag_update_tuple)
         if len(sql_tag_update_list) > 0:
-            if not CFactory().give_me_db(self.file_info.db_server_id).execute_batch(sql_tag_update_list):
+            try:
+                CFactory().give_me_db(self.file_info.db_server_id).execute_batch(sql_tag_update_list)
+            except Exception as error:
+                CLogger().warning('数据库处理出现异常, 错误信息为: {0}'.format(error.__str__()))
                 return CResult.merge_result(self.Failure, '处理失败!')
         return CResult.merge_result(self.Success, '处理完毕!')
 

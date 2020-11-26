@@ -118,9 +118,11 @@ class CDetailParser(CParser):
             sql_detail_insert_params_list.append(sql_params_tuple)
 
         if len(sql_detail_insert_params_list) > 0:
-            if not CFactory().give_me_db(self.file_info.db_server_id).execute_batch(sql_detail_insert_params_list):
+            try:
+                CFactory().give_me_db(self.file_info.db_server_id).execute_batch(sql_detail_insert_params_list)
+            except Exception as error:
+                CLogger().warning('数据库处理出现异常, 错误信息为: {0}'.format(error.__str__()))
                 return CResult.merge_result(self.Failure, '处理失败!')
-
         return CResult.merge_result(self.Success, '处理完毕!')
 
     def _before_process(self):
