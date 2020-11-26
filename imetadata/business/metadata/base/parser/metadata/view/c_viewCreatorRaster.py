@@ -74,19 +74,21 @@ class CViewCreatorRaster(CViewCreator):
         return result
 
     def create_view_json(self, params_json: CJson):
-        '''
+        """
         设置为一个参数，供进程调用
-        '''
+        """
         image_path = params_json.xpath_one('image_path', None)
         browse_full_path = params_json.xpath_one('browse_full_path', None)
         thumb_full_path = params_json.xpath_one('thumb_full_path', None)
         geotiff_full_path = params_json.xpath_one('geotiff_full_path', None)
-        result = self.create_view(image_path,browse_full_path,thumb_full_path,geotiff_full_path)
+        result = self.create_view(image_path, browse_full_path, thumb_full_path, geotiff_full_path)
         return result
 
     def create_view(self, image_path: str, browse_path: str, thumb_path: str, geotiff_path: str):
         """
-        由影像文件生成拇指图(jpg)、快视图(png),支持多波段影像、单波段影像
+        由影像文件生成拇指图(jpg)、快视图(png)。
+        对多波段影像、单波段影像，波段数据类型为Byte（8位无符号整型）、UInt16（16位无符号整型）、Int16（16位有符号整型）的影像，均可进行转换。
+        注意：转换过程中重采样会生成影像临时文件(tiff),保留原影像基本信息，仅压缩影像尺寸。
         快视图：500*xxx（width固定为500，height根据对应比例计算）
         拇指图：50*50（按固定尺寸生成）
         :param image_path: 单个影像文件
@@ -117,9 +119,9 @@ class CViewCreatorRaster(CViewCreator):
             geo_transform = list(source_ds.GetGeoTransform())
             in_band1 = source_ds.GetRasterBand(1)
             data_type = in_band1.DataType
-            # 获取MEM的驱动（GDAL内存文件）、原影像文件驱动
+            # 获取MEM的驱动（GDAL内存文件）、GTiff驱动
             driver_mem = gdal.GetDriverByName('MEM')
-            driver_source = source_ds.GetDriver()
+            driver_GeoTiff = gdal.GetDriverByName('GTiff')
 
             # 制作拇指图
             # 设置拇指图尺寸
@@ -156,8 +158,8 @@ class CViewCreatorRaster(CViewCreator):
                 os.remove(geotiff_path)
             # 配置快视图内存临时文件browse_ds
             CFile.check_and_create_directory(geotiff_path)  # 创建目录
-            browse_ds = driver_source.Create(geotiff_path, xsize=browse_cols, ysize=browse_rows, bands=band_count,
-                                             eType=data_type)
+            browse_ds = driver_GeoTiff.Create(geotiff_path, xsize=browse_cols, ysize=browse_rows, bands=band_count,
+                                              eType=data_type)
             browse_ds.SetProjection(projection)
             browse_ds.SetGeoTransform(geo_transform)
             for index in range(band_count):
@@ -169,7 +171,7 @@ class CViewCreatorRaster(CViewCreator):
                 out_band.ComputeBandStats(False)
             # </editor-fold>
 
-            # 由重采样后影像制作快视图、拇指图
+            # 由重采样后的影像制作快视图、拇指图
             browse_path = self.image2view(browse_ds, browse_path)
             thumb_path = self.image2view(thumb_ds, thumb_path)
 
@@ -190,62 +192,81 @@ class CViewCreatorRaster(CViewCreator):
     def image2view(self, target_ds, view_path: str) -> str:
         """
         影像文件转jpg或png
-        :param target_ds: 影像临时文件
+        对波段数据类型为Byte（8位无符号整型）的影像，可采用gdal.Translate()方法直接进行文件格式转换。
+        对波段数据类型为UInt16（16位无符号整型）、Int16（16位有符号整型）的影像：
+        由于JPEG不支持16位影像的转换，且PNG转换效果非常不理想，图像轮廓模糊。
+        因此对16位影像采用百分比截断的方法压缩至0~255的范围，改变了像素深度，降低到8位。
+        该方法生成的快视图的转换效果与gdal.Translate()方法生成的相比，图像轮廓清晰，可辨识度高。
+        注：gdal == 3.1.3
+        :param target_ds: 影像临时文件的数据集
         :param view_path: 快视图或拇指图文件地址
         :return:
         """
         cols = target_ds.RasterXSize
         rows = target_ds.RasterYSize
         band_count = target_ds.RasterCount
+        band = target_ds.GetRasterBand(1)
+        data_type_name = gdal.GetDataTypeName(band.DataType)
 
-        # 检查影像波段数并读取
-        if band_count >= 3:
-            bandsOrder = [3, 2, 1]
-            data = np.empty([rows, cols, 3], dtype=float)
-            for i in range(3):
-                band = target_ds.GetRasterBand(bandsOrder[i])
-                data1 = band.ReadAsArray(0, 0, cols, rows)
-                data[:, :, i] = data1
-
+        # 检查影像位深度（波段数据类型）
+        if CUtils.equal_ignore_case(data_type_name, 'Byte'):
+            # 对波段数据类型为Byte（8位无符号整型）的影像进行转换
             if CFile.check_and_create_directory(view_path):
-                # 百分比截断压缩影像，将像元取值限定在0~255
-                lower_percent = 0.6
-                higher_percent = 99.4
-                n = data.shape[2]
-                out = np.zeros_like(data, dtype=np.uint8)
-                for i in range(n):
+                if CFile.file_ext(view_path).lower() == 'jpg':
+                    out = gdal.Translate(view_path, target_ds, format='JPEG')
+                elif CFile.file_ext(view_path).lower() == 'png':
+                    out = gdal.Translate(view_path, target_ds, format='PNG')
+        else:
+            # 对波段数据类型为UInt16（16位无符号整型）、Int16（16位有符号整型）的影像进行转换
+            # 检查影像波段数并读取
+            if band_count >= 3:
+                bandsOrder = [3, 2, 1]
+                data = np.empty([rows, cols, 3], dtype=float)
+                for i in range(3):
+                    band = target_ds.GetRasterBand(bandsOrder[i])
+                    data1 = band.ReadAsArray(0, 0, cols, rows)
+                    data[:, :, i] = data1
+
+                if CFile.check_and_create_directory(view_path):
+                    # 百分比截断压缩影像，将像元取值限定在0~255
+                    lower_percent = 0.6
+                    higher_percent = 99.4
+                    n = data.shape[2]
+                    out = np.zeros_like(data, dtype=np.uint8)
+                    for i in range(n):
+                        a = 0
+                        b = 255
+                        c = np.percentile(data[:, :, i], lower_percent)
+                        d = np.percentile(data[:, :, i], higher_percent)
+                        t = a + (data[:, :, i] - c) * (b - a) / (d - c)
+                        t[t < a] = a
+                        t[t > b] = b
+                        out[:, :, i] = t
+                    outImg = Image.fromarray(np.uint8(out))
+                    outImg.save(view_path)
+            else:
+                data = np.empty([rows, cols], dtype=float)
+                band = target_ds.GetRasterBand(1)
+                data1 = band.ReadAsArray(0, 0, cols, rows)
+                data[:, :] = data1
+
+                if CFile.check_and_create_directory(view_path):
+                    # 百分比截断压缩影像，将像元取值限定在0~255
+                    lower_percent = 0.6
+                    higher_percent = 99.4
+                    out = np.zeros_like(data, dtype=np.uint8)
                     a = 0
                     b = 255
-                    c = np.percentile(data[:, :, i], lower_percent)
-                    d = np.percentile(data[:, :, i], higher_percent)
-                    t = a + (data[:, :, i] - c) * (b - a) / (d - c)
+                    c = np.percentile(data[:, :], lower_percent)
+                    d = np.percentile(data[:, :], higher_percent)
+                    t = a + (data[:, :] - c) * (b - a) / (d - c)
                     t[t < a] = a
                     t[t > b] = b
-                    out[:, :, i] = t
-                outImg = Image.fromarray(np.uint8(out))
-                outImg.save(view_path)
-        else:
-            data = np.empty([rows, cols], dtype=float)
-            band = target_ds.GetRasterBand(1)
-            data1 = band.ReadAsArray(0, 0, cols, rows)
-            data[:, :] = data1
-
-            if CFile.check_and_create_directory(view_path):
-                # 百分比截断压缩影像，将像元取值限定在0~255
-                lower_percent = 0.6
-                higher_percent = 99.4
-                out = np.zeros_like(data, dtype=np.uint8)
-                a = 0
-                b = 255
-                c = np.percentile(data[:, :], lower_percent)
-                d = np.percentile(data[:, :], higher_percent)
-                t = a + (data[:, :] - c) * (b - a) / (d - c)
-                t[t < a] = a
-                t[t > b] = b
-                out[:, :] = t
-                outImg = Image.fromarray(np.uint8(out))
-                outImg.save(view_path)
+                    out[:, :] = t
+                    outImg = Image.fromarray(np.uint8(out))
+                    outImg.save(view_path)
         del target_ds
+        del out
         return view_path
 
 
