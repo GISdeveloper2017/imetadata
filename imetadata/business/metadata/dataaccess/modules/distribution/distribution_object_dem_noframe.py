@@ -17,7 +17,7 @@ class distribution_object_dem_noframe(distribution_guotu_object):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = 'DEM_非分幅'
-        info['table_name'] = 'ap3_product_rsp_nmosaic_detail'
+        info['table_name'] = 'ap3_product_rsp_ndem_detail'
         return info
 
     def get_sync_dict_list(self, insert_or_updata) -> list:
@@ -26,13 +26,14 @@ class distribution_object_dem_noframe(distribution_guotu_object):
         本方法的写法为强规则，调用add_value_to_sync_dict_list配置
         第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
         """
-
-        # object_id = self._obj_id
-        # object_name = self._obj_name
         return self.get_sync_xml_dict_list(insert_or_updata)
 
     def get_sync_xml_dict_list(self, insert_or_updata) -> list:
-
+        """
+                insert_or_updata 中 self.DB_True为insert，DB_False为updata
+                本方法的写法为强规则，调用add_value_to_sync_dict_list配置
+                第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
+                """
         object_id = self._obj_id
         object_name = self._obj_name
         dsometadataxml_bus = self._dataset.value_by_name(0, 'dsometadataxml_bus', '')
@@ -52,39 +53,32 @@ class distribution_object_dem_noframe(distribution_guotu_object):
             sync_dict_list, 'dataformat', self._dataset.value_by_name(0, 'dsodatatype', ''),
             self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'project', self._dataset.value_by_name(0, 'dso_prj_project', ''),
+            sync_dict_list, 'projinfo', self._dataset.value_by_name(0, 'dso_prj_project', ''),
             self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'zonationtype', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='zonationtype']"),
-        #     self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'centralmeridian',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='centralmeridian']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'projectbandno', self._dataset.value_by_name(0, 'projectbandno', ''), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'coordinateunit',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='coordinateunit']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'demname',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='demname']"), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'elevationdatum',
-        #     metadataxml_bus_xml.get_element_text_by_xpath_one('/root/elevationdatum'), self.DB_True)
+        # sync_dict_list, 'createrorganize'  # 为空
+        # sync_dict_list, 'submitorganize'  # 为空
+        # sync_dict_list, 'copyrightorgnize'  # 为空
+        # sync_dict_list, 'supplyorganize'  # 为空
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'dsometadataxml', self._dataset.value_by_name(0, 'dsometadataxml', ''),
+            sync_dict_list, 'metafilename',
+            '{0}_21at.xml'.format(object_name), self.DB_True)
+        # sync_dict_list, 'networksize'  # 为空
+        # sync_dict_list, 'zonetype'  # 为空
+        # sync_dict_list, 'centerline'  # 为空
+        # sync_dict_list, 'zoneno'  # 为空
+        # sync_dict_list, 'coordinateunit'  # 为空
+        # sync_dict_list, 'demname'  # 为空
+        # sync_dict_list, 'demstandard'  # 为空
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'dsometadatajson', self._dataset.value_by_name(0, 'dsometadataxml_bus', ''),
             self.DB_True)
         # 插件处理字段
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''), self.DB_True)
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'secrecylevel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='secrecylevel']"),
-        #     self.DB_True)    # 为空
+        # sync_dict_list, 'secrecylevel'  # 为空
         # sync_dict['regioncode']  # 为空
         # sync_dict['regionname']  # 为空
-        # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'resolution', metadataxml_bus_xml.get_element_text_by_xpath_one('/root/resolution'),
-        #     self.DB_True)    # 为空
+        # sync_dict_list, 'resolution'  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedate',
             CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),

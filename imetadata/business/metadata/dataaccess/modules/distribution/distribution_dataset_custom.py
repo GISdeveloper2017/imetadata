@@ -4,25 +4,40 @@
 # @File : distribution_dataset_custom.py
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_dataset import \
     distribution_guotu_dataset
+from imetadata.base.c_xml import CXml
 
 
 class distribution_dataset_custom(distribution_guotu_dataset):
     """
-    todo 李宪 数据检索分发模块对自定义数据集类型数据
+    完成 数据检索分发模块对自定义数据集类型数据
     """
 
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '自定义数据集'
-        info['table_name'] = ''
+        info['table_name'] = 'ap3_product_rsp_nmosaic_whole'
         return info
 
-    def get_sync_dict(self) -> dict:
+    def get_sync_dict_list(self, insert_or_updata) -> list:
         """
-        本方法的写法为强规则，字典key为字段名，字典value为对应的值或者sql语句，在写时需要加语句号，子查询语句加(),值加‘’
-        子查询：sync_dict['字段名']=“(select 字段 from 表 where id=‘1’)”
-        值：sync_dict['字段名']=“‘值’”
-        同时，配置插件方法时请在information()方法中添加info['table_name'] = '表名'的字段
+        insert_or_updata 中 self.DB_True为insert，DB_False为updata
+        本方法的写法为强规则，调用add_value_to_sync_dict_list配置
+        第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
         """
-        sync_dict = dict()
-        return sync_dict
+        sync_dict_list = self.get_sync_predefined_dict_list(insert_or_updata)
+        object_table_id = self._obj_id
+        object_table_data = self._dataset
+        if insert_or_updata:
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'aprnwid', object_table_id)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'datatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
+
+        dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml_bus', '')
+        dsometadataxml_xml = CXml()
+        dsometadataxml_xml.load_xml(dsometadataxml)  # 加载查询出来的xml
+        self.add_value_to_sync_dict_list(sync_dict_list, 'dsometadatajson', dsometadataxml)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'sensors',
+            '{{0}}'.format(dsometadataxml_xml.get_element_text_by_xpath_one('/root/MajorSource')))
+        return sync_dict_list

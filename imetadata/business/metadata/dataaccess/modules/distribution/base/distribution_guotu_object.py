@@ -22,82 +22,22 @@ class distribution_guotu_object(distribution_guotu):
         info = super().information()
         return info
 
-    def _do_access(self):
-        try:
-            quality_xml = self._quality_info  # 获取质检xml
-            access_Wait_flag = self.DB_False  # 定义等待标志，为True则存在检查项目为等待
-            access_Forbid_flag = self.DB_False  # 定义禁止标志，为True则存在检查项目为禁止
-            message = ''
-            # 注释代码在sync稳定后进行调整
-            # for qa_node_id in self.access_check_list():  # 循环写好的检查列表
-            #     qa_node = quality_xml.xpath_one("//item[@id='{0}']".format(qa_node_id))  # 查询xml中的节点
-            #     if qa_node is not None:
-            #         node_result = CXml.get_attr(qa_node, self.Name_Result, '')  # 获取质检结果
-            #         if CUtils.equal_ignore_case(node_result, self.QA_Result_Pass):
-            #             pass
-            #         elif CUtils.equal_ignore_case(node_result, self.QA_Result_Warn):  # 警告则等待
-            #             access_Wait_flag = self.DB_True
-            #         else:  # 错误以及其他情况，比如''，或者为其他字段
-            #             access_Forbid_flag = self.DB_True
-            #             break  # 存在禁止就直接跳出
-            #     else:
-            #         access_Forbid_flag = self.DB_True
-            #         break  # 存在禁止就直接跳出
-
-            # 上面代码之后调整，先用下面代码写sync的内容
-            # 检查级别为warn的项目
-            qa_warn_node_list = CXml.node_xpath(quality_xml, "//business/item[@result='warn']")
-            if len(qa_warn_node_list) != 0:
-                access_Wait_flag = self.DB_True
-                for qa_warn_node in qa_warn_node_list:
-                    node_id = CXml.get_attr(qa_warn_node, 'id', '')
-                    message = '{0}质检项目{1}的质检级别为warn，请检查\n'.format(message, node_id)
-            # 检查级别为error的项目
-            qa_error_node_list = CXml.node_xpath(quality_xml, "//business/item[@result='error']")
-            if len(qa_error_node_list) != 0:
+    def db_access_check(self, access_Wait_flag, access_Forbid_flag, message):
+        temporary_dict = dict()
+        temporary_dict['dso_time'] = self._dataset.value_by_name(0, 'dso_time', '')
+        temporary_dict['browserimg'] = self._dataset.value_by_name(0, 'browserimg', '')
+        temporary_dict['thumbimg'] = self._dataset.value_by_name(0, 'thumbimg', '')
+        temporary_dict['dso_geo_wgs84'] = self._dataset.value_by_name(0, 'dso_geo_wgs84', '')
+        temporary_dict['dso_prj_proj4'] = self._dataset.value_by_name(0, 'dso_prj_proj4', '')
+        for key, value in temporary_dict.items():
+            if CUtils.equal_ignore_case(value, ''):
+                message = message + '[数据{0}入库异常!请进行检查与修正！]'.format(key.replace('dso_', ''))
                 access_Forbid_flag = self.DB_True
-                for qa_error_node in qa_error_node_list:
-                    node_id = CXml.get_attr(qa_error_node, 'id', '')
-                    message = '{0}质检项目{1}的质检级别为error，请检查\n'.format(message, node_id)
+        return access_Wait_flag, access_Forbid_flag, message
 
-            # 这里可以继续放其他的检查项目的代码
-
-            # 开始进行检查的结果判断
-            access_flag = self.DataAccess_Pass
-            if access_Forbid_flag:
-                access_flag = self.DataAccess_Forbid
-            elif access_Wait_flag:
-                access_flag = self.DataAccess_Wait
-            if CUtils.equal_ignore_case(message, ''):
-                message = '模块可以进行访问'
-
-            result = CResult.merge_result(
-                self.Success,
-                '模块[{0}.{1}]对对象[{2}]的访问能力已经分析完毕!'.format(
-                    CUtils.dict_value_by_name(self.information(), self.Name_ID, ''),
-                    CUtils.dict_value_by_name(self.information(), self.Name_Title, ''),
-                    self._obj_name
-                )
-            )
-            result = CResult.merge_result_info(result, self.Name_Access, access_flag)
-            result = CResult.merge_result_info(result, self.Name_Message, message)
-        except:
-            result = CResult.merge_result(
-                self.Failure,
-                '模块[{0}.{1}]对对象[{2}]的访问能力的分析存在异常!'.format(
-                    CUtils.dict_value_by_name(self.information(), self.Name_ID, ''),
-                    CUtils.dict_value_by_name(self.information(), self.Name_Title, ''),
-                    self._obj_name
-                )
-            )
-        return result
-
-    def access_check_list(self) -> list:  # 预留的方法，sync写完后再调
-        check_list = list()  # 如果有其他需要，则可以升级为json
-        check_list.extend(['img', 'metadata_file'])  # 配置的文件质检id
-        check_list.extend(['pixelsize.width', 'coordinate'])  # 配置的影像元数据质检的id
-        check_list.extend(['ysjwjm', 'sjmc'])  # 配置的业务元数据质检的id
-        return check_list
+    def access_check_dict(self) -> dict:  # 预留的方法，sync写完后再调
+        check_dict = dict()  # 如果有其他需要，则可以升级为json
+        return check_dict
 
     def get_sync_dict_list(self, insert_or_updata) -> list:
         """

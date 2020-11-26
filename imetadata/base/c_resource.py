@@ -65,6 +65,7 @@ class CResource:
 
     Name_Browse = 'browse'
     Name_Thumb = 'thumb'
+    Name_Browse_GeoTiff = 'browse_geotiff'
 
     CMD_START = 'start'
     CMD_STOP = 'stop'
@@ -127,6 +128,9 @@ class CResource:
     Name_Time = 'time'
     Name_Start_Time = 'start_time'
     Name_End_Time = 'end_time'
+    Name_Time_Native = 'time_native'
+    Name_Start_Time_Native = 'start_time_native'
+    Name_End_Time_Native = 'end_time_native'
 
     Name_Default = 'default'
 

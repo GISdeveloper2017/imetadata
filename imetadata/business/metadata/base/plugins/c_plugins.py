@@ -535,6 +535,26 @@ class CPlugins(CResource):
             # 从metadata中重新提取时间time_information, 获取time的值, 然后对time, start_time和end_time进行修正
             time_json = parser.metadata.time_information
             time_text = time_json.xpath_one(self.Name_Time, '')
+            start_time_text = time_json.xpath_one(self.Name_Start_Time, '')
+            end_time_text = time_json.xpath_one(self.Name_End_Time, '')
+
+            # 先存在原始的时间值（time_source，start_time_source和end_time_source）
+            parser.metadata.set_metadata_time(
+                self.Success,
+                '原始时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
+                self.Name_Time_Native,
+                time_text)
+            parser.metadata.set_metadata_time(
+                self.Success,
+                '原始时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
+                self.Name_Start_Time_Native,
+                start_time_text)
+            parser.metadata.set_metadata_time(
+                self.Success,
+                '原始时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
+                self.Name_End_Time_Native,
+                end_time_text)
+
             # 监测time_text是否是合法的日期...
             if (not CUtils.text_is_datetime(time_text)) \
                     and (not CUtils.text_is_date_day(time_text)):
@@ -560,6 +580,32 @@ class CPlugins(CResource):
                         '时间信息[{0}]成功从ro_global_dim_time表中解析',
                         self.Name_End_Time,
                         endtime)
+            # 将time, start_time和end_time进行格式化到日的修正处理（如2020变为20200101，202009变为20200901，其他的不变）
+            # 再次从json中获取（可能从ro_global_dim_time取值过了）
+            time_json = parser.metadata.time_information
+            time_text = time_json.xpath_one(self.Name_Time, '')
+            start_time_text = time_json.xpath_one(self.Name_Start_Time, '')
+            end_time_text = time_json.xpath_one(self.Name_End_Time, '')
+            # 格式化处理
+            time_text_day = CUtils.to_day_format(time_text, time_text)
+            start_time_text_day = CUtils.to_day_format(start_time_text, start_time_text)
+            end_time_text_day = CUtils.to_day_format(end_time_text, end_time_text)
+            # 会写到时间json对象中
+            parser.metadata.set_metadata_time(
+                self.Success,
+                '时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
+                self.Name_Time,
+                time_text_day)
+            parser.metadata.set_metadata_time(
+                self.Success,
+                '时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
+                self.Name_Start_Time,
+                start_time_text_day)
+            parser.metadata.set_metadata_time(
+                self.Success,
+                '时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
+                self.Name_End_Time,
+                end_time_text_day)
             return CResult.merge_result(
                 self.Success,
                 '数据文件[{0}]的时间信息解析成功! '.format(self.file_info.file_name_with_full_path)
@@ -682,13 +728,13 @@ class CPlugins(CResource):
                     parser.metadata.set_metadata_view(
                         self.DB_True,
                         '文件[{0}]的预览图成功加载! '.format(self.file_info.file_name_with_full_path),
-                        self.Name_Browse,
+                        self.View_MetaData_Type_Browse,
                         metadata_view_browse
                     )
                     parser.metadata.set_metadata_view(
                         self.DB_True,
                         '文件[{0}]的拇指图成功加载! '.format(self.file_info.file_name_with_full_path),
-                        self.Name_Thumb,
+                        self.View_MetaData_Type_Thumb,
                         metadata_view_thumb
                     )
                     return CResult.merge_result(

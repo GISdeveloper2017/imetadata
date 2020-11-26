@@ -8,7 +8,7 @@ from imetadata.business.metadata.dataaccess.modules.distribution.base.distributi
 
 class distribution_dataset_guoqing(distribution_guotu_dataset):
     """
-    todo 邢凯 数据检索分发模块对国情影像数据集类型数据
+    完成 数据检索分发模块对国情影像数据集类型数据
     """
 
     def information(self) -> dict:
@@ -17,12 +17,21 @@ class distribution_dataset_guoqing(distribution_guotu_dataset):
         info['table_name'] = 'ap3_product_rsp_gq_whole'
         return info
 
-    def get_sync_dict(self) -> dict:
+    def get_sync_dict_list(self, insert_or_updata) -> list:
         """
-        本方法的写法为强规则，字典key为字段名，字典value为对应的值或者sql语句，在写时需要加语句号，子查询语句加(),值加‘’
-        子查询：sync_dict['字段名']=“(select 字段 from 表 where id=‘1’)”
-        值：sync_dict['字段名']=“‘值’”
-        同时，配置插件方法时请在information()方法中添加info['table_name'] = '表名'的字段
+        insert_or_updata 中 self.DB_True为insert，DB_False为updata
+        本方法的写法为强规则，调用add_value_to_sync_dict_list配置
+        第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
         """
-        sync_dict = dict()
-        return sync_dict
+        sync_dict_list = self.get_sync_predefined_dict_list(insert_or_updata)
+        object_table_id = self._obj_id
+        object_table_data = self._dataset
+        if insert_or_updata:
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'aprgdid', object_table_id)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'datatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'dsometadatajson', object_table_data.value_by_name(0, 'dsometadataxml_bus', ''))
+
+        return sync_dict_list

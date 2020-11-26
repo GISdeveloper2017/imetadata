@@ -97,3 +97,133 @@ class C21ATBusDataSetPlugins(CDirPlugins):
                 '')
             return CResult.merge_result(self.Exception,
                                         '元数据文件[{0}]格式不合法, 无法处理! '.format(self.__bus_metadata_xml_file_name__))
+
+    def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
+        """
+        初始化默认的, 业务元数据xml文件的检验列表
+        完成 负责人 王学谦
+        :param parser:
+        :return:
+        """
+        return [
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//DSName",
+                self.Name_ID: 'DSName',
+                self.Name_Title: 'DSName',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 20
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//BeginDate",
+                self.Name_ID: 'BeginDate',
+                self.Name_Title: 'BeginDate',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_date,
+                # self.Name_Width: 8
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//EndDate",
+                self.Name_ID: 'EndDate',
+                self.Name_Title: 'EndDate',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_date,
+                # self.Name_Width: 8
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//Date",
+                self.Name_ID: 'Date',
+                self.Name_Title: 'Date',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_date,
+                # self.Name_Width: 8
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//RegionCode",
+                self.Name_ID: 'RegionCode',
+                self.Name_Title: 'RegionCode',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 20
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//RegionName",
+                self.Name_ID: 'RegionName',
+                self.Name_Title: 'RegionName',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 50
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//Resolution",
+                self.Name_ID: 'Resolution',
+                self.Name_Title: 'Resolution',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 10
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//MajorSource",
+                self.Name_ID: 'MajorSource',
+                self.Name_Title: 'MajorSource',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 38
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//ScaleDenominator",
+                self.Name_ID: 'ScaleDenominator',
+                self.Name_Title: 'ScaleDenominator',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 38
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//ProductType",
+                self.Name_ID: 'ProductType',
+                self.Name_Title: 'ProductType',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 38
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//Remark",
+                self.Name_ID: 'Remark',
+                self.Name_Title: 'Remark',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 500
+            }
+        ]

@@ -6,6 +6,10 @@ from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_base import distribution_base
 from imetadata.database.c_factory import CFactory
+from imetadata.base.c_json import CJson
+from imetadata.base.c_result import CResult
+from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
 
 
 class distribution_guotu(distribution_base):
@@ -32,15 +36,86 @@ class distribution_guotu(distribution_base):
         pass
 
     def _do_access(self) -> str:
-        result = CResult.merge_result(
-            self.Success,
-            '模块[{0}.{1}]对对象[{2}]的访问能力已经分析完毕!'.format(
-                CUtils.dict_value_by_name(self.information(), self.Name_ID, ''),
-                CUtils.dict_value_by_name(self.information(), self.Name_Title, ''),
-                self._obj_name
+        try:
+            quality_info_xml = self._quality_info  # 获取质检xml
+            quality_summary = self._dataset.value_by_name(0, 'dso_quality_summary', '')
+            quality_summary_json = CJson()
+            quality_summary_json.load_obj(quality_summary)
+            access_Wait_flag = self.DB_False  # 定义等待标志，为True则存在检查项目为等待
+            access_Forbid_flag = self.DB_False  # 定义禁止标志，为True则存在检查项目为禁止
+            message = ''
+
+            # 文件与影像质检部分
+            file_qa = quality_summary_json.xpath_one('total', '')
+            image_qa = quality_summary_json.xpath_one('metadata.data', '')
+            if CUtils.equal_ignore_case(file_qa, self.QA_Result_Pass) \
+                    and CUtils.equal_ignore_case(image_qa, self.QA_Result_Pass):
+                pass
+            elif CUtils.equal_ignore_case(file_qa, self.QA_Result_Warn) \
+                    or CUtils.equal_ignore_case(image_qa, self.QA_Result_Warn):
+                message = message + '[数据与其相关文件的质检存在warn!请进行检查！]'
+                access_Wait_flag = self.DB_True
+            else:
+                message = message + '[数据与其相关文件的质检存在error!请进行修正！]'
+                access_Forbid_flag = self.DB_True
+
+            for qa_name, qa_id in self.access_check_dict().items():  # 循环写好的检查列表
+                # qa_id = CUtils.dict_value_by_name(access_check_dict, 'qa_id', '')  # 获取id
+                qa_node = quality_info_xml.xpath_one("//item[@id='{0}']".format(qa_id))  # 查询xml中的节点
+                if qa_node is not None:
+                    node_result = CXml.get_attr(qa_node, self.Name_Result, '', False)  # 获取质检结果
+                    if CUtils.equal_ignore_case(node_result, self.QA_Result_Pass):
+                        pass
+                    elif CUtils.equal_ignore_case(node_result, self.QA_Result_Warn):  # 警告则等待
+                        message = message + '[业务元数据的质检中，项目{0}为warn!请进行检查！]'.format(qa_name)
+                        access_Wait_flag = self.DB_True
+                    else:  # 错误以及其他情况，比如''，或者为其他字段
+                        message = message + '[业务元数据的质检中，项目{0}为error!请进行修正！]'.format(qa_name)
+                        access_Forbid_flag = self.DB_True
+                else:
+                    message = message + '[业务元数据的质检中，没有项目{0}!请进行修正！]'.format(qa_name)
+                    access_Forbid_flag = self.DB_True
+
+            # 数据库部分
+            access_Wait_flag, access_Forbid_flag, message = \
+                self.db_access_check(access_Wait_flag, access_Forbid_flag, message)
+
+            # 开始进行检查的结果判断
+            access_flag = self.DataAccess_Pass
+            if access_Forbid_flag:
+                access_flag = self.DataAccess_Forbid
+            elif access_Wait_flag:
+                access_flag = self.DataAccess_Wait
+            if CUtils.equal_ignore_case(message, ''):
+                message = '模块可以进行访问!'
+
+            result = CResult.merge_result(
+                self.Success,
+                '模块[{0}.{1}]对对象[{2}]的访问能力已经分析完毕!分析结果为:{3}'.format(
+                    CUtils.dict_value_by_name(self.information(), self.Name_ID, ''),
+                    CUtils.dict_value_by_name(self.information(), self.Name_Title, ''),
+                    self._obj_name,
+                    message
+                )
             )
-        )
-        return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Forbid)
+            return CResult.merge_result_info(result, self.Name_Access, access_flag)
+        except:
+            result = CResult.merge_result(
+                self.Failure,
+                '模块[{0}.{1}]对对象[{2}]的访问能力的分析存在异常!'.format(
+                    CUtils.dict_value_by_name(self.information(), self.Name_ID, ''),
+                    CUtils.dict_value_by_name(self.information(), self.Name_Title, ''),
+                    self._obj_name
+                )
+            )
+            return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Forbid)
+
+    def db_access_check(self, access_Wait_flag, access_Forbid_flag, message):
+        return access_Wait_flag, access_Forbid_flag, message
+
+    def access_check_dict(self) -> dict:  # 预留的方法，sync写完后再调
+        check_dict = dict()  # 如果有其他需要，则可以升级为json
+        return check_dict
 
     def sync(self) -> str:
         self._before_sync()

@@ -11,6 +11,7 @@ from imetadata.business.metadata.dataaccess.base.c_daModule import CDAModule
 from imetadata.business.metadata.dataaccess.modules.distribution.base import distribution_base
 from imetadata.business.metadata.dataaccess.modules.distribution.distribution_default import distribution_default
 from imetadata.database.c_factory import CFactory
+from imetadata.base.c_xml import CXml
 
 
 class module_distribution(CDAModule):
@@ -31,15 +32,15 @@ class module_distribution(CDAModule):
         注意: 一定要反馈Access属性
         :return:
         """
-        # module_obj_real = self.__find_module_obj()
-        # if module_obj_real is None:
-        #     message = '没有对应的算法, 直接通过!'
-        #     result = CResult.merge_result(self.Success, message)
-        #     return result
-        # result = module_obj_real.access()
-        # return result
-        result = super().access()
-        return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Pass)
+        module_obj_real = self.__find_module_obj()
+        if module_obj_real is None:
+            message = '没有对应的算法, 直接通过!'
+            result = CResult.merge_result(self.Success, message)
+            return result
+        result = module_obj_real.access()
+        return result
+        # result = super().access()
+        # return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Pass)
 
     def sync(self) -> str:
         """
@@ -74,14 +75,15 @@ class module_distribution(CDAModule):
                 --dm2_storage_object_def.dsodtype,
                 dm2_storage_object_def.dsodcode,
                 dm2_storage_file.dsfid as query_file_id,
+                dm2_storage_file.dsfdirectoryid as query_directory_id,
                 dm2_storage_directory.dsddirlastmodifytime as query_directory_lastmodifytime,
-                dm2_storage_directory.dsdid as query_directory_id,
+                dm2_storage_directory.dsdid as query_dataset_directory_id,
                 dm2_storage_object.* 
             FROM
                 dm2_storage_object
                 LEFT JOIN dm2_storage_object_def ON dm2_storage_object.dsoobjecttype = dm2_storage_object_def.dsodid
                 LEFT JOIN dm2_storage_file on dm2_storage_file.dsf_object_id = dm2_storage_object.dsoid
-                LEFT JOIN dm2_storage_directory on dm2_storage_file.dsfdirectoryid = dm2_storage_directory.dsdid
+                LEFT JOIN dm2_storage_directory on dm2_storage_directory.dsd_object_id = dm2_storage_object.dsoid
             WHERE
                 dm2_storage_object.dsoid = '{0}'
         '''.format(self._obj_id)
@@ -93,6 +95,8 @@ class module_distribution(CDAModule):
         object_id = dataset.value_by_name(0, 'dsoid', '')
         object_name = dataset.value_by_name(0, 'dsoobjectname', '')
         quality_info = dataset.value_by_name(0, 'dso_quality', '')
+        quality_info_xml = CXml()
+        quality_info_xml.load_xml(quality_info)  # 加载查询出来的xml
 
         distribution_obj_real = None
         # 构建数据对象object对应的识别插件，获取get_information里面的Plugins_Info_Module_Distribute_Engine信息
@@ -122,7 +126,7 @@ class module_distribution(CDAModule):
                     self._db_id,
                     object_id,
                     object_name,
-                    quality_info,
+                    quality_info_xml,
                     dataset
                 )
                 distribution_obj_real = distribution_obj
