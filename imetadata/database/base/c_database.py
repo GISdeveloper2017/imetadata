@@ -20,11 +20,14 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
+from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 from imetadata.base.exceptions import *
 from imetadata.database.base.c_dataset import CDataSet
+from imetadata.database.base.dml.c_dbColumnType import CDBColumnType
+from imetadata.database.base.dml.c_dbColumnTypes import CDBColumnTypes
 from imetadata.database.base.sql.c_sql import CSql
 
 
@@ -46,7 +49,7 @@ class CDataBase(CResource):
     _db_conn_password_native = ''
     _db_conn_password = ''
 
-    _db_column_list_define = None
+    _db_column_types: CDBColumnTypes = None
 
     def __init__(self, database_option):
         """
@@ -54,7 +57,7 @@ class CDataBase(CResource):
         :param database_option:
         """
         self.__sql = self._create_default_sql()
-        self._db_column_list_define = list()
+        self._db_column_types = CDBColumnTypes()
 
         self._db_conn_id = CUtils.dict_value_by_name(database_option, self.Name_ID, self.DB_Server_ID_Default)
         self._db_conn_type = CUtils.dict_value_by_name(database_option, self.Name_Type, self.DB_Type_Postgresql)
@@ -80,12 +83,34 @@ class CDataBase(CResource):
         return ''
 
     @property
-    def db_column_list_define(self) -> list:
-        return self._db_column_list_define
+    def db_column_type_default(self) -> CDBColumnType:
+        return CDBColumnType(
+            CResource.Name_Default
+            , CResource.DataType_String
+            , CResource.DB_Column_Set_Method_Param
+            , None
+        )
+
+    @property
+    def db_column_types(self) -> CDBColumnTypes:
+        return self._db_column_types
 
     @property
     def sql(self) -> CSql:
         return self.__sql
+
+    def db_column_type_by_name(self, column_type_name: str) -> CDBColumnType:
+        """
+        根据字段类型的名称, 模糊查找对应的定义, 如果找不到, 则返回默认的定义
+
+        :param column_type_name: 字段类型的名称
+        :return:
+        """
+        column_type = self.db_column_types.column_type_by_name(column_type_name)
+        if column_type is None:
+            return self.db_column_type_default
+        else:
+            return column_type
 
     def _prepare_params_of_execute_sql(self, engine, sql, params):
         """
@@ -184,7 +209,7 @@ class CDataBase(CResource):
             session_maker = sessionmaker(bind=eng)
             session = session_maker()
             try:
-                cursor = session.execute(sql, self._prepare_params_of_execute_sql(eng, sql, params))
+                self.session_execute(session, sql, params)
                 session.commit()
                 return True
             except Exception as ee:
@@ -242,6 +267,17 @@ class CDataBase(CResource):
         if eng is not None:
             eng.dispose()
 
+    def session_if_exists(self, session: Session, sql, params=None) -> bool:
+        """
+        检测一个sql查询是否有结果
+        :param session:
+        :param sql:
+        :param params:
+        :return:
+        """
+        data = self.session_one_row(session, sql, params)
+        return not data.is_empty()
+
     def session_execute(self, session: Session, sql: str, params=None):
         """
         session执行sql
@@ -251,6 +287,34 @@ class CDataBase(CResource):
         :return:
         """
         session.execute(sql, self._prepare_params_of_execute_sql(session.get_bind(), sql, params))
+
+    def session_one_row(self, session: Session, sql, params=None) -> CDataSet:
+        """
+        执行sql, 返回第一行符合要求的记录
+        :param session:
+        :param sql:
+        :param params:
+        :return:
+        """
+        cursor = session.execute(sql, self._prepare_params_of_execute_sql(session.get_bind(), sql, params))
+        data = cursor.fetchone()
+        if data is None:
+            return CDataSet()
+        else:
+            row_data = [data]
+            return CDataSet(row_data)
+
+    def session_all_row(self, session: Session, sql, params=None) -> CDataSet:
+        """
+        执行sql, 返回所有符合要求的记录
+        :param session:
+        :param sql:
+        :param params:
+        :return:
+        """
+        cursor = session.execute(sql, self._prepare_params_of_execute_sql(session.get_bind(), sql, params))
+        data = cursor.fetchall()
+        return CDataSet(data)
 
     def session_commit(self, session: Session):
         """
@@ -268,19 +332,26 @@ class CDataBase(CResource):
         """
         session.rollback()
 
-    def execute_batch(self, sql_params_tuple: []) -> bool:
+    def session_execute_batch(self, session: Session, sql_params_tuple: []):
         """
         批处理事务执行
-        @param db_server_id: 数据库服务器识别id
-        @param sql_params_tuple: sql与dict参数组合的元组集合 [(sql1,dict_params1),(sql2,dict_params2)]
+        :param sql_params_tuple: sql与dict参数组合的元组集合 [(sql1,dict_params1),(sql2,dict_params2)]
+        :param session:
+        @return:
+        """
+        for sql, params in sql_params_tuple:
+            self.session_execute(session, sql, params)
+
+    def execute_batch(self, sql_params_tuple: list):
+        """
+        批处理事务执行
+        :param sql_params_tuple: sql与dict参数组合的元组列表 [(sql1,dict_params1),(sql2,dict_params2)]
         @return:
         """
         session = self.give_me_session()
         try:
-            for sql, params in sql_params_tuple:
-                self.session_execute(session, sql, params)
+            self.session_execute_batch(session, sql_params_tuple)
             self.session_commit(session)
-            return True
         except Exception as error:
             CLogger().warning('数据库处理出现异常, 错误信息为: {0}'.format(error.__str__()))
             self.session_rollback(session)
@@ -295,3 +366,19 @@ class CDataBase(CResource):
     @abstractmethod
     def seq_next_value(self, seq_type: int) -> str:
         pass
+
+    @classmethod
+    def file2param(cls, params: dict, param_name: str, file_name: str):
+        if params is None:
+            return
+
+        if not CFile.file_or_path_exist(file_name):
+            params[param_name] = None
+            return
+
+        # 注意这里一定要使用rb，读出二进制文件，否则有读不全等问题
+        fp = open(file_name, 'rb')
+        try:
+            params[param_name] = fp.read()
+        finally:
+            fp.close()

@@ -44,6 +44,18 @@ class CUtils(CResource):
 
     @classmethod
     def replace_placeholder(cls, text: str, dict_obj: dict, safe: bool = True) -> str:
+        """
+        按照Python的Template规范进行占位符的替换
+        占位符格式如下:
+        . %(name)
+        . %name
+        具体百度python template
+
+        :param text:
+        :param dict_obj:
+        :param safe:
+        :return:
+        """
         if safe:
             return Template(text).safe_substitute(dict_obj)
         else:
@@ -55,7 +67,7 @@ class CUtils(CResource):
 
     @classmethod
     def quote(cls, str1: str) -> str:
-        return "'{0}'".format(str1)
+        return "'{0}'".format(cls.any_2_str(str1))
 
     @classmethod
     def dict_value_by_name(cls, dict_obj: dict, name: str, default_value, ignore_case=True) -> any:
@@ -587,12 +599,5 @@ class CUtils(CResource):
 
 
 if __name__ == '__main__':
-    text = '2020年3月'
-    text = '2020年3月12日'
-    # text = '2020.3'
-    # text = '2020Q1'
-    # text = '2020/3/1 12:12:12'
-    text_format = CUtils.to_day_format(text, text)
-    # text_format = CUtils.standard_datetime_format(text, text).replace('-', '')
-    print(text_format)
-    pass
+    text = "to_jsonb($value)"
+    print(CUtils.replace_placeholder(text, {'value': 'my_value'}))

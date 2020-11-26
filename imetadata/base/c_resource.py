@@ -38,6 +38,11 @@ class CResource:
     Name_Prj_Zone = 'prj_zone'
     Name_Prj_Source = 'prj_source'
 
+    Name_WKT = 'wkt'
+    Name_Srid = 'srid'
+
+    Name_Text = 'text'
+
     Name_Password = 'password'
     Name_UserName = 'username'
     Port_Postgresql_Default = 5432
@@ -200,9 +205,18 @@ class CResource:
     Name_Width = 'width'
     Name_SQL = 'sql'
     Name_NotNull = 'notnull'
+    Name_Null = 'null'
+
+    Name_Value = 'value'
 
     Name_Get = 'get'
     Name_Set = 'set'
+    Name_Set_Method = 'set_method'
+    DB_Column_Set_Method_Param = 'param'
+    DB_Column_Set_Method_Geometry = 'geometry'
+    DB_Column_Set_Method_Function = 'function'
+    DB_Column_Set_Method_Stream = 'stream'
+    DB_Column_Set_Method_Exchange = 'exchange'
 
     Name_XPath = 'xpath'
     Name_Attr_Name = 'attr_name'
@@ -229,6 +243,9 @@ class CResource:
     Path_MD_Rule_Type = '/root/type'
     Path_MD_Rule_Plugins_Dir = '/root/plugins/dir/plugin'
     Path_MD_Rule_Plugins_File = '/root/plugins/file/plugin'
+
+    Path_Setting_Spatial = 'spatial'
+    Path_Setting_Spatial_Srid = '{0}.srid'.format(Path_Setting_Spatial)
 
     Path_Setting_MetaData = 'metadata'
     Path_Setting_MetaData_Plugins_Dir = '{0}.plugins.dir'.format(Path_Setting_MetaData)
@@ -396,18 +413,12 @@ class CResource:
     DataType_XML = 41
     DataType_Json = 42
     DataType_Array = 43
+    DataType_Array_Char = 431
     # ...
 
     DataValueType_Value = 1
     DataValueType_File = 2
     DataValueType_SQL = 3
-    DataValueType_Array = 4
-    DataValueType_Array_String = 41
-    DataValueType_Array_DateTime = 42
-    # ...
-    DataValueType_Geometry = 5
-    DataValueType_Geometry_Srid = 51
-    DataValueType_Geometry_NoSrid = 52
 
     FileFormat_XML = 'xml'
     FileFormat_Json = 'json'

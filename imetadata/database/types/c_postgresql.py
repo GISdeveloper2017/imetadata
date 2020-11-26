@@ -19,6 +19,7 @@ engine = create_engine('postgresql+pg8000://scott:tiger@localhost:port/mydatabas
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 from imetadata.database.base.c_database import CDataBase
+from imetadata.database.base.dml.c_dbColumnType import CDBColumnType
 from imetadata.database.base.sql.c_sql import CSql
 from imetadata.database.types.sql.c_sqlPostgresql import CSqlPostgresql
 
@@ -33,13 +34,84 @@ class CPostgreSQL(CDataBase):
         :param database_option:
         :return:
         """
-        self.db_column_list_define.append(
-            {
-                CResource.Name_Name: 'varchar'
-                , CResource.Name_DataType: CResource.DataType_String
-                , CResource.Name_Get: "'%(value)'"
-                , CResource.Name_Set: "'%(value)'"
-            }
+        self.db_column_types.add(
+            CDBColumnType(
+                '_varchar'
+                , CResource.DataType_Array_Char
+                , CResource.DB_Column_Set_Method_Function
+                , "array[$value]::CHARACTER VARYING[]"
+                # , "'{$value}'"
+            )
+        )
+        self.db_column_types.add(
+            CDBColumnType(
+                'bytea'
+                , CResource.DataType_Binary
+                , CResource.DB_Column_Set_Method_Stream
+                , None
+            )
+        )
+        self.db_column_types.add(
+            CDBColumnType(
+                'jsonb'
+                , CResource.DataType_Json
+                , CResource.DB_Column_Set_Method_Function
+                , "to_jsonb($value)"
+                , True
+                , 0
+            )
+        )
+        self.db_column_types.add(
+            CDBColumnType(
+                'json'
+                , CResource.DataType_Json
+                , CResource.DB_Column_Set_Method_Function
+                , "to_json($value)"
+                , True
+                , 0
+            )
+        )
+        self.db_column_types.add(
+            CDBColumnType(
+                'geometry'
+                , CResource.DataType_Geometry
+                , CResource.DB_Column_Set_Method_Geometry
+                , "st_geometryfromtext($value, $srid)"
+                , True
+                , 1
+            )
+        )
+        self.db_column_types.add(
+            CDBColumnType(
+                'numeric'
+                , CResource.DataType_Numeric
+                , CResource.DB_Column_Set_Method_Param
+                , None
+            )
+        )
+        self.db_column_types.add(
+            CDBColumnType(
+                'int*'
+                , CResource.DataType_Integer
+                , CResource.DB_Column_Set_Method_Param
+                , None
+            )
+        )
+        self.db_column_types.add(
+            CDBColumnType(
+                'timestamp*'
+                , CResource.DataType_DateTime
+                , CResource.DB_Column_Set_Method_Param
+                , None
+            )
+        )
+        self.db_column_types.add(
+            CDBColumnType(
+                'varchar*'
+                , CResource.DataType_String
+                , CResource.DB_Column_Set_Method_Param
+                , None
+            )
         )
 
     def table_info(self, table_name: str) -> dict:
@@ -69,7 +141,7 @@ coalesce(columns.character_Maximum_length, columns.numeric_precision) as columns
 columns.udt_name as datatype, table_comments.comments, table_comments.extAttr
 from information_schema.columns left join 
 (
-select b.column_name, 1 as primarykey
+select b.column_name, -1 as primarykey
 from information_schema.table_constraints a, information_schema.key_column_usage b
 where upper(a.table_name) = '{1}'
   and upper(a.table_schema) = '{0}'
@@ -106,8 +178,8 @@ SELECT a.attname AS column_name,
 ) table_comments on columns.column_name = table_comments.column_name
 where upper(columns.table_schema)=upper('{0}') and upper(columns.table_name) =upper('{1}')
 order by columns.ordinal_position        
-        '''.format(table_name.upper(), self._db_conn_schema.upper())
-        ds_columns = self.all_row(sql_get_table_info)
+        '''.format(self._db_conn_schema.upper(), table_name.upper())
+        ds_columns = self.all_row(sql_get_column_info)
         if not ds_columns.is_empty():
             columns_list = list()
             for column_index in range(ds_columns.size()):
@@ -115,7 +187,7 @@ order by columns.ordinal_position
                     {
                         CResource.Name_Name: ds_columns.value_by_name(column_index, 'columnname', '')
                         , CResource.Name_DataType: ds_columns.value_by_name(column_index, 'datatype', '')
-                        , CResource.Name_PrimaryKey: ds_columns.value_by_name(column_index, 'primarykey', '')
+                        , CResource.Name_PrimaryKey: ds_columns.value_by_name(column_index, 'primarykey', 0)
                     }
                 )
             result[CResource.Name_Columns] = columns_list

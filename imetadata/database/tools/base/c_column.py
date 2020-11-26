@@ -10,13 +10,13 @@ from imetadata.base.c_xml import CXml
 
 
 class CColumn:
+    _value = None
+
     def __init__(self, name: str, db_column_type: str, primary_key: bool = False):
         self._name = name
         self._db_column_type = db_column_type
         self._primary_key = primary_key
-        self._data_type = ''
-        self._value = None
-        self._value_type = CResource.DataValueType_SQL
+        self.reset()
 
     @property
     def name(self):
@@ -27,8 +27,23 @@ class CColumn:
         return self._db_column_type
 
     @property
-    def data_type(self):
-        return self._data_type
+    def value(self):
+        return self._value
+
+    @property
+    def is_primary_key(self):
+        return self._primary_key
+
+    def reset(self):
+        self._value = None
+
+    def set_null(self):
+        """
+        设置value为标准值
+        :param value:
+        :return:
+        """
+        self.set_sql(CResource.Name_Null)
 
     def set_value(self, value):
         """
@@ -36,10 +51,9 @@ class CColumn:
         :param value:
         :return:
         """
-        self._value_type = CResource.DataValueType_Value
-        self._value = value
+        self._value = {CResource.Name_Text: value, CResource.Name_Type: CResource.DataValueType_Value}
 
-    def set_value_as_sql(self, sql):
+    def set_sql(self, sql):
         """
         设置value为原生的sql
         . 如果sql有值, 则表示value为该字符串
@@ -47,8 +61,7 @@ class CColumn:
         :param sql:
         :return:
         """
-        self._value_type = CResource.DataValueType_SQL
-        self._value = sql
+        self._value = {CResource.Name_Text: sql, CResource.Name_Type: CResource.DataValueType_SQL}
 
     def set_value_from_file(self, file_name: str, file_format: str, file_encoding: str):
         """
@@ -60,37 +73,47 @@ class CColumn:
         :param file_encoding:
         :return:
         """
-        self._value_type = CResource.DataValueType_Value
         if CUtils.equal_ignore_case(file_format, CResource.FileFormat_TXT):
-            self._value = CFile.file_2_str(file_name)
+            self._value = {
+                CResource.Name_Text: CFile.file_2_str(file_name),
+                CResource.Name_Type: CResource.DataValueType_SQL
+            }
         elif CUtils.equal_ignore_case(file_format, CResource.FileFormat_XML):
-            self._value = CXml.file_2_str(file_name)
+            self._value = {
+                CResource.Name_Text: CXml.file_2_str(file_name),
+                CResource.Name_Type: CResource.DataValueType_SQL
+            }
         elif CUtils.equal_ignore_case(file_format, CResource.FileFormat_Json):
-            self._value = CJson.file_2_str(file_name)
+            self._value = {
+                CResource.Name_Text: CJson.file_2_str(file_name),
+                CResource.Name_Type: CResource.DataValueType_SQL
+            }
         else:
-            self._value_type = CResource.DataValueType_File
-            self._value = file_name
+            self._value = {
+                CResource.Name_Text: file_name,
+                CResource.Name_Type: CResource.DataValueType_File
+            }
 
-    def set_array(self, src_array: list, array_data_type: int):
+    def set_array(self, src_array: list):
         """
         设置value为数组
-        . 数组数据类型可以为标准单一类型
-            . DataType_String = 1
-            . DataType_DateTime = 2
-            . DataType_Numeric = 3
-            . DataType_Bool = 4
-            . DataType_Integer = 5
-            ...
-        . 注意: value_type为数组的特殊类型, 它的计算方法为
-            . CResource.DataValueType_Array * 10 + array_data_type
         :param src_array:
-        :param array_data_type:
         :return:
         """
-        self._value_type = CResource.DataValueType_Array * 10 + array_data_type
-        self._value = src_array
+        if len(src_array) == 0:
+            self.reset()
+        else:
+            if isinstance(src_array[0], str):
+                array_text = CUtils.list_2_str(src_array, "'", ',', "'")
+            else:
+                array_text = CUtils.list_2_str(src_array, '', ',', '')
+            self._value = {
+                CResource.Name_Text: array_text,
+                CResource.Name_Type: CResource.DataValueType_Value,
+                CResource.Name_Value: src_array
+            }
 
-    def set_geometry(self, wkt: str, srid):
+    def set_geometry(self, wkt: str, srid: int):
         """
         设置value为几何多边形
         . value 将存储dict字典
@@ -99,8 +122,8 @@ class CColumn:
         :param srid:
         :return:
         """
-        self._value_type = CResource.DataValueType_Geometry
-        if srid is None:
-            self._value = {'wkt': wkt, 'type': CResource.DataValueType_Geometry_NoSrid}
-        else:
-            self._value = {'wkt': wkt, 'srid': srid, 'type': CResource.DataValueType_Geometry_Srid}
+        self._value = {
+            CResource.Name_Text: wkt,
+            CResource.Name_Srid: srid,
+            CResource.Name_Type: CResource.DataValueType_Value
+        }

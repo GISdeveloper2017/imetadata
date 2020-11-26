@@ -85,19 +85,3 @@ class CDataSet:
             f.write(value)
         finally:
             f.close()
-
-    @classmethod
-    def file2param(cls, params: dict, param_name: str, file_name: str):
-        if params is None:
-            return
-
-        if not CFile.file_or_path_exist(file_name):
-            params[param_name] = None
-            return
-
-        # 注意这里一定要使用rb，读出二进制文件，否则有读不全等问题
-        fp = open(file_name, 'rb')
-        try:
-            params[param_name] = fp.read()
-        finally:
-            fp.close()

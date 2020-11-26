@@ -23,6 +23,9 @@ application = CSettings(
             {'id': '0', 'type': 'postgresql',
              'host': '127.0.0.1', 'port': '5432', 'database': 'test', 'username': 'postgres', 'password': 'postgres'}
         ],
+        'spatial': {
+            'srid': 4326
+        },
         'directory': {
             'work': '/Users/wangxiya/Documents/交换/9.数管/9.工作目录'
         },

@@ -934,3 +934,19 @@ create index if not exists idx_dm2_storage_obj_na_status on dm2_storage_obj_na(d
 drop index if exists idx_dm2_storage_obj_na_access CASCADE;
 create index if not exists idx_dm2_storage_obj_na_access on dm2_storage_obj_na(dson_object_access);
 
+DROP TABLE if exists public.ro_global_spatialhandle;
+
+CREATE TABLE if not exists public.ro_global_spatialhandle
+(
+    code character varying(100) COLLATE pg_catalog."default"
+        constraint ro_global_spatialhandle_pkey
+			primary key,
+    data text COLLATE pg_catalog."default"
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.ro_global_spatialhandle
+    OWNER to postgres;
+
+
