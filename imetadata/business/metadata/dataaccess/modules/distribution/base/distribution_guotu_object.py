@@ -86,21 +86,21 @@ class distribution_guotu_object(distribution_guotu):
             sync_dict_list, 'centerx',
             "st_x(st_centroid("
             "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
-            "))".format(object_table_id), self.DB_False)
+            "))".format(object_table_id), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'centery',
             "st_y(st_centroid("
             "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
-            "))".format(object_table_id), self.DB_False)
+            "))".format(object_table_id), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'geomwkt',
             "st_astext("
             "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
-            ")".format(object_table_id), self.DB_False)
+            ")".format(object_table_id), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'geomobj',
             "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')".format(object_table_id),
-            self.DB_False)
+            self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'browserimg', object_table_data.value_by_name(0, 'dso_browser', ''), self.DB_True)
@@ -115,7 +115,7 @@ class distribution_guotu_object(distribution_guotu):
             sync_dict_list, 'imgsize',
             "(select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail "
             "where dodobjectid='{0}')".format(object_table_id),
-            self.DB_False)
+            self.DataValueType_SQL)
         # colormodel:交插件处理
         # piexldepth:交插件处理
         if insert_or_updata:
@@ -127,7 +127,7 @@ class distribution_guotu_object(distribution_guotu):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'extent',
             "(select dso_geo_bb_native from dm2_storage_object where dsoid='{0}')".format(object_table_id),
-            self.DB_False)
+            self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'proj', object_table_data.value_by_name(0, 'dso_prj_coordinate', ''))
         # remark:暂时为空

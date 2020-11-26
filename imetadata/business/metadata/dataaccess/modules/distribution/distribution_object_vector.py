@@ -58,7 +58,7 @@ class distribution_object_vector(distribution_guotu):
             split_part( ( dsometadatajson -> 'layers' ->> 0 ) :: json -> 'wkt' ->> 'data', '"', 2 ) 
             AS process_md_coordinate FROM  dm2_storage_object  
             WHERE  dsometadatajson IS NOT NULL AND dsoid = '{0}')
-            '''.format(object_table_id), self.DB_False)
+            '''.format(object_table_id), self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
             sync_dict_list, 'geometrytype',
@@ -67,7 +67,7 @@ class distribution_object_vector(distribution_guotu):
             ( dsometadatajson -> 'layers' ->> 0 ) :: json -> 'geometry' ->> 'name' 
             AS process_md_geomtype FROM  dm2_storage_object  
             WHERE  dsometadatajson IS NOT NULL AND dsoid = '{0}')
-            '''.format(object_table_id), self.DB_False)
+            '''.format(object_table_id), self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
             sync_dict_list, 'tbcount',
@@ -76,13 +76,13 @@ class distribution_object_vector(distribution_guotu):
             ( dsometadatajson -> 'layers' ->> 0 ) :: json -> 'features' ->> 'count' 
             AS process_md_tbcount FROM  dm2_storage_object  
             WHERE  dsometadatajson IS NOT NULL AND dsoid = '{0}')
-            '''.format(object_table_id), self.DB_False)
+            '''.format(object_table_id), self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'geomwkt',
             "st_astext("
             "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
-            ")".format(object_table_id), self.DB_False)
+            ")".format(object_table_id), self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsdid', object_table_data.value_by_name(0, 'query_directory_id', ''))
@@ -110,18 +110,18 @@ class distribution_object_vector(distribution_guotu):
             sync_dict_list, 'centerx',
             "st_x(st_centroid("
             "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
-            "))".format(object_table_id), self.DB_False)
+            "))".format(object_table_id), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'centery',
             "st_y(st_centroid("
             "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
-            "))".format(object_table_id), self.DB_False)
+            "))".format(object_table_id), self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'resolution',
             '''
             (SELECT dsometadatajson->'pixelsize'->>'width' FROM dm2_storage_object 
             where dsometadatajson->'pixelsize'->>'width'> '0.1' is not null and dsoid = '{0}')
-            '''.format(object_table_id), self.DB_False)
+            '''.format(object_table_id), self.DataValueType_SQL)
 
         return sync_dict_list

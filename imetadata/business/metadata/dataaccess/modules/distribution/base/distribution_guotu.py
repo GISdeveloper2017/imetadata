@@ -149,10 +149,14 @@ class distribution_guotu(distribution_base):
                 field_value_type = CUtils.dict_value_by_name(field_dict, 'field_value_type', '')  # 获取值类型
                 if CUtils.equal_ignore_case(field_value, ''):
                     table.column_list.column_by_name(field_name).set_null()
-                elif field_value_type:
+                elif CUtils.equal_ignore_case(field_value_type, self.DataValueType_Value):
                     table.column_list.column_by_name(field_name).set_value(field_value)
-                else:
+                elif CUtils.equal_ignore_case(field_value_type, self.DataValueType_SQL):
                     table.column_list.column_by_name(field_name).set_sql(field_value)
+                elif CUtils.equal_ignore_case(field_value_type, self.DataValueType_Array):
+                    table.column_list.column_by_name(field_name).set_array(field_value)
+                else:
+                    pass
 
             # 不多执行table.if_exists()多查一次哭，所以不用savedata()方法
             if insert_or_updata:
@@ -186,7 +190,8 @@ class distribution_guotu(distribution_base):
         # sync_dict_list = self.add_value_to_sync_dict_list(sync_dict_list,'name','value',self.DB_True)
         return sync_dict_list
 
-    def add_value_to_sync_dict_list(self, sync_dict_list, field_name, field_value, field_value_type=True):
+    def add_value_to_sync_dict_list(self, sync_dict_list, field_name, field_value
+                                    , field_value_type=CResource.DataValueType_Value):
         """
         本方法构建同步用的配置列表
         """

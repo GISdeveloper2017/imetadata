@@ -423,6 +423,7 @@ class CResource:
     DataValueType_Value = 1
     DataValueType_File = 2
     DataValueType_SQL = 3
+    DataValueType_Array = 4
 
     FileFormat_XML = 'xml'
     FileFormat_Json = 'json'
