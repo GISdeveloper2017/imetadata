@@ -151,35 +151,6 @@ class CTable(CResource):
                         column_value_as_text
                     )
                 else:
-                    #     if CUtils.equal_ignore_case(column.value_type, self.DataValueType_Geometry):
-                    #     geometry_wkt = CUtils.any_2_str(CUtils.dict_value_by_name(column.value, self.Name_WKT, ''))
-                    #     geometry_srid = CUtils.dict_value_by_name(column.value, self.Name_Srid, self.SRID_WGS84)
-                    #
-                    #     column_insert_field = column.name
-                    #     column_insert_data = CUtils.replace_placeholder(
-                    #         column_type.set_value_template,
-                    #         dict(
-                    #             {
-                    #                 self.Name_WKT: CUtils.quote(geometry_wkt),
-                    #                 self.Name_Srid: CUtils.any_2_str(geometry_srid)
-                    #             }
-                    #         )
-                    #     )
-                    # elif CUtils.equal_ignore_case(column.value_type, self.DataValueType_Array):
-                    #     column_insert_field = column.name
-                    #     if CUtils.equal_ignore_case(column_type.inner_type, self.DataType_Array):
-                    #         column_insert_data = CUtils.list_2_str(column.value, "", ", ", "")
-                    #     else:
-                    #         column_insert_data = CUtils.list_2_str(column.value, "'", ", ", "'")
-                    #     column_insert_data = CUtils.replace_placeholder(
-                    #         column_type.set_value_template,
-                    #         dict(
-                    #             {
-                    #                 self.Name_Value: column_insert_data
-                    #             }
-                    #         )
-                    #     )
-                    # else:  # elif CUtils.equal_ignore_case(column.value_type, self.DataValueType_Value):
                     if CUtils.equal_ignore_case(column_type.set_value_method, self.DB_Column_Set_Method_Function):
                         column_insert_field = column.name
                         if len(column_value_as_text) > column_type.function_param_max_size >= 0:
@@ -420,6 +391,16 @@ class CTable(CResource):
         sql_text = CUtils.str_append('delete from {0}'.format(self.__table_name), sql_text, ' where ')
         return sql_text, sql_params
 
+    def sql_of_insert(self) -> list:
+        return self.__prepare_insert_data()
+
+    def sql_of_update(self) -> list:
+        return self.__prepare_update_data()
+
+    def sql_of_delete(self) -> list:
+        sql_text, sql_params = self.__prepare_delete()
+        return [(sql_text, sql_params)]
+
     def save_data(self, session: Session = None) -> str:
         if self.if_exists(session):
             return self.update_data(session)
@@ -428,8 +409,6 @@ class CTable(CResource):
 
     def if_exists(self, session: Session = None) -> bool:
         sql_text, sql_params = self.__prepare_if_exists()
-        print(sql_text)
-        print(sql_params)
 
         if session is None:
             return self.__database.if_exists(sql_text, sql_params)
@@ -439,7 +418,6 @@ class CTable(CResource):
     def insert_data(self, session: Session = None) -> str:
         try:
             sql_list = self.__prepare_insert_data()
-            print(sql_list)
 
             if session is None:
                 self.__database.execute_batch(sql_list)
@@ -448,13 +426,11 @@ class CTable(CResource):
 
             return CResult.merge_result(CResult.Success)
         except Exception as error:
-            print(error.__str__())
             return CResult.merge_result(CResult.Failure, error.__str__())
 
     def update_data(self, session: Session = None) -> str:
         try:
             sql_list = self.__prepare_update_data()
-            print(sql_list)
 
             if session is None:
                 self.__database.execute_batch(sql_list)
@@ -468,8 +444,6 @@ class CTable(CResource):
     def delete_data(self, session: Session = None) -> str:
         try:
             sql_text, sql_params = self.__prepare_delete()
-            print(sql_text)
-            print(sql_params)
 
             if session is None:
                 self.__database.execute(sql_text, sql_params)
@@ -478,4 +452,3 @@ class CTable(CResource):
             return CResult.merge_result(CResult.Success)
         except Exception as error:
             return CResult.merge_result(CResult.Failure, error.__str__())
-
