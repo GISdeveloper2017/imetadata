@@ -72,8 +72,8 @@ class distribution_object_third_survey(distribution_guotu_object):
         # self.add_value_to_sync_dict_list(sync_dict, 'cloudpercent', xml.get_element_text_by_xpath_one(''))
         # 数据量
         self.add_value_to_sync_dict_list(sync_dict, 'datacount',
-                                         xml.get_element_text_by_xpath_one(
-                                             '/root/property[@tablename="mbii"]/item[@name="sjl"]'))
+                                         CUtils.to_integer(xml.get_element_text_by_xpath_one(
+                                             '/root/property[@tablename="mbii"]/item[@name="sjl"]')))
         # 密级
         self.add_value_to_sync_dict_list(sync_dict, 'secrecylevel',
                                          xml.get_element_text_by_xpath_one(
@@ -89,7 +89,7 @@ class distribution_object_third_survey(distribution_guotu_object):
         # 产品时间
         # self.add_value_to_sync_dict_list(sync_dict, 'producetime', xml.get_element_text_by_xpath_one(''))
         # 分辨率 待提取
-        #self.add_value_to_sync_dict_list(sync_dict, 'resolution', xml.get_element_text_by_xpath_one(''), self.DB_True)
+        # self.add_value_to_sync_dict_list(sync_dict, 'resolution', xml.get_element_text_by_xpath_one(''), self.DB_True)
         # 色彩模式
         # self.add_value_to_sync_dict_list(sync_dict, 'colormodel', xml.get_element_text_by_xpath_one(''))
         # 像素位数
@@ -103,3 +103,22 @@ class distribution_object_third_survey(distribution_guotu_object):
         # self.add_value_to_sync_dict_list(sync_dict, 'remark', xml.get_element_text_by_xpath_one(''))
 
         return sync_dict
+
+    def access_check_dict(self) -> dict:  # 预留的方法，sync写完后再调
+        check_dict = dict()  # 如果有其他需要，则可以升级为json
+        check_dict['mbii.ysjwjm'] = 'mbii.ysjwjm'
+        check_dict['mbii.xzqdm'] = 'mbii.xzqdm'
+        check_dict['mbii.xmc'] = 'mbii.xmc'
+        check_dict['mbii.mfqk'] = 'mbii.mfqk'
+        check_dict['mbii.sjgs'] = 'mbii.sjgs'
+        check_dict['mbii.dtty'] = 'mbii.dtty'
+        check_dict['mbii.zyjx'] = 'mbii.zyjx'
+        check_dict['mbii.fdfs'] = 'mbii.fdfs'
+        check_dict['mbii.gsklgtydh'] = 'mbii.gsklgtydh'
+        check_dict['mbii.zbdw'] = 'mbii.zbdw'
+        check_dict['mbii.gcjz'] = 'mbii.gcjz'
+        check_dict['mbii.mj'] = 'mbii.mj'
+        check_dict['mbii.sjscdw'] = 'mbii.sjscdw'
+        check_dict['mbii.sjscsj'] = 'mbii.sjscsj'
+
+        return check_dict

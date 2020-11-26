@@ -20,6 +20,9 @@ class distribution_object_custom(distribution_guotu_object):
         info['table_name'] = 'ap3_product_rsp_nmosaic_detail'
         return info
 
+    def access_check_dict(self) -> dict:  # 预留的方法，sync写完后再调
+        pass
+
     def get_sync_dict_list(self,insert_or_updata) -> list:
         """
         insert_or_updata 中 self.DB_True为insert，DB_False为updata
@@ -44,16 +47,13 @@ class distribution_object_custom(distribution_guotu_object):
 
         sync_dict_list = self.get_sync_predefined_dict_list(insert_or_updata)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'aprndid', object_id, self.DB_True)
+            sync_dict_list, 'aprndid', object_id)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'aprnwid', self._dataset.value_by_name(0, 'dsoparentobjid', ''),
-            self.DB_True)
+            sync_dict_list, 'aprnwid', self._dataset.value_by_name(0, 'dsoparentobjid', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'dataformat', self._dataset.value_by_name(0, 'dsodatatype', ''),
-            self.DB_True)
+            sync_dict_list, 'dataformat', self._dataset.value_by_name(0, 'dsodatatype', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'project', self._dataset.value_by_name(0, 'dso_prj_project', ''),
-            self.DB_True)
+            sync_dict_list, 'project', self._dataset.value_by_name(0, 'dso_prj_project', ''))
         # sync_dict_list, 'zonationtype'  # 为空
         # sync_dict_list, 'centralmeridian'  # 为空
         # sync_dict_list, 'projectbandno'  # 为空
@@ -62,8 +62,7 @@ class distribution_object_custom(distribution_guotu_object):
         # sync_dict_list, 'elevationdatum'  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsometadatajson',
-            self._dataset.value_by_name(0, 'dsometadataxml_bus', ''),
-            self.DB_True)
+            self._dataset.value_by_name(0, 'dsometadataxml_bus', ''))
         # 插件处理字段
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''))
@@ -73,14 +72,11 @@ class distribution_object_custom(distribution_guotu_object):
         # sync_dict_list, 'resolution'  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedate',
-            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),
-            self.DB_True)
+            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'begdate',
-            CUtils.to_day_format(dso_time_json.xpath_one('start_time', ''), dso_time_json.xpath_one('start_time', '')),
-            self.DB_True)
+            CUtils.to_day_format(dso_time_json.xpath_one('start_time', ''), dso_time_json.xpath_one('start_time', '')))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'enddate',
-            CUtils.to_day_format(dso_time_json.xpath_one('end_time', ''), dso_time_json.xpath_one('end_time', '')),
-            self.DB_True)
+            CUtils.to_day_format(dso_time_json.xpath_one('end_time', ''), dso_time_json.xpath_one('end_time', '')))
         return sync_dict_list
