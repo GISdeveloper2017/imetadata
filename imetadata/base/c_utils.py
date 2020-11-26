@@ -515,7 +515,8 @@ class CUtils(CResource):
         if CUtils.equal_ignore_case(obj, ''):
             return default_value
         try:
-            value = int(obj)
+            value_decimal = cls.to_decimal(obj, default_value)
+            value = int(value_decimal)
             return value
         except:
             return default_value
@@ -605,3 +606,7 @@ class CUtils(CResource):
 if __name__ == '__main__':
     text = "to_jsonb($value)"
     print(CUtils.replace_placeholder(text, {'value': 'my_value'}))
+
+    # str22 = '30'
+    # sa = CUtils.to_integer(str22, -1)
+    # print(sa)
