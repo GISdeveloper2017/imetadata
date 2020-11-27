@@ -73,7 +73,7 @@ class distribution_object_vector(distribution_guotu):
             sync_dict_list, 'tbcount',
             '''
             (SELECT 
-            ( dsometadatajson -> 'layers' ->> 0 ) :: json -> 'features' ->> 'count' 
+            cast((( dsometadatajson -> 'layers' ->> 0 ) :: json -> 'features' ->> 'count' ) as integer )
             AS process_md_tbcount FROM  dm2_storage_object  
             WHERE  dsometadatajson IS NOT NULL AND dsoid = '{0}')
             '''.format(object_table_id), self.DataValueType_SQL)
