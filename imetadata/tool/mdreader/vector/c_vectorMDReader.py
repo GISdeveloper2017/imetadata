@@ -29,7 +29,8 @@ class CVectorMDReader(CMDReader):
         result_success = self.Success  # 成功的标记-1
 
         gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
-        gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
+        # gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
+        gdal.SetConfigOption("SHAPE_ENCODING", "UTF-8")
 
         # 定义矢量的json对象
         json_vector = CJson()
