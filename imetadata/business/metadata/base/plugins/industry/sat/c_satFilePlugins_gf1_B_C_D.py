@@ -9,10 +9,10 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = 'pms'
+        information[self.Plugins_Info_Title] = '高分一号'
         information[self.Plugins_Info_Name] = 'pms'
         information[self.Plugins_Info_Code] = 'gf1'
-        information[self.Plugins_Info_Catalog] = '高分一号'
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Sat
 
         return information
 

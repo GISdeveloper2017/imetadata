@@ -14,6 +14,6 @@ class plugins_9003_busdataset_ortho(C21ATBusDataSetPlugins):
         # information[self.Plugins_Info_Type] = 'business_data_set_ortho'
         information[self.Plugins_Info_Type] = self.Object_Def_Type_DataSet_Ortho
         information[self.Plugins_Info_Code] = '020101'
-        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset_Business
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_ortho'
         return information

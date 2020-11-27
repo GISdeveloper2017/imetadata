@@ -15,6 +15,7 @@ class plugins_3001_gdb(CDirPlugins):
         information[self.Plugins_Info_Name] = 'gdb'
         information[self.Plugins_Info_Code] = None
         information[self.Plugins_Info_Catalog] = '矢量'
+        # information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
         information[self.Plugins_Info_Type] = 'vector'
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Vector
         information[self.Plugins_Info_BusMetaDataEngine] = None

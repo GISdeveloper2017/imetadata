@@ -16,7 +16,7 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
         information = super().get_information()
         information[self.Plugins_Info_Type] = self.Object_Def_Type_DOM
         information[self.Plugins_Info_Code] = '020105'
-        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Business
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_dom'
         return information
 

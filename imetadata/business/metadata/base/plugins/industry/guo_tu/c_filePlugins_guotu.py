@@ -23,7 +23,7 @@ class CFilePlugins_GUOTU(CFilePlugins):
         information[self.Plugins_Info_Title] = None
         information[self.Plugins_Info_Name] = None
         information[self.Plugins_Info_Code] = '000001'
-        information[self.Plugins_Info_Catalog] = '行业数据'
+        information[self.Plugins_Info_Catalog] = '行业数据'  # 类别（主要区分普通对象、独立业务对象、业务数据集，为第三方系统【即时服务系统】构建数据库视图用）
         information[self.Plugins_Info_Type_Title] = '国土行业数据'
         information[self.Plugins_Info_Type] = '国土'
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Raster
