@@ -1,0 +1,24 @@
+# -*- coding: utf-8 -*- 
+# @Time : 2020/11/26 15:03 
+# @Author : 王西亚 
+# @File : c_childPlugins.py
+from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
+
+
+class CChildPlugins(CPlugins):
+    """
+    子对象插件基类
+    . 子对象是对象的一部分, 以gdb为例, 其中的每一个层, 是gdb对象的子对象
+    . 子对象不需要识别, 是在父对象解析完毕后, 直接创建的, 无需识别
+    """
+
+    def classified(self):
+        return self.Object_Confirm_IKnown, ''
+
+    def get_information(self) -> dict:
+        information = super().get_information()
+        information[self.Plugins_Info_DetailEngine] = None
+        information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector
+        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+        information[self.Plugins_Info_Module_Distribute_Engine] = None
+        return information

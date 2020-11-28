@@ -144,6 +144,8 @@ class CResource:
     FileName_MetaData = 'metadata.json'
     FileName_MetaData_Bus = 'metadata_bus.xml'
 
+    TableName_DM_Object = 'dm2_storage_object'
+
     Object_Confirm_IUnKnown = 0
     Object_Confirm_Maybe = 1
     Object_Confirm_IKnown = -1
@@ -151,6 +153,8 @@ class CResource:
 
     Name_Result = 'result'
     Name_Message = 'message'
+
+    Name_Layers = 'layers'
 
     Success = -1
     Failure = 0
@@ -176,6 +180,7 @@ class CResource:
     FileType_Unknown = 'none'
     FileType_File = 'file'
     FileType_Dir = 'dir'
+    FileType_Layer = 'layer'
 
     File_Status_Valid = -1
     File_Status_Invalid = 0
@@ -467,7 +472,7 @@ class CResource:
     Object_Def_Type_DEM = 'dem'
     Object_Def_Type_DEM_NoFrame = 'dem_noframe'  # dem非分幅
     Object_Def_Type_Ortho = 'ortho'  # 单景正射
-    Object_Def_Type_Mosaic = 'mosaic'   # 镶嵌影像
+    Object_Def_Type_Mosaic = 'mosaic'  # 镶嵌影像
     Object_Def_Type_Third_Survey = 'third_survey'  # 三调影像
     Object_Def_Type_Guoqing_Scene = 'guoqing_scene'  # 国情影像-整景纠正
     Object_Def_Type_Guoqing_Frame = 'guoqing_frame'  # 国情影像-分幅影像
@@ -477,9 +482,9 @@ class CResource:
     Object_Def_Type_DataSet_DOM = 'business_data_set_dom'  # dom数据集
     Object_Def_Type_DataSet_DEM = 'business_data_set_dem'  # dem数据集
     Object_Def_Type_DataSet_DEM_Frame = 'business_data_set_dem_frame'  # dem分幅数据集
-    Object_Def_Type_DataSet_DEM_NoFrame = 'business_data_set_dem_noframe' # dem非分幅数据集
+    Object_Def_Type_DataSet_DEM_NoFrame = 'business_data_set_dem_noframe'  # dem非分幅数据集
     Object_Def_Type_DataSet_Ortho = 'business_data_set_ortho'  # 单景正射数据集
-    Object_Def_Type_DataSet_Mosaic = 'business_data_set_mosaic'   # 镶嵌影像数据集
+    Object_Def_Type_DataSet_Mosaic = 'business_data_set_mosaic'  # 镶嵌影像数据集
     Object_Def_Type_DataSet_Third_Survey = 'business_data_set_third_survey'  # 三调影像数据集
     Object_Def_Type_DataSet_Guoqing = 'business_data_set_guoqing'  # 国情影像数据集
     Object_Def_Type_DataSet_Guoqing_Scene = 'business_data_set_guoqing_scene'  # 国情影像-整景纠正数据集
@@ -487,3 +492,5 @@ class CResource:
     Object_Def_Type_DataSet_Custom = 'business_data_set_custom'  # 自定义影像数据集
 
     Plugins_Info_Module_Distribute_Engine = 'module.distribute.engine'
+    Plugins_Info_Child_Layer_Plugins_Name = 'child_layer_plugins_name'
+    Plugins_Info_Child_Layer_Data_Type = 'child_layer_data_type'

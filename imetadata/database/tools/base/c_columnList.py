@@ -18,3 +18,7 @@ class CColumnList(CList):
 
     def column_by_index(self, column_index) -> CColumn:
         return self.item_by_index(column_index)
+
+    def reset(self):
+        for column in self.list:
+            column.reset()

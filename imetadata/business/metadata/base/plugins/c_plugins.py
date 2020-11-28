@@ -174,7 +174,7 @@ class CPlugins(CResource):
         information[self.Plugins_Info_HasChildObj] = self.DB_False
         information[self.Plugins_Info_Group_Name] = None
         information[self.Plugins_Info_Group_Title] = None
-        information[self.Plugins_Info_Module_Distribute_Engine] = None # 同步的引擎，值是发布同步用的类的名字
+        information[self.Plugins_Info_Module_Distribute_Engine] = None  # 同步的引擎，值是发布同步用的类的名字
         return information
 
     def get_id(self) -> str:
@@ -260,22 +260,32 @@ class CPlugins(CResource):
 
             # 首先要判断和验证与数据质量相关的核心内容
             if CResult.result_success(result):
-                self.parser_metadata_with_qa(parser)
+                result = self.parser_metadata_with_qa(parser)
             else:
                 return result
 
             # 其次, 根据合法的数据\元数据\业务元数据内容, 提取其他元数据内容, 如果其中出现异常, 则写入质检结果中
             if CResult.result_success(result):
-                self.parser_metadata_after_qa(parser)
+                result = self.parser_metadata_after_qa(parser)
             else:
                 return result
 
-            return CResult.merge_result(
-                self.Success,
-                '数据[{0}]的全部元数据解析完毕! '.format(
-                    self.file_info.file_name_with_full_path,
+            # 上述内容都处理完毕后, 再执行自定义的元数据解析
+            if CResult.result_success(result):
+                result = self.parser_metadata_custom(parser)
+            else:
+                return result
+
+            if CResult.result_success(result):
+                return CResult.merge_result(
+                    self.Success,
+                    '数据[{0}]的全部元数据解析完毕! '.format(
+                        self.file_info.file_name_with_full_path
+                    )
                 )
-            )
+            else:
+                return result
+
         except Exception as error:
             return CResult.merge_result(
                 self.Failure,
@@ -325,9 +335,10 @@ class CPlugins(CResource):
                                                 '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path))
 
                 try:
-                    parser.metadata.set_metadata_file(self.DB_True,
-                                                      '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path),
-                                                      metadata_format, file_metadata_name_with_path)
+                    parser.metadata.set_metadata_file(
+                        self.DB_True,
+                        '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path),
+                        metadata_format, file_metadata_name_with_path)
                     return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path))
                 except Exception as error:
                     parser.metadata.set_metadata(
@@ -1027,3 +1038,16 @@ class CPlugins(CResource):
                 self.Name_Result: self.QA_Result_Error
             }
         ]
+
+    def parser_metadata_custom(self, parser: CMetaDataParser) -> str:
+        """
+        自定义的元数据解析, 在所有质检和其他处理之后触发
+        :param parser:
+        :return:
+        """
+        return CResult.merge_result(
+            self.Success,
+            '数据[{0}]的自定义元数据解析完毕! '.format(
+                self.file_info.file_name_with_full_path
+            )
+        )

@@ -52,42 +52,7 @@ where dsodetailparsestatus = 2
 
         CLogger().debug('开始处理对象: {0}.{1}.{2}.{3}的元数据'.format(dso_id, dso_data_type, dso_object_type, dso_object_name))
 
-        sql_get_info = ''
-        if CUtils.equal_ignore_case(dso_data_type, self.FileType_Dir):
-            sql_get_info = '''
-                select 
-                    coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) || dm2_storage_directory.dsddirectory as query_object_fullname   
-                    , dm2_storage_directory.dsd_directory_valid as query_object_valid  
-                    , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as query_object_root_dir 
-                    , dm2_storage.dstid as query_object_storage_id
-                    , dm2_storage_directory.dsddirectory as query_object_relation_path
-                    , dm2_storage_directory.dsdid as query_object_file_id
-                    , dm2_storage_directory.dsdparentid as query_object_file_parent_id
-                    , dm2_storage_object.dsoparentobjid as query_object_owner_id
-                from dm2_storage_object, dm2_storage_directory, dm2_storage  
-                where 
-                    dm2_storage_object.dsoid = dm2_storage_directory.dsd_object_id    
-                    and dm2_storage_directory.dsdstorageid = dm2_storage.dstid    
-                    and dm2_storage_object.dsoid = :dsoid
-                '''
-        else:
-            sql_get_info = '''
-                select 
-                    coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) || dm2_storage_file.dsffilerelationname as query_object_fullname 
-                    , dm2_storage_file.dsffilevalid as query_object_valid     
-                    , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as query_object_root_dir 
-                    , dm2_storage.dstid as query_object_storage_id
-                    , dm2_storage_file.dsffilerelationname as query_object_relation_path
-                    , dm2_storage_file.dsfid as query_object_file_id
-                    , dm2_storage_file.dsfdirectoryid as query_object_file_parent_id
-                    , dm2_storage_object.dsoparentobjid as query_object_owner_id
-                from dm2_storage_object, dm2_storage_file, dm2_storage, dm2_storage_directory   
-                where dm2_storage_object.dsoid = dm2_storage_file.dsf_object_id 
-                    and dm2_storage_file.dsfstorageid = dm2_storage.dstid 
-                    and dm2_storage_directory.dsdid = dm2_storage_file.dsfdirectoryid 
-                    and dm2_storage_object.dsoid = :dsoid
-                '''
-        ds_file_info = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_info, {'dsoid': dso_id})
+        ds_file_info = self.get_object_info(dso_id, dso_data_type)
 
         if ds_file_info.value_by_name(0, 'query_object_valid', self.DB_False) == self.DB_False:
             CFactory().give_me_db(self.get_mission_db_id()).execute('''

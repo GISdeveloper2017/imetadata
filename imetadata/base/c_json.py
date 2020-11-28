@@ -218,16 +218,15 @@ class CJson:
 if __name__ == '__main__':
     dict_obj = {'a': {'name': 'a1', 'sex': 0, 'birthday': '2020-01-01'}, 'b': 'other'}
     print(CJson.dict_attr_by_path(dict_obj, 'a.birthday1'))
-    dict_obj = {'a': ["a1", "a2", "a3"], 'b': 'other'}
+    dict_obj = {'a': [{"name": "a1"}, {"name": "a2"}, {"name": "a3"}], 'b': 'other'}
     json_obj = CJson()
     json_obj.load_obj(dict_obj)
     a_list = json_obj.xpath_one('a', None)
     print(a_list)
     print(type(a_list))
-    a_name = CJson.json_attr_value("""
-    {
-        "a": {"name": null}, "b": "other"
-    }
-    """, 'b.name', None)
-    print(a_name)
+    for a_item in a_list:
+        print(a_item)
+        print(type(a_item))
+        print(a_item['name'])
+
 
