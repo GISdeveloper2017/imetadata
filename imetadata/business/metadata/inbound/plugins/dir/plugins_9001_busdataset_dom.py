@@ -14,6 +14,6 @@ class plugins_9001_busdataset_dom(C21ATBusDataSetPlugins):
         # information[self.Plugins_Info_Type] = 'business_data_set_dom'
         information[self.Plugins_Info_Type] = self.Object_Def_Type_DataSet_DOM
         information[self.Plugins_Info_Code] = '020105'
-        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset_Business
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_dom'
         return information

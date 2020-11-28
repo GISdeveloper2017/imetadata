@@ -27,30 +27,36 @@ class distribution_dataset_gdb(distribution_guotu):
         sync_dict_list = list()
         object_table_id = self._obj_id  # 获取oid
         object_table_data = self._dataset
-        if insert_or_updata:  # 如果为更新，则不需要主键
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprid', object_table_id)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'aprid', object_table_id)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'aprvdid1', object_table_id)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'productname', object_table_data.value_by_name(0, 'dsoobjectname', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'producttype', object_table_data.value_by_name(0, 'dsodcode', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsodatatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
-        now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'addtime', now_time)
+            sync_dict_list, 'queryable', '1')
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'dstype', '1')
         if insert_or_updata:
             self.add_value_to_sync_dict_list(
-                sync_dict_list, 'queryable', '1')
-            self.add_value_to_sync_dict_list(
                 sync_dict_list, 'isdel', '0')
+            now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
             self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprvdid1', object_table_id)
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'dstype', '1')
+                sync_dict_list, 'addtime', now_time)
 
+        # self.add_value_to_sync_dict_list(
+        #     sync_dict_list, 'dsnamed', object_table_data.value_by_name(0, 'dsoobjectname', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'dsnamed', object_table_data.value_by_name(0, 'dsoobjectname', ''))
+            sync_dict_list, 'dsnamed',
+            '''
+            (select array_to_string(array_agg(dsoobjectname), '/') 
+            from dm2_storage_object where dsoparentobjid='{0}')
+            '''.format(object_table_id),
+            self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'busitype', object_table_data.value_by_name(0, 'dsoobjecttype', ''))
 
@@ -83,7 +89,7 @@ class distribution_dataset_gdb(distribution_guotu):
             (SELECT st_union (
             (select dso_geo_bb_native from dm2_storage_object where dsoparentobjid='{0}' limit 1)
             ))
-            '''.format(object_table_id), self.DB_False)
+            '''.format(object_table_id), self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
             sync_dict_list, 'extent',
@@ -91,7 +97,7 @@ class distribution_dataset_gdb(distribution_guotu):
             (SELECT st_union( 
             (select dso_geo_bb_native from dm2_storage_object where dsoparentobjid='{0}' limit 1)
             ))
-            '''.format(object_table_id), self.DB_False)
+            '''.format(object_table_id), self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'centerx',
@@ -99,7 +105,7 @@ class distribution_dataset_gdb(distribution_guotu):
             (SELECT st_x ( st_centroid ( st_union ( 
             (select dso_geo_bb_native from dm2_storage_object where dsoparentobjid='{0}' limit 1)
             ) ) ) )
-            '''.format(object_table_id), self.DB_False)
+            '''.format(object_table_id), self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'centery',
@@ -107,7 +113,7 @@ class distribution_dataset_gdb(distribution_guotu):
             (SELECT st_y ( st_centroid ( st_union ( 
             (select dso_geo_bb_native from dm2_storage_object where dsoparentobjid='{0}' limit 1)
             ) ) ) )
-            '''.format(object_table_id), self.DB_False)
+            '''.format(object_table_id), self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'geomwkt',
@@ -115,7 +121,7 @@ class distribution_dataset_gdb(distribution_guotu):
             (SELECT st_astext ( st_union ( 
             (select dso_geo_bb_native from dm2_storage_object where dsoparentobjid='{0}' limit 1)
             ) ) )
-            '''.format(object_table_id), self.DB_False)
+            '''.format(object_table_id), self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imgsize',
@@ -123,6 +129,6 @@ class distribution_dataset_gdb(distribution_guotu):
             (select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail 
             where dodobjectid in 
             (select dsoid FROM dm2_storage_object WHERE dsoparentobjid='{0}'))
-            '''.format(object_table_id), self.DB_False)
+            '''.format(object_table_id), self.DataValueType_SQL)
 
         return sync_dict_list

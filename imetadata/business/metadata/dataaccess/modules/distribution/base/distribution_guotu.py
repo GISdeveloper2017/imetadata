@@ -2,6 +2,7 @@
 # @Time : 2020/11/11 18:21
 # @Author : 赵宇飞
 # @File : distribution_guotu.py
+from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_base import distribution_base
@@ -10,6 +11,7 @@ from imetadata.base.c_json import CJson
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
+from imetadata.database.tools.c_table import CTable
 
 
 class distribution_guotu(distribution_base):
@@ -126,32 +128,53 @@ class distribution_guotu(distribution_base):
         pass
 
     def _do_sync(self) -> str:
-        table_name = CUtils.dict_value_by_name(self.information(), 'table_name', '')
-        sql_check = '''
-        select aprid from {0} where aprid='{1}'
-        '''.format(table_name, self._obj_id)
-        record_cheak = CFactory().give_me_db(self._db_id).one_row(sql_check).size()  # 查找记录数
-        if record_cheak == 0:  # 记录数为0则拼接插入语句
-            sql_all_archived = self.process_insert_sql(table_name, self.get_sync_dict_list(self.DB_True))
-        else:  # 记录数不为0则拼接更新语句
-            sql_all_archived = self.process_updata_sql(table_name, self.get_sync_dict_list(self.DB_False)
-                                                       , self._obj_id)
         try:
-            if CFactory().give_me_db(self._db_id).execute(sql_all_archived):  # 执行拼好的语句
+            table_name = CUtils.dict_value_by_name(self.information(), 'table_name', '')
+            # 因此类插件的表格情况特殊，为双主键，且要先确定插入还是更新，所以不用table.if_exists()方法
+            sql_check = '''
+            select aprid from {0} where aprid='{1}'
+            '''.format(table_name, self._obj_id)
+            record_cheak = CFactory().give_me_db(self._db_id).one_row(sql_check).size()  # 查找记录数
+            if record_cheak == 0:  # 记录数为0则拼接插入语句
+                insert_or_updata = self.DB_True
+            else:  # 记录数不为0则拼接更新语句
+                insert_or_updata = self.DB_False
+
+            table = CTable()
+            table.load_info(CResource.DB_Server_ID_Default, table_name)
+            # insert_or_updatad的意义是要先确定是更新还是插入，不能把不该更新的，在插入时是默认值的参数更新
+            for field_dict in self.get_sync_dict_list(insert_or_updata):
+                field_name = CUtils.dict_value_by_name(field_dict, 'field_name', '')  # 获取字段名
+                field_value = CUtils.dict_value_by_name(field_dict, 'field_value', '')  # 获取字段值
+                field_value_type = CUtils.dict_value_by_name(field_dict, 'field_value_type', '')  # 获取值类型
+                if CUtils.equal_ignore_case(field_value, ''):
+                    table.column_list.column_by_name(field_name).set_null()
+                elif CUtils.equal_ignore_case(field_value_type, self.DataValueType_Value):
+                    table.column_list.column_by_name(field_name).set_value(field_value)
+                elif CUtils.equal_ignore_case(field_value_type, self.DataValueType_SQL):
+                    table.column_list.column_by_name(field_name).set_sql(field_value)
+                elif CUtils.equal_ignore_case(field_value_type, self.DataValueType_Array):
+                    table.column_list.column_by_name(field_name).set_array(field_value)
+                else:
+                    pass
+
+            # 不多执行table.if_exists()多查一次哭，所以不用savedata()方法
+            if insert_or_updata:
+                result = table.insert_data()
+            else:
+                result = table.update_data()
+
+            if CResult.result_success(result):
                 return CResult.merge_result(
                     self.Success,
                     '对象[{0}]的同步成功! '.format(self._obj_name)
                 )
             else:
-                return CResult.merge_result(
-                    self.Failure,
-                    '对象[{0}]的同步错误!,请检查配置.'.format(self._obj_name)
-                )
+                return result
         except Exception as error:
             return CResult.merge_result(
                 self.Failure,
-                '数据检索分发模块在进行数据同步时出现错误:同步的对象[{0}]在录入数据库时出现异常, '
-                '可能是业务元数据或空间信息存在问题,详细情况: [{1}]!'.format(
+                '数据检索分发模块在进行数据同步时出现错误:同步的对象[{0}]在处理时出现异常, 详细情况: [{1}]!'.format(
                     self._obj_name,
                     error.__str__()
                 )
@@ -167,54 +190,8 @@ class distribution_guotu(distribution_base):
         # sync_dict_list = self.add_value_to_sync_dict_list(sync_dict_list,'name','value',self.DB_True)
         return sync_dict_list
 
-    def process_insert_sql(self, table_name, field_dict_list):
-
-        """
-        本方法构建插入语句
-        """
-        sql_temporary_1 = ''  # 拼表名
-        sql_temporary_2 = ''  # 拼值
-        duplicate_removal_set = set()  # 用于去重判断
-        field_dict_list.reverse()  # 倒序进行循环，用于去重
-        for field_dict in field_dict_list:
-            field_name = CUtils.dict_value_by_name(field_dict, 'field_name', '')  # 获取字段名
-            field_value = CUtils.dict_value_by_name(field_dict, 'field_value', '')  # 获取字段值
-            field_type = CUtils.dict_value_by_name(field_dict, 'field_type', '')  # 获取字段类型
-            if not CUtils.equal_ignore_case(field_value, '') and field_name not in duplicate_removal_set:
-                duplicate_removal_set.add(field_name)  # 如果没有拼接过这个字段，这加入set集合，用于查重
-                sql_temporary_1 = sql_temporary_1 + '{0},'.format(field_name)  # 拼接字段部分的sql
-                if field_type:  # 拼接values部分的sql field_type判断是否需要加''
-                    sql_temporary_2 = sql_temporary_2 + "'{0}',".format(field_value)
-                else:
-                    sql_temporary_2 = sql_temporary_2 + "{0},".format(field_value)
-        insert_sql = '''
-        INSERT INTO {0}({1}) VALUES ({2})
-        '''.format(table_name, sql_temporary_1[:-1], sql_temporary_2[:-1])  # 记得截取后面的逗号
-        return insert_sql
-
-    def process_updata_sql(self, table_name, field_dict_list, oid):
-        """
-        本方法构建更新
-        """
-        sql_temporary = ''
-        duplicate_removal_set = set()  # 用于去重判断
-        field_dict_list.reverse()  # 倒序进行循环，用于去重
-        for field_dict in field_dict_list:
-            field_name = CUtils.dict_value_by_name(field_dict, 'field_name', '')
-            field_value = CUtils.dict_value_by_name(field_dict, 'field_value', '')
-            field_type = CUtils.dict_value_by_name(field_dict, 'field_type', '')
-            if not CUtils.equal_ignore_case(field_value, '') and field_name not in duplicate_removal_set:
-                duplicate_removal_set.add(field_name)
-                if field_type:
-                    sql_temporary = sql_temporary + "{0}='{1}',".format(field_name, field_value)
-                else:
-                    sql_temporary = sql_temporary + "{0}={1},".format(field_name, field_value)
-        updata_sql = '''
-        UPDATE {0} SET {1} WHERE aprid='{2}'
-        '''.format(table_name, sql_temporary[:-1], oid)
-        return updata_sql
-
-    def add_value_to_sync_dict_list(self, sync_dict_list, field_name, field_value, field_type=True):
+    def add_value_to_sync_dict_list(self, sync_dict_list, field_name, field_value
+                                    , field_value_type=CResource.DataValueType_Value):
         """
         本方法构建同步用的配置列表
         """
@@ -222,6 +199,6 @@ class distribution_guotu(distribution_base):
             {
                 'field_name': field_name,
                 'field_value': field_value,
-                'field_type': field_type
+                'field_value_type': field_value_type
             }
         ])

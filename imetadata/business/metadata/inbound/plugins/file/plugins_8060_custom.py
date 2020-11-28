@@ -26,7 +26,7 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
         # information[self.Plugins_Info_Type] = 'custom'
         information[self.Plugins_Info_Type] = self.Object_Def_Type_Custom
         information[self.Plugins_Info_Code] = '020107'
-        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Business
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_custom'
         return information
 

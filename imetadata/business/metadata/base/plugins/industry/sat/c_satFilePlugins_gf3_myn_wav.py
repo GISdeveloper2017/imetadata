@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
-# @Time : 2020/11/6 10:21
+# @Time : 2020/11/9 13:54 
 # @Author : 邢凯凯
-# @File : c_satFilePlugins_gf3_mdj_wsc.py
+# @File : c_satFilePlugins_gf3_myn_wav.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
@@ -9,11 +9,11 @@ from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CM
 from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
 
 
-class CSatFilePlugins_gf3_mdj_wsc(CSatPlugins):
+class CSatFilePlugins_gf3_myn_wav(CSatPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = '高分三号'
-        information[self.Plugins_Info_Name] = 'gf3_mdj_wsc'
+        information[self.Plugins_Info_Name] = 'gf3_myn_wav'
         information[self.Plugins_Info_Code] = 'gf3'
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Sat
 
@@ -35,11 +35,11 @@ class CSatFilePlugins_gf3_mdj_wsc(CSatPlugins):
             TextMatchType_Regex: 正则表达式
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return 'gf3_mdj_wsc_*_l1a*_l1*', self.TextMatchType_Common
+            return 'gf3_myn_wav_*_l1a*_l1*', self.TextMatchType_Common
         else:
-            # GF3_MDJ_WSC_999188_E114.4_N28.4_20160822_L1A_HH_L10002009144_Strip_0.tiff
-            # 暂定gf3_mdj_wsc_*_l1a_hh_l1*_strip_0.tiff为主对象文件
-            return 'gf3_mdj_wsc_*_l1a_hh_l1*_strip_0.tiff', self.TextMatchType_Common
+            # GF3_MYN_WAV_001009_E107.9_N39.6_20161018_L1A_HH_L10001906059.tiff
+            # 暂定gf3_myn_wav_*_l1a_hh_l1*.tiff为主对象文件
+            return 'gf3_myn_wav_*_l1a_hh_l1*.tiff', self.TextMatchType_Common
 
     def get_classified_object_name_of_sat(self, sat_file_status) -> str:
         """
@@ -58,7 +58,7 @@ class CSatFilePlugins_gf3_mdj_wsc(CSatPlugins):
         elif sat_file_status == self.Sat_Object_Status_Dir:
             return self.file_info.file_name_without_path
         else:
-            return self.file_info.file_main_name.replace('HH', 'HHHV').replace('_Strip_0', '')
+            return self.file_info.file_main_name.replace('HH', 'AHV')
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """
@@ -89,41 +89,9 @@ class CSatFilePlugins_gf3_mdj_wsc(CSatPlugins):
         """
         return [
             {
-                self.Name_FileName: '{0}_Strip_0.tiff'.format(self.classified_object_name().replace('HHHV', 'HH')),
-                self.Name_ID: 'Strip_0.tiff',
-                self.Name_Title: '影像文件Strip_0',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_Format: self.DataFormat_Raster_File
-            },
-            {
-                self.Name_FileName: '{0}_Strip_1.tiff'.format(self.classified_object_name().replace('HHHV', 'HH')),
-                self.Name_ID: 'Strip_1.tiff',
-                self.Name_Title: '影像文件Strip_1',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_Format: self.DataFormat_Raster_File
-            },
-            {
-                self.Name_FileName: '{0}_Strip_2.tiff'.format(self.classified_object_name().replace('HHHV', 'HH')),
-                self.Name_ID: 'Strip_2.tiff',
-                self.Name_Title: '影像文件Strip_2',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_Format: self.DataFormat_Raster_File
-            },
-            {
-                self.Name_FileName: '{0}_Strip_3.tiff'.format(self.classified_object_name().replace('HHHV', 'HH')),
-                self.Name_ID: 'Strip_3.tiff',
-                self.Name_Title: '影像文件Strip_3',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_Format: self.DataFormat_Raster_File
-            },
-            {
-                self.Name_FileName: '{0}_Strip_4.tiff'.format(self.classified_object_name().replace('HHHV', 'HH')),
-                self.Name_ID: 'Strip_4.tiff',
-                self.Name_Title: '影像文件Strip_4',
+                self.Name_FileName: '{0}.tiff'.format(self.classified_object_name().replace('AHV', 'HH')),
+                self.Name_ID: 'hh_tiff',
+                self.Name_Title: '影像文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_Format: self.DataFormat_Raster_File
@@ -166,8 +134,8 @@ class CSatFilePlugins_gf3_mdj_wsc(CSatPlugins):
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_XPath: '/product/productinfo/ProductLevel',
-                self.Name_ID: 'ProductLevel',
+                self.Name_XPath: '/product/productinfo/productLevel',
+                self.Name_ID: 'productLevel',
                 self.Name_Title: '产品属性',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
@@ -461,11 +429,11 @@ class CSatFilePlugins_gf3_mdj_wsc(CSatPlugins):
         return [
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: '{0}.jpg'.format(self.classified_object_name().replace('_HHHV_', '_HH_'))
+                self.Name_FileName: '{0}.jpg'.format(self.classified_object_name().replace('_AHV_', '_HH_'))
 
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
-                self.Name_FileName: '{0}.thumnail.jpg'.format(self.classified_object_name().replace('_HHHV_', '_HH_'))
+                self.Name_FileName: '{0}.thumb.jpg'.format(self.classified_object_name().replace('_AHV_', '_HH_'))
             }
         ]

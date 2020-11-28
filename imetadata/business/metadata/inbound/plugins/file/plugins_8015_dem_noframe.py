@@ -25,7 +25,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
         # information[self.Plugins_Info_Type] = 'dem_noframe'
         information[self.Plugins_Info_Type] = self.Object_Def_Type_DEM_NoFrame
         information[self.Plugins_Info_Code] = '02010602'
-        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Business
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_dem_noframe'
         return information
 
@@ -97,7 +97,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
                     self.Name_FileName: '',
                     self.Name_ID: 'metadata_file',
                     self.Name_Title: '元数据文件',
-                    self.Name_Result: self.QA_Result_Error,
+                    self.Name_Result: self.QA_Result_Pass,
                     self.Name_Group: self.QA_Group_Data_Integrity,
                     self.Name_Message: '本文件缺少业务元数据，是正常现象'
                 }
@@ -120,51 +120,84 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
         完成 负责人 李宪
         @return:
         """
-        return [
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 100,
-                self.Name_XPath: "//ProductName",
-                self.Name_ID: 'ProductName',
-                self.Name_Title: '产品名称',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date,
-                self.Name_XPath: "//ProduceDate",
-                self.Name_ID: 'ProduceDate',
-                self.Name_Title: '产品日期',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Width: 8,
-                self.Name_XPath: "//GridCellSize",
-                self.Name_ID: 'GridCellSize',
-                self.Name_Title: '网格尺寸',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: False,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 500,
-                self.Name_XPath: "//Description",
-                self.Name_ID: 'Description',
-                self.Name_Title: '说明',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            }
-        ]
+        file_name_with_full_path = self.file_info.file_name_with_full_path
+        if file_name_with_full_path.endswith('_21at.xml'):
+            return [
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 100,
+                    self.Name_XPath: "//ProductName",
+                    self.Name_ID: 'ProductName',
+                    self.Name_Title: '产品名称',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_date,
+                    self.Name_XPath: "//ProduceDate",
+                    self.Name_ID: 'ProduceDate',
+                    self.Name_Title: '产品日期',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_decimal_or_integer,
+                    self.Name_Width: 8,
+                    self.Name_XPath: "//GridCellSize",
+                    self.Name_ID: 'GridCellSize',
+                    self.Name_Title: '网格尺寸',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_NotNull: False,
+                    self.Name_DataType: self.value_type_string,
+                    self.Name_Width: 500,
+                    self.Name_XPath: "//Description",
+                    self.Name_ID: 'Description',
+                    self.Name_Title: '说明',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error
+                }
+            ]
+        else:
+            return []
+
+    def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
+        """
+        标准模式的提取时间信息的列表
+        """
+        file_name_with_full_path = self.file_info.file_name_with_full_path
+        if file_name_with_full_path.endswith('_21at.xml'):
+            return [
+                {
+                    self.Name_Source: self.Name_Business,
+                    self.Name_ID: self.Name_Time,
+                    self.Name_XPath: '//ProduceDate',
+                    self.Name_Format: self.MetaDataFormat_XML
+                },
+                {
+                    self.Name_Source: self.Name_Business,
+                    self.Name_ID: self.Name_Start_Time,
+                    self.Name_XPath: '//ProduceDate',
+                    self.Name_Format: self.MetaDataFormat_XML
+                },
+                {
+                    self.Name_Source: self.Name_Business,
+                    self.Name_ID: self.Name_End_Time,
+                    self.Name_XPath: '//ProduceDate',
+                    self.Name_Format: self.MetaDataFormat_XML
+                }
+            ]
+        else:
+            return []
 
 if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,

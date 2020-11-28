@@ -26,9 +26,8 @@ class distribution_dataset_guoqing(distribution_guotu_dataset):
         sync_dict_list = self.get_sync_predefined_dict_list(insert_or_updata)
         object_table_id = self._obj_id
         object_table_data = self._dataset
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprgdid', object_table_id)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'aprgdid', object_table_id)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'datatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
         self.add_value_to_sync_dict_list(

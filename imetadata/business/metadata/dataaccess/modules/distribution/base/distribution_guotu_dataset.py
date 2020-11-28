@@ -51,9 +51,8 @@ class distribution_guotu_dataset(distribution_guotu):
         sync_dict_list = list()
         object_table_id = self._obj_id
         object_table_data = self._dataset
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprid', object_table_id)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'aprid', object_table_id)
 
         dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml_bus', '')
         dsometadataxml_xml = CXml()
@@ -87,21 +86,21 @@ class distribution_guotu_dataset(distribution_guotu):
             sync_dict_list, 'centerx',
             '''
             (select centerx::decimal(8,2) from ro_global_dim_space where gdscode='{0}')
-            '''.format(regioncode), self.DB_False)
+            '''.format(regioncode), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'centery',
             '''
             (select centery::decimal(8,2) from ro_global_dim_space where gdscode='{0}')
-            '''.format(regioncode), self.DB_False)
+            '''.format(regioncode), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'geomwkt',
             "st_astext("
             "(select gdsgeometry from ro_global_dim_space where gdscode='{0}')"
-            ")".format(regioncode), self.DB_False)
+            ")".format(regioncode), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'geomobj',
             "(select gdsgeometry from ro_global_dim_space where gdscode='{0}')".format(regioncode),
-            self.DB_False)
+            self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'browserimg', object_table_data.value_by_name(0, 'dso_browser', ''))
@@ -110,9 +109,6 @@ class distribution_guotu_dataset(distribution_guotu):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'producetime',
             CUtils.to_day_format(dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date'), ''))
-        now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
-        self.add_value_to_sync_dict_list(
-            sync_dict_list, 'addtime', now_time)
         self.add_value_to_sync_dict_list(  # resolution:分辨率
             sync_dict_list, 'resolution',
             dsometadataxml_xml.get_element_text_by_xpath_one('/root/Resolution'))
@@ -123,23 +119,25 @@ class distribution_guotu_dataset(distribution_guotu):
             "where dodobjectid in "
             "(select dsoid FROM dm2_storage_object WHERE dsoparentobjid='{0}')"
             ")".format(object_table_id),
-            self.DB_False)
+            self.DataValueType_SQL)
         # colormodel:交插件处理
         # piexldepth:交插件处理
         if insert_or_updata:
             self.add_value_to_sync_dict_list(sync_dict_list, 'isdel', '0')
+            now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'addtime', now_time)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'extent',
             "(select gds_geo_bbox from ro_global_dim_space where gdscode='{0}')".format(regioncode),
-            self.DB_False)
+            self.DataValueType_SQL)
         # self.add_value_to_sync_dict_list(
         #     sync_dict_list, 'proj', object_table_data.value_by_name(0, 'dso_prj_coordinate', ''), self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'remark',
             dsometadataxml_xml.get_element_text_by_xpath_one('/root/Remark'))
         # ispublishservice:暂时为空
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(sync_dict_list, 'queryable', '1')
+        self.add_value_to_sync_dict_list(sync_dict_list, 'queryable', '1')
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'mainrssource',
             dsometadataxml_xml.get_element_text_by_xpath_one('/root/MajorSource'))

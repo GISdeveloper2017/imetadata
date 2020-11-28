@@ -25,8 +25,8 @@ class distribution_guotu_object(distribution_guotu):
     def db_access_check(self, access_Wait_flag, access_Forbid_flag, message):
         temporary_dict = dict()
         temporary_dict['dso_time'] = self._dataset.value_by_name(0, 'dso_time', '')
-        temporary_dict['browserimg'] = self._dataset.value_by_name(0, 'browserimg', '')
-        temporary_dict['thumbimg'] = self._dataset.value_by_name(0, 'thumbimg', '')
+        temporary_dict['dso_browser'] = self._dataset.value_by_name(0, 'dso_browser', '')
+        temporary_dict['dso_browser'] = self._dataset.value_by_name(0, 'dso_browser', '')
         temporary_dict['dso_geo_wgs84'] = self._dataset.value_by_name(0, 'dso_geo_wgs84', '')
         temporary_dict['dso_prj_proj4'] = self._dataset.value_by_name(0, 'dso_prj_proj4', '')
         for key, value in temporary_dict.items():
@@ -59,9 +59,8 @@ class distribution_guotu_object(distribution_guotu):
         sync_dict_list = list()
         object_table_id = self._obj_id  # 获取oid
         object_table_data = self._dataset
-        if insert_or_updata:  # 如果为更新，则不需要主键
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprid', object_table_id, self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'aprid', object_table_id, self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'productname', object_table_data.value_by_name(0, 'dsoobjectname', ''), self.DB_True)
         self.add_value_to_sync_dict_list(
@@ -87,21 +86,21 @@ class distribution_guotu_object(distribution_guotu):
             sync_dict_list, 'centerx',
             "st_x(st_centroid("
             "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
-            "))".format(object_table_id), self.DB_False)
+            "))".format(object_table_id), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'centery',
             "st_y(st_centroid("
             "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
-            "))".format(object_table_id), self.DB_False)
+            "))".format(object_table_id), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'geomwkt',
             "st_astext("
             "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
-            ")".format(object_table_id), self.DB_False)
+            ")".format(object_table_id), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'geomobj',
             "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')".format(object_table_id),
-            self.DB_False)
+            self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'browserimg', object_table_data.value_by_name(0, 'dso_browser', ''), self.DB_True)
@@ -111,37 +110,36 @@ class distribution_guotu_object(distribution_guotu):
             sync_dict_list, 'producetime',
             CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),
             self.DB_True)
-        now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
-        self.add_value_to_sync_dict_list(
-            sync_dict_list, 'addtime', now_time, self.DB_True)
         # resolution:分辨率，交插件处理
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imgsize',
             "(select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail "
             "where dodobjectid='{0}')".format(object_table_id),
-            self.DB_False)
+            self.DataValueType_SQL)
         # colormodel:交插件处理
         # piexldepth:交插件处理
         if insert_or_updata:
             self.add_value_to_sync_dict_list(
-                sync_dict_list, 'isdel', '0', self.DB_True)
+                sync_dict_list, 'isdel', '0')
+            now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'addtime', now_time, self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'extent',
             "(select dso_geo_bb_native from dm2_storage_object where dsoid='{0}')".format(object_table_id),
-            self.DB_False)
+            self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'proj', object_table_data.value_by_name(0, 'dso_prj_coordinate', ''), self.DB_True)
+            sync_dict_list, 'proj', object_table_data.value_by_name(0, 'dso_prj_coordinate', ''))
         # remark:暂时为空
         # ispublishservice:暂时为空
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'queryable', '1', self.DB_True)
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'queryable', '0')
         # scale:交插件处理
         # mainrssource:交插件处理
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'dsdid', object_table_data.value_by_name(0, 'query_directory_id', ''), self.DB_True)
+            sync_dict_list, 'dsdid', object_table_data.value_by_name(0, 'query_directory_id', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'dsfid', object_table_data.value_by_name(0, 'query_file_id', ''), self.DB_True)
+            sync_dict_list, 'dsfid', object_table_data.value_by_name(0, 'query_file_id', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedatetag',
             CUtils.to_day_format(dso_time_json.xpath_one('time', ''),

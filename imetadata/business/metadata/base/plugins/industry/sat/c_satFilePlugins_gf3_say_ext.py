@@ -12,10 +12,10 @@ from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
 class CSatFilePlugins_gf3_say_ext(CSatPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = 'gf3_say_ext'
+        information[self.Plugins_Info_Title] = '高分三号'
         information[self.Plugins_Info_Name] = 'gf3_say_ext'
         information[self.Plugins_Info_Code] = 'gf3'
-        information[self.Plugins_Info_Catalog] = '高分三号'
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Sat
 
         return information
 

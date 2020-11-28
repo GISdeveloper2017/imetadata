@@ -44,24 +44,21 @@ class distribution_object_dem_noframe(distribution_guotu_object):
         metadataxml_bus_xml.load_xml(dsometadataxml_bus)
 
         sync_dict_list = self.get_sync_predefined_dict_list(insert_or_updata)
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'aprndid', object_id, self.DB_True)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'aprnwid', self._dataset.value_by_name(0, 'dsoparentobjid', ''), self.DB_True)
+            sync_dict_list, 'aprndid', object_id)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'dataformat', self._dataset.value_by_name(0, 'dsodatatype', ''),
-            self.DB_True)
+            sync_dict_list, 'aprnwid', self._dataset.value_by_name(0, 'dsoparentobjid', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'projinfo', self._dataset.value_by_name(0, 'dso_prj_project', ''),
-            self.DB_True)
+            sync_dict_list, 'dataformat', self._dataset.value_by_name(0, 'dsodatatype', ''))
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'projinfo', self._dataset.value_by_name(0, 'dso_prj_project', ''))
         # sync_dict_list, 'createrorganize'  # 为空
         # sync_dict_list, 'submitorganize'  # 为空
         # sync_dict_list, 'copyrightorgnize'  # 为空
         # sync_dict_list, 'supplyorganize'  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'metafilename',
-            '{0}_21at.xml'.format(object_name), self.DB_True)
+            '{0}_21at.xml'.format(object_name))
         # sync_dict_list, 'networksize'  # 为空
         # sync_dict_list, 'zonetype'  # 为空
         # sync_dict_list, 'centerline'  # 为空
@@ -70,25 +67,21 @@ class distribution_object_dem_noframe(distribution_guotu_object):
         # sync_dict_list, 'demname'  # 为空
         # sync_dict_list, 'demstandard'  # 为空
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'dsometadatajson', self._dataset.value_by_name(0, 'dsometadataxml_bus', ''),
-            self.DB_True)
+            sync_dict_list, 'dsometadatajson', self._dataset.value_by_name(0, 'dsometadataxml_bus', ''))
         # 插件处理字段
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''), self.DB_True)
+            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''))
         # sync_dict_list, 'secrecylevel'  # 为空
         # sync_dict['regioncode']  # 为空
         # sync_dict['regionname']  # 为空
         # sync_dict_list, 'resolution'  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedate',
-            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),
-            self.DB_True)
+            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'begdate',
-            CUtils.to_day_format(dso_time_json.xpath_one('start_time', ''), dso_time_json.xpath_one('start_time', '')),
-            self.DB_True)
+            CUtils.to_day_format(dso_time_json.xpath_one('start_time', ''), dso_time_json.xpath_one('start_time', '')))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'enddate',
-            CUtils.to_day_format(dso_time_json.xpath_one('end_time', ''), dso_time_json.xpath_one('end_time', '')),
-            self.DB_True)
+            CUtils.to_day_format(dso_time_json.xpath_one('end_time', ''), dso_time_json.xpath_one('end_time', '')))
         return sync_dict_list

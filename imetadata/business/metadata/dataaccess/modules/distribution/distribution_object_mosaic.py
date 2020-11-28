@@ -34,8 +34,7 @@ class distribution_object_mosaic(distribution_guotu_object):
         xml.load_xml(dsometadataxml_bus)
 
         # 后处理流程介文档中的字段
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(sync_dict, 'aprmwid', object_table_id, self.DB_True)
+        self.add_value_to_sync_dict_list(sync_dict, 'aprmwid', object_table_id)
         # sync_dict['datatype'] = "'{0}'".format()
         # sync_dict['projinfo'] = "'{0}'".format()
         # sync_dict['zonetype'] = "'{0}'".format()
@@ -52,7 +51,7 @@ class distribution_object_mosaic(distribution_guotu_object):
         # sync_dict['productsize'] = "'{0}'".format()
         self.add_value_to_sync_dict_list(sync_dict, 'imagesource',xml.get_element_text_by_xpath_one('/Metadatafile/BasicDataContent/ImageSource'))
         self.add_value_to_sync_dict_list(sync_dict, 'dsometadatajson',
-                                         object_table_data.value_by_name(0, 'dsometadataxml_bus', ''), self.DB_True)
+                                         object_table_data.value_by_name(0, 'dsometadataxml_bus', ''))
         # 数据量
         # sync_dict['datacount'] = "''"
         # 密级
@@ -66,8 +65,7 @@ class distribution_object_mosaic(distribution_guotu_object):
         #    xml.get_element_text_by_xpath_one('/Metadatafile/BasicDataContent/ProduceDate'))
         # 分辨率
         self.add_value_to_sync_dict_list(sync_dict, 'resolution',
-                                         xml.get_element_text_by_xpath_one('/Metadatafile/BasicDataContent/Resolution'),
-                                         self.DB_True)
+                                         xml.get_element_text_by_xpath_one('/Metadatafile/BasicDataContent/Resolution'))
         # 色彩模式
         # self.add_value_to_sync_dict_list(sync_dict, 'colormodel',xml.get_element_text_by_xpath_one(''))
         # 像素位数
@@ -79,3 +77,14 @@ class distribution_object_mosaic(distribution_guotu_object):
         # 备注
         self.add_value_to_sync_dict_list(sync_dict, 'remark', xml.get_element_text_by_xpath_one('/Metadatafile/BasicDataContent/Description'))
         return sync_dict
+
+    def access_check_dict(self) -> dict:  # 预留的方法，sync写完后再调
+        check_dict = dict()  # 如果有其他需要，则可以升级为json
+        check_dict['ProductName'] = 'ProductName'
+        check_dict['ProduceDate'] = 'ProduceDate'
+        check_dict['DataDate'] = 'DataDate'
+        check_dict['ImageSource'] = 'ImageSource'
+        check_dict['Resolution'] = 'Resolution'
+        check_dict['Description'] = 'Description'
+
+        return check_dict

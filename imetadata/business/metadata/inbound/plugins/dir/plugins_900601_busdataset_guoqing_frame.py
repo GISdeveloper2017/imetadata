@@ -13,6 +13,6 @@ class plugins_900601_busdataset_guoqing_frame(C21ATBusDataSetPlugins):
         # information[self.Plugins_Info_Type] = 'business_data_set_guoqing_frame'
         information[self.Plugins_Info_Type] = self.Object_Def_Type_DataSet_Guoqing_Frame
         information[self.Plugins_Info_Code] = '02010301'
-        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
+        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset_Business
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_guoqing'
         return information

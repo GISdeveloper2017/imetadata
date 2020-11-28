@@ -44,18 +44,19 @@ class plugins_6001_shp(CVectorFilePlugins):
         :param parser:
         :return:
         """
-        return [
-            {self.Name_FileName: '{0}.dbf'.format(self.classified_object_name()), self.Name_ID: 'dbf',
-             self.Name_Title: '属性数据文件', self.Name_Result: self.QA_Result_Error, 'size': {'min': 1, 'max': 100000}, 'format': 'xml'}
-            , {self.Name_FileName: '{0}.prj'.format(self.classified_object_name()), self.Name_ID: 'prj',
-               self.Name_Title: '投影文件', self.Name_Result: self.QA_Result_Warn}
-            , {self.Name_FileName: '{0}.shx'.format(self.classified_object_name()), self.Name_ID: 'shx',
-               self.Name_Title: 'shx文件', self.Name_Result: self.QA_Result_Error}
-            , {self.Name_FileName: '{0}.sbn'.format(self.classified_object_name()), self.Name_ID: 'sbn',
-               self.Name_Title: 'sbn文件', self.Name_Result: self.QA_Result_Error}
-            , {self.Name_FileName: '{0}.sbx'.format(self.classified_object_name()), self.Name_ID: 'sbx',
-               self.Name_Title: 'sbx文件', self.Name_Result: self.QA_Result_Error}
-        ]
+        return self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path)  # 调用默认的规则列表,对对象及其附属文件进行质检
+        # return [
+        #     {self.Name_FileName: '{0}.dbf'.format(self.classified_object_name()), self.Name_ID: 'dbf',
+        #      self.Name_Title: '属性数据文件', self.Name_Result: self.QA_Result_Error, 'size': {'min': 1, 'max': 100000}, 'format': 'xml'}
+        #     , {self.Name_FileName: '{0}.prj'.format(self.classified_object_name()), self.Name_ID: 'prj',
+        #        self.Name_Title: '投影文件', self.Name_Result: self.QA_Result_Warn}
+        #     , {self.Name_FileName: '{0}.shx'.format(self.classified_object_name()), self.Name_ID: 'shx',
+        #        self.Name_Title: 'shx文件', self.Name_Result: self.QA_Result_Error}
+        #     , {self.Name_FileName: '{0}.sbn'.format(self.classified_object_name()), self.Name_ID: 'sbn',
+        #        self.Name_Title: 'sbn文件', self.Name_Result: self.QA_Result_Error}
+        #     , {self.Name_FileName: '{0}.sbx'.format(self.classified_object_name()), self.Name_ID: 'sbx',
+        #        self.Name_Title: 'sbx文件', self.Name_Result: self.QA_Result_Error}
+        # ]
 
     def init_qa_metadata_xml_list(self, parser: CMetaDataParser) -> list:
         """
@@ -88,3 +89,95 @@ class plugins_6001_shp(CVectorFilePlugins):
         :return:
         """
         return []
+    def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
+        """
+        设置解析json格式元数据的检验规则列表, 为空表示无检查规则
+        完成 负责人 李宪
+        :param parser:
+        :return:
+        """
+        return [
+            # {
+            #     self.Name_Type: self.QA_Type_XML_Node_Exist,
+            #     self.Name_NotNull: True,
+            #     self.Name_DataType: self.value_type_decimal_or_integer_positive,
+            #     self.Name_XPath: 'pixelsize.width',
+            #     self.Name_ID: 'width',
+            #     self.Name_Title: '影像宽度',
+            #     self.Name_Group: self.QA_Group_Data_Integrity,
+            #     self.Name_Result: self.QA_Result_Error
+            # },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 1000,
+                self.Name_XPath: 'layers[0].wgs84.coordinate',
+                self.Name_ID: 'coordinate',
+                self.Name_Title: '坐标参考系',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+                self.Name_XPath: 'layers[0].wgs84.extent.maxy',
+                self.Name_ID: 'maxy',
+                self.Name_Title: 'maxy',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+                self.Name_XPath: 'layers[0].wgs84.extent.maxx',
+                self.Name_ID: 'maxx',
+                self.Name_Title: 'maxx',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+                self.Name_XPath: 'layers[0].wgs84.extent.minx',
+                self.Name_ID: 'minx',
+                self.Name_Title: 'minx',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+                self.Name_XPath: 'layers[0].wgs84.extent.miny',
+                self.Name_ID: 'miny',
+                self.Name_Title: 'miny',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            }
+        ]

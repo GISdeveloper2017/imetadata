@@ -35,38 +35,36 @@ class distribution_object_ortho(distribution_guotu_object):
         xml.load_xml(dsometadataxml_bus)
 
         # 后处理流程介绍文档中的字段
-        if insert_or_updata:
-            self.add_value_to_sync_dict_list(sync_dict, 'aprodid', object_table_id, self.DB_True)
-        self.add_value_to_sync_dict_list(sync_dict, 'aprowid', object_table_data.value_by_name(0, 'dsoparentobjid', ''),
-                                         self.DB_True)
+        self.add_value_to_sync_dict_list(sync_dict, 'aprodid', object_table_id)
+        self.add_value_to_sync_dict_list(sync_dict, 'aprowid', object_table_data.value_by_name(0, 'dsoparentobjid', ''))
         self.add_value_to_sync_dict_list(sync_dict, 'sataname', xml.get_element_text_by_xpath_one(
-            '/Metadatafile/BasicDataContent/SatelliteID'), self.DB_True)
+            '/Metadatafile/BasicDataContent/SatelliteID'))
         dsoobjectname = object_table_data.value_by_name(0, 'dsoobjectname', '')
         resolution = xml.get_element_text_by_xpath_one('/Metadatafile/BasicDataContent/Resolution')
         if 'pan' in CUtils.text_to_lower(dsoobjectname):
 
-            self.add_value_to_sync_dict_list(sync_dict, 'panfilename', dsoobjectname, self.DB_True)
+            self.add_value_to_sync_dict_list(sync_dict, 'panfilename', dsoobjectname)
 
-            self.add_value_to_sync_dict_list(sync_dict, 'panresolution', resolution, self.DB_True)
+            self.add_value_to_sync_dict_list(sync_dict, 'panresolution', resolution)
 
             self.add_value_to_sync_dict_list(sync_dict, 'panimagedate', xml.get_element_text_by_xpath_one(
-                '/Metadatafile/BasicDataContent/ReceiveTime'), self.DB_True)
+                '/Metadatafile/BasicDataContent/ReceiveTime'))
 
-            self.add_value_to_sync_dict_list(sync_dict, 'fusefilename', dsoobjectname, self.DB_True)
+            self.add_value_to_sync_dict_list(sync_dict, 'fusefilename', dsoobjectname)
         else:
 
-            self.add_value_to_sync_dict_list(sync_dict, 'msfilename', dsoobjectname, self.DB_True)
+            self.add_value_to_sync_dict_list(sync_dict, 'msfilename', dsoobjectname)
             # sync_dict['mssensorname'] = "''"
 
-            self.add_value_to_sync_dict_list(sync_dict, 'msresolution', resolution, self.DB_True)
+            self.add_value_to_sync_dict_list(sync_dict, 'msresolution', resolution)
             # sync_dict['mstraceno'] = "''"
 
             self.add_value_to_sync_dict_list(sync_dict, 'msimagedate', xml.get_element_text_by_xpath_one(
-                '/Metadatafile/BasicDataContent/ReceiveTime'), self.DB_True)
+                '/Metadatafile/BasicDataContent/ReceiveTime'))
             # sync_dict['fusefilename'] = "''"
 
         self.add_value_to_sync_dict_list(sync_dict, 'dsometadatajson',
-                                         object_table_data.value_by_name(0, 'dsometadataxml_bus', ''), self.DB_True)
+                                         object_table_data.value_by_name(0, 'dsometadataxml_bus', ''))
         # sync_dict['bandcount'] = "''"
         # sync_dict['bandname'] = "''"
         # sync_dict['cloudpercent'] = "''"
@@ -84,7 +82,7 @@ class distribution_object_ortho(distribution_guotu_object):
         #    xml.get_element_text_by_xpath_one('/Metadatafile/BasicDataContent/ProduceDate'))
         # resolution
         self.add_value_to_sync_dict_list(sync_dict, 'resolution', xml.get_element_text_by_xpath_one(
-            '/Metadatafile/BasicDataContent/Resolution'), self.DB_True)
+            '/Metadatafile/BasicDataContent/Resolution'))
         # 色彩模式
         # sync_dict['colormodel'] = "''"
         # 像素位数
@@ -93,8 +91,19 @@ class distribution_object_ortho(distribution_guotu_object):
         # sync_dict['scale'] = "''"
         # 主要星源
         self.add_value_to_sync_dict_list(sync_dict, 'mainrssource', xml.get_element_text_by_xpath_one(
-            '/Metadatafile/BasicDataContent/SatelliteID'), self.DB_True)
+            '/Metadatafile/BasicDataContent/SatelliteID'))
         self.add_value_to_sync_dict_list(sync_dict, 'remark', xml.get_element_text_by_xpath_one(
-            '/Metadatafile/BasicDataContent/Description'), self.DB_True)
+            '/Metadatafile/BasicDataContent/Description'))
 
         return sync_dict
+
+    def access_check_dict(self) -> dict:  # 预留的方法，sync写完后再调
+        check_dict = dict()  # 如果有其他需要，则可以升级为json
+        check_dict['ProductName'] = 'ProductName'
+        check_dict['ProduceDate'] = 'ProduceDate'
+        check_dict['SatelliteID'] = 'SatelliteID'
+        check_dict['Resolution'] = 'Resolution'
+        check_dict['ReceiveTime'] = 'ReceiveTime'
+        check_dict['Description'] = 'Description'
+
+        return check_dict

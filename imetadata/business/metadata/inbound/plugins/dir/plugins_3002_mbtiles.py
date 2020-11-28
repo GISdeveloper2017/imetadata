@@ -18,6 +18,7 @@ class plugins_3002_mbtiles(CFilePlugins):
         information[self.Plugins_Info_Name] = '21at_mbtiles'
         information[self.Plugins_Info_Code] = None
         information[self.Plugins_Info_Catalog] = '切片'
+        # information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Tiles
         information[self.Plugins_Info_Type] = 'tiles'
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = None
