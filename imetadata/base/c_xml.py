@@ -25,6 +25,7 @@ from lxml import etree
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
+from imetadata.base.exceptions import PathNotCreateException
 
 
 class CXml:
@@ -82,6 +83,9 @@ class CXml:
         CFile.check_and_create_directory(filename)
         self.__xml_tree = etree.ElementTree(self.__xml_root_node)
         self.__xml_tree.write(filename, encoding=encoding, xml_declaration=True)
+
+    def to_file(self, filename, encoding=Encoding_UTF8):
+        self.save_file(filename, encoding)
 
     def to_xml(self) -> str:
         """
@@ -351,6 +355,15 @@ class CXml:
         xml_obj = CXml()
         xml_obj.load_file(filename)
         return xml_obj.to_xml()
+
+    @classmethod
+    def str_2_file(cls, xml_content: str, filename: str) -> str:
+        if not CFile.check_and_create_directory(filename):
+            raise PathNotCreateException(filename)
+
+        xml_obj = CXml()
+        xml_obj.load_xml(xml_content)
+        xml_obj.to_file(filename, cls.Encoding_UTF8)
 
     @classmethod
     def remove(cls, xml_node: etree):

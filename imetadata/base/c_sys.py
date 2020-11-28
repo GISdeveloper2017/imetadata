@@ -25,7 +25,7 @@ class CSys(CResource):
 
     @classmethod
     def get_application_name(cls):
-        return cls.Name_Application
+        return cls.Application_Name
 
     @classmethod
     def get_application_dir(cls):
@@ -33,7 +33,7 @@ class CSys(CResource):
 
     @classmethod
     def get_application_package_name(cls):
-        return cls.Name_Application
+        return cls.Application_Name
 
     @classmethod
     def get_job_root_dir(cls):

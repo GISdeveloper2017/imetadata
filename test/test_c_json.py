@@ -6,7 +6,7 @@
 from imetadata.base.c_json import CJson
 
 
-class T_C_Json:
+class Test_C_Json:
     test_filename: str = r"C:\Users\Clare\PycharmProjects\pythonProject\test1.xml"
     test_text: str = '{"a":1,"b":2,"c":3,"d":4,"中文属性":5, "student": [{"name":"小明", "birthday": "2020-1-1"}, {"name":"小王", "birthday": "2020-2-1"}]}'
 
@@ -36,3 +36,16 @@ class T_C_Json:
         json_obj = CJson()
         json_obj.load_obj(data)
         assert json_obj.xpath_one('a', -1) == 1
+
+
+if __name__ == '__main__':
+    file_name = '/Users/wangxiya/Downloads/gdb.json'
+    json = CJson()
+    json.load_file(file_name)
+    data_source = json.xpath_one('datasource', None)
+    layers = json.xpath_one('layers', None)
+    target_json = CJson()
+    target_json.set_value_of_name('datasource', data_source)
+    target_json.set_value_of_name('layer_count', 1)
+    target_json.set_value_of_name('layers', [layers[0]])
+    print(target_json.to_json())

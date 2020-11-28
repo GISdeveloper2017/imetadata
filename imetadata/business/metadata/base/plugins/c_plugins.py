@@ -318,7 +318,15 @@ class CPlugins(CResource):
         if default_metadata_engine is not None:
             result = parser.process_default_metadata(default_metadata_engine)
             if CResult.result_success(result):
-                metadata_format = CResult.result_info(result, self.Name_Format, self.MetaDataFormat_Text)
+                metadata_format = CResult.result_info(result, self.Name_Format, None)
+                if metadata_format is None:
+                    parser.metadata.set_metadata(
+                        self.DB_True,
+                        '无实体元数据',
+                        self.MetaDataFormat_Text,
+                        None
+                    )
+                    return CResult.merge_result(self.Success, '该类型数据无实体元数据! ')
 
                 file_metadata_name_with_path = CFile.join_file(self.file_content.work_root_dir, self.FileName_MetaData)
                 metadata_filename = CResult.result_info(result, self.Name_FileName, None)
@@ -331,21 +339,29 @@ class CPlugins(CResource):
                         '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path),
                         self.MetaDataFormat_Text,
                         '')
-                    return CResult.merge_result(self.Exception,
-                                                '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path))
+                    return CResult.merge_result(
+                        self.Exception,
+                        '元数据文件[{0}]创建失败, 原因不明! '.format(file_metadata_name_with_path)
+                    )
 
                 try:
                     parser.metadata.set_metadata_file(
                         self.DB_True,
                         '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path),
-                        metadata_format, file_metadata_name_with_path)
-                    return CResult.merge_result(self.Success, '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path))
+                        metadata_format,
+                        file_metadata_name_with_path
+                    )
+                    return CResult.merge_result(
+                        self.Success,
+                        '元数据文件[{0}]成功加载! '.format(file_metadata_name_with_path)
+                    )
                 except Exception as error:
                     parser.metadata.set_metadata(
                         self.DB_False,
                         '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(file_metadata_name_with_path, error.__str__()),
                         self.MetaDataFormat_Text,
-                        '')
+                        ''
+                    )
                     return CResult.merge_result(self.Exception,
                                                 '元数据文件[{0}]格式不合法, 无法处理! '.format(file_metadata_name_with_path))
             else:
@@ -996,8 +1012,6 @@ class CPlugins(CResource):
         @return: 返回img的质检列表,如果是主文件shp，会有一个格式的项，用于质检文件的打开可读性
         """
         file_main_name = CFile.file_main_name(file_name_with_full_path)
-        # file_ext = CFile.file_ext(file_name_with_full_path)
-        # file_path = CFile.file_path(file_name_with_full_path)
         return [
             {
                 self.Name_FileName: '{0}.shp'.format(file_main_name),
@@ -1021,19 +1035,7 @@ class CPlugins(CResource):
             }, {
                 self.Name_FileName: '{0}.shx'.format(file_main_name),
                 self.Name_ID: 'shx',
-                self.Name_Title: 'shx文件',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            }, {
-                self.Name_FileName: '{0}.sbn'.format(file_main_name),
-                self.Name_ID: 'sbn',
-                self.Name_Title: 'sbn文件',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            }, {
-                self.Name_FileName: '{0}.sbx'.format(file_main_name),
-                self.Name_ID: 'sbx',
-                self.Name_Title: 'sbx文件',
+                self.Name_Title: '索引文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error
             }

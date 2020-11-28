@@ -112,10 +112,8 @@ where dsometadataparsestatus = 2
                     update dm2_storage_object
                     set dsometadataparsestatus = 0
                       , dsolastmodifytime = now()
-                      , dsometadataparsememo = :dsometadataparsememo
                     where dsoid = :dsoid
-                    ''', {'dsoid': dso_id, 'dsometadataparsememo': '文件或目录[{0}]元数据解析成功结束!'.format(
-                    ds_file_info.value_by_name(0, 'query_object_fullname', ''))})
+                    ''', {'dsoid': dso_id})
                 return CResult.merge_result(self.Success, '文件或目录[{0}]元数据解析成功结束!'.format(
                     ds_file_info.value_by_name(0, 'query_object_fullname', '')))
             else:

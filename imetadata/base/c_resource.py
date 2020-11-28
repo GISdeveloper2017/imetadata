@@ -53,7 +53,7 @@ class CResource:
     OS_Linux = 'linux'
     OS_MacOS = 'Darwin'
 
-    Name_Application = 'imetadata'
+    Application_Name = 'imetadata'
     SYSTEM_NAME_MISSION_ID = '{system.mission.id}'
 
     NAME_CMD_COMMAND = 'cmd_command'
@@ -62,6 +62,9 @@ class CResource:
     NAME_CMD_TRIGGER = 'cmd_trigger'
     NAME_CMD_ALGORITHM = 'cmd_algorithm'
     NAME_CMD_PARAMS = 'cmd_params'
+
+    Name_Application = 'application'
+    Name_Debug = 'debug'
 
     Name_Browse = 'browse'
     Name_Thumb = 'thumb'
@@ -295,7 +298,7 @@ class CResource:
     MetaDataEngine_Raster = 'raster'
     MetaDataEngine_Vector = 'vector'
     MetaDataEngine_Document = 'document'
-
+    MetaDataEngine_Spatial_Layer = 'spatial_layer'
     BrowseEngine_Raster = 'raster'
     BrowseEngine_Vector = 'vector'
     BrowseEngine_Document = 'document'
@@ -459,9 +462,16 @@ class CResource:
     def path_switch(self, path_prefix, switch_name: str) -> str:
         return '{0}.{1}'.format(path_prefix, switch_name)
 
-    Object_Def_Catalog_Common = 0  # 普通文件
-    Object_Def_Catalog_Object = 1  # 独立对象类型
-    Object_Def_Catalog_Dataset = 2  # 数据集类型
+    # Object_Def_Catalog_Common = 'object'  # 普通文件
+    # Object_Def_Catalog_Object = 'object'  # 独立对象类型
+    Object_Def_Catalog_Dataset = 'dataset'  # 普通数据集类型（gdb数据）
+    Object_Def_Catalog_Object_Common = 'object_common'  # 普通文件(文档、图片等)
+    Object_Def_Catalog_Object_Vector = 'object_vector'  # 普通矢量文件
+    Object_Def_Catalog_Object_Raster = 'object_raster'  # 普通影像文件
+    Object_Def_Catalog_Object_Sat = 'object_sat'  # 卫星类型
+    Object_Def_Catalog_Object_Tiles = 'object_tiles'  # 切片类型
+    Object_Def_Catalog_Object_Business = 'object_bus'  # 业务对象类型（如即时服务）
+    Object_Def_Catalog_Dataset_Business = 'dataset_bus'  # 业务数据集类型（如即时服务）
 
     # 通用类型
     Object_Def_Type_Raster = 'raster'

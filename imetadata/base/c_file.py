@@ -12,6 +12,7 @@ import chardet
 from sortedcontainers import SortedList
 
 from imetadata.base.c_utils import CUtils
+from imetadata.base.exceptions import PathNotCreateException
 
 
 class CFile:
@@ -208,6 +209,9 @@ class CFile:
 
     @classmethod
     def str_2_file(cls, str_info: str, file_name_with_path: str, encoding_type='utf-8'):
+        if not CFile.check_and_create_directory(file_name_with_path):
+            raise PathNotCreateException(file_name_with_path)
+
         if CUtils.equal_ignore_case(str_info, "") \
                 or CUtils.equal_ignore_case(file_name_with_path, ""):
             return

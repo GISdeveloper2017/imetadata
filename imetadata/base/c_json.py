@@ -21,7 +21,9 @@ from __future__ import absolute_import
 import demjson
 import jsonpath
 
+from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
+from imetadata.base.exceptions import PathNotCreateException
 
 
 class CJson:
@@ -170,6 +172,15 @@ class CJson:
         json = CJson()
         json.load_file(filename)
         return json.to_json()
+
+    @classmethod
+    def str_2_file(cls, json_content: str, filename: str):
+        if not CFile.check_and_create_directory(filename):
+            raise PathNotCreateException(filename)
+
+        json = CJson()
+        json.load_json_text(json_content)
+        json.to_file(filename)
 
     @classmethod
     def dict_data_by_path(cls, obj: dict, path_str: str) -> list:

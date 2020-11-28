@@ -50,6 +50,10 @@ class CDMFilePathInfoEx(CFileInfoEx):
 
     @property
     def owner_obj_id(self):
+        """
+        所属对象
+        :return:
+        """
         return self.__owner_obj_id
 
     def __init__(self, file_type, file_name_with_full_path, storage_id, file_or_path_id, parent_id, owner_obj_id,

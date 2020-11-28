@@ -111,13 +111,23 @@ class CPluginsMng(CResource):
                                                                        file_info)
                 object_confirm, object_name = class_classified_obj.classified()
                 if object_confirm != cls.Object_Confirm_IUnKnown:
+                    obj_info = class_classified_obj.get_information()
+                    obj_id = class_classified_obj.get_id()
                     CLogger().debug(
-                        '{0} is classified as {1}.{2}'.format(target, class_classified_obj.get_information(),
-                                                              class_classified_obj.get_id()))
+                        '{0} is classified as {1}.{2}'.format(
+                            target,
+                            obj_info,
+                            obj_id
+                        )
+                    )
                     return class_classified_obj
-            except:
-                CLogger().debug('插件[{0}]解析出现异常, 请检查!'.format(file_main_name))
-                continue
+            except Exception as error:
+                CLogger().debug('插件[{0}]解析出现异常, 错误信息为: [{1}], 请检查!'.format(file_main_name, error.__str__()))
+                if settings.application.xpath_one('{0}.{1}'.format(cls.Name_Application, cls.Name_Debug),
+                                                  cls.DB_False) == cls.DB_True:
+                    raise
+                else:
+                    continue
         else:
             return None
 

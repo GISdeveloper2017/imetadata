@@ -44,19 +44,8 @@ class plugins_6001_shp(CVectorFilePlugins):
         :param parser:
         :return:
         """
-        return self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path)  # 调用默认的规则列表,对对象及其附属文件进行质检
-        # return [
-        #     {self.Name_FileName: '{0}.dbf'.format(self.classified_object_name()), self.Name_ID: 'dbf',
-        #      self.Name_Title: '属性数据文件', self.Name_Result: self.QA_Result_Error, 'size': {'min': 1, 'max': 100000}, 'format': 'xml'}
-        #     , {self.Name_FileName: '{0}.prj'.format(self.classified_object_name()), self.Name_ID: 'prj',
-        #        self.Name_Title: '投影文件', self.Name_Result: self.QA_Result_Warn}
-        #     , {self.Name_FileName: '{0}.shx'.format(self.classified_object_name()), self.Name_ID: 'shx',
-        #        self.Name_Title: 'shx文件', self.Name_Result: self.QA_Result_Error}
-        #     , {self.Name_FileName: '{0}.sbn'.format(self.classified_object_name()), self.Name_ID: 'sbn',
-        #        self.Name_Title: 'sbn文件', self.Name_Result: self.QA_Result_Error}
-        #     , {self.Name_FileName: '{0}.sbx'.format(self.classified_object_name()), self.Name_ID: 'sbx',
-        #        self.Name_Title: 'sbx文件', self.Name_Result: self.QA_Result_Error}
-        # ]
+        return self.init_qa_file_integrity_default_list(
+            self.file_info.file_name_with_full_path)  # 调用默认的规则列表,对对象及其附属文件进行质检
 
     def init_qa_metadata_xml_list(self, parser: CMetaDataParser) -> list:
         """
@@ -89,6 +78,7 @@ class plugins_6001_shp(CVectorFilePlugins):
         :return:
         """
         return []
+
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
         设置解析json格式元数据的检验规则列表, 为空表示无检查规则

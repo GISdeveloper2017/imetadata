@@ -19,6 +19,9 @@ from imetadata.base.c_settings import CSettings
 
 application = CSettings(
     {
+        'application': {
+            'debug': -1
+        },
         'databases': [
             {'id': '0', 'type': 'postgresql',
              'host': '127.0.0.1', 'port': '5432', 'database': 'test', 'username': 'postgres', 'password': 'postgres'}
