@@ -85,6 +85,12 @@ where dsistatus = {1}
                 self.update_ib_result(ds_ib_id, all_ib_file_or_path_existed)
                 return all_ib_file_or_path_existed
 
+            # 将数据入库的记录保存到日志中
+            result = self.ib_log(ds_ib_id, ds_src_storage_id, ds_ib_directory_name)
+            if not CResult.result_success(result):
+                self.update_ib_result(ds_ib_id, result)
+                return result
+
             # 如果是在核心存储或混合存储中直接入库, 则仅仅改变元数据状态即可
             if CUtils.equal_ignore_case(ds_src_storage_type, self.Storage_Type_Mix) \
                     or CUtils.equal_ignore_case(ds_src_storage_type, self.Storage_Type_Core):
@@ -136,12 +142,6 @@ where dsistatus = {1}
                                                 ds_ib_directory_name)
 
             # 至此, 数据入库前的检查处理完毕
-            # 将数据入库的记录保存到日志中
-            result = self.ib_log(ds_ib_id, ds_src_storage_id, ds_ib_directory_name)
-            if not CResult.result_success(result):
-                self.update_ib_result(ds_ib_id, result)
-                return result
-
             # 移动源目录至目标目录
             result = self.ib_files_move(proc_ib_src_path, proc_ib_dest_path)
             if not CResult.result_success(result):
@@ -522,9 +522,8 @@ where dsistatus = {1}
         }
 
         commands = [
-            (sql_move_file, params_move_file)
-            , (sql_move_directory_metadata, params_move_directory_metadata)
-            , (sql_link_parent_dir_to_root, params_link_parent_dir_to_root)
+            (sql_move_file, params_move_file), (sql_move_directory_metadata, params_move_directory_metadata),
+            (sql_link_parent_dir_to_root, params_link_parent_dir_to_root)
         ]
         try:
             CFactory().give_me_db(self.get_mission_db_id()).execute_batch(commands)
@@ -616,10 +615,16 @@ where dsistatus = {1}
             return CResult.merge_result(self.Success, '所有文件均存在, 且与库中记录统一! ')
 
     def ib_log(self, ib_id, storage_id, directory_name):
+        sql_log_clear_old = '''
+        delete from dm2_storage_inbound_log where dsilownerid = :ib_id
+        '''
+        params_log_clear_old = {
+            'ib_id': ib_id
+        }
         sql_log_ib_file = '''
         insert into dm2_storage_inbound_log(dsilownerid, dsildirectory, dsilfilename, dsilobjectname, dsilobjecttype)
         select
-              {0} as owner_id
+              '{0}' as owner_id
             , dm2_storage_directory.dsddirectory
             , dm2_storage_file.dsffilename
             , dm2_storage_object.dsoobjectname
@@ -640,7 +645,12 @@ where dsistatus = {1}
             'directory': directory_name
         }
         try:
-            CFactory().give_me_db(self.get_mission_db_id()).execute(sql_log_ib_file, params_log_ib_file)
+            CFactory().give_me_db(self.get_mission_db_id()).execute_batch(
+                [
+                    (sql_log_clear_old, params_log_clear_old),
+                    (sql_log_ib_file, params_log_ib_file)
+                ]
+            )
             return CResult.merge_result(self.Success, '日志记录登记完成!')
         except Exception as error:
             return CResult.merge_result(self.Failure, '日志记录登记出错, 详细原因为: [{0}]'.format(error.__str__()))
@@ -717,7 +727,11 @@ where dsistatus = {1}
                 select dsdid
                 from dm2_storage_directory
                 where dsdstorageid = :storage_id
-                    and position(:src_directory in dsddirectory) = 1
+                and (
+                    position(:src_directory in dsddirectory) = 1
+                    or 
+                    dsdid = :src_root_dir_id
+                )
             )
             and dsf_object_id is not null
         )
@@ -728,11 +742,59 @@ where dsistatus = {1}
             'src_root_dir_id': ib_dir_id
         }
 
+        # 更新子对象状态
+        sql_update_sub_object_in_directory = '''
+        update dm2_storage_object
+        set dso_bus_status = '{0}'
+        where dsoparentobjid in (
+            select dsd_object_id
+            from dm2_storage_directory
+            where dsdstorageid = :storage_id
+                and (
+                    position(:src_directory in dsddirectory) = 1
+                    or 
+                    dsdid = :src_root_dir_id
+                )
+                and dsd_object_id is not null
+        )
+        '''.format(self.IB_Bus_Status_Online)
+        params_update_sub_object_in_directory = {
+            'storage_id': storage_id,
+            'src_directory': CFile.join_file(ib_directory_name, ''),
+            'src_root_dir_id': ib_dir_id
+        }
+        # 更新子对象状态
+        sql_update_sub_object_of_file = '''
+        update dm2_storage_object
+        set dso_bus_status = '{0}'
+        where dsoparentobjid in (
+            select dsf_object_id
+            from dm2_storage_file
+            where dsfdirectoryid in (
+                select dsdid
+                from dm2_storage_directory
+                where dsdstorageid = :storage_id
+                and (
+                    position(:src_directory in dsddirectory) = 1
+                    or 
+                    dsdid = :src_root_dir_id
+                )
+            )
+            and dsf_object_id is not null
+        )
+        '''.format(self.IB_Bus_Status_Online)
+        params_update_sub_object_of_file = {
+            'storage_id': storage_id,
+            'src_directory': CFile.join_file(ib_directory_name, ''),
+            'src_root_dir_id': ib_dir_id
+        }
+
         commands = [
-            (sql_update_file, params_update_file)
-            , (sql_update_directory, params_update_directory)
-            , (sql_update_object_in_directory, params_update_object_in_directory)
-            , (sql_update_object_of_file, params_update_object_of_file)
+            (sql_update_file, params_update_file), (sql_update_directory, params_update_directory),
+            (sql_update_object_in_directory, params_update_object_in_directory),
+            (sql_update_object_of_file, params_update_object_of_file),
+            (sql_update_sub_object_in_directory, params_update_sub_object_in_directory),
+            (sql_update_sub_object_of_file, params_update_sub_object_of_file)
         ]
         try:
             CFactory().give_me_db(self.get_mission_db_id()).execute_batch(commands)

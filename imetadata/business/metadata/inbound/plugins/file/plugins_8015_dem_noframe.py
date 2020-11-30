@@ -35,6 +35,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
         完成 负责人 李宪 在这里检验dem_noframe的识别规则
         :return:
         """
+        super().classified()
         file_main_name_with_path = CFile.join_file(self.file_info.file_path, self.file_info.file_main_name)
         check_file_main_name_exist_tif = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
         check_file_main_name_exist_img = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Img))

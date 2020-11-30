@@ -3,9 +3,8 @@
 # @Author : 王西亚 
 # @File : c_vectorMDReader.py
 
-import gdal
 import psutil
-from osgeo import ogr, osr
+from osgeo import ogr, osr, gdal
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson

@@ -625,11 +625,11 @@ comment on column dm2_storage_object.dso_quality_summary is '质检概况';
     . dm2_storage_inbound_log
         . 数据入库日志
 */
-drop table dm2_storage_inbound cascade ;
+drop table if exists dm2_storage_inbound cascade ;
 
-create table dm2_storage_inbound
+create table if not exists dm2_storage_inbound
 (
-    dsiid         serial       not null
+    dsiid         varchar(100)       not null
         constraint dm2_storage_inbound_pk primary key,
     dsistorageid  varchar(100) not null,
     dsidirectory  varchar(2000),
@@ -657,13 +657,13 @@ comment on column dm2_storage_inbound.dsiProcMemo is '处理结果';
 comment on column dm2_storage_inbound.dsiMemo is '备注';
 alter table dm2_storage_inbound owner to postgres;
 
-drop table dm2_storage_inbound_log cascade ;
+drop table if exists dm2_storage_inbound_log cascade ;
 
-create table dm2_storage_inbound_log
+create table if not exists dm2_storage_inbound_log
 (
     dsilid         serial       not null
         constraint dm2_storage_inbound_log_pk primary key,
-    dsilownerid int not null,
+    dsilownerid varchar(100) not null,
     dsildirectory  varchar(2000),
     dsilfilename  varchar(2000),
     dsilobjectname  varchar(100),
