@@ -206,7 +206,7 @@ class CPlugins(CResource):
 
         return CResult.merge_result(self.Success, '处理完毕!')
 
-    @property
+    # @property 本属性存在问题，谨慎使用
     def object_detail_file_full_name_list(self) -> list:
         return self._object_detail_file_full_name_list
 
