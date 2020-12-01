@@ -2,9 +2,10 @@
 # @Time : 2020/11/23 15:51
 # @Author : 赵宇飞
 # @File : distribution_dataset_gdb.py
-from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu import distribution_guotu
 import datetime
+
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu import distribution_guotu
 
 
 class distribution_dataset_gdb(distribution_guotu):

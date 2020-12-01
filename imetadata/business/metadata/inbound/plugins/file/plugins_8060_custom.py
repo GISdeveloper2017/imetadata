@@ -19,6 +19,7 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
                 tif/TIF	    有	    XXXXXX.img	    以影像文件为单位
     元数据文件 	xml/XML	    无	    XXXXXX_21at.xml	元数据生产工具生成
     """
+
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = '自定义影像'
@@ -40,14 +41,16 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
         file_main_name = self.file_info.file_main_name
         file_ext = self.file_info.file_ext
         file_object_name = file_main_name
-        file_name_with_full_path = self.file_info.file_name_with_full_path   # 初始化需要的参数
+        file_name_with_full_path = self.file_info.file_name_with_full_path  # 初始化需要的参数
 
         if file_name_with_full_path.endswith('_21at.xml'):
             file_object_name = file_main_name[:-5]
 
         file_main_name_with_path = CFile.join_file(self.file_info.file_path, file_object_name)
-        check_file_main_name_exist_tif = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
-        check_file_main_name_exist_img = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Img))
+        check_file_main_name_exist_tif = CFile.file_or_path_exist(
+            '{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
+        check_file_main_name_exist_img = CFile.file_or_path_exist(
+            '{0}.{1}'.format(file_main_name_with_path, self.Name_Img))
         if (not check_file_main_name_exist_tif) and (not check_file_main_name_exist_img):
             return self.Object_Confirm_IUnKnown, self._object_name
 
@@ -56,7 +59,7 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
             self._object_confirm = self.Object_Confirm_IKnown
             self._object_name = self.file_info.file_main_name
             file_detail_xml = '{0}_21at.xml'.format(self.file_info.file_main_name_with_full_path)
-            self.add_file_to_details(file_detail_xml)       #将文件加入到附属文件列表中
+            self.add_file_to_details(file_detail_xml)  # 将文件加入到附属文件列表中
         else:
             self._object_confirm = self.Object_Confirm_IKnown_Not
             self._object_name = None
@@ -156,6 +159,7 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
                 self.Name_Result: self.QA_Result_Error
             }
         ]
+
 
 if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,

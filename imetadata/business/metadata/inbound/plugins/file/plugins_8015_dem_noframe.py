@@ -18,6 +18,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
                 tif/TIF	    有	    XXXX区域5米DEM.img	    以影像文件为单位
     元数据文件 	xml/XML	    无	    XXXX区域5米DEM_21at.xml	元数据生产工具生成
     """
+
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = 'DEM数据'
@@ -37,17 +38,19 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
         """
         super().classified()
         file_main_name_with_path = CFile.join_file(self.file_info.file_path, self.file_info.file_main_name)
-        check_file_main_name_exist_tif = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
-        check_file_main_name_exist_img = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Img))
+        check_file_main_name_exist_tif = CFile.file_or_path_exist(
+            '{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
+        check_file_main_name_exist_img = CFile.file_or_path_exist(
+            '{0}.{1}'.format(file_main_name_with_path, self.Name_Img))
         if (not check_file_main_name_exist_tif) and (not check_file_main_name_exist_img):
             return self.Object_Confirm_IUnKnown, self._object_name
 
-        if CUtils.equal_ignore_case(self.file_info.file_ext, self.Name_Tif)\
+        if CUtils.equal_ignore_case(self.file_info.file_ext, self.Name_Tif) \
                 or CUtils.equal_ignore_case(self.file_info.file_ext, self.Name_Img):
             self._object_confirm = self.Object_Confirm_IKnown
             self._object_name = self.file_info.file_main_name
             file_detail_xml = '{0}_21at.xml'.format(self.file_info.file_main_name_with_full_path)
-            self.add_file_to_details(file_detail_xml)       #将文件加入到附属文件列表中
+            self.add_file_to_details(file_detail_xml)  # 将文件加入到附属文件列表中
         else:
             self._object_confirm = self.Object_Confirm_IKnown_Not
             self._object_name = None
@@ -199,6 +202,7 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
             ]
         else:
             return []
+
 
 if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,

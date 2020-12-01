@@ -114,7 +114,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
         :return:
         """
         db_object_confirm = self.ds_file_or_path.value_by_name(0, 'dsf_object_confirm',
-                                                                   self.Object_Confirm_IUnKnown)
+                                                               self.Object_Confirm_IUnKnown)
         db_object_id = CUtils.one_id()
         if (db_object_confirm == self.Object_Confirm_IKnown) or (db_object_confirm == self.Object_Confirm_Maybe):
             db_object_size = self.ds_file_or_path.value_by_name(0, 'dsffilesize', 0)
@@ -151,10 +151,10 @@ class CDMFileInfo(CDMFilePathInfoEx):
                 where dsfid = :dsfid
                 '''
             CFactory().give_me_db(self.db_server_id).execute(sql_update_file_object, {'dsfid': self.my_id,
-                                                                                          'dsf_object_confirm': object_confirm,
-                                                                                          'dsfFileSize': self.file_size,
-                                                                                          'fileModifyTime': CUtils.any_2_str(
-                                                                                              self.file_modify_time)})
+                                                                                      'dsf_object_confirm': object_confirm,
+                                                                                      'dsfFileSize': self.file_size,
+                                                                                      'fileModifyTime': CUtils.any_2_str(
+                                                                                          self.file_modify_time)})
         else:
             sql_insert_object = '''
                 insert into dm2_storage_object(dsoid, dsoobjectname, dsoobjecttype, dsodatatype, dsoalphacode, dsoaliasname, dsoparentobjid) 

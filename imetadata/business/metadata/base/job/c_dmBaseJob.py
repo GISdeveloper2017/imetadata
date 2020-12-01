@@ -40,72 +40,72 @@ class CDMBaseJob(CDBQueueJob):
                         'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
                     }
                 ), (
-                    '''
-                    delete from dm2_storage_obj_detail
-                    where dodobjectid in (
-                      select dsf_object_id
-                      from dm2_storage_file
-                      where dsfstorageid = :StorageID and position(:SubDirectory in dsffilerelationname) = 1
-                    )
-                    ''',
-                    {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
-                    }
-                ), (
-                    '''
-                    delete from dm2_storage_object
-                    where dsoid in (
-                      select dsd_object_id
-                      from dm2_storage_directory
-                      where dsdstorageid = :StorageID and position(:SubDirectory in dsddirectory) = 1
-                    )
-                    ''',
-                    {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
-                    }
-                ), (
-                    '''
-                    delete from dm2_storage_object
-                    where dsoid in (
-                      select dsf_object_id
-                      from dm2_storage_file
-                      where dsfstorageid = :StorageID and position(:SubDirectory in dsffilerelationname) = 1
-                    )
-                    ''',
-                    {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
-                    }
-                ), (
-                    '''
-                    delete from dm2_storage_file
-                    where dsfstorageid = :StorageID and position(:SubDirectory in dsffilerelationname) = 1
-                    ''',
-                    {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
-                    }
-                ), (
-                    '''
-                    delete from dm2_storage_directory
-                    where dsdstorageid = :StorageID and position(:SubDirectory in dsddirectory) = 1
-                    ''',
-                    {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
-                    }
-                ), (
-                    '''
-                    delete from dm2_storage_directory
-                    where dsdstorageid = :StorageID and dsddirectory = :SubDirectory
-                    ''',
-                    {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': ds_ib_directory_name
-                    }
+                '''
+                delete from dm2_storage_obj_detail
+                where dodobjectid in (
+                  select dsf_object_id
+                  from dm2_storage_file
+                  where dsfstorageid = :StorageID and position(:SubDirectory in dsffilerelationname) = 1
                 )
+                ''',
+                {
+                    'StorageID': ds_storage_id,
+                    'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
+                }
+            ), (
+                '''
+                delete from dm2_storage_object
+                where dsoid in (
+                  select dsd_object_id
+                  from dm2_storage_directory
+                  where dsdstorageid = :StorageID and position(:SubDirectory in dsddirectory) = 1
+                )
+                ''',
+                {
+                    'StorageID': ds_storage_id,
+                    'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
+                }
+            ), (
+                '''
+                delete from dm2_storage_object
+                where dsoid in (
+                  select dsf_object_id
+                  from dm2_storage_file
+                  where dsfstorageid = :StorageID and position(:SubDirectory in dsffilerelationname) = 1
+                )
+                ''',
+                {
+                    'StorageID': ds_storage_id,
+                    'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
+                }
+            ), (
+                '''
+                delete from dm2_storage_file
+                where dsfstorageid = :StorageID and position(:SubDirectory in dsffilerelationname) = 1
+                ''',
+                {
+                    'StorageID': ds_storage_id,
+                    'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
+                }
+            ), (
+                '''
+                delete from dm2_storage_directory
+                where dsdstorageid = :StorageID and position(:SubDirectory in dsddirectory) = 1
+                ''',
+                {
+                    'StorageID': ds_storage_id,
+                    'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
+                }
+            ), (
+                '''
+                delete from dm2_storage_directory
+                where dsdstorageid = :StorageID and dsddirectory = :SubDirectory
+                ''',
+                {
+                    'StorageID': ds_storage_id,
+                    'SubDirectory': ds_ib_directory_name
+                }
+            )
             ]
         )
 

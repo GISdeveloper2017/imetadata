@@ -16,9 +16,9 @@ if __name__ == '__main__':
                             'E:\测试数据\GF3_mdj_WSC_000823_E122.8_N39.8_20161005_L1A_hh_L10002039504_strip_0.tiff',
                             'E:\测试数据', '')
 
-#    file_info = CFileInfoEx(plugins_6006_gf3_kas_wsc.FileType_Dir,
-#                            'E:\测试数据\GF3_KAS_WSC_000823_E122.8_N39.8_20161005_L1A_VV_L10002039504',
-#                            'E:\测试数据', '')
+    #    file_info = CFileInfoEx(plugins_6006_gf3_kas_wsc.FileType_Dir,
+    #                            'E:\测试数据\GF3_KAS_WSC_000823_E122.8_N39.8_20161005_L1A_VV_L10002039504',
+    #                            'E:\测试数据', '')
     plugins = plugins_4007_gf3_mdj_wsc(file_info)
     object_confirm, object_name = plugins.classified()
     if object_confirm == plugins_4007_gf3_mdj_wsc.Object_Confirm_IUnKnown:

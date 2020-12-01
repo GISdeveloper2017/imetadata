@@ -6,9 +6,7 @@
 import datetime
 
 from imetadata.base.c_json import CJson
-from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
-from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu import \
     distribution_guotu
 

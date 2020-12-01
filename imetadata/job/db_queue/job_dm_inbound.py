@@ -465,7 +465,8 @@ where dsistatus = {1}
                 '源目录[{0}]想核心存储目录[{1}]下入库时出现错误! \n{2}'.format(src_dir, dest_dir, message)
             )
 
-    def src_ib_metadata_move_to_storage(self, ib_id, src_storage_id, src_dir_id, src_ib_directory_name, dest_ib_storage_id,
+    def src_ib_metadata_move_to_storage(self, ib_id, src_storage_id, src_dir_id, src_ib_directory_name,
+                                        dest_ib_storage_id,
                                         desc_ib_dir_id, dest_ib_subpath):
         """
         将源文件的元数据, 移动至目标存储下

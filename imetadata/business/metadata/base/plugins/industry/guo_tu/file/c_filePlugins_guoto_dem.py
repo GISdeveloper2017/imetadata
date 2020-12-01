@@ -15,7 +15,7 @@ class CFilePlugins_GUOTU_DEM(CFilePlugins_GUOTU):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = self.Object_Def_Type_DEM
-        information[self.Plugins_Info_Code] = '02010601' #只有分幅DEM继承于这个类 （非分幅DEM在21at基类中）
+        information[self.Plugins_Info_Code] = '02010601'  # 只有分幅DEM继承于这个类 （非分幅DEM在21at基类中）
         information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Business
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_dem'
         return information

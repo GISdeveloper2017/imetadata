@@ -3,9 +3,9 @@
 # @Author : 赵宇飞
 # @File : distribution_dataset_dom.py
 from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_dataset import \
     distribution_guotu_dataset
-from imetadata.base.c_xml import CXml
 
 
 class distribution_dataset_dom(distribution_guotu_dataset):

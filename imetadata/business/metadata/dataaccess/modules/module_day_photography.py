@@ -9,6 +9,7 @@ class module_day_photography(CDAModule):
     """
     日新图模块对数管编目的质检要求
     """
+
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '日新图'

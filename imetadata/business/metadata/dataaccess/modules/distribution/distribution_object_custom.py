@@ -23,7 +23,7 @@ class distribution_object_custom(distribution_guotu_object):
     def access_check_dict(self) -> dict:  # 预留的方法，sync写完后再调
         pass
 
-    def get_sync_dict_list(self,insert_or_updata) -> list:
+    def get_sync_dict_list(self, insert_or_updata) -> list:
         """
         insert_or_updata 中 self.DB_True为insert，DB_False为updata
         本方法的写法为强规则，调用add_value_to_sync_dict_list配置

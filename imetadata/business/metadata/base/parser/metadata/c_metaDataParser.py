@@ -339,7 +339,8 @@ class CMetaDataParser(CParser):
             )
             return CResult.merge_result(self.Success, '元数据和业务元数据处理完毕!')
         except Exception as error:
-            return CResult.merge_result(self.Failure, '元数据和业务元数据处理完毕, 但质检结果入库时发生异常, 错误信息为: [{0}]'.format(error.__str__()))
+            return CResult.merge_result(self.Failure,
+                                        '元数据和业务元数据处理完毕, 但质检结果入库时发生异常, 错误信息为: [{0}]'.format(error.__str__()))
 
     def save_metadata_time(self) -> str:
         """

@@ -2,15 +2,13 @@
 # @Time : 2020/11/11 18:21
 # @Author : 赵宇飞
 # @File : distribution_guotu.py
+from imetadata.base.c_json import CJson
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_base import distribution_base
 from imetadata.database.c_factory import CFactory
-from imetadata.base.c_json import CJson
-from imetadata.base.c_result import CResult
-from imetadata.base.c_utils import CUtils
-from imetadata.base.c_xml import CXml
 from imetadata.database.tools.c_table import CTable
 
 

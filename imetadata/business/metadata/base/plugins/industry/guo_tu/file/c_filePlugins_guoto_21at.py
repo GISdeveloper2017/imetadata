@@ -18,6 +18,7 @@ class CFilePlugins_GUOTU_21AT(CFilePlugins_GUOTU):
         5.8 DEM-非分幅影像（***_21at.xml）
         5.9 自定义影像（***_21at.xml/无xml文件）
     """
+
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
         提取xml格式的业务元数据, 加载到parser的metadata对象中

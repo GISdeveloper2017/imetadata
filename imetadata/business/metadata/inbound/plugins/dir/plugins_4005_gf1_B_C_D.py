@@ -8,4 +8,3 @@ from imetadata.business.metadata.base.plugins.industry.sat.c_satFilePlugins_gf1_
 
 class plugins_4005_gf1_B_C_D(CSatFilePlugins_gf1_B_C_D):
     pass
-

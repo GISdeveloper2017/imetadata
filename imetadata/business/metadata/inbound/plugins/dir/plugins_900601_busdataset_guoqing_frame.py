@@ -5,6 +5,7 @@
 
 from imetadata.business.metadata.base.plugins.c_21ATBusDataSetPlugins import C21ATBusDataSetPlugins
 
+
 class plugins_900601_busdataset_guoqing_frame(C21ATBusDataSetPlugins):
     def get_information(self) -> dict:
         information = super().get_information()

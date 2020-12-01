@@ -44,12 +44,14 @@ class distribution_object_mosaic(distribution_guotu_object):
         # sync_dict['coordinateunit'] = "'{0}'".format()
         # sync_dict['demname'] = "'{0}'".format()
         # sync_dict['demstandard'] = "'{0}'".format()
-        self.add_value_to_sync_dict_list(sync_dict, 'mosaiclinefilename', object_table_data.value_by_name(0,'dsoobjectname',''))
+        self.add_value_to_sync_dict_list(sync_dict, 'mosaiclinefilename',
+                                         object_table_data.value_by_name(0, 'dsoobjectname', ''))
         # sync_dict['sensors'] = "'{0}'".format()
         # sync_dict['iscuted'] = "'{0}'".format()
         # numeric
         # sync_dict['productsize'] = "'{0}'".format()
-        self.add_value_to_sync_dict_list(sync_dict, 'imagesource',xml.get_element_text_by_xpath_one('/Metadatafile/BasicDataContent/ImageSource'))
+        self.add_value_to_sync_dict_list(sync_dict, 'imagesource', xml.get_element_text_by_xpath_one(
+            '/Metadatafile/BasicDataContent/ImageSource'))
         self.add_value_to_sync_dict_list(sync_dict, 'dsometadatajson',
                                          object_table_data.value_by_name(0, 'dsometadataxml_bus', ''))
         # 数据量
@@ -75,7 +77,8 @@ class distribution_object_mosaic(distribution_guotu_object):
         # 主要星源
         # self.add_value_to_sync_dict_list(sync_dict, 'mainrssource', xml.get_element_text_by_xpath_one(''))
         # 备注
-        self.add_value_to_sync_dict_list(sync_dict, 'remark', xml.get_element_text_by_xpath_one('/Metadatafile/BasicDataContent/Description'))
+        self.add_value_to_sync_dict_list(sync_dict, 'remark', xml.get_element_text_by_xpath_one(
+            '/Metadatafile/BasicDataContent/Description'))
         return sync_dict
 
     def access_check_dict(self) -> dict:  # 预留的方法，sync写完后再调

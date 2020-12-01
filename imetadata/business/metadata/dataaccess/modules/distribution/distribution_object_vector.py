@@ -2,9 +2,10 @@
 # @Time : 2020/11/20 18:27
 # @Author : 赵宇飞
 # @File : distribution_object_vector.py
-from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu import distribution_guotu
 import datetime
+
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu import distribution_guotu
 
 
 class distribution_object_vector(distribution_guotu):

@@ -10,6 +10,7 @@ class module_data2service(CDAModule):
     """
     数据服务发布模块
     """
+
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '数据服务发布'

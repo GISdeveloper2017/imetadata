@@ -18,7 +18,8 @@ from imetadata.business.metadata.base.parser.detail.c_detailParser_same_file_mai
 
 class CDetailParserMng(CResource):
     @classmethod
-    def give_me_parser(cls, parser_type, object_id: str, object_name: str, file_info: CDMFilePathInfoEx, file_custom_list: list):
+    def give_me_parser(cls, parser_type, object_id: str, object_name: str, file_info: CDMFilePathInfoEx,
+                       file_custom_list: list):
         input_parser_type = CUtils.any_2_str(parser_type)
 
         if CUtils.equal_ignore_case(input_parser_type, cls.DetailEngine_Same_File_Main_Name):

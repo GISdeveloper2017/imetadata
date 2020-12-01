@@ -78,8 +78,9 @@ where dsfscanstatus = 2
                 order by dsddirectory desc
                 limit 1
                 '''.format(CFile.sep())
-            rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {'dsdStorageID': ds_storage_id,
-                                                                                             'dsdDirectory': ds_subpath})
+            rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule,
+                                                                              {'dsdStorageID': ds_storage_id,
+                                                                               'dsdDirectory': ds_subpath})
             ds_rule_content = rule_ds.value_by_name(0, 'dsdScanRule', '')
 
             file_obj = CDMFileInfo(
