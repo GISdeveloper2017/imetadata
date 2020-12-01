@@ -9,7 +9,6 @@ from __future__ import absolute_import
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
-from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
@@ -72,9 +71,13 @@ where dsometadataparsestatus = 2
             order by dsddirectory desc
             limit 1
             '''.format(CFile.sep())
-        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(sql_get_rule, {
-            'dsdStorageID': ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
-            'dsdDirectory': ds_file_info.value_by_name(0, 'query_object_relation_path', '')})
+        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(
+            sql_get_rule,
+            {
+                'dsdStorageID': ds_file_info.value_by_name(0, 'query_object_storage_id', ''),
+                'dsdDirectory': ds_file_info.value_by_name(0, 'query_object_relation_path', '')
+            }
+        )
         ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
         file_info_obj = CDMFilePathInfoEx(
             dso_data_type,
@@ -108,12 +111,15 @@ where dsometadataparsestatus = 2
             process_result = plugins_obj.parser_metadata(metadata_parser)
 
             if CResult.result_success(process_result):
-                CFactory().give_me_db(self.get_mission_db_id()).execute('''
+                CFactory().give_me_db(self.get_mission_db_id()).execute(
+                    '''
                     update dm2_storage_object
                     set dsometadataparsestatus = 0
                       , dsolastmodifytime = now()
                     where dsoid = :dsoid
-                    ''', {'dsoid': dso_id})
+                    ''',
+                    {'dsoid': dso_id}
+                )
                 return CResult.merge_result(self.Success, '文件或目录[{0}]元数据解析成功结束!'.format(
                     ds_file_info.value_by_name(0, 'query_object_fullname', '')))
             else:

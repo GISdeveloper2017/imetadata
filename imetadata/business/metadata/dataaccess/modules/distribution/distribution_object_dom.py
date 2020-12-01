@@ -47,16 +47,16 @@ class distribution_object_dom(distribution_guotu_object):
         object_name = self._obj_name
         dsometadataxml_bus = self._dataset.value_by_name(0, 'dsometadataxml_bus', '')
         xml = CXml()
-        xml.load_xml(dsometadataxml_bus)    # 初始化xml
-        dsometadataxml_bus_type = '{0}'.format(xml.xpath_one("/root/@type"))    # 查询业务元数据类别
+        xml.load_xml(dsometadataxml_bus)  # 初始化xml
+        dsometadataxml_bus_type = '{0}'.format(xml.xpath_one("/root/@type"))  # 查询业务元数据类别
         if object_name is not None:
             if dsometadataxml_bus_type is not None:
-                if CUtils.equal_ignore_case(dsometadataxml_bus_type,'mdb'):
+                if CUtils.equal_ignore_case(dsometadataxml_bus_type, 'mdb'):
                     return self.get_sync_mdb_dict_list(insert_or_updata)
-                elif CUtils.equal_ignore_case(dsometadataxml_bus_type,'mat'):
+                elif CUtils.equal_ignore_case(dsometadataxml_bus_type, 'mat'):
                     return self.get_sync_mat_dict_list(insert_or_updata)
-                elif CUtils.equal_ignore_case(dsometadataxml_bus_type,'xls')\
-                        or CUtils.equal_ignore_case(dsometadataxml_bus_type,'xlsx'):
+                elif CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xls') \
+                        or CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xlsx'):
                     return self.get_sync_xls_dict_list(insert_or_updata)
                 else:
                     return []
@@ -78,7 +78,7 @@ class distribution_object_dom(distribution_guotu_object):
 
         sync_dict_list = self.get_sync_predefined_dict_list(insert_or_updata)
         self.add_value_to_sync_dict_list(
-            sync_dict_list,'aprsdid', object_id)
+            sync_dict_list, 'aprsdid', object_id)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'aprswid', self._dataset.value_by_name(0, 'dsoparentobjid', ''))
         # sync_dict['fname']   #为空
@@ -112,11 +112,14 @@ class distribution_object_dom(distribution_guotu_object):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsometadatajson', self._dataset.value_by_name(0, 'dsometadataxml_bus', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'createrorganize', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='sjscdwm']"))
+            sync_dict_list, 'createrorganize',
+            metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='sjscdwm']"))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'submitorganize', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='sjbqdwm']"))
+            sync_dict_list, 'submitorganize',
+            metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='sjbqdwm']"))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'copyrightorgnize', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='sjcbdwm']"))
+            sync_dict_list, 'copyrightorgnize',
+            metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='sjcbdwm']"))
         # sync_dict['supplyorganize']  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'colormodel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='yxscms']"))
@@ -196,11 +199,14 @@ class distribution_object_dom(distribution_guotu_object):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsometadatajson', self._dataset.value_by_name(0, 'dsometadataxml_bus', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'createrorganize', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据生产单位名']"))
+            sync_dict_list, 'createrorganize',
+            metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据生产单位名']"))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'submitorganize', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据版权单位名']"))
+            sync_dict_list, 'submitorganize',
+            metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据版权单位名']"))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'copyrightorgnize', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据出版单位名']"))
+            sync_dict_list, 'copyrightorgnize',
+            metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据出版单位名']"))
         # sync_dict['supplyorganize']  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'colormodel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='影像色彩模式']"))
@@ -220,11 +226,14 @@ class distribution_object_dom(distribution_guotu_object):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'resolution', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='地面分辨率']"))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'imagedate', CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')))
+            sync_dict_list, 'imagedate',
+            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'begdate', CUtils.to_day_format(dso_time_json.xpath_one('start_time', ''), dso_time_json.xpath_one('start_time', '')))
+            sync_dict_list, 'begdate',
+            CUtils.to_day_format(dso_time_json.xpath_one('start_time', ''), dso_time_json.xpath_one('start_time', '')))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'enddate', CUtils.to_day_format(dso_time_json.xpath_one('end_time', ''), dso_time_json.xpath_one('end_time', '')))
+            sync_dict_list, 'enddate',
+            CUtils.to_day_format(dso_time_json.xpath_one('end_time', ''), dso_time_json.xpath_one('end_time', '')))
         return sync_dict_list
 
     def get_sync_xls_dict_list(self, insert_or_updata) -> list:
@@ -284,15 +293,19 @@ class distribution_object_dom(distribution_guotu_object):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dataformat', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='数据格式']"))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'maindatasource', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='主要数据源']"))
+            sync_dict_list, 'maindatasource',
+            metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='主要数据源']"))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsometadatajson', self._dataset.value_by_name(0, 'dsometadataxml_bus', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'createrorganize', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='产品生产单位名称']"))
+            sync_dict_list, 'createrorganize',
+            metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='产品生产单位名称']"))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'submitorganize', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='产品所有权权单位名称']"))
+            sync_dict_list, 'submitorganize',
+            metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='产品所有权权单位名称']"))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'copyrightorgnize', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='产品出版单位名称']"))
+            sync_dict_list, 'copyrightorgnize',
+            metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='产品出版单位名称']"))
         # sync_dict['supplyorganize']  # 为空
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'colormodel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='影像色彩']"))

@@ -5,11 +5,9 @@
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_result import CResult
-from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.parser.metadata.metadata.c_mdExtractor import CMDExtractor
 from imetadata.database.c_factory import CFactory
-from imetadata.tool.mdreader.vector.c_vectorMDReader import CVectorMDReader
 
 
 class CMDExtractorSpatialLayer(CMDExtractor):

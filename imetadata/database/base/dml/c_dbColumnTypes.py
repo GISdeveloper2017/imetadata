@@ -4,7 +4,6 @@
 # @File : c_dbColumnTypes.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_list import CList
-from imetadata.base.c_utils import CUtils
 from imetadata.database.base.dml.c_dbColumnType import CDBColumnType
 
 

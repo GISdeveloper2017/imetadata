@@ -239,5 +239,3 @@ if __name__ == '__main__':
         print(a_item)
         print(type(a_item))
         print(a_item['name'])
-
-

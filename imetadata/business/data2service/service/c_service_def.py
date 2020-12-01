@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 from imetadata import settings
 
+
 class LayerDef(object):
     def __init__(self):
         '''
@@ -16,6 +17,7 @@ class LayerDef(object):
         self.sourcetype = ''
         # self.sourcepath = []
         self.sourcepath = {}
+
 
 class ServiceDef(object):
     def __init__(self, sid, sname):

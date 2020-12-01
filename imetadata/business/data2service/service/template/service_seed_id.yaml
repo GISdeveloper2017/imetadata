@@ -1,15 +1,15 @@
 seeds:
   seed_Mosaic_ALL_2016:
-    caches: [$all_cache$]
+    caches: [ $all_cache$ ]
     levels:
       from: $min_level$
       to: $max_level$                                 #17
     # refresh_before:
     #   time: $refresh_time$                            #2017-5-28T22:55:00
-    grids: [$grids$]                                  #webmercator, cgcs2000
-    coverages: [$kn$]
+    grids: [ $grids$ ]                                  #webmercator, cgcs2000
+    coverages: [ $kn$ ]
 coverages:
-$cache_area$
+  $cache_area$
 #  kall:
 #    bbox: [$seed_bbox$]                                
 #    srs: "EPSG:4326"

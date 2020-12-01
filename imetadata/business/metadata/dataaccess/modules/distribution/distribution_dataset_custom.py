@@ -2,9 +2,9 @@
 # @Time : 2020/11/17 19:32
 # @Author : 赵宇飞
 # @File : distribution_dataset_custom.py
+from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_dataset import \
     distribution_guotu_dataset
-from imetadata.base.c_xml import CXml
 
 
 class distribution_dataset_custom(distribution_guotu_dataset):

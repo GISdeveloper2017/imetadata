@@ -45,7 +45,7 @@ from dm2_storage_inbound
   left join dm2_storage_directory 
     on dm2_storage_directory.dsdid = dm2_storage_inbound.dsidirectoryid 
 where dm2_storage_inbound.dsiprocid = '{0}'
-            '''.format(self.SYSTEM_NAME_MISSION_ID)
+        '''.format(self.SYSTEM_NAME_MISSION_ID)
 
     def get_abnormal_mission_restart_sql(self) -> str:
         return '''
@@ -95,6 +95,7 @@ where dsistatus = {1}
             if CUtils.equal_ignore_case(ds_src_storage_type, self.Storage_Type_Mix) \
                     or CUtils.equal_ignore_case(ds_src_storage_type, self.Storage_Type_Core):
                 result_ib_in_core_or_mix_storage = self.update_ib_data_status_in_core_or_mix_storage(
+                    ds_ib_id,
                     ds_src_storage_id,
                     ds_ib_directory_name,
                     ds_src_dir_id
@@ -138,8 +139,10 @@ where dsistatus = {1}
                     return result
 
             proc_ib_src_path = CFile.join_file(ds_src_root_path, ds_ib_directory_name)
-            proc_ib_dest_path = CFile.join_file(CFile.join_file(dest_ib_root_path, dest_ib_subpath),
-                                                ds_ib_directory_name)
+            proc_ib_dest_path = CFile.join_file(
+                CFile.join_file(dest_ib_root_path, dest_ib_subpath),
+                ds_ib_directory_name
+            )
 
             # 至此, 数据入库前的检查处理完毕
             # 移动源目录至目标目录
@@ -157,7 +160,7 @@ where dsistatus = {1}
 
             # 将源文件的元数据, 移动至目标存储下, 如果出现异常, 则在方法内部rollback
             result = self.src_ib_metadata_move_to_storage(
-                ds_src_storage_id, ds_src_dir_id, ds_ib_directory_name, dest_ib_storage_id, desc_ib_dir_id,
+                ds_ib_id, ds_src_storage_id, ds_src_dir_id, ds_ib_directory_name, dest_ib_storage_id, desc_ib_dir_id,
                 dest_ib_subpath)
             if not CResult.result_success(result):
                 # 利用相同的方法, 把移动的数据, 重新移动回原目录, 这里理论上应该100%成功
@@ -462,12 +465,14 @@ where dsistatus = {1}
                 '源目录[{0}]想核心存储目录[{1}]下入库时出现错误! \n{2}'.format(src_dir, dest_dir, message)
             )
 
-    def src_ib_metadata_move_to_storage(self, src_storage_id, src_dir_id, src_ib_directory_name, dest_ib_storage_id,
+    def src_ib_metadata_move_to_storage(self, ib_id, src_storage_id, src_dir_id, src_ib_directory_name,
+                                        dest_ib_storage_id,
                                         desc_ib_dir_id, dest_ib_subpath):
         """
         将源文件的元数据, 移动至目标存储下
 
-        :param src_storage_id:
+        :param ib_id: 入库记录标识 dm2_storage_inbound.dsiid
+        :param src_storage_id: 待入库存储标识 dm2_storage_inbound.dsistorageid
         :param src_dir_id:
         :param src_ib_directory_name:镶嵌影像
         :param dest_ib_storage_id:
@@ -521,9 +526,21 @@ where dsistatus = {1}
             'src_root_dir_id': src_dir_id
         }
 
+        # 将入库记录中的目标存储标识进行更新
+        sql_update_ib_target_storage = '''
+        update dm2_storage_inbound
+        set dsitargetstorageid = :target_storage_id
+        where dsiid = :ib_id
+        '''
+        params_update_ib_target_storage = {
+            'target_storage_id': dest_ib_storage_id,
+            'ib_id': ib_id
+        }
+
         commands = [
             (sql_move_file, params_move_file), (sql_move_directory_metadata, params_move_directory_metadata),
-            (sql_link_parent_dir_to_root, params_link_parent_dir_to_root)
+            (sql_link_parent_dir_to_root, params_link_parent_dir_to_root),
+            (sql_update_ib_target_storage, params_update_ib_target_storage)
         ]
         try:
             CFactory().give_me_db(self.get_mission_db_id()).execute_batch(commands)
@@ -536,9 +553,9 @@ where dsistatus = {1}
             CFactory().give_me_db(self.get_mission_db_id()).execute(
                 '''
                 update dm2_storage_inbound 
-                set dsistatus = {0}, dsiprocmemo = :ib_message
+                set dsistatus = {0}, dsiprocmemo = :ib_message, dsi_na_status = {1}
                 where dsiid = :ib_id   
-                '''.format(self.ProcStatus_Finished),
+                '''.format(self.ProcStatus_Finished, self.ProcStatus_InQueue),
                 {'ib_id': ib_id, 'ib_message': CResult.result_message(result)}
             )
         else:
@@ -655,9 +672,10 @@ where dsistatus = {1}
         except Exception as error:
             return CResult.merge_result(self.Failure, '日志记录登记出错, 详细原因为: [{0}]'.format(error.__str__()))
 
-    def update_ib_data_status_in_core_or_mix_storage(self, storage_id, ib_directory_name, ib_dir_id):
+    def update_ib_data_status_in_core_or_mix_storage(self, ib_id, storage_id, ib_directory_name, ib_dir_id):
         """
         如果是在线存储或混合存储, 直接将业务状态修改即可
+        :param ib_id:
         :param ib_dir_id:
         :param storage_id:
         :param ib_directory_name:
@@ -789,12 +807,24 @@ where dsistatus = {1}
             'src_root_dir_id': ib_dir_id
         }
 
+        # 将入库记录中的目标存储标识进行更新
+        sql_update_ib_target_storage = '''
+        update dm2_storage_inbound
+        set dsitargetstorageid = :target_storage_id
+        where dsiid = :ib_id
+        '''
+        params_update_ib_target_storage = {
+            'target_storage_id': storage_id,
+            'ib_id': ib_id
+        }
+
         commands = [
             (sql_update_file, params_update_file), (sql_update_directory, params_update_directory),
             (sql_update_object_in_directory, params_update_object_in_directory),
             (sql_update_object_of_file, params_update_object_of_file),
             (sql_update_sub_object_in_directory, params_update_sub_object_in_directory),
-            (sql_update_sub_object_of_file, params_update_sub_object_of_file)
+            (sql_update_sub_object_of_file, params_update_sub_object_of_file),
+            (sql_update_ib_target_storage, params_update_ib_target_storage)
         ]
         try:
             CFactory().give_me_db(self.get_mission_db_id()).execute_batch(commands)

@@ -10,6 +10,7 @@ class job_d2s_service_creator(CD2SBaseJob):
     数据服务发布-服务批量创建-算法
     1. 解析dp_v_qfg_schema和dp_v_qfg_schema_layer表, 将服务加入到dp_v_qfg中
     """
+
     def get_mission_seize_sql(self) -> str:
         pass
 

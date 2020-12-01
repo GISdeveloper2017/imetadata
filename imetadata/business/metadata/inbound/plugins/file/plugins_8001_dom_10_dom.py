@@ -67,6 +67,7 @@ class plugins_8001_dom_10_dom(CFilePlugins_GUOTU_DOM):
 
         return self._object_confirm, self._object_name
 
+
 if __name__ == '__main__':
     # file_info = CFileInfoEx(plugins_1000_dom_10.FileType_File,
     #                        '/Users/wangxiya/Documents/交换/1.给我的/即时服务产品/业务数据集/DOM/湖北单个成果数据/H49G001026/H49G001026.tif',

@@ -406,7 +406,6 @@ where dsodetailparsestatus = 2
         )
 
 
-
 if __name__ == '__main__':
     """
     Job对象的简洁测试模式

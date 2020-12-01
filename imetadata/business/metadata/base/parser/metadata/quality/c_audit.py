@@ -206,8 +206,8 @@ class CAudit(CResource):
             result_dict[cls.Name_Result] = cls.QA_Result_Pass
         else:
             result_dict[cls.Name_Message] = '{0}的值[{1}],宽度为[{2}]，不符合要求的宽度不超过[{3}], 请检查修正!'.format(title_prefix,
-                                                                                               value, value_lenth,
-                                                                                               value_width)
+                                                                                                  value, value_lenth,
+                                                                                                  value_width)
 
         return result_dict
 
@@ -393,7 +393,6 @@ class CAudit(CResource):
 
         return result_dict
 
-
     @classmethod
     def __a_check_value_not_null__(cls, result_template: dict, value, title_prefix, value_not_null):
         """
@@ -531,5 +530,3 @@ class CAudit(CResource):
             result_dict[cls.Name_Result] = cls.QA_Result_Pass
 
         return result_dict
-
-

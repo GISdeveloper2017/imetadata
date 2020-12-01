@@ -52,7 +52,7 @@ class plugins_8041_third_survey_noblock(CFilePlugins_GUOTU_Third_Survey):
         # 正则表达式，(?i)代表大小写不敏感，^代表字符串开头，$代表字符串结尾
         # \S用于匹配所有非空字符，+代表匹配前面字符的数量为至少一个，即\S+匹配一个或多个非空字符
         # \d匹配数字，即[0-9]，即\d+匹配一个或多个非空字符
-        match_str = '(?i)^'+file_name_before_six+r'\S+dom.img$'
+        match_str = '(?i)^' + file_name_before_six + r'\S+dom.img$'
         check_file_main_name_exist = CFile.find_file_or_subpath_of_path(file_path, match_str, CFile.MatchType_Regex)
         if not check_file_main_name_exist:  # 检查主文件存在性
             return self.Object_Confirm_IUnKnown, self._object_name

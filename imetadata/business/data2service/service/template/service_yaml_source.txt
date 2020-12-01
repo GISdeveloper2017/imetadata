@@ -1,4 +1,4 @@
-  $cache_source$:
+$cache_source$:
     type: mapserver
     wms_opts:
       featureinfo: true

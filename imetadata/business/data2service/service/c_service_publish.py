@@ -23,10 +23,14 @@ def clear_failure(service_name):
     for ext in ['.shp', '.dbf', '.shx', 'prj']:
         service_files.append(os.path.join(application.xpath_one('data2service.tindex_dir', None), service_name + ext))
 
-    service_files.append(os.path.join(application.xpath_one('data2service.map_dir', None), 'service_' + service_name + '.map'))
-    service_files.append(os.path.join(application.xpath_one('data2service.yaml_dir', None), 'service_' + service_name + '.yaml'))
-    service_files.append(os.path.join(application.xpath_one('data2service.seed_dir', None), 'service_seed_' + service_name + '.yaml'))
-    service_files.append(os.path.join(application.xpath_one('data2service.wsgi_dir', None), 'service_' + service_name + '.wsgi'))
+    service_files.append(
+        os.path.join(application.xpath_one('data2service.map_dir', None), 'service_' + service_name + '.map'))
+    service_files.append(
+        os.path.join(application.xpath_one('data2service.yaml_dir', None), 'service_' + service_name + '.yaml'))
+    service_files.append(
+        os.path.join(application.xpath_one('data2service.seed_dir', None), 'service_seed_' + service_name + '.yaml'))
+    service_files.append(
+        os.path.join(application.xpath_one('data2service.wsgi_dir', None), 'service_' + service_name + '.wsgi'))
 
     service_files.append(os.path.join(application.xpath_one('data2service.map_dir', None), service_name + '.map'))
     service_files.append(os.path.join(application.xpath_one('data2service.yaml_dir', None), service_name + '.yaml'))
@@ -322,7 +326,8 @@ def ReplaceSameTemplate(service_def) -> tuple:
             continue
 
         # one layer one mapfile
-        mapfile = os.path.join(application.xpath_one('data2service.map_dir', None), service_def.id + '_' + lyr_def.id + '.map')
+        mapfile = os.path.join(application.xpath_one('data2service.map_dir', None),
+                               service_def.id + '_' + lyr_def.id + '.map')
 
         res_prjextent = geoUtils.UnionExt(all_prjextent)
         all_ext_prj = "{0} {1} {2} {3}".format(res_prjextent[0], res_prjextent[2], res_prjextent[1], res_prjextent[3])
@@ -361,7 +366,8 @@ def ReplaceSameTemplate(service_def) -> tuple:
                                                                                yaml_source_values)
 
     # yaml
-    yaml_cache_dir = application.xpath_one('data2service.service_yaml.cache_dir', None).replace('$orderid$', service_def.id)
+    yaml_cache_dir = application.xpath_one('data2service.service_yaml.cache_dir', None).replace('$orderid$',
+                                                                                                service_def.id)
     if not os.path.exists(yaml_cache_dir):
         os.makedirs(yaml_cache_dir)
 
@@ -386,11 +392,13 @@ def ProcessService(service_def):
 
     repres = ReplaceSameTemplate(service_def)
 
-    cache_area = application.xpath_one('data2service.seed_yaml.coverages', None).replace('$kid$', 'kall').replace('$seed_bbox$', repres[0])
+    cache_area = application.xpath_one('data2service.seed_yaml.coverages', None).replace('$kid$', 'kall').replace(
+        '$seed_bbox$', repres[0])
     seedvalues = dict({'$refresh_time$': datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"),
                        '$cache_area$': cache_area, '$kn$': 'kall', '$all_cache$': repres[1],
                        '$grids$': service_def.getGrids()})
-    seedfile = os.path.join(application.xpath_one('data2service.seed_dir', None), 'service_seed_' + service_def.id + '.yaml')
+    seedfile = os.path.join(application.xpath_one('data2service.seed_dir', None),
+                            'service_seed_' + service_def.id + '.yaml')
     RepFile(os.path.join(basedir, "template/service_seed_id.yaml"), seedfile, seedvalues)
 
     qldfp = open(application.xpath_one('data2service.qld_conf.conf_path', None), 'r')

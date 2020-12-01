@@ -4,17 +4,18 @@
 # @File : c_viewCreatorRaster.py
 
 import os
+
 import numpy as np
 from PIL import Image
 from osgeo import gdal, gdalconst
 
-from imetadata.base.c_json import CJson
-from imetadata.base.c_processUtils import CProcessUtils
-from imetadata.base.c_time import CTime
 from imetadata.base.c_file import CFile
-from imetadata.base.c_utils import CUtils
+from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
+from imetadata.base.c_processUtils import CProcessUtils
 from imetadata.base.c_result import CResult
+from imetadata.base.c_time import CTime
+from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.view.c_viewCreator import CViewCreator
 from imetadata.database.c_factory import CFactory
 

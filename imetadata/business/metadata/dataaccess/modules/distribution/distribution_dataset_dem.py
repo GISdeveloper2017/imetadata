@@ -2,10 +2,9 @@
 # @Time : 2020/11/17 16:30
 # @Author : 赵宇飞
 # @File : distribution_dataset_dem.py
-from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu_dataset import \
     distribution_guotu_dataset
-from imetadata.base.c_xml import CXml
 
 
 class distribution_dataset_dem(distribution_guotu_dataset):
@@ -44,6 +43,6 @@ class distribution_dataset_dem(distribution_guotu_dataset):
             sync_dict_list, 'datatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'sensors',
-            list([dsometadataxml_xml.get_element_text_by_xpath_one('/root/MajorSource')]),self.DataValueType_Array)
+            list([dsometadataxml_xml.get_element_text_by_xpath_one('/root/MajorSource')]), self.DataValueType_Array)
         self.add_value_to_sync_dict_list(sync_dict_list, 'dsometadatajson', dsometadataxml)
         return sync_dict_list

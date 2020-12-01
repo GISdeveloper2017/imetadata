@@ -4,19 +4,19 @@ services:
     use_grid_names: true
     origin: 'nw'
   kml:
-      use_grid_names: true
+    use_grid_names: true
   wmts:
     #restful: true
     #kvp: false
     md:
       title: WMTS Proxy
-      abstract: WMTS Proxy  
+      abstract: WMTS Proxy
   wms:
-    srs: ['EPSG:3857','EPSG:4490','CRS:84','EPSG:4326','EPSG:4283','EPSG:28354','EPSG:28355','EPSG:28356','EPSG:102100']
-    versions: ['1.1.0','1.1.1','1.3.0']
-    image_formats: ['image/png', 'image/jpeg']
+    srs: [ 'EPSG:3857','EPSG:4490','CRS:84','EPSG:4326','EPSG:4283','EPSG:28354','EPSG:28355','EPSG:28356','EPSG:102100' ]
+    versions: [ '1.1.0','1.1.1','1.3.0' ]
+    image_formats: [ 'image/png', 'image/jpeg' ]
     on_source_errors: raise
-    strict: true    
+    strict: true
     md:
       title: WMS Proxy
       abstract: WMS Proxy
@@ -25,47 +25,47 @@ layers:
   - name: root
     title: root layer
     layers:
-      - name: $service_name$                              
-        title: $service_name$                             
-        sources: [qld_cache_all] 
+      - name: $service_name$
+        title: $service_name$
+        sources: [ qld_cache_all ]
 
 caches:
   qld_cache_all:
     format: mixed
     request_format: image/png
-    grids: [webmercator,cgcs2000]
-    sources: [qld_mosaic]  
+    grids: [ webmercator,cgcs2000 ]
+    sources: [ qld_mosaic ]
 sources:
   qld_mosaic:
     type: mapserver
     req:
-      map: $map_file$                                    
-      layers: $lyr_name$                                 
+      map: $map_file$
+      layers: $lyr_name$
       transparent: true
     coverage:
-      bbox: [$coverage_bbox$]                                  
+      bbox: [ $coverage_bbox$ ]
       srs: 'EPSG:4326'
     mapserver:
-      binary: $server_bin$                                     
-      working_dir: $server_dir$                                
+      binary: $server_bin$
+      working_dir: $server_dir$
 grids:
-    webmercator:
-       base: GLOBAL_WEBMERCATOR
-    cgcs2000:
-       srs: 'EPSG:4490'
-       #bbox: [73.62, 16.7, 134.77, 53.56]
-       bbox: [-180, -90, 180, 90]
-       bbox_srs: 'EPSG:4326'
-       tile_size: [256, 256]
-       origin: 'nw'
-    wgs84:
-       srs: 'EPSG:4326'       
-       bbox: [-180, -90, 180, 90]
-       bbox_srs: 'EPSG:4326'
-       #res: [0.000010728836060,0.000021457672119,0.000042915344238,0.000085830688477,0.000171661376953, 0.000343322753906, 0.000686645507812, 0.00137329101562, 0.00274658203125, 0.0054931640625, 0.010986328125, 0.02197265625, 0.0439453125, 0.087890625, 0.17578125, 0.3515625, 0.703125]
-       tile_size: [256, 256]
-       origin: 'nw'
-    
+  webmercator:
+    base: GLOBAL_WEBMERCATOR
+  cgcs2000:
+    srs: 'EPSG:4490'
+    #bbox: [73.62, 16.7, 134.77, 53.56]
+    bbox: [ -180, -90, 180, 90 ]
+    bbox_srs: 'EPSG:4326'
+    tile_size: [ 256, 256 ]
+    origin: 'nw'
+  wgs84:
+    srs: 'EPSG:4326'
+    bbox: [ -180, -90, 180, 90 ]
+    bbox_srs: 'EPSG:4326'
+    #res: [0.000010728836060,0.000021457672119,0.000042915344238,0.000085830688477,0.000171661376953, 0.000343322753906, 0.000686645507812, 0.00137329101562, 0.00274658203125, 0.0054931640625, 0.010986328125, 0.02197265625, 0.0439453125, 0.087890625, 0.17578125, 0.3515625, 0.703125]
+    tile_size: [ 256, 256 ]
+    origin: 'nw'
+
 globals:
   image:
     formats:

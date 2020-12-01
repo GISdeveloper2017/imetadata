@@ -31,8 +31,10 @@ class plugins_8012_dem_12(CFilePlugins_GUOTU_DEM):
             return self.Object_Confirm_IUnKnown, self._object_name
 
         file_main_name_with_path = CFile.join_file(self.file_info.file_path, file_main_name)
-        check_file_main_name_exist_tif = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
-        check_file_main_name_exist_bil = CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Bil))
+        check_file_main_name_exist_tif = CFile.file_or_path_exist(
+            '{0}.{1}'.format(file_main_name_with_path, self.Name_Tif))
+        check_file_main_name_exist_bil = CFile.file_or_path_exist(
+            '{0}.{1}'.format(file_main_name_with_path, self.Name_Bil))
         if (not check_file_main_name_exist_tif) and (not check_file_main_name_exist_bil):
             return self.Object_Confirm_IUnKnown, self._object_name
         """

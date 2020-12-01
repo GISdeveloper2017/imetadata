@@ -326,7 +326,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
      |interval|trigger.hours|可选, 每隔x小时执行一次|{"trigger": {"hours": 2}}|
      |interval|trigger.days|可选, 每隔x小时执行一次|{"trigger": {"days": 2}}|
      |interval|trigger.weeks|可选, 每隔x星期执行一次|{"trigger": {"weeks": 2}}|
-     |db_queue|job.db_server_id|数据库队列, 引用的数据库的标识, 该标识在settings.py中定义|{"job": {"db_server_id": 2}}|
+     |db_queue|job.db_server_id|数据库队列, 引用的数据库的标识, 该标识在settings.py中定义|{"job": {"db_server_id": "2"}}|
      |db_queue|process.parallel_count|并行worker的个数|{"process": {"parallel_count": 1}}|
 ***
 # 功能设计
@@ -1202,11 +1202,23 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
                         1. 如果已经通知完毕
                             1. 更新dm2_storage_obj_na表该记录的状态为重新通知
     1. 标识通知成功结束, 更新dm2_storage_inbound表的通知状态:
-        1. dsi_na_status=2 -> 0 完成通知
+        1. dsi_na_status=2 -> 9 完成通知, 等待确认
     1. 过程出现异常:
         1. dsi_na_status=2 -> 3 通知过程出现错误
         1. dsi_na_proc_memo 错误详细信息
-        
+##### 数据入库通知进度监控-job_dm_inbound_notify_monitor
+1. 名称: job_dm_inbound_notify_monitor
+1. 类型: interval(30秒)
+1. 算法:
+    1. 搜索dm2_storage_inbound表中dsi_na_status=9的记录
+        1. 将处理成功的dm2_storage_obj_na
+            1. dson_notify_status=0 通知完毕
+        1. 标识通知成功结束, 更新dm2_storage_inbound表的通知状态:
+            1. dsi_na_status=9 -> 0 成功通知
+        1. 过程出现异常:
+            1. dsi_na_status=9 -> 3 通知过程出现错误
+            1. dsi_na_proc_memo 错误详细信息
+                
 ***
 ## 数据发布
 ### 场景

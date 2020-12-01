@@ -73,16 +73,16 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
         :return:
         """
         file_detail_xml = '{0}_21at.xml'.format(self.file_info.file_main_name_with_full_path)
-        self.add_file_to_details(file_detail_xml)       #将文件加入到附属文件列表中
+        self.add_file_to_details(file_detail_xml)  # 将文件加入到附属文件列表中
         file_detail_xq = '{0}xq.*'.format(self.file_info.file_main_name)
         if not CUtils.equal_ignore_case(self.file_info.file_path, ''):
             list_file_fullname_xq = CFile.file_or_dir_fullname_of_path(
                 self.file_info.file_path,
                 False,
                 file_detail_xq,
-                CFile.MatchType_Common)         #模糊匹配文件列表
+                CFile.MatchType_Common)  # 模糊匹配文件列表
             for list_file_fullname in list_file_fullname_xq:
-                self.add_file_to_details(list_file_fullname)        #将文件加入到附属文件列表中
+                self.add_file_to_details(list_file_fullname)  # 将文件加入到附属文件列表中
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """

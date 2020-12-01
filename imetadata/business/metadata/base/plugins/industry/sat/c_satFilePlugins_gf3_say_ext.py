@@ -390,7 +390,8 @@ class CSatFilePlugins_gf3_say_ext(CSatPlugins):
         TopRightLatitude_text = xml.get_element_text(xml.xpath_one('/product/imageinfo/corner/topRight/latitude'))
         TopRightLongitude_text = xml.get_element_text(xml.xpath_one('/product/imageinfo/corner/topRight/longitude'))
         BottomRightLatitude_text = xml.get_element_text(xml.xpath_one('/product/imageinfo/corner/bottomRight/latitude'))
-        BottomRightLongitude_text = xml.get_element_text(xml.xpath_one('/product/imageinfo/corner/bottomRight/longitude'))
+        BottomRightLongitude_text = xml.get_element_text(
+            xml.xpath_one('/product/imageinfo/corner/bottomRight/longitude'))
 
         native_center_filename_with_path = CFile.join_file(self.file_content.work_root_dir,
                                                            '{0}_native_center.wkt'.format(CUtils.one_id()))

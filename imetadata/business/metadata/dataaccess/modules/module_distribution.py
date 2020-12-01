@@ -6,12 +6,11 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_object import CObject
 from imetadata.base.c_result import CResult
 from imetadata.base.c_sys import CSys
-from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.base.c_daModule import CDAModule
 from imetadata.business.metadata.dataaccess.modules.distribution.base import distribution_base
 from imetadata.business.metadata.dataaccess.modules.distribution.distribution_default import distribution_default
 from imetadata.database.c_factory import CFactory
-from imetadata.base.c_xml import CXml
 
 
 class module_distribution(CDAModule):

@@ -1,4 +1,4 @@
-  $lyr_cache$:
+$lyr_cache$:
     format: mixed
     request_format: image/png
     grids: [$grids$]

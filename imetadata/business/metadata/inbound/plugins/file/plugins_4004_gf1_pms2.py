@@ -7,6 +7,3 @@ from imetadata.business.metadata.base.plugins.industry.sat.c_satFilePlugins_gf1_
 
 class plugins_4004_gf1_pms2(CSatFilePlugins_gf1_pms2):
     pass
-
-
-

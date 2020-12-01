@@ -76,7 +76,8 @@ class CDAModule(CResource):
             target_notify_status = self.ProcStatus_Finished
         if not ds_na.is_empty():
             na_id = CUtils.any_2_str(ds_na.value_by_name(0, 'dsonid', 0))
-            if ds_na.value_by_name(0, 'dson_notify_status', self.ProcStatus_Finished) == self.ProcStatus_Finished:
+            if (ds_na.value_by_name(0, 'dson_notify_status', self.ProcStatus_Finished) == self.ProcStatus_Finished) or \
+                    (ds_na.value_by_name(0, 'dson_notify_status', self.ProcStatus_Finished) == self.ProcStatus_InQueue):
                 CFactory().give_me_db(self._db_id).execute(
                     '''
                     update dm2_storage_obj_na

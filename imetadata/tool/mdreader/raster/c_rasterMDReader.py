@@ -313,9 +313,12 @@ class CRasterMDReader(CMDReader):
                 json_wgs84.set_value_of_name('boundingbox', json_bounding.json_obj)
                 json_wgs84.set_value_of_name('msg', 'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换成功！'.format(source))
             else:
-                json_wgs84.set_value_of_name('msg', 'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(source))
+                json_wgs84.set_value_of_name('msg',
+                                             'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(
+                                                 source))
         else:
-            json_wgs84.set_value_of_name('msg', 'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：文件不存在coordinate信息！'.format(source))
+            json_wgs84.set_value_of_name('msg',
+                                         'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：文件不存在coordinate信息！'.format(source))
         return json_wgs84
 
     def get_other_metadata_by_raster(self, other_metadata: dict) -> CJson:
@@ -637,4 +640,3 @@ if __name__ == '__main__':
     # print("完成第{0}个数据！,python.exe【process_id:{1}】的内存大小:{2}MB".format(1, process_id, mem_size))
     # end_time = time.time()
     # print('time=%.4lfs'%(end_time-start_time))
-

@@ -131,7 +131,7 @@ class CMDTransformerDOM(CMDTransformer):
                 xml_obj.set_attr(node_item, self.Name_Name, CUtils.any_2_str(row_list[1]).lower())
                 xml_obj.set_element_text(node_item, CUtils.any_2_str(row_list[2].strip()))  # 设置item节点与属性与内容
         if not flag:
-            raise   # 如果未找到1+tab键开头，则抛出异常
+            raise  # 如果未找到1+tab键开头，则抛出异常
         return xml_obj
 
     def xls_to_xml(self, file_metadata_name_with_path: str):
@@ -141,7 +141,7 @@ class CMDTransformerDOM(CMDTransformer):
         :return xml_obj:将文件内容存储好的项目对象
         """
         all_data = xlrd.open_workbook(file_metadata_name_with_path)  # 获取表格所有内容
-        table_data = all_data.sheets()[0]   # 默认获取第一个表格
+        table_data = all_data.sheets()[0]  # 默认获取第一个表格
 
         cols_num = table_data.ncols  # 获取列数
         rows_num = table_data.nrows  # 获取行数
@@ -158,7 +158,8 @@ class CMDTransformerDOM(CMDTransformer):
         xml_obj.set_attr(node_root, self.Name_Type, self.transformer_type)  # 设置root节点与属性
         for row in range(0, rows_num):
             node_item = xml_obj.create_element(node_root, 'item')
-            xml_obj.set_attr(node_item, self.Name_Name, CUtils.any_2_str(table_data.cell(row, cols_index).value).lower())
+            xml_obj.set_attr(node_item, self.Name_Name,
+                             CUtils.any_2_str(table_data.cell(row, cols_index).value).lower())
             xml_obj.set_element_text(node_item, table_data.cell(row, cols_index + 1).value)  # 设置item节点与属性与内容
         return xml_obj
 

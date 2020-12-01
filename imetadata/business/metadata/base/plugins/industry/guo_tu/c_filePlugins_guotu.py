@@ -35,7 +35,7 @@ class CFilePlugins_GUOTU(CFilePlugins):
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
         information[self.Plugins_Info_SpatialEngine] = self.MetaDataEngine_Raster  # 国土的统一都是影像数据
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_default'
-        information[self.Plugins_Info_ViewEngine] = self.BrowseEngine_Raster # 抽取快视图都是影像类型
+        information[self.Plugins_Info_ViewEngine] = self.BrowseEngine_Raster  # 抽取快视图都是影像类型
         return information
 
     def classified(self):
