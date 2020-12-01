@@ -150,8 +150,10 @@ where dsi_na_status = 2
                     module_id = module_name
                     module_title = CUtils.dict_value_by_name(module_obj.information(), self.Name_Title, '')
 
-                    module_access = object_da_result.xpath_one('{0}.{1}'.format(module_id, self.Name_Result),
-                                                               self.DataAccess_Forbid)
+                    module_access = object_da_result.xpath_one(
+                        '{0}.{1}'.format(module_id, self.Name_Result),
+                        self.DataAccess_Forbid
+                    )
                     CLogger().debug(
                         '存储[{0}]下, 批次为[{1}]的目录[{2}]下的对象[{3}], 与模块[{4}]的访问权限为[{5}]!'.format(
                             ds_storage_title,
