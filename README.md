@@ -326,7 +326,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
      |interval|trigger.hours|可选, 每隔x小时执行一次|{"trigger": {"hours": 2}}|
      |interval|trigger.days|可选, 每隔x小时执行一次|{"trigger": {"days": 2}}|
      |interval|trigger.weeks|可选, 每隔x星期执行一次|{"trigger": {"weeks": 2}}|
-     |db_queue|job.db_server_id|数据库队列, 引用的数据库的标识, 该标识在settings.py中定义|{"job": {"db_server_id": 2}}|
+     |db_queue|job.db_server_id|数据库队列, 引用的数据库的标识, 该标识在settings.py中定义|{"job": {"db_server_id": "2"}}|
      |db_queue|process.parallel_count|并行worker的个数|{"process": {"parallel_count": 1}}|
 ***
 # 功能设计
