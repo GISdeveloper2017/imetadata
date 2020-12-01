@@ -143,7 +143,7 @@ class CVectorMDReader(CMDReader):
             if CFile.check_and_create_directory(file_name_with_path):
                 json_vector.to_file(file_name_with_path)
             return CResult.merge_result(CResult.Failure,
-                                        '文件[{0}]读取异常!｛1｝'.format(self.__file_name_with_path__, error))
+                                        '文件[{0}]读取异常!{1}'.format(self.__file_name_with_path__, error.__str__()))
         finally:
             vector_ds.Destroy()
             vector_ds = None

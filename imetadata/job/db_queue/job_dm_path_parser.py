@@ -116,8 +116,8 @@ where dsdscanfilestatus = 2
                 inbound_subpath
             )
             return CResult.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_subpath))
-        except:
-            return CResult.merge_result(self.Failure, '目录为[{0}]下的文件和子目录扫描处理出现错误!'.format(ds_subpath))
+        except Exception as err:
+            return CResult.merge_result(self.Failure, '目录为[{0}]下的文件和子目录扫描处理出现错误!错误原因为: {1}'.format(ds_subpath), err.__str__())
         finally:
             self.exchange_file_or_subpath_valid_unknown2invalid(ds_id)
 
@@ -255,12 +255,13 @@ where dsdscanfilestatus = 2
         database = CFactory().give_me_db(self.get_mission_db_id())
         new_batch_no = database.seq_next_value(self.Seq_Type_Date_AutoInc)
         sql_register_2_inbound_list = '''
-        insert into dm2_storage_inbound(dsistorageid, dsidirectory, dsibatchno, dsistatus, dsidirectoryid) 
-        VALUES(:storageid, :directory, :batch_no, :status, :directory_id) 
+        insert into dm2_storage_inbound(dsiid, dsistorageid, dsidirectory, dsibatchno, dsistatus, dsidirectoryid) 
+        VALUES(:dsiid, :storageid, :directory, :batch_no, :status, :directory_id) 
         '''
         database.execute(
             sql_register_2_inbound_list,
             {
+                'dsiid': CUtils.one_id(),
                 'storageid': storage_id,
                 'directory': directory,
                 'batch_no': new_batch_no,
