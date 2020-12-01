@@ -9,10 +9,10 @@ from imetadata.business.metadata.base.plugins.industry.common.c_vectorFilePlugin
 class plugins_6001_shp(CVectorFilePlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Name] = 'shp'
+        information[self.Plugins_Info_Title] = 'shp'
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
-        information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector
-        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+        # information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector
+        # information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_vector'
         return information
 

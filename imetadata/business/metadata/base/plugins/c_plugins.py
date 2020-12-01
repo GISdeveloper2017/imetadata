@@ -98,12 +98,14 @@ class CPlugins(CResource):
     Plugins_Info_Title = 'dsodtitle'
     # 插件英文编码-业务
     Plugins_Info_Code = 'dsodcode'
-    # 插件中文编码-业务
+    # 插件Catalog代码-业务
     Plugins_Info_Catalog = 'dsodcatalog'
-    # 插件大类-英文-内置
-    Plugins_Info_Type = 'dsodtype'
-    # 插件大类-中文-内置
-    Plugins_Info_Type_Title = 'dsodtype_title'
+    # 插件Catalog标题-业务
+    Plugins_Info_Catalog_Title = 'dsodcatalogtitle'
+    # # 插件大类-英文-内置
+    # Plugins_Info_Type = 'dsodtype'
+    # # 插件大类-中文-内置
+    # Plugins_Info_Type_Title = 'dsodtype_title'
     # 插件-对象是否允许包含子对象
     Plugins_Info_HasChildObj = 'dsod_has_child_obj'
 

@@ -9,8 +9,8 @@ class CVectorChildPlugins(CSpatialChildPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Name] = 'vector_layer'
-        information[self.Plugins_Info_Title] = '矢量数据集图层'
+        # information[self.Plugins_Info_Name] = 'vector_layer'
+        information[self.Plugins_Info_Title] = 'vector_layer'
         information[self.Plugins_Info_DetailEngine] = None
         information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector
         information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])

@@ -26,9 +26,8 @@ class plugins_8041_third_survey_noblock(CFilePlugins_GUOTU_Third_Survey):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = '三调影像'
-        information[self.Plugins_Info_Name] = 'third_survey_noblock'
-
+        # information[self.Plugins_Info_Title] = '三调影像'
+        # information[self.Plugins_Info_Name] = 'third_survey_noblock'
         return information
 
     def classified(self):

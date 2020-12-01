@@ -12,9 +12,8 @@ class plugins_8010_dem_10(CFilePlugins_GUOTU_DEM):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = 'DEM数据'
-        information[self.Plugins_Info_Name] = 'dem_10'
-
+        information[self.Plugins_Info_Title] = 'DEM_分幅'
+        # information[self.Plugins_Info_Name] = 'dem_10'
         return information
 
     def classified(self):

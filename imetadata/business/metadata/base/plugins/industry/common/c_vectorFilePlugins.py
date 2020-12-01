@@ -11,17 +11,15 @@ class CVectorFilePlugins(CFilePlugins):
         information = super().get_information()
         information[self.Plugins_Info_Title] = '矢量'
         information[self.Plugins_Info_Code] = None
-        # information[self.Plugins_Info_Catalog] = '矢量'
-        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Vector
-        # information[self.Plugins_Info_Type] = 'vector'
-        information[self.Plugins_Info_Type] = self.Object_Def_Type_Vector
+        information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector
+        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+        information[self.Plugins_Info_Catalog] = self.DataCatalog_Common
+        information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Vector
         information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
         information[self.Plugins_Info_SpatialEngine] = self.MetaDataEngine_Vector  # 通用的矢量数据的空间引擎（解析自身元数据json用的）
-        information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector
-        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
         return information
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:

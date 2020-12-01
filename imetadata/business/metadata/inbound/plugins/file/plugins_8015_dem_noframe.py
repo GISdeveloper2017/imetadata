@@ -20,12 +20,9 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
     """
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = 'DEM数据'
-        information[self.Plugins_Info_Name] = 'dem_noframe'
-        # information[self.Plugins_Info_Type] = 'dem_noframe'
-        information[self.Plugins_Info_Type] = self.Object_Def_Type_DEM_NoFrame
+        information[self.Plugins_Info_Title] = 'DEM_非分幅'
+        # information[self.Plugins_Info_Name] = 'dem_noframe'
         information[self.Plugins_Info_Code] = '02010602'
-        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Business
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_dem_noframe'
         return information
 

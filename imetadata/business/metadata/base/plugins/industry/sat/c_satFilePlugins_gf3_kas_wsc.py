@@ -12,11 +12,9 @@ from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
 class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = '高分三号'
-        information[self.Plugins_Info_Name] = 'gf3_kas_wsc'
-        information[self.Plugins_Info_Code] = 'gf3'
-        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Sat
-
+        information[self.Plugins_Info_Title] = 'GF3_SAR'
+        information[self.Plugins_Info_Group_Name] = 'GF3'
+        information[self.Plugins_Info_Group_Title] = '高分三号'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):

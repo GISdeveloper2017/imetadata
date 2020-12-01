@@ -399,13 +399,17 @@ class CResource:
     Path_21AT_MD_Content_ProductType = '/root/ProductType'
     Path_21AT_MD_Content_ProductName = '/root/DSName'
 
-    DataGroup_Sat_raster = 'sat_raster'
-    DataGroup_Industry_Data = 'industry_data'
-    DataGroup_Industry_DataSet = 'industry_dataset'
+    # DataGroup_Sat_raster = 'sat_raster' # 卫星的不能只能GF1 GF2...
+    DataGroup_Industry_Data = 'land_data'
+    DataGroup_Industry_DataSet = 'land_dataset'
     DataGroup_Raster = 'raster'
     DataGroup_Raster_DataSet = 'raster_dataset'
     DataGroup_Vector = 'vector'
     DataGroup_Vector_DataSet = 'vector_dataset'
+
+    DataCatalog_Land = 'land'  # 国土行业
+    DataCatalog_Sat = 'sat'  # 原始数据（卫星）
+    DataCatalog_Common = 'common'  # 通用数据
 
     DataType_String = 1
     DataType_DateTime = 2
@@ -442,9 +446,9 @@ class CResource:
     Path_IB_Option_CheckFileLocked = '{0}.check_file_locked'.format(Path_IB_Option)
 
     def data_group_title(self, group_name: str):
-        if group_name.lower() == self.DataGroup_Sat_raster:
-            return '卫星影像'
-        elif group_name.lower() == self.DataGroup_Industry_Data:
+        # if group_name.lower() == self.DataGroup_Sat_raster:
+        #     return '卫星影像'
+        if group_name.lower() == self.DataGroup_Industry_Data:
             return '行业数据'
         elif group_name.lower() == self.DataGroup_Industry_DataSet:
             return '行业数据集'
@@ -456,6 +460,16 @@ class CResource:
             return '矢量'
         elif group_name.lower() == self.DataGroup_Vector_DataSet:
             return '矢量数据集'
+        else:
+            return None
+
+    def data_catalog_title(self, catalog_name: str):
+        if catalog_name.lower() == self.DataCatalog_Land:
+            return '国土行业'
+        elif catalog_name.lower() == self.DataCatalog_Sat:
+            return '原始数据'
+        elif catalog_name.lower() == self.DataCatalog_Common:
+            return '通用数据'
         else:
             return None
 

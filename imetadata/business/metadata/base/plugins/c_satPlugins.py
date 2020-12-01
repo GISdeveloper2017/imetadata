@@ -38,18 +38,18 @@ class CSatPlugins(CPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = '未知卫星'
-        information[self.Plugins_Info_Name] = 'UnknownSat'
-        information[self.Plugins_Info_Code] = '000001'
-        information[self.Plugins_Info_Catalog] = '卫星数据'
-        information[self.Plugins_Info_Type_Title] = '原始数据'
-        information[self.Plugins_Info_Type] = 'sat'
+        # information[self.Plugins_Info_Name] = 'UnknownSat'
+        information[self.Plugins_Info_Code] = None  # '000001'
+        information[self.Plugins_Info_Group_Name] = None  # self.DataGroup_Sat_raster
+        information[self.Plugins_Info_Group_Title] = None  # self.data_group_title(information[self.Plugins_Info_Group_Name])
+        information[self.Plugins_Info_Catalog] = self.DataCatalog_Sat  # '卫星数据'
+        information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
+        # information[self.Plugins_Info_Type_Title] = '原始数据'
+        # information[self.Plugins_Info_Type] = 'sat'
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
         information[self.Plugins_Info_DetailEngine] = self.get_runtime_detail_engine()
-        information[self.Plugins_Info_Group_Name] = self.DataGroup_Sat_raster
-        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
-
         return information
 
     def create_file_content(self):

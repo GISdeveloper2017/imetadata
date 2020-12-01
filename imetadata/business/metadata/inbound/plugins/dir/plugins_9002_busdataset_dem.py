@@ -9,11 +9,7 @@ from imetadata.business.metadata.base.plugins.c_21ATBusDataSetPlugins import C21
 class plugins_9002_busdataset_dem(C21ATBusDataSetPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = '业务数据集-DEM'
-        information[self.Plugins_Info_Name] = 'DEM'
-        # information[self.Plugins_Info_Type] = 'business_data_set_dem'
-        information[self.Plugins_Info_Type] = self.Object_Def_Type_DataSet_DEM
+        information[self.Plugins_Info_Title] = 'DEM数据集'
         information[self.Plugins_Info_Code] = '020106'
-        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset_Business
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_dem'
         return information

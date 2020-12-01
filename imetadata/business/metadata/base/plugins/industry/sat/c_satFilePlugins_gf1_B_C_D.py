@@ -9,11 +9,9 @@ class CSatFilePlugins_gf1_B_C_D(CSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = '高分一号'
-        information[self.Plugins_Info_Name] = 'pms'
-        information[self.Plugins_Info_Code] = 'gf1'
-        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Sat
-
+        information[self.Plugins_Info_Title] = 'GF1_PMS'
+        information[self.Plugins_Info_Group_Name] = 'GF1'
+        information[self.Plugins_Info_Group_Title] = '高分一号'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):

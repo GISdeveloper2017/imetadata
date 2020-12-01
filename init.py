@@ -25,8 +25,8 @@ class CApplicationInit(CResource):
         '''
         sql_register_dm_metadata_plugins = '''
         insert into dm2_storage_object_def(
-            dsodid, dsodname, dsodtitle, dsodtype, dsodtype_title, dsodcode, dsodcatalog, dsodgroupname, dsodgrouptitle) 
-            values (:dsodid, :dsodname, :dsodtitle, :dsodtype, :dsodtype_title, :dsodcode, :dsodcatalog, :dsodgroupname, :dsodgrouptitle) 
+            dsodid, dsodtitle, dsodcode, dsodgroupname, dsodgrouptitle, dsodcatalog, dsodcatalogtitle) 
+            values (:dsodid, :dsodtitle, :dsodcode, :dsodgroupname, :dsodgrouptitle, :dsodcatalog, :dsodcatalogtitle) 
         '''
 
         CFactory().give_me_db().execute(sql_register_dm_metadata_plugins_clear)

@@ -13,11 +13,8 @@ class plugins_8020_ortho(CFilePlugins_GUOTU_21AT):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Title] = '单景正射'
-        information[self.Plugins_Info_Name] = 'ortho'
-        # information[self.Plugins_Info_Type] = 'ortho'
-        information[self.Plugins_Info_Type] = self.Object_Def_Type_Ortho
+        # information[self.Plugins_Info_Name] = 'ortho'
         information[self.Plugins_Info_Code] = '020101'
-        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Business
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_ortho'
         return information
 

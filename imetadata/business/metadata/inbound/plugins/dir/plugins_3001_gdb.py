@@ -17,18 +17,18 @@ from imetadata.database.tools.c_table import CTable
 class plugins_3001_gdb(CDirPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = '矢量数据集'
-        information[self.Plugins_Info_Name] = 'gdb'
+        information[self.Plugins_Info_Title] = 'gdb'
+        # information[self.Plugins_Info_Name] = 'gdb'
         information[self.Plugins_Info_Code] = None
-        information[self.Plugins_Info_Catalog] = '矢量'
-        # information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Dataset
-        information[self.Plugins_Info_Type] = 'vector'
+        information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector_DataSet
+        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+        information[self.Plugins_Info_Catalog] = self.DataCatalog_Common
+        information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
+        # information[self.Plugins_Info_Type] = 'vector'
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Vector
         information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
-        information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector_DataSet
-        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_gdb'
         information[self.Plugins_Info_Child_Layer_Data_Type] = 'layer'
         information[self.Plugins_Info_Child_Layer_Plugins_Name] = 'plugins_6050_layer_vector'

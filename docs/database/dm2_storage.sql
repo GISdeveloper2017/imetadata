@@ -856,14 +856,15 @@ create table if not exists dm2_storage_object_def
 	dsodid varchar(100) not null
 		constraint dm2_storage_object_def_pkey
 			primary key,
-    dsodname varchar(100) not null,
+    dsodname varchar(100) ,
 	dsodtitle varchar(1000) not null,
 	dsodcode varchar(100),
 	dsodtype varchar(100),
 	dsodtype_title varchar(300),
 	dsodgroupname varchar(100),
 	dsodgrouptitle varchar(100),
-	dsodcatalog varchar(100)
+	dsodcatalog varchar(100),
+	dsodcatalogtitle varchar(100)
 );
 
 comment on table dm2_storage_object_def is '数管-存储目录-对象-定义';
@@ -885,6 +886,8 @@ comment on column dm2_storage_object_def.dsodgroupname is '数管-定义-分组�
 comment on column dm2_storage_object_def.dsodgrouptitle is '数管-定义-分组标题';
 
 comment on column dm2_storage_object_def.dsodcatalog is '数据类别';
+
+comment on column dm2_storage_object_def.dsodcatalogtitle is '数据类别-标题';
 
 alter table dm2_storage_object_def owner to postgres;
 

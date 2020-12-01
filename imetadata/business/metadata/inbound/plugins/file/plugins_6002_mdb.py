@@ -14,14 +14,15 @@ from imetadata.database.tools.c_table import CTable
 class plugins_6002_mdb(CVectorFilePlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Name] = 'mdb'
+        information[self.Plugins_Info_Title] = 'mdb'
+        # information[self.Plugins_Info_Name] = 'mdb'
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Vector
         information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
-        information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector
-        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+        # information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector
+        # information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
         information[self.Plugins_Info_Child_Layer_Data_Type] = 'layer'
         information[self.Plugins_Info_Child_Layer_Plugins_Name] = 'plugins_6050_layer_vector'
         return information

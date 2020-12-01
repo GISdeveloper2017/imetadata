@@ -9,7 +9,7 @@ from imetadata.business.metadata.base.plugins.industry.common.c_rasterFilePlugin
 class plugins_7000_img(CRasterFilePlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Name] = 'img'
+        information[self.Plugins_Info_Title] = 'img'
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
         return information
 

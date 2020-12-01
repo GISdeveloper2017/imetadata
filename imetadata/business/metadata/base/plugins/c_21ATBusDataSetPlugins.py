@@ -23,18 +23,20 @@ class C21ATBusDataSetPlugins(CDirPlugins):
         if self.__metadata_xml_obj__ is not None:
             information[self.Plugins_Info_Title] = CXml.get_element_text(
                 self.__metadata_xml_obj__.xpath_one(self.Path_21AT_MD_Content_ProductName))
-            information[self.Plugins_Info_Name] = None
-        information[self.Plugins_Info_Code] = '110001'
-        information[self.Plugins_Info_Catalog] = '业务数据集'
-        information[self.Plugins_Info_Type_Title] = '业务数据集'
-        information[self.Plugins_Info_Type] = 'business_data_set'
+            # information[self.Plugins_Info_Name] = None
+        information[self.Plugins_Info_Code] = None  # '110001'
+        information[self.Plugins_Info_Group_Name] = self.DataGroup_Industry_DataSet
+        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+        information[self.Plugins_Info_Catalog] = self.DataCatalog_Land  # 'land'
+        information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])  # '国土行业'
+        # information[self.Plugins_Info_Type_Title] = '业务数据集'
+        # information[self.Plugins_Info_Type] = 'business_data_set'
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_TagsEngine] = 'global_dim'
         information[self.Plugins_Info_DetailEngine] = None
         information[self.Plugins_Info_HasChildObj] = self.DB_True
-        information[self.Plugins_Info_Group_Name] = self.DataGroup_Industry_DataSet
-        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+
 
         return information
 

@@ -11,17 +11,16 @@ class CRasterFilePlugins(CFilePlugins):
         information = super().get_information()
         information[self.Plugins_Info_Title] = '影像'
         information[self.Plugins_Info_Code] = None
-        # information[self.Plugins_Info_Catalog] = '影像'
-        information[self.Plugins_Info_Catalog] = self.Object_Def_Catalog_Object_Raster
+        information[self.Plugins_Info_Group_Name] = self.DataGroup_Raster
+        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+        information[self.Plugins_Info_Catalog] = self.DataCatalog_Common
+        information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
         # information[self.Plugins_Info_Type] = 'raster'
-        information[self.Plugins_Info_Type] = self.Object_Def_Type_Raster
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Raster
         information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
         information[self.Plugins_Info_SpatialEngine] = self.MetaDataEngine_Raster  # 通用的影像数据的空间引擎（解析自身元数据json用的）
-        information[self.Plugins_Info_Group_Name] = self.DataGroup_Raster
-        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_custom'  # 即时服务中通用影像被认为自定义影像
         information[self.Plugins_Info_ViewEngine] = self.BrowseEngine_Raster # 通用的影像数据抽取快视图的引擎设置
         return information

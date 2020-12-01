@@ -12,9 +12,8 @@ class plugins_8004_dom_part_2(CFilePlugins_GUOTU_DOM):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = 'DOM数据'
-        information[self.Plugins_Info_Name] = 'dom_part_2'
-
+        # information[self.Plugins_Info_Title] = 'DOM数据'
+        # information[self.Plugins_Info_Name] = 'dom_part_2'
         return information
 
     def classified(self):

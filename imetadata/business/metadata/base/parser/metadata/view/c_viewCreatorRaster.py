@@ -33,18 +33,18 @@ class CViewCreatorRaster(CViewCreator):
         """
         # 获取对象类型
         sql_query = '''
-                    select dsodtype from dm2_storage_object_def 
+                    select dsodtitle from dm2_storage_object_def 
                     left join dm2_storage_object on dm2_storage_object.dsoobjecttype = dm2_storage_object_def.dsodid
                     where dm2_storage_object.dsoid = '{0}'
                 '''.format(self.object_id)
-        object_def_type = CFactory().give_me_db(self.file_info.db_server_id).one_value(sql_query)
+        object_def_title = CFactory().give_me_db(self.file_info.db_server_id).one_value(sql_query)
 
         create_time = CTime.today()
         create_format_time = CTime.format_str(create_time, '%Y%m%d')
         year = CTime.format_str(create_time, '%Y')
         month = CTime.format_str(create_time, '%m')
         day = CTime.format_str(create_time, '%d')
-        relative_path_part = r'{0}\{1}\{2}\{3}'.format(object_def_type, year, month, day)  # 相对路径格式
+        relative_path_part = r'{0}\{1}\{2}\{3}'.format(object_def_title, year, month, day)  # 相对路径格式
         view_relative_path_browse = r'\{0}\{1}_browse.png'.format(relative_path_part, self.object_id)
         view_relative_path_thumb = r'\{0}\{1}_thumb.jpg'.format(relative_path_part, self.object_id)
         view_relative_path_geotiff = r'\{0}\{1}_browse.tiff'.format(relative_path_part, self.object_id)
