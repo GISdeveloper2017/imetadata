@@ -47,9 +47,10 @@ class CUtils(CResource):
         """
         按照Python的Template规范进行占位符的替换
         占位符格式如下:
-        . %(name)
-        . %name
+        . $name
+        . ${$name}
         具体百度python template
+        如果字符串里需要$, 则使用$$消除占位语法
 
         :param text:
         :param dict_obj:
@@ -604,7 +605,7 @@ class CUtils(CResource):
 
 
 if __name__ == '__main__':
-    text = "to_jsonb($value)"
+    text = "to_jsonb(${value})"
     print(CUtils.replace_placeholder(text, {'value': 'my_value'}))
 
     # str22 = '30'

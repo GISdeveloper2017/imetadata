@@ -17,16 +17,16 @@ class job_dm_sync_app(CDMBaseJob):
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage_obj_na 
-set dson_notify_proc_id = '{0}', dson_notify_status = 2
+set dson_notify_proc_id = '{0}', dson_notify_status = {1}
 where dsonid = (
   select dsonid  
   from   dm2_storage_obj_na 
-  where  dson_notify_status = 1
+  where  dson_notify_status = {2}
   order by dson_addtime
   limit 1
   for update skip locked
 )
-        '''.format(self.SYSTEM_NAME_MISSION_ID)
+        '''.format(self.SYSTEM_NAME_MISSION_ID, self.ProcStatus_Processing, self.ProcStatus_InQueue)
 
     def get_mission_info_sql(self) -> str:
         return '''
@@ -44,9 +44,9 @@ where dm2_storage_obj_na.dson_notify_proc_id = '{0}'
     def get_abnormal_mission_restart_sql(self) -> str:
         return '''
 update dm2_storage_obj_na 
-set dson_notify_status = 1, dson_notify_proc_id = null 
-where dson_notify_status = 2
-        '''
+set dson_notify_status = {1}, dson_notify_proc_id = null 
+where dson_notify_status = {0}
+        '''.format(self.ProcStatus_Processing, self.ProcStatus_InQueue)
 
     def process_mission(self, dataset) -> str:
         """
@@ -108,17 +108,19 @@ where dson_notify_status = 2
             CFactory().give_me_db(self.get_mission_db_id()).execute(
                 '''
                 update dm2_storage_obj_na 
-                set dson_notify_status = 0, dson_notify_proc_id = null, dson_notify_proc_memo = :proc_message
+                set dson_notify_status = {0}, dson_notify_proc_id = null, dson_notify_proc_memo = :proc_message
                 where dsonid = :id   
-                ''', {'id': na_id, 'proc_message': CResult.result_message(result)}
+                '''.format(self.ProcStatus_Finished),
+                {'id': na_id, 'proc_message': CResult.result_message(result)}
             )
         else:
             CFactory().give_me_db(self.get_mission_db_id()).execute(
                 '''
                 update dm2_storage_obj_na 
-                set dson_notify_status = 3, dson_notify_proc_id = null, dson_notify_proc_memo = :proc_message
+                set dson_notify_status = {0}, dson_notify_proc_id = null, dson_notify_proc_memo = :proc_message
                 where dsonid = :id   
-                ''', {'id': na_id, 'proc_message': CResult.result_message(result)}
+                '''.format(self.ProcStatus_Error),
+                {'id': na_id, 'proc_message': CResult.result_message(result)}
             )
 
 

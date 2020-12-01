@@ -26,8 +26,8 @@ class job_dm_inbound_qi_monitor(CTimeJob):
               , dm2_storage_inbound.dsiotheroption as query_ib_option
             from dm2_storage_inbound 
               left join dm2_storage on dm2_storage.dstid = dm2_storage_inbound.dsistorageid 
-            where dm2_storage_inbound.dsistatus = {0}
-            '''.format(self.IB_Status_QI_Processing)
+            where dm2_storage_inbound.dsistatus in ({0}, {1})
+            '''.format(self.IB_Status_QI_Processing, self.IB_Status_QI_Error)
         )
         if inbound_qi_list.is_empty():
             return CResult.merge_result(CResult.Success, '本次没有需要检查的入库质检任务！')

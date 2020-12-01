@@ -236,7 +236,7 @@ where dsi_na_status = 2
                     , dsi_na_proc_memo = :notify_message
                     , dsiproctime = now()
                 where dsiid = :notify_id   
-                '''.format(self.ProcStatus_Finished),
+                '''.format(self.ProcStatus_WaitConfirm),
                 {
                     'notify_id': notify_id,
                     'notify_message': CResult.result_message(result)

@@ -949,4 +949,10 @@ TABLESPACE pg_default;
 ALTER TABLE public.ro_global_spatialhandle
     OWNER to postgres;
 
+/*
+    2020-12-01
+    . 为dm2_storage_inbound增加目标storageid, 便于后期查询处理
+*/
+alter table dm2_storage_inbound add column dsiTargetStorageId varchar(100);
+comment on column dm2_storage_inbound.dsiTargetStorageId is '目标存储标识';
 
