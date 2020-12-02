@@ -262,7 +262,8 @@ class CPlugins(CResource):
 
             # 首先要判断和验证与数据质量相关的核心内容
             if CResult.result_success(result):
-                result = self.parser_metadata_with_qa(parser)
+                self.parser_metadata_with_qa(parser)
+                result = parser.save_metadata_data_and_bus()
             else:
                 return result
 
@@ -785,7 +786,7 @@ class CPlugins(CResource):
         else:
             return CResult.merge_result(self.Success, '可视元数据引擎未设置, 将在子类中自行实现! ')
 
-    def parser_metadata_with_qa(self, parser: CMetaDataParser) -> str:
+    def parser_metadata_with_qa(self, parser: CMetaDataParser):
         """
         进行质量检验, 保证数据实体的可读性, 并处理好元数据和业务元数据, 保证后续的其他元数据解析的通畅和无误!!!
         :param parser:
@@ -818,8 +819,6 @@ class CPlugins(CResource):
                 self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text, '')
         # 自定义的元数据质检
         self.qa_metadata_custom(parser)
-
-        return parser.save_metadata_data_and_bus()
 
     def qa_metadata_custom(self, parser: CMetaDataParser):
         """
