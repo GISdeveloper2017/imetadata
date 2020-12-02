@@ -58,24 +58,23 @@ class distribution_guotu_object(distribution_guotu):
         object_table_id = self._obj_id  # 获取oid
         object_table_data = self._dataset
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'aprid', object_table_id, self.DB_True)
+            sync_dict_list, 'aprid', object_table_id)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'productname', object_table_data.value_by_name(0, 'dsoobjectname', ''), self.DB_True)
+            sync_dict_list, 'productname', object_table_data.value_by_name(0, 'dsoobjectname', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'producttype', object_table_data.value_by_name(0, 'dsodcode', ''), self.DB_True)
+            sync_dict_list, 'producttype', object_table_data.value_by_name(0, 'dsodcode', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'dsodatatype', object_table_data.value_by_name(0, 'dsodatatype', ''), self.DB_True)
+            sync_dict_list, 'dsodatatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
         dso_time = object_table_data.value_by_name(0, 'dso_time', '')
         dso_time_json = CJson()
         dso_time_json.load_obj(dso_time)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'begdate', dso_time_json.xpath_one('start_time', ''), self.DB_True)
+            sync_dict_list, 'begdate', dso_time_json.xpath_one('start_time', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'enddate', dso_time_json.xpath_one('end_time', ''), self.DB_True)
+            sync_dict_list, 'enddate', dso_time_json.xpath_one('end_time', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedate',
-            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),
-            self.DB_True)
+            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')))
         # datacount:数据数量
         # secrecylevel:密级
         # regioncode:行政区码
@@ -101,13 +100,12 @@ class distribution_guotu_object(distribution_guotu):
             self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'browserimg', object_table_data.value_by_name(0, 'dso_browser', ''), self.DB_True)
+            sync_dict_list, 'browserimg', object_table_data.value_by_name(0, 'dso_browser', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'thumbimg', object_table_data.value_by_name(0, 'dso_thumb', ''), self.DB_True)
+            sync_dict_list, 'thumbimg', object_table_data.value_by_name(0, 'dso_thumb', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'producetime',
-            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')),
-            self.DB_True)
+            CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')))
         # resolution:分辨率，交插件处理
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imgsize',
@@ -121,7 +119,7 @@ class distribution_guotu_object(distribution_guotu):
                 sync_dict_list, 'isdel', '0')
             now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
             self.add_value_to_sync_dict_list(
-                sync_dict_list, 'addtime', now_time, self.DB_True)
+                sync_dict_list, 'addtime', now_time)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'extent',
             "(select dso_geo_bb_native from dm2_storage_object where dsoid='{0}')".format(object_table_id),
@@ -141,7 +139,6 @@ class distribution_guotu_object(distribution_guotu):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedatetag',
             CUtils.to_day_format(dso_time_json.xpath_one('time', ''),
-                                 dso_time_json.xpath_one('time', '')).replace(r'[-/\.年月日]', '')[:8]
-            , self.DB_True)
+                                 dso_time_json.xpath_one('time', '')).replace(r'[-/\.年月日]', '')[:8])
 
         return sync_dict_list
