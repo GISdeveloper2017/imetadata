@@ -115,7 +115,7 @@ class CRasterMDReader(CMDReader):
                                             '文件[{0}]读取文件投影信息失败!'.format(self.__file_name_with_path__))
             # 定义coordinate子对象
             json_coordinate = CJson()
-            spatial = raster_ds.GetSpatialRef()
+            spatial = osr.SpatialReference()
             if spatial.ImportFromWkt(projection) == gdal.CE_None:
                 proj_wkt = spatial.ExportToWkt()
                 json_coordinate.set_value_of_name('wkt', proj_wkt)
@@ -267,7 +267,7 @@ class CRasterMDReader(CMDReader):
         finally:
             del raster_ds
 
-    def transform_to_WGS84(self, geo_transform: list, image_size_x: int, image_size_y: int, projection) -> CJson:
+    def transform_to_WGS84(self, geo_transform: tuple, image_size_x: int, image_size_y: int, projection: str) -> CJson:
         """
         wgs84坐标系转换结果（wgs84节点）
         :param geo_transform:
@@ -289,8 +289,6 @@ class CRasterMDReader(CMDReader):
         json_wgs84_coordinate.set_value_of_name('esri', wgs84_esri)
         json_wgs84.set_value_of_name('coordinate', json_wgs84_coordinate.json_obj)
 
-        source_projection = osr.SpatialReference(wkt=projection)
-        source = source_projection.GetAttrValue('DATUM', 0)
         point_left_top_x = geo_transform[0]
         point_left_top_y = geo_transform[3]
         point_right_bottom_x = geo_transform[0] + image_size_x * geo_transform[1] + image_size_y * geo_transform[2]
@@ -298,6 +296,8 @@ class CRasterMDReader(CMDReader):
         rb = (0, 0)
         lu = (0, 0)
         if projection.strip() != '':
+            source_projection = osr.SpatialReference(wkt=projection)
+            source = source_projection.GetAttrValue('GEOGCS', 0)
             prosrs = osr.SpatialReference()
             prosrs.ImportFromWkt(projection)
             geosrs = prosrs.CloneGeogCS()
@@ -318,7 +318,7 @@ class CRasterMDReader(CMDReader):
                                                  source))
         else:
             json_wgs84.set_value_of_name('msg',
-                                         'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：文件不存在coordinate信息！'.format(source))
+                                         'boundingbox四至范围从原坐标系转wgs_84坐标系转换失败！失败原因：文件不存在coordinate信息！')
         return json_wgs84
 
     def get_other_metadata_by_raster(self, other_metadata: dict) -> CJson:
@@ -599,9 +599,9 @@ class CRasterMDReader(CMDReader):
 
 if __name__ == '__main__':
     # CRasterMDReader('/aa/bb/cc.img').get_metadata_2_file('/aa/bb/cc.json')
-    # CRasterMDReader(r'D:\App\test\镶嵌影像\石嘴山市-3.img').get_metadata_2_file(r'D:\test\raster_test\石嘴山市-3.json')
-    CRasterMDReader(r'D:\data\云南高分影像\F47\F47E001007BJ210M2017A.TIF').get_metadata_2_file(
-        r'D:\data\云南高分影像\F47\F47E001007BJ210M2017A.json')
+    # CRasterMDReader(r'D:\test\入库存储\dem\fenfu\2772.0-509.0.tif').get_metadata_2_file(r'D:\test\raster_test\2772.0-509.0.json')
+    CRasterMDReader(r'D:\test\入库存储1\云南高分影像\F47\F47E001007BJ210M2017A.TIF').get_metadata_2_file(
+        r'D:\test\raster_test\F47E001007BJ210M2017A.json')
     # CRasterMDReader(r'D:\test\DOM\广西影像数据\2772.0-509.0\2772.0-509.0.img').get_metadata_2_file(
     #     r'D:\test\raster_test\2772.0-509.0-1.json')
     # CRasterMDReader(r'D:\test\DOM\湖北单个成果数据\H49G001026\H49G001026.tif').get_metadata_2_file(

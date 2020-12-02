@@ -168,34 +168,38 @@ class CVectorMDReader(CMDReader):
         json_wgs84.set_value_of_name('coordinate', json_wgs84_coordinate.json_obj)
 
         spatialRef = layer.GetSpatialRef()
-        proj_wkt = spatialRef.ExportToWkt()
-        source_projection = osr.SpatialReference(wkt=proj_wkt)
-        source = source_projection.GetAttrValue('DATUM', 0)
-        extent = layer.GetExtent()
-        rb = (0, 0)
-        lu = (0, 0)
-        if proj_wkt.strip() != '':
-            prosrs = osr.SpatialReference()
-            prosrs.ImportFromWkt(proj_wkt)
-            geosrs = prosrs.CloneGeogCS()
-            ct = osr.CreateCoordinateTransformation(prosrs, geosrs)
-            if ct is not None:
-                rb = ct.TransformPoint(extent[1], extent[2])
-                lu = ct.TransformPoint(extent[0], extent[3])
-                json_bounding = CJson()
-                json_bounding.set_value_of_name('minx', lu[0])
-                json_bounding.set_value_of_name('maxy', lu[1])
-                json_bounding.set_value_of_name('maxx', rb[0])
-                json_bounding.set_value_of_name('miny', rb[1])
-                json_wgs84.set_value_of_name('extent', json_bounding.json_obj)
-                json_wgs84.set_value_of_name('msg', 'extent四至范围从{0}坐标系转wgs_84坐标系转换成功！'.format(source))
+        if spatialRef is None:
+            json_wgs84.set_value_of_name('msg',
+                                         'extent四至范围从原坐标系转wgs_84坐标系转换失败！失败原因：文件读取空间参考失败！')
+        else:
+            proj_wkt = spatialRef.ExportToWkt()
+            extent = layer.GetExtent()
+            rb = (0, 0)
+            lu = (0, 0)
+            if proj_wkt.strip() != '':
+                source_projection = osr.SpatialReference(wkt=proj_wkt)
+                source = source_projection.GetAttrValue('GEOGCS', 0)
+                prosrs = osr.SpatialReference()
+                prosrs.ImportFromWkt(proj_wkt)
+                geosrs = prosrs.CloneGeogCS()
+                ct = osr.CreateCoordinateTransformation(prosrs, geosrs)
+                if ct is not None:
+                    rb = ct.TransformPoint(extent[1], extent[2])
+                    lu = ct.TransformPoint(extent[0], extent[3])
+                    json_bounding = CJson()
+                    json_bounding.set_value_of_name('minx', lu[0])
+                    json_bounding.set_value_of_name('maxy', lu[1])
+                    json_bounding.set_value_of_name('maxx', rb[0])
+                    json_bounding.set_value_of_name('miny', rb[1])
+                    json_wgs84.set_value_of_name('extent', json_bounding.json_obj)
+                    json_wgs84.set_value_of_name('msg', 'extent四至范围从{0}坐标系转wgs_84坐标系转换成功！'.format(source))
+                else:
+                    json_wgs84.set_value_of_name('msg',
+                                                 'extent四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(
+                                                     source))
             else:
                 json_wgs84.set_value_of_name('msg',
-                                             'extent四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(
-                                                 source))
-        else:
-            json_wgs84.set_value_of_name('msg',
-                                         'extent四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：文件不存在coordinate信息！'.format(source))
+                                             'extent四至范围从原坐标系转wgs_84坐标系转换失败！失败原因：文件不存在wkt信息！')
         return json_wgs84
 
     def get_attributes_by_vectorlayer(self, layer) -> CJson:
@@ -353,7 +357,7 @@ if __name__ == '__main__':
     # CVectorMDReader('/aa/bb/cc1.shp').get_metadata_2_file('/aa/bb/cc1.json')
     # CVectorMDReader('/aa/bb/cc2.gdb').get_metadata_2_file('/aa/bb/cc2.json')
     # CVectorMDReader(r'D:\data\0生态审计\少量数据测试_修改后\重大工程项目_曲靖市_2019.shp').get_metadata_2_file(r'C:\app\cc1.json')
-    CVectorMDReader(r'D:\App\test\镶嵌影像\石嘴山市-3xq.shp').get_metadata_2_file(r'D:\test\vector_test\石嘴山市-3xq.json')
+    CVectorMDReader(r'D:\test\入库存储\gdb数据集\FileGeodb.gdb').get_metadata_2_file(r'D:\test\vector_test\FileGeodb.json')
     # CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb.gdb').get_metadata_2_file(r'C:\app2\cc4.json')
     # CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb_noLayer.gdb').get_metadata_2_file(r'M:\app\cc4.json')
     # CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb_error.gdb').get_metadata_2_file(r'C:\app\cc6.json')
