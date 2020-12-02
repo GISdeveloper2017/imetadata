@@ -109,7 +109,7 @@ where dsodetailparsestatus = 2
             detail_parser = CDetailParserMng.give_me_parser(
                 CUtils.dict_value_by_name(plugins_information, plugins_obj.Plugins_Info_DetailEngine, None),
                 dso_id, dso_object_name, file_info_obj,
-                plugins_obj.object_detail_file_full_name_list
+                plugins_obj.object_detail_file_full_name_list()
             )
             process_result = plugins_obj.parser_detail(detail_parser)
             if not CResult.result_success(process_result):
