@@ -154,6 +154,10 @@ where dsi_na_status = 2
                         '{0}.{1}'.format(module_id, self.Name_Result),
                         self.DataAccess_Forbid
                     )
+                    module_access_memo = object_da_result.xpath_one(
+                        '{0}.{1}'.format(module_id, self.Name_Message),
+                        ''
+                    )
                     CLogger().debug(
                         '存储[{0}]下, 批次为[{1}]的目录[{2}]下的对象[{3}], 与模块[{4}]的访问权限为[{5}]!'.format(
                             ds_storage_title,
@@ -172,7 +176,7 @@ where dsi_na_status = 2
                     #         ):
                     #     continue
 
-                    result = module_obj.notify(module_access)
+                    result = module_obj.notify(ds_ib_id, module_access, module_access_memo)
                     if not CResult.result_success(result):
                         message = CResult.result_message(result)
                         CLogger().debug(

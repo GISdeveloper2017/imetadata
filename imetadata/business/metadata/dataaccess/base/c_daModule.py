@@ -49,7 +49,7 @@ class CDAModule(CResource):
         )
         return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Forbid)
 
-    def notify(self, access: str) -> str:
+    def notify(self, inbound_id: str, access: str, memo: str) -> str:
         """
         处理数管中识别的对象, 与第三方模块的通知
         . 如果第三方模块自行处理, 则无需继承本方法
@@ -83,24 +83,30 @@ class CDAModule(CResource):
                     update dm2_storage_obj_na
                     set dson_notify_status = :status
                         , dson_object_access = :object_access
+                        , dson_access_memo = :object_access_memo
+                        , dson_inbound_id = :inbound_id
                     where dsonid = :id 
                     ''',
                     {
                         'id': na_id,
                         'status': target_notify_status,
-                        'object_access': access
+                        'object_access': access,
+                        'inbound_id': inbound_id,
+                        'object_access_memo': memo
                     }
                 )
         else:
             CFactory().give_me_db(self._db_id).execute(
                 '''
-                insert into dm2_storage_obj_na(dson_app_id, dson_object_access, dson_object_id) 
-                values(:app_id, :object_access, :object_id)
+                insert into dm2_storage_obj_na(dson_app_id, dson_object_access, dson_object_id, dson_inbound_id, dson_access_memo) 
+                values(:app_id, :object_access, :object_id, :inbound_id, :object_access_memo)
                 ''',
                 {
                     'app_id': CUtils.dict_value_by_name(self.information(), self.Name_ID, ''),
                     'object_id': self._obj_id,
-                    'object_access': access
+                    'object_access': access,
+                    'inbound_id': inbound_id,
+                    'object_access_memo': memo
                 }
             )
 
