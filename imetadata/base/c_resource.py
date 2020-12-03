@@ -436,6 +436,9 @@ class CResource:
     DataValueType_File = 2
     DataValueType_SQL = 3
 
+    # 在数据同步时用到下面参数以及上面三个参数
+    DataValueType_Array = 4
+
     FileFormat_XML = 'xml'
     FileFormat_Json = 'json'
     FileFormat_TXT = 'txt'
