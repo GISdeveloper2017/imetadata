@@ -30,7 +30,8 @@ application = CSettings(
             'srid': 4326
         },
         'directory': {
-            'work': '/Users/wangxiya/Documents/交换/9.数管/9.工作目录'
+            'work': '/Users/wangxiya/Documents/交换/9.数管/9.工作目录',
+            'test': 'F:/work/测试数据'
         },
         'data2service': {
             'local_dir': '/home/geocube/local',
