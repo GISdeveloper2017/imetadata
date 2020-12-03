@@ -34,14 +34,14 @@ class CViewCreatorRaster(CViewCreator):
         """
         # 获取对象类型
         sql_query = '''
-                    select dsodtitle,dsodgroupname,dsodcatalog 
+                    select dsodtitle,dsodgroup,dsodcatalog 
                     from dm2_storage_object_def 
                     left join dm2_storage_object on dm2_storage_object.dsoobjecttype = dm2_storage_object_def.dsodid
                     where dm2_storage_object.dsoid = '{0}'
                 '''.format(self.object_id)
         ds_object_def = CFactory().give_me_db(self.file_info.db_server_id).one_row(sql_query)
         title = ds_object_def.value_by_name(0, 'dsodtitle', '')
-        groupname = ds_object_def.value_by_name(0, 'dsodgroupname', '')
+        groupname = ds_object_def.value_by_name(0, 'dsodgroup', '')
         catalog = ds_object_def.value_by_name(0, 'dsodcatalog', '')
 
         create_time = CTime.today()
@@ -49,10 +49,12 @@ class CViewCreatorRaster(CViewCreator):
         year = CTime.format_str(create_time, '%Y')
         month = CTime.format_str(create_time, '%m')
         day = CTime.format_str(create_time, '%d')
-        relative_path_part = r'{0}\{1}\{2}\{3}\{4}\{5}'.format(catalog, groupname, title, year, month, day)  # 相对路径格式
-        view_relative_path_browse = r'\{0}\{1}_browse.png'.format(relative_path_part, self.object_id)
-        view_relative_path_thumb = r'\{0}\{1}_thumb.jpg'.format(relative_path_part, self.object_id)
-        view_relative_path_geotiff = r'\{0}\{1}_browse.tiff'.format(relative_path_part, self.object_id)
+        sep = CFile.sep()  # 操作系统的不同处理分隔符不同
+        relative_path_part = r'{0}{6}{1}{6}{2}{6}{3}{6}{4}{6}{5}'.format(catalog, groupname, title, year, month, day,
+                                                                         sep)  # 相对路径格式
+        view_relative_path_browse = r'{2}{0}{2}{1}_browse.png'.format(relative_path_part, self.object_id, sep)
+        view_relative_path_thumb = r'{2}{0}{2}{1}_thumb.jpg'.format(relative_path_part, self.object_id, sep)
+        view_relative_path_geotiff = r'{2}{0}{2}{1}_browse.tiff'.format(relative_path_part, self.object_id, sep)
 
         browse_full_path = CFile.join_file(self.file_content.view_root_dir, view_relative_path_browse)
         thumb_full_path = CFile.join_file(self.file_content.view_root_dir, view_relative_path_thumb)
