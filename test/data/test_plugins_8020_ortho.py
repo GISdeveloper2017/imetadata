@@ -69,8 +69,8 @@ def test_classified(file_name_with_full_path):
     else:
         if obj_name_with_full_path not in real_object_name_with_full_path_list:
             flag = True
-    # allure.attach('可能性为{0},识别出的对象名为{1}'.format(object_confirm, object_name),
-    #               'classified方法信息', allure.attachment_type.TEXT)
+    allure.attach('可能性为{0},识别出的对象名为{1}'.format(object_confirm, object_name),
+                  'classified方法信息', allure.attachment_type.TEXT)
     assert flag
 
 
@@ -99,9 +99,9 @@ def test_metadata_time(real_file_name_with_full_path):
     plugins_obj.parser_metadata_with_qa(metadata_parser)
     plugins_obj.parser_metadata_time_after_qa(metadata_parser)
     result_with_time, message_with_time, time_information = metadata_parser.metadata.metadata_time()
-    # allure.attach('处理信息为{0},时间元数据内容为{1}'
-    #               .format(message_with_time, time_information),
-    #               '时间元数据信息', allure.attachment_type.TEXT)
+    allure.attach('处理信息为{0},时间元数据内容为{1}'
+                  .format(message_with_time, time_information),
+                  '时间元数据信息', allure.attachment_type.TEXT)
     assert result_with_time
 
 
@@ -114,9 +114,9 @@ def test_metadata_spatial(real_file_name_with_full_path):
     plugins_obj, metadata_parser = get_parameter(real_file_name_with_full_path)
     plugins_obj.parser_metadata_spatial_after_qa(metadata_parser)
     result_with_spatial, message_with_spatial, metadata_spatial = metadata_parser.metadata.metadata_spatial()
-    # allure.attach('处理信息为{0},空间元数据内容为{1}'
-    #               .format(message_with_spatial, metadata_spatial),
-    #               '空间元数据信息', allure.attachment_type.TEXT)
+    allure.attach('处理信息为{0},空间元数据内容为{1}'
+                  .format(message_with_spatial, metadata_spatial),
+                  '空间元数据信息', allure.attachment_type.TEXT)
     assert result_with_spatial
 
 
@@ -130,9 +130,9 @@ def test_metadata_view(real_file_name_with_full_path):
     plugins_obj.parser_metadata_view_after_qa(metadata_parser)
     result_with_view, message_with_view, thumb_img_file_name, browse_img_file_name \
         = metadata_parser.metadata.metadata_view()
-    # allure.attach('处理信息为{0},拇指图为{1}，快视图为{2}'
-    #               .format(message_with_view, thumb_img_file_name, browse_img_file_name),
-    #               '视图元数据信息', allure.attachment_type.TEXT)
+    allure.attach('处理信息为{0},拇指图为{1}，快视图为{2}'
+                  .format(message_with_view, thumb_img_file_name, browse_img_file_name),
+                  '视图元数据信息', allure.attachment_type.TEXT)
     assert result_with_view
 
 
