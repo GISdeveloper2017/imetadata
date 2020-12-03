@@ -45,10 +45,10 @@ class CViewCreatorRaster(CViewCreator):
         year = CTime.format_str(create_time, '%Y')
         month = CTime.format_str(create_time, '%m')
         day = CTime.format_str(create_time, '%d')
-        relative_path_part = r'{0}\{1}\{2}\{3}'.format(object_def_title, year, month, day)  # 相对路径格式
-        view_relative_path_browse = r'\{0}\{1}_browse.png'.format(relative_path_part, self.object_id)
-        view_relative_path_thumb = r'\{0}\{1}_thumb.jpg'.format(relative_path_part, self.object_id)
-        view_relative_path_geotiff = r'\{0}\{1}_browse.tiff'.format(relative_path_part, self.object_id)
+        relative_path_part = r'{0}{4}{1}{4}{2}{4}{3}'.format(object_def_title, year, month, day, CFile.sep())  # 相对路径格式
+        view_relative_path_browse = r'{2}{0}{2}{1}_browse.png'.format(relative_path_part, self.object_id, CFile.sep())
+        view_relative_path_thumb = r'{2}{0}{2}{1}_thumb.jpg'.format(relative_path_part, self.object_id, CFile.sep())
+        view_relative_path_geotiff = r'{2}{0}{2}{1}_browse.tiff'.format(relative_path_part, self.object_id, CFile.sep())
 
         browse_full_path = CFile.join_file(self.file_content.view_root_dir, view_relative_path_browse)
         thumb_full_path = CFile.join_file(self.file_content.view_root_dir, view_relative_path_thumb)

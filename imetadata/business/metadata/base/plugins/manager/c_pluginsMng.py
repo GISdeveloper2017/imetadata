@@ -27,20 +27,23 @@ class CPluginsMng(CResource):
         :return:
         """
         class_classified_obj = None
-
+        # 根据rule_content, 获取入库规则文件的特定插件列表
         if file_info.file_type == cls.FileType_Dir:
             plugin_node_list = CXml.xml_xpath(file_info.rule_content, cls.Path_MD_Rule_Plugins_Dir)
         else:
             plugin_node_list = CXml.xml_xpath(file_info.rule_content, cls.Path_MD_Rule_Plugins_File)
 
         if len(plugin_node_list) > 0:
+            # 根据指定的插件列表, 尝试进行识别
             class_classified_obj = cls.__plugins_classified_by_plugin_node_list__(file_info, plugin_node_list)
 
             if class_classified_obj is not None:
                 return class_classified_obj
 
+        # 如果入库规则文件中没有指定插件列表, 则读取数据入库规则类型, 它==数据集类型
         rule_type = CXml.get_element_text(CXml.xml_xpath_one(file_info.rule_content, cls.Path_MD_Rule_Type))
         if not CUtils.equal_ignore_case(rule_type, ''):
+            # 如果有数据入库规则文件, 则获取其规则类型, 匹配setting中的类型
             plugins_json_array = settings.application.xpath_one(cls.Path_Setting_MetaData_Plugins_Dir, None)
             if plugins_json_array is not None:
                 for plugins_define in plugins_json_array:
@@ -52,6 +55,7 @@ class CPluginsMng(CResource):
                     if CUtils.equal_ignore_case(key_word, rule_type):
                         class_classified_obj = cls.__plugins_classified_by_plugin_list__(file_info, plugin_list)
         else:
+            # 如果没有数据入库规则文件, 则通过目录, 逐一匹配setting中的类型
             file_path = file_info.file_path_with_rel_path
             plugins_json_array = settings.application.xpath_one(cls.Path_Setting_MetaData_Plugins_Dir, None)
             if plugins_json_array is not None:
@@ -67,6 +71,11 @@ class CPluginsMng(CResource):
                     else:
                         if CFile.subpath_in_path(CUtils.any_2_str(key_word), file_path):
                             class_classified_obj = cls.__plugins_classified_by_plugin_list__(file_info, plugin_list)
+
+                    if class_classified_obj is not None:
+                        return class_classified_obj
+                    else:
+                        continue
 
         if class_classified_obj is not None:
             return class_classified_obj
@@ -179,9 +188,12 @@ class CPluginsMng(CResource):
                 object_confirm, object_name = class_classified_obj.classified()
                 if object_confirm != cls.Object_Confirm_IUnKnown:
                     CLogger().debug(
-                        '{0} is classified as {1}.{2}'.format(file_info.file_main_name,
-                                                              class_classified_obj.get_information(),
-                                                              class_classified_obj.get_id()))
+                        '{0} is classified as {1}.{2}'.format(
+                            file_info.file_main_name,
+                            class_classified_obj.get_information(),
+                            class_classified_obj.get_id()
+                        )
+                    )
                     return class_classified_obj
             except:
                 CLogger().debug('插件[{0}]解析出现异常, 请检查!'.format(plugin_id))

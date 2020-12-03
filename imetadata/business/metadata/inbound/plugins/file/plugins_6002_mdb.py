@@ -14,7 +14,7 @@ from imetadata.database.tools.c_table import CTable
 class plugins_6002_mdb(CVectorFilePlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = 'mdb'
+        information[self.Plugins_Info_Type] = 'mdb'
         # information[self.Plugins_Info_Name] = 'mdb'
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Vector

@@ -967,3 +967,60 @@ comment on column dm2_storage_obj_na.dson_access_memo is '可用性分析备注'
 alter table dm2_storage_obj_na
     add column dson_inbound_id varchar(100);
 comment on column dm2_storage_obj_na.dson_inbound_id is '入库批次标识';
+
+
+/*
+    2020-12-03 统一数据类型管理体系
+*/
+alter table dm2_storage_object_def
+    add column dsodcatalogtitle varchar(100);
+comment on column dm2_storage_object_def.dsodcatalogtitle is '数据类别-标题';
+
+drop table if exists dm2_storage_object_def;
+create table if not exists dm2_storage_object_def
+(
+    dsodid           varchar(100) not null
+        constraint dm2_storage_object_def_pkey
+            primary key,
+    dsodtitle        varchar(1000),
+    dsodtype         varchar(100),
+    dsodtypetitle    varchar(100),
+    dsodtypecode     varchar(100),
+    dsodgroup        varchar(100),
+    dsodgrouptitle   varchar(100),
+    dsodcatalog      varchar(100),
+    dsodcatalogtitle varchar(100)
+);
+
+comment on table dm2_storage_object_def is '数管-存储目录-对象-定义';
+
+comment on column dm2_storage_object_def.dsodid is '对象标识';
+
+comment on column dm2_storage_object_def.dsodtitle is '对象标题';
+
+comment on column dm2_storage_object_def.dsodtype is '类型';
+comment on column dm2_storage_object_def.dsodtypetitle is '类型标题';
+comment on column dm2_storage_object_def.dsodtypecode is '类型编码';
+
+comment on column dm2_storage_object_def.dsodgroup is '数管-定义-分组名称';
+
+comment on column dm2_storage_object_def.dsodgrouptitle is '数管-定义-分组标题';
+
+comment on column dm2_storage_object_def.dsodcatalog is '数据类别';
+
+comment on column dm2_storage_object_def.dsodcatalogtitle is '数据类别-标题';
+
+alter table dm2_storage_object_def
+    owner to postgres;
+
+create index idx_dm2_storage_object_def_id
+    on dm2_storage_object_def (dsodid);
+
+create index idx_dm2_storage_object_def_group
+    on dm2_storage_object_def (dsodgroup);
+create index idx_dm2_storage_object_def_type
+    on dm2_storage_object_def (dsodtype);
+create index idx_dm2_storage_object_def_catalog
+    on dm2_storage_object_def (dsodcatalog);
+
+

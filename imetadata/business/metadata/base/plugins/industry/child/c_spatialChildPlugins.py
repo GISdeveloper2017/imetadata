@@ -13,6 +13,4 @@ class CSpatialChildPlugins(CChildPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        # information[self.Plugins_Info_Type] = 'layer'
-        # information[self.Plugins_Info_Type_Title] = '数据集图层'
         return information

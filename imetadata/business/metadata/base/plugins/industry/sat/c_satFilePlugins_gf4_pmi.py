@@ -12,8 +12,8 @@ from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
 class CSatFilePlugins_gf4_pmi(CSatPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = 'GF4_PMI'
-        information[self.Plugins_Info_Group_Name] = 'GF4'
+        information[self.Plugins_Info_Type] = 'GF4_PMI'
+        information[self.Plugins_Info_Group] = 'GF4'
         information[self.Plugins_Info_Group_Title] = '高分四号'
         return information
 

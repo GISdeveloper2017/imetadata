@@ -105,8 +105,11 @@ where dsdscanfilestatus = 2
         )
         inbound_subpath = CUtils.equal_ignore_case(
             ds_storage_type,
-            self.Storage_Type_InBound) and CUtils.equal_ignore_case(ds_id,
-                                                                    ds_storage_id)
+            self.Storage_Type_InBound
+        ) and CUtils.equal_ignore_case(
+            ds_id,
+            ds_storage_id
+        )
 
         CLogger().debug('处理的目录为: {0}'.format(ds_subpath))
         try:
@@ -117,7 +120,8 @@ where dsdscanfilestatus = 2
             )
             return CResult.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_subpath))
         except Exception as err:
-            return CResult.merge_result(self.Failure, '目录为[{0}]下的文件和子目录扫描处理出现错误!错误原因为: {1}'.format(ds_subpath), err.__str__())
+            return CResult.merge_result(self.Failure, '目录为[{0}]下的文件和子目录扫描处理出现错误!错误原因为: {1}'.format(ds_subpath),
+                                        err.__str__())
         finally:
             self.exchange_file_or_subpath_valid_unknown2invalid(ds_id)
 

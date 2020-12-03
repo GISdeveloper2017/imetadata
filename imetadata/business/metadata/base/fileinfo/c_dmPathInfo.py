@@ -120,10 +120,14 @@ class CDMPathInfo(CDMFilePathInfoEx):
                     , dsdscanfilestatus = 1, dsdscandirstatus = 1, dsd_directory_valid = -1, dsddirlastmodifytime = :fileModifyTime
                 where dsdid = :dsdid
                 '''
-            CFactory().give_me_db(self.db_server_id).execute(sql_update_path_object, {'dsdid': self.my_id,
-                                                                                      'dsd_object_confirm': object_confirm,
-                                                                                      'fileModifyTime': CUtils.any_2_str(
-                                                                                          self.file_modify_time)})
+            CFactory().give_me_db(self.db_server_id).execute(
+                sql_update_path_object,
+                {
+                    'dsdid': self.my_id,
+                    'dsd_object_confirm': object_confirm,
+                    'fileModifyTime': CUtils.any_2_str(self.file_modify_time)
+                }
+            )
         else:
             sql_insert_object = '''
                 insert into dm2_storage_object(dsoid, dsoobjectname, dsoobjecttype, dsodatatype, dsoalphacode, dsoaliasname, dsoparentobjid) 
@@ -191,21 +195,25 @@ class CDMPathInfo(CDMFilePathInfoEx):
             try:
                 metadata_rule_content = CXml.file_2_str(metadata_rule_file_name)
                 CLogger().debug(
-                    '在目录[{0}]下发现元数据规则文件, 它的内容为[{1}]'.format(self.file_name_with_full_path, metadata_rule_content))
+                    '在目录[{0}]下发现元数据规则文件, 它的内容为[{1}]'.format(self.file_name_with_full_path, metadata_rule_content)
+                )
             except:
                 pass
 
         db_metadata_rule_content = self.ds_file_or_path.value_by_name(0, 'dsdscanrule', '')
         CLogger().debug(
-            '目录[{0}]在库中登记的规则内容为[{1}]'.format(self.file_name_with_full_path, db_metadata_rule_content))
+            '目录[{0}]在库中登记的规则内容为[{1}]'.format(self.file_name_with_full_path, db_metadata_rule_content)
+        )
 
         if CUtils.equal_ignore_case(metadata_rule_content, db_metadata_rule_content):
             CLogger().debug(
-                '目录[{0}]的规则内容与库中的相同'.format(self.file_name_with_full_path))
+                '目录[{0}]的规则内容与库中的相同'.format(self.file_name_with_full_path)
+            )
             return
         else:
             CLogger().debug(
-                '目录[{0}]的规则内容与库中的不同, 将清理目录下的文件, 重新入库!'.format(self.file_name_with_full_path))
+                '目录[{0}]的规则内容与库中的不同, 将清理目录下的文件, 重新入库!'.format(self.file_name_with_full_path)
+            )
 
         sql_update_path_scan_rule = '''
             update dm2_storage_directory

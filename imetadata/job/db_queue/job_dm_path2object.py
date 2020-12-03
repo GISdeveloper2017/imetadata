@@ -99,7 +99,8 @@ where dsdscanstatus = 2
                                             '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path_full_name))
             else:
                 path_obj.db_check_and_update_metadata_rule(
-                    CFile.join_file(ds_path_full_name, self.FileName_MetaData_Rule))
+                    CFile.join_file(ds_path_full_name, self.FileName_MetaData_Rule)
+                )
 
                 path_obj.db_path2object()
 

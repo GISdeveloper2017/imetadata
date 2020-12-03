@@ -24,8 +24,8 @@ class CChildPlugins(CPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector
-        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+        information[self.Plugins_Info_Group] = self.DataGroup_Vector
+        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group])
         information[self.Plugins_Info_Catalog] = self.DataCatalog_Common
         information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
         information[self.Plugins_Info_DetailEngine] = None

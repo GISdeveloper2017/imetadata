@@ -87,25 +87,23 @@ class CPlugins(CResource):
     """
     # 插件标识-内置
     Plugins_Info_ID = 'dsodid'
-    # 插件英文描述-内置
-    Plugins_Info_Name = 'dsodname'
     # 插件分组名称(英文)-内置
-    Plugins_Info_Group_Name = 'dsodgroupname'
+    Plugins_Info_Group = 'dsodgroup'
     # 插件分组名称(中文)-内置
     Plugins_Info_Group_Title = 'dsodgrouptitle'
 
     # 插件中文描述-内置
     Plugins_Info_Title = 'dsodtitle'
+    # 插件大类-英文-内置
+    Plugins_Info_Type = 'dsodtype'
+    # 插件大类-中文-内置
+    Plugins_Info_Type_Title = 'dsodtypetitle'
     # 插件英文编码-业务
-    Plugins_Info_Code = 'dsodcode'
+    Plugins_Info_Type_Code = 'dsodtypecode'
     # 插件Catalog代码-业务
     Plugins_Info_Catalog = 'dsodcatalog'
     # 插件Catalog标题-业务
     Plugins_Info_Catalog_Title = 'dsodcatalogtitle'
-    # # 插件大类-英文-内置
-    # Plugins_Info_Type = 'dsodtype'
-    # # 插件大类-中文-内置
-    # Plugins_Info_Type_Title = 'dsodtype_title'
     # 插件-对象是否允许包含子对象
     Plugins_Info_HasChildObj = 'dsod_has_child_obj'
 
@@ -171,10 +169,11 @@ class CPlugins(CResource):
     def get_information(self) -> dict:
         information = dict()
         information[self.Plugins_Info_ID] = self.get_id()
+        information[self.Plugins_Info_Title] = information[self.Plugins_Info_ID]
         information[self.Plugins_Info_ViewEngine] = None
         information[self.Plugins_Info_SpatialEngine] = None
         information[self.Plugins_Info_HasChildObj] = self.DB_False
-        information[self.Plugins_Info_Group_Name] = None
+        information[self.Plugins_Info_Group] = None
         information[self.Plugins_Info_Group_Title] = None
         information[self.Plugins_Info_Module_Distribute_Engine] = None  # 同步的引擎，值是发布同步用的类的名字
         return information

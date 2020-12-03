@@ -26,7 +26,7 @@ class plugins_8040_third_survey_block(CFilePlugins_GUOTU_Third_Survey):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        # information[self.Plugins_Info_Title] = '三调影像'
+        # information[self.Plugins_Info_Type] = '三调影像'
         # information[self.Plugins_Info_Name] = 'third_survey_block'
         return information
 

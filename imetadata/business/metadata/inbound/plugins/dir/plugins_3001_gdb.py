@@ -17,14 +17,13 @@ from imetadata.database.tools.c_table import CTable
 class plugins_3001_gdb(CDirPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = 'gdb'
+        information[self.Plugins_Info_Type] = 'gdb'
         # information[self.Plugins_Info_Name] = 'gdb'
-        information[self.Plugins_Info_Code] = None
-        information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector_DataSet
-        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+        information[self.Plugins_Info_Type_Code] = None
+        information[self.Plugins_Info_Group] = self.DataGroup_Vector_DataSet
+        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group])
         information[self.Plugins_Info_Catalog] = self.DataCatalog_Common
         information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
-        # information[self.Plugins_Info_Type] = 'vector'
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Vector
         information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName

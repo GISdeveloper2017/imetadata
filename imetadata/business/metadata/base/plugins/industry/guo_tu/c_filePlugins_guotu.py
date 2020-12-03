@@ -20,15 +20,13 @@ class CFilePlugins_GUOTU(CFilePlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = None
+        information[self.Plugins_Info_Type] = None
         # information[self.Plugins_Info_Name] = None
-        information[self.Plugins_Info_Code] = '000001'
-        information[self.Plugins_Info_Group_Name] = self.DataGroup_Industry_Data
-        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+        information[self.Plugins_Info_Type_Code] = '000001'
+        information[self.Plugins_Info_Group] = self.DataGroup_Industry_Data
+        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group])
         information[self.Plugins_Info_Catalog] = self.DataCatalog_Land
         information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
-        # information[self.Plugins_Info_Type_Title] = '国土行业数据'
-        # information[self.Plugins_Info_Type] = '国土'
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Raster
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName

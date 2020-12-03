@@ -23,28 +23,19 @@ class C21ATBusDataSetPlugins(CDirPlugins):
         if self.__metadata_xml_obj__ is not None:
             information[self.Plugins_Info_Title] = CXml.get_element_text(
                 self.__metadata_xml_obj__.xpath_one(self.Path_21AT_MD_Content_ProductName))
-            # information[self.Plugins_Info_Name] = None
-        information[self.Plugins_Info_Code] = None  # '110001'
-        information[self.Plugins_Info_Group_Name] = self.DataGroup_Industry_DataSet
-        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+        information[self.Plugins_Info_Type_Code] = None  # '110001'
+        information[self.Plugins_Info_Group] = self.DataGroup_Industry_DataSet
+        information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group])
         information[self.Plugins_Info_Catalog] = self.DataCatalog_Land  # 'land'
-        information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])  # '国土行业'
-        # information[self.Plugins_Info_Type_Title] = '业务数据集'
-        # information[self.Plugins_Info_Type] = 'business_data_set'
+        information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(
+            information[self.Plugins_Info_Catalog])  # '国土行业'
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_TagsEngine] = 'global_dim'
         information[self.Plugins_Info_DetailEngine] = None
         information[self.Plugins_Info_HasChildObj] = self.DB_True
 
-
         return information
-
-    # def get_id(self) -> str:
-    #     if self.__classified_object_type__ is not None:
-    #         return CUtils.any_2_str(self.__classified_object_type__)
-    #     else:
-    #         return super().get_id()
 
     def classified(self):
         self._object_confirm = self.Object_Confirm_IUnKnown
@@ -62,7 +53,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
 
                 if CUtils.equal_ignore_case(
                         self.__classified_object_type,
-                        CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Name, None)
+                        CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Type, None)
                 ):
                     self._object_confirm = self.Object_Confirm_IKnown
                     self._object_name = CXml.get_element_text(

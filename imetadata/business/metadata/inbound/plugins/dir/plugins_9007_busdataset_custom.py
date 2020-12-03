@@ -9,7 +9,8 @@ from imetadata.business.metadata.base.plugins.c_21ATBusDataSetPlugins import C21
 class plugins_9007_busdataset_custom(C21ATBusDataSetPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Title] = '自定义影像数据集'
-        information[self.Plugins_Info_Code] = '020107'
+        information[self.Plugins_Info_Type] = '自定义影像'
+        information[self.Plugins_Info_Type_Title] = '自定义影像数据集'
+        information[self.Plugins_Info_Type_Code] = '020107'
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_custom'
         return information

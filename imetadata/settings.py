@@ -69,40 +69,65 @@ application = CSettings(
                 'dir': [
                     {
                         'plugin': [
-                            'plugins_8000_dom_10'
-                            , 'plugins_8001_dom_10_dom'
-                            , 'plugins_8002_dom_12'
-                            , 'plugins_8003_dom_12_dom'
-                            , 'plugins_8004_dom_part_2'
+                            'plugins_9001_busdataset_dom',
+                            'plugins_8000_dom_10',
+                            'plugins_8001_dom_10_dom',
+                            'plugins_8002_dom_12',
+                            'plugins_8003_dom_12_dom',
+                            'plugins_8004_dom_part_2'
                         ],
                         'keyword': 'dom'
                     },
                     {
                         'plugin': [
-                            'plugins_8010_dem_10'
-                            , 'plugins_8011_dem_10_dem'
-                            , 'plugins_8012_dem_12'
-                            , 'plugins_8013_dem_12_dem'
-                            , 'plugins_8014_dem_part_2'
-                            , 'plugins_8015_dem_noframe'
+                            'plugins_9002_busdataset_dem',
+                            'plugins_8010_dem_10',
+                            'plugins_8011_dem_10_dem',
+                            'plugins_8012_dem_12',
+                            'plugins_8013_dem_12_dem',
+                            'plugins_8014_dem_part_2',
+                            'plugins_8015_dem_noframe'
                         ],
                         'keyword': 'dem'
                     },
-                    {'plugin': ['plugins_8020_ortho'], 'keyword': '单景正射'},
-                    {'plugin': ['plugins_8030_mosaic'], 'keyword': '镶嵌影像'},
                     {
-                        'plugin': ['plugins_8040_third_survey_block', 'plugins_8041_third_survey_noblock'],
+                        'plugin': [
+                            'plugins_9003_busdataset_ortho',
+                            'plugins_8020_ortho'
+                        ],
+                        'keyword': '单景正射'
+                    },
+                    {
+                        'plugin': [
+                            'plugins_9004_busdataset_mosaic',
+                            'plugins_8030_mosaic'
+                        ],
+                        'keyword': '镶嵌影像'
+                    },
+                    {
+                        'plugin': [
+                            'plugins_9005_busdataset_third_survey',
+                            'plugins_8040_third_survey_block',
+                            'plugins_8041_third_survey_noblock'
+                        ],
                         'keyword': '三调影像'
                     },
                     {
                         'plugin': [
-                            'plugins_8050_guoqing_scene_noblock'
-                            , 'plugins_8051_guoqing_scene_block'
-                            , 'plugins_8052_guoqing_frame'
+                            'plugins_9006_busdataset_guoqing',
+                            'plugins_8050_guoqing_scene_noblock',
+                            'plugins_8051_guoqing_scene_block',
+                            'plugins_8052_guoqing_frame'
                         ],
                         'keyword': '国情影像'
                     },
-                    {'plugin': ['plugins_8060_custom'], 'keyword': '自定义影像'}
+                    {
+                        'plugin': [
+                            'plugins_9007_busdataset_custom',
+                            'plugins_8060_custom'
+                        ],
+                        'keyword': '自定义影像'
+                    }
                 ]
             },
             'qi': {
