@@ -54,7 +54,8 @@ class Plugins_Test_Base(CResource):
         )
         plugins_obj = self.create_plugins(file_info)
         metadata_parser = CMetaDataParser(
-            file_type, test_file_with_full_path.replace(self._test_file_parent_path, ''),
+            CUtils.one_id(),
+            test_file_with_full_path.replace(self._test_file_parent_path, ''),
             file_info, plugins_obj.file_content, plugins_obj.get_information()
         )
         return file_info, plugins_obj, metadata_parser
@@ -178,8 +179,10 @@ class Plugins_Test_Base(CResource):
                 result_with_view, message_with_view, thumb_img_file_name, browse_img_file_name \
                     = metadata_parser.metadata.metadata_view()
                 # 录入测试信息
-                allure.attach('处理信息为{0},拇指图为{1}，快视图为{2}'
-                              .format(message_with_view, thumb_img_file_name, browse_img_file_name),
+                allure.attach('处理信息为{0}'.format(message_with_view),
                               '{0}'.format(test_file_with_full_path),
                               allure.attachment_type.TEXT)
+                # 因为快视图拇指图的路径生成依赖数据库object表，所以测试中暂时无法生成文件
+                # allure.attach.file(thumb_img_file_name, attachment_type=allure.attachment_type.JPG)
+                # allure.attach.file(browse_img_file_name, attachment_type=allure.attachment_type.PNG)
                 assert result_with_view
