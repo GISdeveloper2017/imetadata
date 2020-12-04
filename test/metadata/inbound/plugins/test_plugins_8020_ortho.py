@@ -21,19 +21,19 @@ class Test_Plugins_8020_Ortho(Plugins_Test_Base):
             (
                 self.FileType_File,
                 '单景test{0}单景test.tif'.format(CFile.sep()),
-                -1,
+                self.Object_Confirm_IKnown,
                 '单景test'
             ),
             (
                 self.FileType_File,
                 '单景test_123{0}单景test_123.tif'.format(CFile.sep()),
-                -1,
+                self.Object_Confirm_IKnown,
                 '单景test_123'
             ),
             (
                 self.FileType_File,
                 '单景test{0}单景test_21at.xml'.format(CFile.sep()),
-                2,
+                self.Object_Confirm_IKnown_Not,
                 None
             )
         ]
