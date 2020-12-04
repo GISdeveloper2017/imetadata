@@ -41,22 +41,13 @@ class Plugins_Test_Base(CResource):
             plugins_type
         )
 
-        self._test_file_with_full_path_list = list()
-        for file_type, file_name_with_rel_path in self.file_name_with_rel_path_list():
-            self._test_file_with_full_path_list.append(
-                (
-                    file_type,
-                    CFile.join_file(self._test_file_parent_path, file_name_with_rel_path)
-                )
-            )
-
     @allure.title("文件识别")  # 方法标题
     @allure.description("测试classified方法")  # 描述
     def test_classified(self):
         self.init_before_test()
 
-        file_name_with_full_path_all_list = CFile.file_or_dir_fullname_of_path(self._test_file_root_path, True)
-        for test_file_with_full_path in file_name_with_full_path_all_list:
+        for file_type, test_file_with_rel_path, correct_object_confirm, correct_object_name in self.file_name_with_rel_path_list():
+            test_file_with_full_path = CFile.join_file(self._test_file_parent_path, test_file_with_rel_path)
             if CFile.is_file(test_file_with_full_path):
                 file_type = self.FileType_File
             elif CFile.is_dir(test_file_with_full_path):
@@ -81,8 +72,8 @@ class Plugins_Test_Base(CResource):
                 if test_file_with_full_path not in self._test_file_with_full_path_list:
                     flag = True
             allure.attach(
-                '可能性为{0},识别出的对象名为{1}'.format(object_confirm, CUtils.any_2_str(object_name)),
                 'classified方法信息',
+                '{0}'.format(test_file_with_full_path),
                 allure.attachment_type.TEXT
             )
             assert flag

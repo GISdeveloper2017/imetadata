@@ -11,6 +11,8 @@ from imetadata.business.metadata.inbound.plugins.file.plugins_8020_ortho import 
 from test.metadata.inbound.plugins.test_plugins_base import Plugins_Test_Base
 
 
+@allure.feature("单景影像111")  # 模块标题
+@allure.story("文件识别111")  # 模块标题
 class Test_Class_AAA(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
         return plugins_8020_ortho(file_info)

@@ -109,7 +109,7 @@ class CFile:
 
     @classmethod
     def join_file(cls, path: str, *paths: AnyStr) -> str:
-        result = path
+        result = CUtils.any_2_str(path)
         for each_path in paths:
             real_file_name = CUtils.any_2_str(each_path)
             if real_file_name.startswith(r'/') or real_file_name.startswith('\\'):
