@@ -62,7 +62,7 @@ class distribution_guotu_object(distribution_guotu):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'productname', object_table_data.value_by_name(0, 'dsoobjectname', ''))
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'producttype', object_table_data.value_by_name(0, 'dsodcode', ''))
+            sync_dict_list, 'producttype', self._obj_type_code)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsodatatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
         dso_time = object_table_data.value_by_name(0, 'dso_time', '')
