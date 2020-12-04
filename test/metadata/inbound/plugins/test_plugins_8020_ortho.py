@@ -1,19 +1,20 @@
-# -*- coding: utf-8 -*- 
-# @Time : 2020/9/7 11:00 
-# @Author : 王西亚 
-# @File : test_c_file.py
+#!/usr/bin/python3
+# -*- coding:utf-8 -*-
+
 import allure
 import pytest
 
+from imetadata import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
+from imetadata.base.c_resource import CResource
+from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.inbound.plugins.file.plugins_8020_ortho import plugins_8020_ortho
-from imetadata import settings
 
-root_path_total = settings.application.xpath_one('directory.test', '')
-root_path_module = CFile.join_file(root_path_total, '\\国土行业\\国土数据\\单景正射')  # 需要配置的地方1，配置相应的文件夹
+root_path_total = CUtils.any_2_str(settings.application.xpath_one(CResource.Path_Setting_Dir_Test_Data, ''))
+root_path_module = CFile.join_file(root_path_total, "国土行业", "国土数据", "单景正射")  # 需要配置的地方1，配置相应的文件夹
 file_type = 'file'  # 需要配置的地方2，文件对象配置file，数据集像配置dir
 object_template = plugins_8020_ortho  # 需要配置的地方3，配置类对象
 storage_id = '11'
@@ -26,7 +27,8 @@ for file_name_with_full_path_file in file_name_with_full_path_all_list:
         file_name_with_full_path_file_list.append(file_name_with_full_path_file)
 
 # 用于元数据测试的部分
-object_name_with_full_path_list = ['单景test\\单景test.tif', '单景test_123\\单景test_123.tif']  # 需要配置的地方4，已知的对象
+object_name_with_full_path_list = ['单景test{0}单景test.tif'.format(CFile.sep()),
+                                   '单景test_123{0}单景test_123.tif'.format(CFile.sep())]  # 需要配置的地方4，已知的对象
 real_object_name_with_full_path_list = list()
 for object_name_with_full_path in object_name_with_full_path_list:
     object_name_with_full_path = CFile.join_file(root_path_module, object_name_with_full_path)
@@ -83,6 +85,9 @@ def test_metadata(real_file_name_with_full_path):
     plugins_obj, metadata_parser = get_parameter(real_file_name_with_full_path)
     plugins_obj.parser_metadata_with_qa(metadata_parser)
     result_with_qa, message_with_qa, metadata_bus_type, metadata_bus = metadata_parser.metadata.metadata_bus()
+    allure.attach('处理信息为{0},业务元数据类型为{1},业务元数据内容为{2}'
+                  .format(message_with_qa, metadata_bus_type, metadata_bus),
+                  '业务元数据信息', allure.attachment_type.TEXT)
     allure.attach('处理信息为{0},业务元数据类型为{1},业务元数据内容为{2}'
                   .format(message_with_qa, metadata_bus_type, metadata_bus),
                   '业务元数据信息', allure.attachment_type.TEXT)

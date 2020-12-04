@@ -89,7 +89,7 @@ class CSys(CResource):
 
     @classmethod
     def get_work_root_dir(cls):
-        rt_path = settings.application.xpath_one('{0}.{1}'.format(cls.Name_Directory, cls.Name_Work), None)
+        rt_path = settings.application.xpath_one(cls.Path_Setting_Dir_WorkDir, None)
         if CUtils.equal_ignore_case(CUtils.any_2_str(rt_path), ''):
             rt_path = os.path.join(cls.get_project_dir(), cls.Name_Work)
 

@@ -6,6 +6,7 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
+from imetadata.database.base.c_dataset import CDataSet
 from imetadata.database.c_factory import CFactory
 
 
@@ -73,16 +74,19 @@ class CDMFilePathInfoEx(CFileInfoEx):
         self.__parent_id = parent_id
         self.__owner_obj_id = owner_obj_id
 
-        self._ds_storage = CFactory().give_me_db(self.__db_server_id).one_row(
-            '''
-            select dstid, dsttitle, dm2_storage.dstownerpath, dm2_storage.dstunipath
-                , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as root_path
-                , dstotheroption 
-            from dm2_storage 
-            where dstid = :dstID
-            ''',
-            {'dstid': self.storage_id}
-        )
+        if self.__storage_id is not None:
+            self._ds_storage = CFactory().give_me_db(self.__db_server_id).one_row(
+                '''
+                select dstid, dsttitle, dm2_storage.dstownerpath, dm2_storage.dstunipath
+                    , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as root_path
+                    , dstotheroption 
+                from dm2_storage 
+                where dstid = :dstID
+                ''',
+                {'dstid': self.storage_id}
+            )
+        else:
+            self._ds_storage = CDataSet()
 
         root_path = self._ds_storage.value_by_name(0, 'root_path', '')
         super().__init__(file_type, file_name_with_full_path, root_path, rule_content)

@@ -24,7 +24,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
             information[self.Plugins_Info_Title] = CXml.get_element_text(
                 self.__metadata_xml_obj__.xpath_one(self.Path_21AT_MD_Content_ProductName))
         information[self.Plugins_Info_Type_Code] = None  # '110001'
-        information[self.Plugins_Info_Group] = self.DataGroup_Industry_DataSet
+        information[self.Plugins_Info_Group] = self.DataGroup_Industry_Land_DataSet
         information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group])
         information[self.Plugins_Info_Catalog] = self.DataCatalog_Land  # 'land'
         information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(

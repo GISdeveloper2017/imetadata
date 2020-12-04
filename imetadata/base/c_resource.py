@@ -248,6 +248,7 @@ class CResource:
     Name_Shp = 'shp'
 
     Name_Switch = 'switch'
+    Name_Test = 'test'
 
     Switch_Use_Ready_Flag_File_Name = 'use_ready_flag_file_name'
     Switch_Inbound_After_QI_Immediately = 'inbound_after_qi_immediately'
@@ -258,6 +259,11 @@ class CResource:
 
     Path_Setting_Spatial = 'spatial'
     Path_Setting_Spatial_Srid = '{0}.srid'.format(Path_Setting_Spatial)
+
+    Path_Setting_Dir = Name_Directory
+    Path_Setting_Dir_WorkDir = '{0}.{1}'.format(Path_Setting_Dir, Name_Work)
+    Path_Setting_Dir_Test = '{0}.{1}'.format(Path_Setting_Dir, Name_Test)
+    Path_Setting_Dir_Test_Data = '{0}.{1}'.format(Path_Setting_Dir_Test, Name_Data)
 
     Path_Setting_MetaData = 'metadata'
     Path_Setting_MetaData_Plugins_Dir = '{0}.plugins.dir'.format(Path_Setting_MetaData)
@@ -400,8 +406,8 @@ class CResource:
     Path_21AT_MD_Content_ProductName = '/root/DSName'
 
     # DataGroup_Sat_raster = 'sat_raster' # 卫星的不能只能GF1 GF2...
-    DataGroup_Industry_Data = 'land_data'
-    DataGroup_Industry_DataSet = 'land_dataset'
+    DataGroup_Industry_Land_Data = 'land_data'
+    DataGroup_Industry_Land_DataSet = 'land_dataset'
     DataGroup_Raster = 'raster'
     DataGroup_Raster_DataSet = 'raster_dataset'
     DataGroup_Vector = 'vector'
@@ -451,10 +457,10 @@ class CResource:
     def data_group_title(self, group_name: str):
         # if group_name.lower() == self.DataGroup_Sat_raster:
         #     return '卫星影像'
-        if group_name.lower() == self.DataGroup_Industry_Data:
-            return '行业数据'
-        elif group_name.lower() == self.DataGroup_Industry_DataSet:
-            return '行业数据集'
+        if group_name.lower() == self.DataGroup_Industry_Land_Data:
+            return '国土数据'
+        elif group_name.lower() == self.DataGroup_Industry_Land_DataSet:
+            return '国土数据集'
         elif group_name.lower() == self.DataGroup_Raster:
             return '影像'
         elif group_name.lower() == self.DataGroup_Raster_DataSet:

@@ -31,7 +31,9 @@ application = CSettings(
         },
         'directory': {
             'work': '/Users/wangxiya/Documents/交换/9.数管/9.工作目录',
-            'test': 'F:/work/测试数据'
+            'test': {
+                'data': '/Users/wangxiya/Documents/我的测试数据/31.混合存储/数据测试'
+            }
         },
         'data2service': {
             'local_dir': '/home/geocube/local',

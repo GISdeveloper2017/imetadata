@@ -7,6 +7,7 @@ import os
 import shutil
 import time
 from fnmatch import fnmatch
+from typing import AnyStr
 
 import chardet
 from sortedcontainers import SortedList
@@ -107,11 +108,14 @@ class CFile:
         return len(list_files) > 0
 
     @classmethod
-    def join_file(cls, path, file_name: str) -> str:
-        real_file_name = file_name
-        if file_name.startswith(r'/') or file_name.startswith('\\'):
-            real_file_name = real_file_name[1:len(real_file_name)]
-        return os.path.join(path, real_file_name)
+    def join_file(cls, path: str, *paths: AnyStr) -> str:
+        result = path
+        for each_path in paths:
+            real_file_name = CUtils.any_2_str(each_path)
+            if real_file_name.startswith(r'/') or real_file_name.startswith('\\'):
+                real_file_name = real_file_name[1:len(real_file_name)]
+            result = os.path.join(result, real_file_name)
+        return result
 
     @classmethod
     def remove_file(cls, file_name_with_path: str):
@@ -379,10 +383,17 @@ class CFile:
 
 
 if __name__ == '__main__':
+    print(CFile.join_file('/aa/bb/', '中国'))
+    print(CFile.join_file('/aa/bb/', '/cc'))
+    print(CFile.join_file('/aa/bb', 'cc'))
+    print(CFile.join_file('/aa/bb/', ''))
+    print(CFile.join_file('/aa/bb/', '/'))
+    print(CFile.join_file('/aa/bb', ''))
+
     # CFile.move_path_to('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios/aa/bb')
     # shutil.move('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios')
-    for file_or_path in CFile.file_or_subpath_of_path('/Users/wangxiya/Documents/交换'):
-        print(file_or_path)
+    # for file_or_path in CFile.file_or_subpath_of_path('/Users/wangxiya/Documents/交换'):
+    #     print(file_or_path)
     # print('*'*10)
     # for file_or_path in CFile.search_file_or_subpath_of_path('/Users/wangxiya/Documents/交换', '*'):
     #     print(file_or_path)

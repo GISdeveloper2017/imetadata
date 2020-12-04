@@ -23,7 +23,7 @@ class CFilePlugins_GUOTU(CFilePlugins):
         information[self.Plugins_Info_Type] = None
         # information[self.Plugins_Info_Name] = None
         information[self.Plugins_Info_Type_Code] = '000001'
-        information[self.Plugins_Info_Group] = self.DataGroup_Industry_Data
+        information[self.Plugins_Info_Group] = self.DataGroup_Industry_Land_Data
         information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group])
         information[self.Plugins_Info_Catalog] = self.DataCatalog_Land
         information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
