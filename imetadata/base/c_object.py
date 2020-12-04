@@ -61,8 +61,8 @@ class CObject:
             return None
 
     @classmethod
-    def create_module_distribution_instance(cls, package_root_name, package_name, db_id, obj_id, obj_name, quality,
-                                            dataset):
+    def create_module_distribution_instance(cls, package_root_name, package_name, db_id, obj_id, obj_name,
+                                            obj_type_code, quality, dataset):
         """
         同步第三方系统的对象构建
         """
@@ -71,7 +71,7 @@ class CObject:
             package_obj = importlib.import_module(package_full_name)
             class_meta = getattr(package_obj, package_name)
             class_meta_one = class_meta
-            obj = class_meta_one(db_id, obj_id, obj_name, quality, dataset)
+            obj = class_meta_one(db_id, obj_id, obj_name, obj_type_code, quality, dataset)
             return obj
         except Exception as error:
             print('CObject.create_module_distribution_instance():' + error.__str__())

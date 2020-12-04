@@ -6,6 +6,7 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_object import CObject
 from imetadata.base.c_result import CResult
 from imetadata.base.c_sys import CSys
+from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.base.c_daModule import CDAModule
 from imetadata.business.metadata.dataaccess.modules.distribution.base import distribution_base
@@ -71,8 +72,6 @@ class module_distribution(CDAModule):
     def __find_module_obj(self) -> distribution_base:
         sql_query = '''
             SELECT
-                --dm2_storage_object_def.dsodtype,
-                dm2_storage_object_def.dsodtypecode as dsodcode,
                 dm2_storage_file.dsfid as query_file_id,
                 dm2_storage_file.dsfdirectoryid as query_directory_id,
                 dm2_storage_directory.dsddirlastmodifytime as query_directory_lastmodifytime,
@@ -80,25 +79,65 @@ class module_distribution(CDAModule):
                 dm2_storage_object.* 
             FROM
                 dm2_storage_object
-                LEFT JOIN dm2_storage_object_def ON dm2_storage_object.dsoobjecttype = dm2_storage_object_def.dsodid
                 LEFT JOIN dm2_storage_file on dm2_storage_file.dsf_object_id = dm2_storage_object.dsoid
                 LEFT JOIN dm2_storage_directory on dm2_storage_directory.dsd_object_id = dm2_storage_object.dsoid
             WHERE
                 dm2_storage_object.dsoid = '{0}'
         '''.format(self._obj_id)
-
-        dataset = CFactory().give_me_db(self._db_id).one_row(sql_query)
-        # object_def_type = dataset.value_by_name(0, 'dsodtype', '') #类型不需要了
-        object_plugin_file_main_name = dataset.value_by_name(0, 'dsoobjecttype', '')  # plugins_8000_dom_10
-        object_plugin_type = dataset.value_by_name(0, 'dsodatatype', '')  # 数据类型:dir-目录;file-文件
+        db_id = self._db_id  # 数据库连接标识
+        dataset = CFactory().give_me_db(db_id).one_row(sql_query)
         object_id = dataset.value_by_name(0, 'dsoid', '')
         object_name = dataset.value_by_name(0, 'dsoobjectname', '')
         quality_info = dataset.value_by_name(0, 'dso_quality', '')
         quality_info_xml = CXml()
         quality_info_xml.load_xml(quality_info)  # 加载查询出来的xml
 
+        obj_type_code = None
         distribution_obj_real = None
         # 构建数据对象object对应的识别插件，获取get_information里面的Plugins_Info_Module_Distribute_Engine信息
+        class_classified_obj = self.get_plugins_instance_by_object_id(db_id, object_id)
+        if class_classified_obj is not None:
+            plugins_info = class_classified_obj.get_information()
+            obj_type_code = CUtils.dict_value_by_name(plugins_info, class_classified_obj.Plugins_Info_Type_Code, '')
+            distinct_file_main_name = CUtils.dict_value_by_name(plugins_info,
+                                                                class_classified_obj.Plugins_Info_Module_Distribute_Engine,
+                                                                '')  # 对应同步文件的类名称
+            # 判断同步插件文件是否存在
+            access_modules_root_dir = CSys.get_metadata_data_access_modules_root_dir()
+            distribution_root_dir = CFile.join_file(access_modules_root_dir, self.Name_Distribution)
+            distribution_file = CFile.join_file(distribution_root_dir, '{0}.py'.format(distinct_file_main_name))
+            if CFile.file_or_path_exist(distribution_file):
+                # 构建同步对象
+                distribution_obj = CObject.create_module_distribution_instance(
+                    '{0}.{1}'.format(CSys.get_metadata_data_access_modules_root_name(), self.Name_Distribution),
+                    distinct_file_main_name,
+                    db_id,
+                    object_id,
+                    object_name,
+                    obj_type_code,
+                    quality_info_xml,
+                    dataset
+                )
+                distribution_obj_real = distribution_obj
+        if distribution_obj_real is None:
+            # 注意, 这里默认为默认处理的同步插件，先预留
+            distribution_obj_real = distribution_default(self._db_id, object_id, object_name, obj_type_code,
+                                                         quality_info, dataset)
+        return distribution_obj_real
+
+    def get_plugins_instance_by_object_id(self, db_id, object_id):
+        """
+        根据对应object_id获取识别的插件对象
+        """
+        sql_query = '''
+            SELECT dsoobjecttype, dsodatatype FROM dm2_storage_object WHERE dsoid = '{0}'
+        '''.format(object_id)
+        dataset = CFactory().give_me_db(db_id).one_row(sql_query)
+        object_plugin_file_main_name = dataset.value_by_name(0, 'dsoobjecttype', '')  # plugins_8000_dom_10
+        object_plugin_type = dataset.value_by_name(0, 'dsodatatype', '')  # 数据类型:dir-目录;file-文件
+
+        class_classified_obj_real = None
+        # 构建数据对象object对应的识别插件
         plugins_root_package_name = '{0}.{1}'.format(CSys.get_plugins_package_root_name(), object_plugin_type)
         # 判断插件是否存在
         plugins_root_dir = CSys.get_plugins_root_dir()
@@ -110,26 +149,5 @@ class module_distribution(CDAModule):
                 object_plugin_file_main_name,
                 None
             )
-            plugins_info = class_classified_obj.get_information()
-            distinct_file_main_name = plugins_info[self.Plugins_Info_Module_Distribute_Engine]  # 对应同步文件的类名称
-
-            # 判断同步插件文件是否存在
-            access_modules_root_dir = CSys.get_metadata_data_access_modules_root_dir()
-            distribution_root_dir = CFile.join_file(access_modules_root_dir, self.Name_Distribution)
-            distribution_file = CFile.join_file(distribution_root_dir, '{0}.py'.format(distinct_file_main_name))
-            if CFile.file_or_path_exist(distribution_file):
-                # 构建同步对象
-                distribution_obj = CObject.create_module_distribution_instance(
-                    '{0}.{1}'.format(CSys.get_metadata_data_access_modules_root_name(), self.Name_Distribution),
-                    distinct_file_main_name,
-                    self._db_id,
-                    object_id,
-                    object_name,
-                    quality_info_xml,
-                    dataset
-                )
-                distribution_obj_real = distribution_obj
-        if distribution_obj_real is None:
-            # 注意, 这里默认为默认处理的同步插件，先预留
-            distribution_obj_real = distribution_default(self._db_id, object_id, object_name, quality_info, dataset)
-        return distribution_obj_real
+            class_classified_obj_real = class_classified_obj
+        return class_classified_obj_real
