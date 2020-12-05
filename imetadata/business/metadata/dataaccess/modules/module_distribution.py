@@ -84,7 +84,7 @@ class module_distribution(CDAModule):
             WHERE
                 dm2_storage_object.dsoid = '{0}'
         '''.format(self._obj_id)
-        db_id = self._db_id  # 数据库连接标识
+        db_id = self._db_id  # 数据库连接标识（查询的dm2的数管库）
         dataset = CFactory().give_me_db(db_id).one_row(sql_query)
         object_id = dataset.value_by_name(0, 'dsoid', '')
         object_name = dataset.value_by_name(0, 'dsoobjectname', '')
@@ -108,10 +108,11 @@ class module_distribution(CDAModule):
             distribution_file = CFile.join_file(distribution_root_dir, '{0}.py'.format(distinct_file_main_name))
             if CFile.file_or_path_exist(distribution_file):
                 # 构建同步对象
+                db_id_distribution = self.DB_Server_ID_Distribution   # 同步处理的目标数据库标识id
                 distribution_obj = CObject.create_module_distribution_instance(
                     '{0}.{1}'.format(CSys.get_metadata_data_access_modules_root_name(), self.Name_Distribution),
                     distinct_file_main_name,
-                    db_id,
+                    db_id_distribution,
                     object_id,
                     object_name,
                     obj_type_code,

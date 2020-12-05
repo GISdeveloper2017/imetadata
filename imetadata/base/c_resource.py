@@ -97,6 +97,7 @@ class CResource:
     DB_Type_Postgresql = 'postgresql'
 
     DB_Server_ID_Default = '0'
+    DB_Server_ID_Distribution = '0'  # 同步的目标数据库（如ap3_product_rsp_***）标识，可能与数管dm2的数据库不在同一个库
 
     Name_ON = 'on'
     Name_OFF = 'off'
