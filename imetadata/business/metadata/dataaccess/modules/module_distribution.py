@@ -95,7 +95,7 @@ class module_distribution(CDAModule):
         obj_type_code = None
         distribution_obj_real = None
         # 构建数据对象object对应的识别插件，获取get_information里面的Plugins_Info_Module_Distribute_Engine信息
-        class_classified_obj = self.get_plugins_instance_by_object_id(db_id, object_id)
+        class_classified_obj = CObject.get_plugins_instance_by_object_id(db_id, object_id)
         if class_classified_obj is not None:
             plugins_info = class_classified_obj.get_information()
             obj_type_code = CUtils.dict_value_by_name(plugins_info, class_classified_obj.Plugins_Info_Type_Code, '')
@@ -108,7 +108,7 @@ class module_distribution(CDAModule):
             distribution_file = CFile.join_file(distribution_root_dir, '{0}.py'.format(distinct_file_main_name))
             if CFile.file_or_path_exist(distribution_file):
                 # 构建同步对象
-                db_id_distribution = self.DB_Server_ID_Distribution   # 同步处理的目标数据库标识id
+                db_id_distribution = self.DB_Server_ID_Distribution  # 同步处理的目标数据库标识id
                 distribution_obj = CObject.create_module_distribution_instance(
                     '{0}.{1}'.format(CSys.get_metadata_data_access_modules_root_name(), self.Name_Distribution),
                     distinct_file_main_name,
@@ -125,30 +125,3 @@ class module_distribution(CDAModule):
             distribution_obj_real = distribution_default(self._db_id, object_id, object_name, obj_type_code,
                                                          quality_info, dataset)
         return distribution_obj_real
-
-    def get_plugins_instance_by_object_id(self, db_id, object_id):
-        """
-        根据对应object_id获取识别的插件对象
-        """
-        sql_query = '''
-            SELECT dsoobjecttype, dsodatatype FROM dm2_storage_object WHERE dsoid = '{0}'
-        '''.format(object_id)
-        dataset = CFactory().give_me_db(db_id).one_row(sql_query)
-        object_plugin_file_main_name = dataset.value_by_name(0, 'dsoobjecttype', '')  # plugins_8000_dom_10
-        object_plugin_type = dataset.value_by_name(0, 'dsodatatype', '')  # 数据类型:dir-目录;file-文件
-
-        class_classified_obj_real = None
-        # 构建数据对象object对应的识别插件
-        plugins_root_package_name = '{0}.{1}'.format(CSys.get_plugins_package_root_name(), object_plugin_type)
-        # 判断插件是否存在
-        plugins_root_dir = CSys.get_plugins_root_dir()
-        plugins_type_root_dir = CFile.join_file(plugins_root_dir, object_plugin_type)
-        plugins_file = CFile.join_file(plugins_type_root_dir, '{0}.py'.format(object_plugin_file_main_name))
-        if CFile.file_or_path_exist(plugins_file):
-            class_classified_obj = CObject.create_plugins_instance(
-                plugins_root_package_name,
-                object_plugin_file_main_name,
-                None
-            )
-            class_classified_obj_real = class_classified_obj
-        return class_classified_obj_real

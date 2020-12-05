@@ -8,16 +8,15 @@ import os
 import numpy as np
 from PIL import Image
 from osgeo import gdal, gdalconst
-
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
+from imetadata.base.c_object import CObject
 from imetadata.base.c_processUtils import CProcessUtils
 from imetadata.base.c_result import CResult
 from imetadata.base.c_time import CTime
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.view.c_viewCreator import CViewCreator
-from imetadata.database.c_factory import CFactory
 
 
 class CViewCreatorRaster(CViewCreator):
@@ -33,16 +32,16 @@ class CViewCreatorRaster(CViewCreator):
         :return:
         """
         # 获取对象类型
-        sql_query = '''
-                    select dsodtitle,dsodgroup,dsodcatalog 
-                    from dm2_storage_object_def 
-                    left join dm2_storage_object on dm2_storage_object.dsoobjecttype = dm2_storage_object_def.dsodid
-                    where dm2_storage_object.dsoid = '{0}'
-                '''.format(self.object_id)
-        ds_object_def = CFactory().give_me_db(self.file_info.db_server_id).one_row(sql_query)
-        title = ds_object_def.value_by_name(0, 'dsodtitle', '')
-        groupname = ds_object_def.value_by_name(0, 'dsodgroup', '')
-        catalog = ds_object_def.value_by_name(0, 'dsodcatalog', '')
+        type = 'default'
+        group = 'default'
+        catalog = 'default'
+        # 构建数据对象object对应的识别插件，获取get_information里面的信息
+        class_classified_obj = CObject.get_plugins_instance_by_object_id(self.file_info.db_server_id, self.object_id)
+        if class_classified_obj is not None:
+            plugins_info = class_classified_obj.get_information()
+            type = CUtils.dict_value_by_name(plugins_info, class_classified_obj.Plugins_Info_Type, 'default')
+            group = CUtils.dict_value_by_name(plugins_info, class_classified_obj.Plugins_Info_Group, 'default')
+            catalog = CUtils.dict_value_by_name(plugins_info, class_classified_obj.Plugins_Info_Catalog, 'default')
 
         create_time = CTime.today()
         create_format_time = CTime.format_str(create_time, '%Y%m%d')
@@ -50,7 +49,7 @@ class CViewCreatorRaster(CViewCreator):
         month = CTime.format_str(create_time, '%m')
         day = CTime.format_str(create_time, '%d')
         sep = CFile.sep()  # 操作系统的不同处理分隔符不同
-        relative_path_part = r'{0}{6}{1}{6}{2}{6}{3}{6}{4}{6}{5}'.format(catalog, groupname, title, year, month, day,
+        relative_path_part = r'{0}{6}{1}{6}{2}{6}{3}{6}{4}{6}{5}'.format(catalog, group, type, year, month, day,
                                                                          sep)  # 相对路径格式
         view_relative_path_browse = r'{2}{0}{2}{1}_browse.png'.format(relative_path_part, self.object_id, sep)
         view_relative_path_thumb = r'{2}{0}{2}{1}_thumb.jpg'.format(relative_path_part, self.object_id, sep)
