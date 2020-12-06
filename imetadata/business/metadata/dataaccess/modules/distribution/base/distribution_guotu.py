@@ -99,13 +99,14 @@ class distribution_guotu(distribution_base):
                 )
             )
             return CResult.merge_result_info(result, self.Name_Access, access_flag)
-        except:
+        except Exception as error:
             result = CResult.merge_result(
                 self.Failure,
-                '模块[{0}.{1}]对对象[{2}]的访问能力的分析存在异常!'.format(
+                '模块[{0}.{1}]对对象[{2}]的访问能力的分析存在异常!详细情况: {3}!'.format(
                     CUtils.dict_value_by_name(self.information(), self.Name_ID, ''),
                     CUtils.dict_value_by_name(self.information(), self.Name_Title, ''),
-                    self._obj_name
+                    self._obj_name,
+                    error.__str__()
                 )
             )
             return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Forbid)
@@ -139,7 +140,7 @@ class distribution_guotu(distribution_base):
                 insert_or_updata = self.DB_False
 
             table = CTable()
-            table.load_info(CResource.DB_Server_ID_Default, table_name)
+            table.load_info(self._db_id, table_name)
             # insert_or_updatad的意义是要先确定是更新还是插入，不能把不该更新的，在插入时是默认值的参数更新
             for field_dict in self.get_sync_dict_list(insert_or_updata):
                 field_name = CUtils.dict_value_by_name(field_dict, 'field_name', '')  # 获取字段名

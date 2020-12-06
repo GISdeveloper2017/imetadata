@@ -84,7 +84,7 @@ class Plugins_Test_Base(CResource):
                 '应该的对象名为{2}，识别出的对象名为{3}'.format(
                     correct_object_confirm, object_confirm, correct_object_name, object_name
                 ),
-                '{0}'.format(test_file_with_full_path),
+                '{0}'.format(test_file_with_rel_path),
                 allure.attachment_type.TEXT
             )
             assert flag
@@ -109,7 +109,7 @@ class Plugins_Test_Base(CResource):
                 # 录入测试信息
                 allure.attach('处理信息为{0},业务元数据类型为{1},业务元数据内容为{2}'
                               .format(message_with_qa, metadata_bus_type, metadata_bus),
-                              '{0}'.format(test_file_with_full_path),
+                              '{0}'.format(test_file_with_rel_path),
                               allure.attachment_type.TEXT)
                 assert result_with_qa
 
@@ -133,7 +133,7 @@ class Plugins_Test_Base(CResource):
                 # 录入测试信息
                 allure.attach('处理信息为{0},时间元数据内容为{1}'
                               .format(message_with_time, time_information),
-                              '{0}'.format(test_file_with_full_path),
+                              '{0}'.format(test_file_with_rel_path),
                               allure.attachment_type.TEXT)
                 assert result_with_time
 
@@ -157,7 +157,7 @@ class Plugins_Test_Base(CResource):
                 # 录入测试信息
                 allure.attach('处理信息为{0},空间元数据内容为{1}'
                               .format(message_with_spatial, metadata_spatial),
-                              '{0}'.format(test_file_with_full_path),
+                              '{0}'.format(test_file_with_rel_path),
                               allure.attachment_type.TEXT)
                 assert result_with_spatial
 
@@ -180,7 +180,7 @@ class Plugins_Test_Base(CResource):
                     = metadata_parser.metadata.metadata_view()
                 # 录入测试信息
                 allure.attach('处理信息为{0}'.format(message_with_view),
-                              '{0}'.format(test_file_with_full_path),
+                              '{0}'.format(test_file_with_rel_path),
                               allure.attachment_type.TEXT)
                 # 因为快视图拇指图的路径生成依赖数据库object表，所以测试中暂时无法生成文件
                 # allure.attach.file(thumb_img_file_name, attachment_type=allure.attachment_type.JPG)

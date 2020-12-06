@@ -62,7 +62,7 @@ class distribution_guotu_dataset(distribution_guotu):
             sync_dict_list, 'productname',  # 配置字段名
             dsometadataxml_xml.get_element_text_by_xpath_one('/root/DSName'))  # 配置字段值
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'producttype', object_table_data.value_by_name(0, 'dsodcode', ''))
+            sync_dict_list, 'producttype', self._obj_type_code)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dsodatatype', object_table_data.value_by_name(0, 'dsodatatype', ''))
         self.add_value_to_sync_dict_list(

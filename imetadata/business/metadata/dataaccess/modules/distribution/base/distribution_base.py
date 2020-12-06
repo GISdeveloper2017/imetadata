@@ -13,15 +13,15 @@ class distribution_base(CResource):
     _db_id: str
     _obj_id: str
     _obj_name: str
-    # _obj_type: str
+    _obj_type_code: str  # 国土类型业务编码 如: 020105
     _quality_info: CXml
     _dataset: CDataSet
 
-    def __init__(self, db_id, obj_id, obj_name, quality, dataset):
+    def __init__(self, db_id, obj_id, obj_name, obj_type_code, quality, dataset):
         self._db_id = db_id
         self._obj_id = obj_id
         self._obj_name = obj_name
-        # self._obj_type = obj_type
+        self._obj_type_code = obj_type_code
         self._quality_info = quality
         self._dataset = dataset
 
