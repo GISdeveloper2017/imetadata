@@ -8,18 +8,33 @@ from abc import abstractmethod
 from imetadata.base.c_json import CJson
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
+from imetadata.base.c_utils import CUtils
 
 
 class CJob(CResource):
     __id = None
     __mission_db_id = None
     __params = None
+    __abnormal_job_retry_times = 0
 
     def __init__(self, job_id: str, job_params: str):
         self.__id = job_id
         self.__params = job_params
-        self.__mission_db_id = str(self.params_value_by_name(self.Job_Params_DB_Server_ID, self.DB_Server_ID_Default))
+        self.__mission_db_id = CUtils.any_2_str(
+            self.params_value_by_name(
+                self.Job_Params_DB_Server_ID,
+                self.DB_Server_ID_Default
+            )
+        )
+        self.__abnormal_job_retry_times = self.params_value_by_name(
+            self.Job_Params_Abnormal_Job_Retry_Times,
+            self.Default_Abnormal_Job_Retry_Times
+        )
+
         self.custom_init()
+
+    def abnormal_job_retry_times(self) -> int:
+        return self.__abnormal_job_retry_times
 
     def get_mission_db_id(self) -> str:
         return self.__mission_db_id

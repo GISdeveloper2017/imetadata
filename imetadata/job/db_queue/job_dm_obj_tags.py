@@ -42,7 +42,7 @@ set dsotagsparsestatus = 1, dsotagsparseprocid = null
 where dsotagsparsestatus = 2
         '''
 
-    def process_mission(self, dataset):
+    def process_mission(self, dataset, is_retry_mission: bool):
         dso_id = dataset.value_by_name(0, 'dsoid', '')
         dso_data_type = dataset.value_by_name(0, 'dsodatatype', '')
         dso_object_type = dataset.value_by_name(0, 'dsoobjecttype', '')

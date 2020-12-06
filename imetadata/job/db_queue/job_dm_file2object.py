@@ -60,7 +60,7 @@ set dsfscanstatus = 1
 where dsfscanstatus = 2
         '''
 
-    def process_mission(self, dataset) -> str:
+    def process_mission(self, dataset, is_retry_mission: bool) -> str:
         ds_subpath = dataset.value_by_name(0, 'query_subpath', '')
         ds_file_name_with_path = dataset.value_by_name(0, 'query_file_full_name', '')
         ds_dir_id = dataset.value_by_name(0, 'query_dir_id', '')

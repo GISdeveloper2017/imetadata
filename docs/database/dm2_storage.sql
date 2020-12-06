@@ -1024,3 +1024,13 @@ create index idx_dm2_storage_object_def_catalog
     on dm2_storage_object_def (dsodcatalog);
 
 
+/*
+    2020-12-06
+    . 支持自动识别重试机制
+        . 元数据抽取失败几率大
+*/
+
+alter table dm2_storage_object
+    add column dso_metadataparser_retry int default 0;
+comment on column dm2_storage_object.dso_metadataparser_retry is '数据对象-元数据抽取-重试';
+

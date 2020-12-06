@@ -54,7 +54,7 @@ set dsistatus = {0}, dsiprocid = null
 where dsistatus = {1}
         '''.format(self.IB_Status_IB_InQueue, self.IB_Status_IB_Processing)
 
-    def process_mission(self, dataset) -> str:
+    def process_mission(self, dataset, is_retry_mission: bool) -> str:
         """
         详细算法复杂, 参见readme.md中[### 数据入库调度]章节
         :param dataset:

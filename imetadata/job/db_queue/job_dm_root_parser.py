@@ -40,7 +40,7 @@ set dstscanstatus = 1, dstprocessid = null
 where dstscanstatus = 2
         '''
 
-    def process_mission(self, dataset):
+    def process_mission(self, dataset, is_retry_mission: bool):
         storage_id = dataset.value_by_name(0, 'root_directory_id', '')
         storage_root_path = dataset.value_by_name(0, 'root_directory', '')
 

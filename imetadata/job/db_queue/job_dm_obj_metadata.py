@@ -20,15 +20,30 @@ class job_dm_obj_metadata(CDMBaseJob):
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage_object 
-set dsometadataparseprocid = '{0}', dsometadataparsestatus = 2
+set dsometadataparseprocid = '{0}', dsometadataparsestatus = {1}
 where dsoid = (
   select dsoid  
   from   dm2_storage_object 
-  where  dsometadataparsestatus = 1 
+  where  dsometadataparsestatus = {2} 
   limit 1
   for update skip locked
 )
-        '''.format(self.SYSTEM_NAME_MISSION_ID)
+        '''.format(self.SYSTEM_NAME_MISSION_ID, self.ProcStatus_Processing, self.ProcStatus_InQueue)
+
+    def get_mission_retry_sql(self) -> str:
+        return '''
+        update dm2_storage_object 
+        set dsometadataparseprocid = '{0}', dsometadataparsestatus = {1}
+        where dsoid = (
+          select dsoid  
+          from   dm2_storage_object 
+          where  dsometadataparsestatus = {2} 
+                and dso_metadataparser_retry < {3}
+          limit 1
+          for update skip locked
+        )
+        '''.format(self.SYSTEM_NAME_MISSION_ID, self.ProcStatus_Processing, self.ProcStatus_Error,
+                   self.abnormal_job_retry_times())
 
     def get_mission_info_sql(self):
         return '''
@@ -38,11 +53,11 @@ select dsoid, dsodatatype, dsoobjecttype, dsoobjectname from dm2_storage_object 
     def get_abnormal_mission_restart_sql(self) -> str:
         return '''
 update dm2_storage_object 
-set dsometadataparsestatus = 1, dsometadataparseprocid = null 
-where dsometadataparsestatus = 2
-        '''
+set dsometadataparsestatus = {0}, dsometadataparseprocid = null, dso_metadataparser_retry = 0 
+where dsometadataparsestatus = {1}
+        '''.format(self.ProcStatus_InQueue, self.ProcStatus_Processing)
 
-    def process_mission(self, dataset):
+    def process_mission(self, dataset, is_retry_mission: bool):
         dso_id = dataset.value_by_name(0, 'dsoid', '')
         dso_data_type = dataset.value_by_name(0, 'dsodatatype', '')
         dso_object_type = dataset.value_by_name(0, 'dsoobjecttype', '')
@@ -53,13 +68,18 @@ where dsometadataparsestatus = 2
         ds_file_info = self.get_object_info(dso_id, dso_data_type)
 
         if ds_file_info.value_by_name(0, 'query_object_valid', self.DB_False) == self.DB_False:
-            CFactory().give_me_db(self.get_mission_db_id()).execute('''
+            CFactory().give_me_db(self.get_mission_db_id()).execute(
+                '''
                 update dm2_storage_object
-                set dsometadataparsestatus = 0
+                set dsometadataparsestatus = {0}
                   , dsolastmodifytime = now()
                   , dsometadataparsememo = '文件或目录不存在，元数据无法解析'
                 where dsoid = :dsoid
-                ''', {'dsoid': dso_id})
+                '''.format(self.ProcStatus_Finished),
+                {
+                    'dsoid': dso_id
+                }
+            )
             return CResult.merge_result(self.Success, '文件或目录[{0}]不存在，元数据无法解析, 元数据处理正常结束!'.format(
                 ds_file_info.value_by_name(0, 'query_object_fullname', '')))
 
@@ -101,48 +121,86 @@ where dsometadataparsestatus = 2
 
         plugins_obj.classified()
         if not plugins_obj.create_virtual_content():
-            self.db_update_object_status(dso_id, '文件或目录[{0}]的内容解析失败, 元数据无法提取!'.format(
-                ds_file_info.value_by_name(0, 'query_object_fullname', '')))
+            process_result = CResult.merge_result(
+                self.Failure,
+                '文件或目录[{0}]的内容解析失败, 元数据无法提取!'.format(
+                    ds_file_info.value_by_name(0, 'query_object_fullname', '')
+                )
+            )
+            self.db_update_object_status(dso_id, process_result, is_retry_mission)
+            return process_result
+
         try:
             metadata_parser = CMetaDataParser(
-                dso_id, dso_object_name, file_info_obj, plugins_obj.file_content,
+                dso_id,
+                dso_object_name,
+                file_info_obj,
+                plugins_obj.file_content,
                 plugins_obj.get_information()
             )
             process_result = plugins_obj.parser_metadata(metadata_parser)
 
-            if CResult.result_success(process_result):
-                CFactory().give_me_db(self.get_mission_db_id()).execute(
-                    '''
-                    update dm2_storage_object
-                    set dsometadataparsestatus = 0
-                      , dsolastmodifytime = now()
-                    where dsoid = :dsoid
-                    ''',
-                    {'dsoid': dso_id}
-                )
-                return CResult.merge_result(self.Success, '文件或目录[{0}]元数据解析成功结束!'.format(
-                    ds_file_info.value_by_name(0, 'query_object_fullname', '')))
-            else:
-                self.db_update_object_status(dso_id, '文件或目录[{0}]元数据解析过程出现错误! 错误原因为: {1}'.format(
-                    ds_file_info.value_by_name(0, 'query_object_fullname', ''), CResult.result_message(process_result)))
-                return process_result
+            self.db_update_object_status(dso_id, process_result, is_retry_mission)
+            return process_result
         except Exception as error:
-            self.db_update_object_status(dso_id, '文件或目录[{0}]元数据解析过程出现错误! 错误原因为: {1}'.format(
-                ds_file_info.value_by_name(0, 'query_object_fullname', ''), error.__str__()))
-
-            return CResult.merge_result(self.Failure, '文件或目录[{0}]元数据解析过程出现错误! 错误原因为: {1}'.format(
-                ds_file_info.value_by_name(0, 'query_object_fullname', ''), error.__str__()))
+            process_result = CResult.merge_result(
+                self.Failure,
+                '文件或目录[{0}]元数据解析过程出现错误! 错误原因为: {1}'.format(
+                    ds_file_info.value_by_name(0, 'query_object_fullname', ''),
+                    error.__str__()
+                )
+            )
+            self.db_update_object_status(dso_id, process_result, is_retry_mission)
+            return process_result
         finally:
             plugins_obj.destroy_virtual_content()
 
-    def db_update_object_status(self, dso_id, memo):
-        CFactory().give_me_db(self.get_mission_db_id()).execute('''
-            update dm2_storage_object
-            set dsometadataparsestatus = 3
-              , dsolastmodifytime = now()
-              , dsometadataparsememo = :dsometadataparsememo
-            where dsoid = :dsoid
-            ''', {'dsoid': dso_id, 'dsometadataparsememo': memo})
+    def db_update_object_status(self, dso_id, process_result, is_retry_mission):
+        if CResult.result_success(process_result):
+            CFactory().give_me_db(self.get_mission_db_id()).execute(
+                '''
+                update dm2_storage_object
+                set dsometadataparsestatus = {0}
+                  , dsometadataparsememo = :dsometadataparsememo
+                  , dso_metadataparser_retry = 0
+                  , dsolastmodifytime = now()
+                where dsoid = :dsoid
+                '''.format(self.ProcStatus_Finished),
+                {
+                    'dsoid': dso_id,
+                    'dsometadataparsememo': CResult.result_message(process_result)
+                }
+            )
+        elif is_retry_mission:
+            CFactory().give_me_db(self.get_mission_db_id()).execute(
+                '''
+                update dm2_storage_object
+                set dsometadataparsestatus = {0}
+                  , dsolastmodifytime = now()
+                  , dsometadataparsememo = :dsometadataparsememo
+                  , dso_metadataparser_retry = dso_metadataparser_retry + 1
+                where dsoid = :dsoid
+                '''.format(self.ProcStatus_Error),
+                {
+                    'dsoid': dso_id,
+                    'dsometadataparsememo': CResult.result_message(process_result)
+                }
+            )
+        else:
+            CFactory().give_me_db(self.get_mission_db_id()).execute(
+                '''
+                update dm2_storage_object
+                set dsometadataparsestatus = {0}
+                  , dsolastmodifytime = now()
+                  , dsometadataparsememo = :dsometadataparsememo
+                  , dso_metadataparser_retry = 0
+                where dsoid = :dsoid
+                '''.format(self.ProcStatus_Error),
+                {
+                    'dsoid': dso_id,
+                    'dsometadataparsememo': CResult.result_message(process_result)
+                }
+            )
 
 
 if __name__ == '__main__':

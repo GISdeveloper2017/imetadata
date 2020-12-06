@@ -327,7 +327,12 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
      |interval|trigger.days|可选, 每隔x小时执行一次|{"trigger": {"days": 2}}|
      |interval|trigger.weeks|可选, 每隔x星期执行一次|{"trigger": {"weeks": 2}}|
      |db_queue|job.db_server_id|数据库队列, 引用的数据库的标识, 该标识在settings.py中定义|{"job": {"db_server_id": "2"}}|
+     |db_queue|job.abnormal_job_retry_times|异常任务的重试次数, 默认为3次 *|{"job": {"abnormal_job_retry_times": 5}}|
      |db_queue|process.parallel_count|并行worker的个数|{"process": {"parallel_count": 1}}|
+
+     注意: 
+     >> *异常任务的重试处理, 必须自行在子类中解决, 参见job_dm_obj_metadata. 这里本想在基类中直接重试, 但考虑到这样重试成功率不高, 还是让
+         另外一个并行来重新抢占会好一些
 ***
 # 功能设计
 ## 数据管理

@@ -91,6 +91,9 @@ class CResource:
     NAME_SUBPROCESS_LIST = 'subprocess_list'
 
     Job_Params_DB_Server_ID = 'db_server_id'
+    Job_Params_Abnormal_Job_Retry_Times = 'abnormal_job_retry_times'
+    Default_Abnormal_Job_Retry_Times = 3
+
     Name_Parallel_Count = 'parallel_count'
     Name_Process = 'process'
 

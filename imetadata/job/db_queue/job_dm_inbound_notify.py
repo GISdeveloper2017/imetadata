@@ -53,7 +53,7 @@ set dsi_na_status = 1, dsi_na_proc_id = null
 where dsi_na_status = 2
         '''
 
-    def process_mission(self, dataset) -> str:
+    def process_mission(self, dataset, is_retry_mission: bool) -> str:
         """
         :param dataset:
         :return:

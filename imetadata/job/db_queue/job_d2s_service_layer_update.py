@@ -63,7 +63,7 @@ order by dplastmodifytime limit 1 for update skip locked)
         where dpStatus = {1}
         '''.format(self.ProcStatus_InQueue, self.ProcStatus_Processing)
 
-    def process_mission(self, dataset) -> str:
+    def process_mission(self, dataset, is_retry_mission: bool) -> str:
         """
         详细算法复杂, 参见readme.md中[##### 服务发布调度]章节
         :param dataset:

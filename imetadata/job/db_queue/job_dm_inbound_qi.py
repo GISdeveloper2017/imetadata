@@ -51,7 +51,7 @@ set dsiStatus = {0}, dsiprocid = null
 where dsiStatus = {1}
         '''.format(self.IB_Status_QI_InQueue, self.IB_Status_QI_Dir_Scan_Creating)
 
-    def process_mission(self, dataset) -> str:
+    def process_mission(self, dataset, is_retry_mission: bool) -> str:
         """
         :param dataset:
         :return:

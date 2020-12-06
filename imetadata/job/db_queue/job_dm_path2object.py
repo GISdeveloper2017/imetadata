@@ -59,7 +59,7 @@ set dsdscanstatus = 1, dsdprocessid = null
 where dsdscanstatus = 2
         '''
 
-    def process_mission(self, dataset) -> str:
+    def process_mission(self, dataset, is_retry_mission: bool) -> str:
         ds_subpath = dataset.value_by_name(0, 'query_subpath', '')
         ds_root_path = dataset.value_by_name(0, 'query_root_path', '')
         ds_storage_id = dataset.value_by_name(0, 'query_storage_id', '')

@@ -20,5 +20,5 @@ class job_d2s_service_creator(CD2SBaseJob):
     def get_abnormal_mission_restart_sql(self) -> str:
         pass
 
-    def process_mission(self, dataset) -> str:
+    def process_mission(self, dataset, is_retry_mission: bool) -> str:
         pass

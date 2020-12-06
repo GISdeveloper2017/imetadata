@@ -61,7 +61,7 @@ set dsdscanfilestatus = 1, dsdscanfileprocessid = null
 where dsdscanfilestatus = 2
         '''
 
-    def process_mission(self, dataset) -> str:
+    def process_mission(self, dataset, is_retry_mission: bool) -> str:
         ds_id = dataset.value_by_name(0, 'query_dir_id', '')
         ds_storage_id = dataset.value_by_name(0, 'query_storage_id', '')
         ds_storage_type = dataset.value_by_name(0, 'query_storage_type', self.Storage_Type_Core)

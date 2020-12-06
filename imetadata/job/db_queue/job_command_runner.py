@@ -58,7 +58,7 @@ set scmstatus = 1, scmprocessid = null
 where scmstatus = 2 
         '''
 
-    def process_mission(self, dataset):
+    def process_mission(self, dataset, is_retry_mission: bool):
         mission_id = dataset.value_by_name(0, 'scmid', '')
         mission_title = dataset.value_by_name(0, 'scmtitle', '')
 

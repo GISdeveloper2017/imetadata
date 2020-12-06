@@ -17,18 +17,25 @@ class CDBQueueScheduleExecute(CScheduleExecute):
 
     def get_or_create_sch_job(self) -> CDBQueueJob:
         if self.__schedule__ is None:
-            self.__schedule__ = super().default_create_sch_job(self.__schedule_trigger__,
-                                                               self.__schedule_algorithm__,
-                                                               self.__schedule_id__,
-                                                               self.__schedule_params__)
+            self.__schedule__ = super().default_create_sch_job(
+                self.__schedule_trigger__,
+                self.__schedule_algorithm__,
+                self.__schedule_id__,
+                self.__schedule_params__
+            )
 
         return self.__schedule__
 
     def start(self):
         schedule = self.get_or_create_sch_job()
         if schedule is None:
-            CLogger().warning('无法创建Job对象: {0}.{1}.{2}'.format(self.__schedule_id__, self.__schedule_trigger__,
-                                                              self.__schedule_algorithm__))
+            CLogger().warning(
+                '无法创建Job对象: {0}.{1}.{2}'.format(
+                    self.__schedule_id__,
+                    self.__schedule_trigger__,
+                    self.__schedule_algorithm__
+                )
+            )
             return
 
         schedule.before_execute()
