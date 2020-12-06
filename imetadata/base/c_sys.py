@@ -72,12 +72,28 @@ class CSys(CResource):
         return os.path.join(cls.get_metadata_root_dir(), cls.Name_InBound)
 
     @classmethod
+    def get_dataaccess_root_dir(cls):
+        return os.path.join(cls.get_metadata_root_dir(), cls.Name_DataAccess)
+
+    @classmethod
+    def get_dataaccess_modules_root_dir(cls):
+        return os.path.join(cls.get_dataaccess_root_dir(), cls.Name_Modules)
+
+    @classmethod
     def get_metadata_package_root_name(cls):
         return '{0}.{1}'.format(cls.get_business_package_root_name(), cls.Name_MetaData)
 
     @classmethod
     def get_inbound_package_root_name(cls):
         return '{0}.{1}'.format(cls.get_metadata_package_root_name(), cls.Name_InBound)
+
+    @classmethod
+    def get_dataaccess_package_root_name(cls):
+        return '{0}.{1}'.format(cls.get_metadata_package_root_name(), cls.Name_DataAccess)
+
+    @classmethod
+    def get_dataaccess_modules_package_root_name(cls):
+        return '{0}.{1}'.format(cls.get_dataaccess_package_root_name(), cls.Name_Modules)
 
     @classmethod
     def get_plugins_root_dir(cls):

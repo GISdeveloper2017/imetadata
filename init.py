@@ -11,13 +11,14 @@ from imetadata.base.c_logger import CLogger
 from imetadata.base.c_object import CObject
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_sys import CSys
+from imetadata.base.c_utils import CUtils
 from imetadata.database.c_factory import CFactory
 
 
 class CApplicationInit(CResource):
-    def register_dm_metadata_plugins_2_dm2_storage_object_def(self):
+    def register_dm_metadata_plugins(self):
         sql_register_dm_metadata_plugins_clear = '''
-        delete from dm2_storage_object_def
+        truncate table dm2_storage_object_def
         '''
 
         sql_unregister_dm_metadata_plugins = '''
@@ -53,10 +54,65 @@ class CApplicationInit(CResource):
                     CFactory().give_me_db().execute(sql_unregister_dm_metadata_plugins, plugins_info)
                     CFactory().give_me_db().execute(sql_register_dm_metadata_plugins, plugins_info)
 
+    def register_dm_modules(self):
+        sql_register_dm_metadata_modules_clear = '''
+        truncate table dm2_modules
+        '''
+
+        sql_register_dm_metadata_modules = '''
+        insert into dm2_modules(dmid, dmtitle) 
+            values (:dmid, :dmtitle) 
+        '''
+
+        CFactory().give_me_db().execute(sql_register_dm_metadata_modules_clear)
+
+        modules_root_dir = CSys.get_dataaccess_modules_root_dir()
+        module_file_name_list = CFile.file_or_subpath_of_path(modules_root_dir)
+        for module_file_name in module_file_name_list:
+            if CFile.is_file(CFile.join_file(modules_root_dir, module_file_name)) and (
+                    not (str(module_file_name)).startswith('_')):
+                module_name = CFile.file_main_name(module_file_name)
+                module_obj = CObject.create_module_instance(
+                    CSys.get_dataaccess_modules_package_root_name(),
+                    module_name,
+                    CResource.DB_Server_ID_Default,
+                    '',
+                    '',
+                    '',
+                    None
+                )
+                module_info = module_obj.information()
+                CFactory().give_me_db().execute(
+                    sql_register_dm_metadata_modules,
+                    {
+                        'dmid': module_name,
+                        'dmtitle': CUtils.dict_value_by_name(module_info, CResource.Name_Title, module_name)
+                    }
+                )
+
+    def register_dm_metadata_quality_group(self):
+        sql_register_dm_metadata_modules_clear = '''
+        truncate table dm2_quality_group
+        '''
+
+        sql_register_dm_metadata_modules = '''
+        insert into dm2_quality_group(dqgid, dqgtitle) 
+            values (:dqgid, :dqgtitle) 
+        '''
+
+        CFactory().give_me_db().execute_batch(
+            [
+                (sql_register_dm_metadata_modules_clear, None),
+                (sql_register_dm_metadata_modules, {'dqgid': CResource.QA_Group_Data_Integrity, 'dqgtitle': '数据完整性'})
+            ]
+        )
+
 
 def start_init():
     application_init = CApplicationInit()
-    application_init.register_dm_metadata_plugins_2_dm2_storage_object_def()
+    application_init.register_dm_metadata_plugins()
+    application_init.register_dm_modules()
+    application_init.register_dm_metadata_quality_group()
 
 
 if __name__ == "__main__":

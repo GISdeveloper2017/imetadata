@@ -1028,9 +1028,43 @@ create index idx_dm2_storage_object_def_catalog
     2020-12-06
     . 支持自动识别重试机制
         . 元数据抽取失败几率大
+    . 完善可视化部分的支持
+        . 第三方子系统的注册
 */
 
 alter table dm2_storage_object
     add column dso_metadataparser_retry int default 0;
 comment on column dm2_storage_object.dso_metadataparser_retry is '数据对象-元数据抽取-重试';
 
+drop table if exists dm2_modules;
+create table if not exists dm2_modules
+(
+    dmid    varchar(100) not null
+        constraint dm2_modules_pkey
+            primary key,
+    dmtitle varchar(200) not null
+);
+
+comment on table dm2_modules is '数管-第三方模块';
+comment on column dm2_modules.dmid is '标识';
+comment on column dm2_modules.dmtitle is '名称';
+
+alter table dm2_modules
+    owner to postgres;
+
+
+drop table if exists dm2_quality_group;
+create table if not exists dm2_quality_group
+(
+    dqgid    varchar(100) not null
+        constraint dm2_quality_group_pkey
+            primary key,
+    dqgtitle varchar(200) not null
+);
+
+comment on table dm2_quality_group is '数管-质检-分组';
+comment on column dm2_quality_group.dqgid is '标识';
+comment on column dm2_quality_group.dqgtitle is '描述';
+
+alter table dm2_quality_group
+    owner to postgres;
