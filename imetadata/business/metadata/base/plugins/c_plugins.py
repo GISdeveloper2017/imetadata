@@ -567,6 +567,12 @@ class CPlugins(CResource):
             start_time_text = time_json.xpath_one(self.Name_Start_Time, '')
             end_time_text = time_json.xpath_one(self.Name_End_Time, '')
 
+            # 当3个时间都为空时候，取文件的修改时间
+            if CUtils.equal_ignore_case(time_text, '') \
+                    and CUtils.equal_ignore_case(start_time_text, '') \
+                    and CUtils.equal_ignore_case(end_time_text, ''):
+                return self.get_default_metadata_time(parser)
+
             # 先存在原始的时间值（time_source，start_time_source和end_time_source）
             parser.metadata.set_metadata_time(
                 self.Success,
@@ -585,30 +591,33 @@ class CPlugins(CResource):
                 end_time_text)
 
             # 监测time_text是否是合法的日期...
-            if (not CUtils.text_is_datetime(time_text)) \
+            if (not CUtils.equal_ignore_case(time_text, '')) \
+                    and (not CUtils.text_is_datetime(time_text)) \
                     and (not CUtils.text_is_date_day(time_text)):
                 # 从数据库中查询为标准格式（2020，202009，2020Q1），如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
                 # time_text_temp = time_text.replace('-', '').replace('/', '').replace('\\', '').replace('.', '').replace('年', '').replace('月', '')
-                time_text_temp = CUtils.standard_datetime_format(time_text, time_text).replace('-', '')
-                # 从ro_global_dim_time表中识别是否有记录，如果有，则获取对应的开始时间、结束时间
-                sql = '''
-                select starttime, endtime from ro_global_dim_time where gdtquickcode ='{0}'
-                '''.format(time_text_temp)
-                ds_time = CFactory().give_me_db(self.file_info.db_server_id).one_row(sql)
-                starttime = ds_time.value_by_name(0, 'starttime', None)
-                endtime = ds_time.value_by_name(0, 'endtime', None)
-                if starttime is not None:
-                    parser.metadata.set_metadata_time(
-                        self.Success,
-                        '时间信息[{0}]成功从ro_global_dim_time表中解析',
-                        self.Name_Start_Time,
-                        starttime)
-                if endtime is not None:
-                    parser.metadata.set_metadata_time(
-                        self.Success,
-                        '时间信息[{0}]成功从ro_global_dim_time表中解析',
-                        self.Name_End_Time,
-                        endtime)
+                time_text_standard = CUtils.standard_datetime_format(time_text, time_text)
+                if not CUtils.equal_ignore_case(time_text_standard, ''):
+                    time_text_temp = time_text_standard.replace('-', '')
+                    # 从ro_global_dim_time表中识别是否有记录，如果有，则获取对应的开始时间、结束时间
+                    sql = '''
+                    select starttime, endtime from ro_global_dim_time where gdtquickcode ='{0}'
+                    '''.format(time_text_temp)
+                    ds_time = CFactory().give_me_db(self.file_info.db_server_id).one_row(sql)
+                    starttime = ds_time.value_by_name(0, 'starttime', None)
+                    endtime = ds_time.value_by_name(0, 'endtime', None)
+                    if starttime is not None:
+                        parser.metadata.set_metadata_time(
+                            self.Success,
+                            '时间信息[{0}]成功从ro_global_dim_time表中解析',
+                            self.Name_Start_Time,
+                            starttime)
+                    if endtime is not None:
+                        parser.metadata.set_metadata_time(
+                            self.Success,
+                            '时间信息[{0}]成功从ro_global_dim_time表中解析',
+                            self.Name_End_Time,
+                            endtime)
             # 将time, start_time和end_time进行格式化到日的修正处理（如2020变为20200101，202009变为20200901，其他的不变）
             # 再次从json中获取（可能从ro_global_dim_time取值过了）
             time_json = parser.metadata.time_information
