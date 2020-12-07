@@ -10,6 +10,7 @@ from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.spatial.c_spatialExtractor import CSpatialExtractor
+from imetadata.tool.geomwkt_tool.md_img2wkt import process_bus
 
 
 class CSpatialExtractorRaster(CSpatialExtractor):
@@ -109,14 +110,18 @@ class CSpatialExtractorRaster(CSpatialExtractor):
             wgs84_bbox_wkt = wkt_info
             for name, value in dict_wgs84.items():
                 wgs84_bbox_wkt = wgs84_bbox_wkt.replace(name, value)
-            wgs84_geom_wkt = wgs84_bbox_wkt
+            # wgs84_geom_wkt = wgs84_bbox_wkt
 
             wgs84_center_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_center.wkt')
             CFile.str_2_file(wgs84_center_wkt, wgs84_center_filepath)
             wgs84_bbox_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_bbox.wkt')
             CFile.str_2_file(wgs84_bbox_wkt, wgs84_bbox_filepath)
             wgs84_geom_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_geom.wkt')
-            CFile.str_2_file(wgs84_geom_wkt, wgs84_geom_filepath)
+            # CFile.str_2_file(wgs84_geom_wkt, wgs84_geom_filepath)
+            object_file_path = self.file_info.file_name_with_full_path
+            result_flag = process_bus(object_file_path, wgs84_geom_filepath, None)
+            if not result_flag:
+                raise Exception('影像实际边界解析工具解析失败')
             # </editor-fold>
 
             # <editor-fold desc="2.投影信息">

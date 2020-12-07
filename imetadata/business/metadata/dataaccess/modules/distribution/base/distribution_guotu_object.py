@@ -122,7 +122,7 @@ class distribution_guotu_object(distribution_guotu):
                 sync_dict_list, 'addtime', now_time)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'extent',
-            "(select dso_geo_bb_native from dm2_storage_object where dsoid='{0}')".format(object_table_id),
+            "(select dso_geo_bb_wgs84 from dm2_storage_object where dsoid='{0}')".format(object_table_id),
             self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'proj', object_table_data.value_by_name(0, 'dso_prj_coordinate', ''))
