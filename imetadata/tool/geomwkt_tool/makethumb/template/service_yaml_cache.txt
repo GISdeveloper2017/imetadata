@@ -1,0 +1,5 @@
+  $lyr_cache$:
+    format: mixed
+    request_format: image/png
+    grids: [$grids$]
+    sources: [$cache_source$]

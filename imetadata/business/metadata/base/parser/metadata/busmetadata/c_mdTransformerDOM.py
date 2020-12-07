@@ -4,10 +4,9 @@
 # @File : c_mdTransformerDOM.py
 
 import re
-
 import pypyodbc
 import xlrd
-
+# import jaydebeapi
 from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
 from imetadata.base.c_sys import CSys
@@ -51,16 +50,18 @@ class CMDTransformerDOM(CMDTransformer):
                 )
             else:
                 raise
-        except:
+        except Exception as error:
             super().metadata.set_metadata_bus(
                 self.Exception,
-                '元数据文件[{0}]格式不合法或解析异常, 无法处理! '.format(file_metadata_name_with_path),
+                '元数据文件[{0}]格式不合法或解析异常, 无法处理! 错误原因为{1}'
+                    .format(file_metadata_name_with_path, error.__str__()),
                 self.MetaDataFormat_Text,
                 ''
             )
             return CResult.merge_result(
                 self.Exception,
-                '元数据文件[{0}]格式不合法或解析异常, 无法处理! '.format(file_metadata_name_with_path)
+                '元数据文件[{0}]格式不合法或解析异常, 无法处理! 错误原因为{1}'
+                    .format(file_metadata_name_with_path, error.__str__())
             )
 
     def mdb_to_xml(self, file_metadata_name_with_path: str):
@@ -77,12 +78,25 @@ class CMDTransformerDOM(CMDTransformer):
                     file_metadata_name_with_path)  # win驱动，安装AccessDatabaseEngine_X64.exe驱动
                 conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
             elif CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Linux):
-                conn = pypyodbc.connect('DSN=mymdb')  # linux配置，需要配置mdbtools, unixODBC, libmdbodbc
+                pass
+                # 安装jaydebeapi3包，使用UCanAccess.jar
+                # ucanaccess_jars = [
+                #     "/UCanAccess-4.0.4-bin/ucanaccess-4.0.4.jar",
+                #     "/UCanAccess-4.0.4-bin/lib/commons-lang-2.6.jar",
+                #     "/UCanAccess-4.0.4-bin/lib/commons-logging-1.1.3.jar",
+                #     "/UCanAccess-4.0.4-bin/lib/hsqldb.jar",
+                #     "/UCanAccess-4.0.4-bin/lib/jackcess-2.1.11.jar",
+                # ]
+                # classpath = ":".join(ucanaccess_jars)
+                # conn = jaydebeapi.connect(
+                #     "net.ucanaccess.jdbc.UcanaccessDriver",
+                #     ["jdbc:ucanaccess://{0}".format(file_metadata_name_with_path), "", ""],
+                #     classpath
+                # )
             else:
-                raise
+                raise Exception('操作系统识别发生错误')
 
             cur = conn.cursor()  # 游标
-
             sql = "SELECT * FROM " + self.object_name
             cur.execute(sql)
             table_data = cur.fetchall()
@@ -99,8 +113,8 @@ class CMDTransformerDOM(CMDTransformer):
                 node_item = xml_obj.create_element(node_root, 'item')
                 xml_obj.set_attr(node_item, self.Name_Name, CUtils.any_2_str(row_name).lower())
                 xml_obj.set_element_text(node_item, table_data[0][field_index])  # 设置item节点与属性与内容
-        except:
-            raise
+        except Exception as error:
+            raise Exception(error.__str__())
         finally:
             if cur is not None:
                 cur.close()
@@ -131,7 +145,7 @@ class CMDTransformerDOM(CMDTransformer):
                 xml_obj.set_attr(node_item, self.Name_Name, CUtils.any_2_str(row_list[1]).lower())
                 xml_obj.set_element_text(node_item, CUtils.any_2_str(row_list[2].strip()))  # 设置item节点与属性与内容
         if not flag:
-            raise  # 如果未找到1+tab键开头，则抛出异常
+            raise Exception('文件内容异常，无法正常识别文件开头')  # 如果未找到1+tab键开头，则抛出异常
         return xml_obj
 
     def xls_to_xml(self, file_metadata_name_with_path: str):
@@ -151,7 +165,7 @@ class CMDTransformerDOM(CMDTransformer):
         elif CUtils.equal_ignore_case(CUtils.any_2_str(cols_num), CUtils.any_2_str(3)):
             cols_index = 1  # 有序号列从2列开始
         else:
-            raise
+            raise Exception('xls格式异常，无法正常解析')
 
         xml_obj = CXml()  # 建立xml对象
         node_root = xml_obj.new_xml('root')

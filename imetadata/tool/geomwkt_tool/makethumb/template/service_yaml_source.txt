@@ -1,0 +1,14 @@
+  $cache_source$:
+    type: mapserver
+    wms_opts:
+      featureinfo: true
+    req:
+      map: $map_file$
+      layers: $lyr_name$
+      transparent: true
+    coverage:
+      bbox: [$coverage_bbox$]
+      srs: 'EPSG:4326'
+    mapserver:
+      binary: $server_bin$
+      working_dir: $server_dir$
