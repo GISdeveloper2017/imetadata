@@ -6,6 +6,7 @@
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
+from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.fileinfo.c_dmPathInfo import CDMPathInfo
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
@@ -65,11 +66,21 @@ where dsiStatus = {1}
         # 按需要再开启
         # ds_ib_option = CUtils.any_2_str(dataset.value_by_name(0, 'query_ib_option', ''))
 
-        CLogger().debug('正在入库的是存储[{0}]下的目录[{1}]'.format(ds_storage_title,
-                                                        CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)))
-        ib_full_directory = CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+        CLogger().debug(
+            '正在入库的是存储[{0}]下的目录[{1}]'.format(
+                ds_storage_title,
+                CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+            )
+        )
 
         try:
+            ds_ib_directory = CFile.unify(CFile.add_prefix(ds_ib_directory_name))
+            if not CUtils.equal_ignore_case(ds_ib_directory, ds_ib_directory_name):
+                self.correct_ib_directory(ds_ib_id, ds_ib_directory)
+                ds_ib_directory_name = ds_ib_directory
+
+            ib_full_directory = CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+
             super().clear_anything_in_directory(ds_storage_id, ds_ib_directory_name)
             metadata_rule_file_name = CFile.join_file(ib_full_directory, self.FileName_MetaData_Rule)
             metadata_rule_content = ''
@@ -147,6 +158,22 @@ where dsiStatus = {1}
                 '''.format(self.IB_Status_QI_Error),
                 {'notify_id': notify_id, 'notify_message': CResult.result_message(result)}
             )
+
+    def correct_ib_directory(self, ds_ib_id, ds_ib_directory):
+        """
+        修正入库目录的编写格式
+        :param ds_ib_id:
+        :param ds_ib_directory:
+        :return:
+        """
+        CFactory().give_me_db(self.get_mission_db_id()).execute(
+            '''
+            update dm2_storage_inbound 
+            set dsidirectory = :directory
+            where dsiid = :ib_id   
+            ''',
+            {'ib_id': ds_ib_id, 'directory': ds_ib_directory}
+        )
 
 
 if __name__ == '__main__':

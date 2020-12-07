@@ -303,10 +303,10 @@ class CDMPathInfo(CDMFilePathInfoEx):
         params['dsdid'] = self.my_id
         params['dsdparentid'] = self.parent_id
         params['dsdstorageid'] = self.storage_id
-        params['dsddirectory'] = self.file_name_with_rel_path
+        params['dsddirectory'] = CFile.unify(self.file_name_with_rel_path)
         params['dsddirtype'] = self.Dir_Type_Directory
         params['dsddirectoryname'] = self.file_name_without_path
-        params['dsdpath'] = self.file_path_with_rel_path
+        params['dsdpath'] = CFile.unify(self.file_path_with_rel_path)
         params['dsddircreatetime'] = self.file_create_time
         params['dsddirlastmodifytime'] = self.file_modify_time
         params['dsdparentobjid'] = self.owner_obj_id

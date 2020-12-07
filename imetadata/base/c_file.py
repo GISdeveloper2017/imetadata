@@ -17,6 +17,7 @@ from imetadata.base.exceptions import PathNotCreateException
 
 
 class CFile:
+    unify_seperator = '/'
     MatchType_Common = 1
     MatchType_Regex = 2
 
@@ -34,7 +35,7 @@ class CFile:
 
     @classmethod
     def sep(cls):
-        return os.sep
+        return cls.unify_seperator
 
     @classmethod
     def file_name(cls, file_name_with_path: str) -> str:
@@ -115,6 +116,20 @@ class CFile:
             if real_file_name.startswith(r'/') or real_file_name.startswith('\\'):
                 real_file_name = real_file_name[1:len(real_file_name)]
             result = os.path.join(result, real_file_name)
+        return result
+
+    @classmethod
+    def add_prefix(cls, path: str) -> str:
+        real_path = CUtils.any_2_str(path)
+        if real_path.startswith(r'/') or real_path.startswith('\\'):
+            return real_path
+        else:
+            return '{0}{1}'.format(cls.sep(), real_path)
+
+    @classmethod
+    def unify(cls, file_or_path: str) -> str:
+        result = file_or_path
+        result = result.replace('\\', cls.sep())
         return result
 
     @classmethod
@@ -383,12 +398,13 @@ class CFile:
 
 
 if __name__ == '__main__':
-    print(CFile.join_file('/aa/bb/', '中国'))
-    print(CFile.join_file('/aa/bb/', '/cc'))
-    print(CFile.join_file('/aa/bb', 'cc'))
-    print(CFile.join_file('/aa/bb/', ''))
-    print(CFile.join_file('/aa/bb/', '/'))
-    print(CFile.join_file('/aa/bb', ''))
+    print(CFile.join_file('', 'aa/bb/', '中国'))
+    print(os.path.normpath('c:\\a/bb\\c/dd'))
+    # print(CFile.join_file('/aa/bb/', '/cc'))
+    # print(CFile.join_file('/aa/bb', 'cc'))
+    # print(CFile.join_file('/aa/bb/', ''))
+    # print(CFile.join_file('/aa/bb/', '/'))
+    # print(CFile.join_file('/aa/bb', ''))
 
     # CFile.move_path_to('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios/aa/bb')
     # shutil.move('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios')

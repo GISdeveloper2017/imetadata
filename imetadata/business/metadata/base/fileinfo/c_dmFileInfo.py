@@ -2,7 +2,7 @@
 # @Time : 2020/9/17 09:33 
 # @Author : 王西亚 
 # @File : c_dmFileInfo.py
-
+from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
@@ -25,7 +25,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
             from dm2_storage_file
             where dsfstorageid = :dsfStorageID and dsfdirectoryid = :dsfDirectoryId and dsffilerelationname = :dsfFileRelationName
             ''', {'dsfStorageID': self.storage_id, 'dsfDirectoryId': self.parent_id,
-                  'dsfFileRelationName': self.file_name_with_rel_path})
+                  'dsfFileRelationName': CFile.unify(self.file_name_with_rel_path)})
             if not self.ds_file_or_path.is_empty():
                 self.my_id = self.ds_file_or_path.value_by_name(0, 'dsfid', None)
             if self.my_id is None:
@@ -87,7 +87,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
         params['dsfid'] = self.my_id
         params['dsfdirectoryid'] = self.parent_id
         params['dsfstorageid'] = self.storage_id
-        params['dsffilerelationname'] = self.file_name_with_rel_path
+        params['dsffilerelationname'] = CFile.unify(self.file_name_with_rel_path)
         params['dsffilename'] = self.file_name_without_path
         params['dsffilemainname'] = self.file_main_name
         params['dsfext'] = self.file_ext

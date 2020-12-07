@@ -1008,6 +1008,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
         1. dsfScanStatus=0
 
 ##### 对象标签处理调度-job_dm_obj_tags
+###### 版本1
 1. 名称: job_dm_obj_tags
 1. 类型: db_queue
 1. 算法:
@@ -1018,6 +1019,28 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
         1. 空间标签
    1. 将处理成功的dm2_storage_object记录
         1. dsoTagsParserStatus=0
+
+###### 版本2
+1. 名称: job_dm_obj_tags
+1. 类型: db_queue
+1. 算法:
+   1. 抢占dm2_storage_object表中dsoTagsParserStatus=1的记录, 状态更新为2
+   1. 根据对象类型, 解析对象的标签
+        1. 标签的自定义处理分为几个级别:
+            1. 全局
+                1. 在应用程序的settings中, 对标签的提取方式进行处理
+                    1. 注册标签库:(ro_global_dim_xxx都是系统内置的标签库, 可以自定义其他标签库)
+                    1. 设置标签库的匹配字段, 可以是一个,也可以是多个. 比如dim_custom, 就只有title, 而dim_time, 就有title和quickcode
+            1. 存储级
+                1. 在存储的otherOption中, 可以单独定制上述内容
+            1. 数据级定制
+                1. 在数据插件类中, 可以有针对性的定制每一个数据的标签库
+        1. 业务标签
+        1. 时间标签
+        1. 空间标签
+   1. 将处理成功的dm2_storage_object记录
+        1. dsoTagsParserStatus=0
+
 
 ##### 对象详情处理调度-job_dm_obj_detail
 1. 名称: job_dm_obj_detail

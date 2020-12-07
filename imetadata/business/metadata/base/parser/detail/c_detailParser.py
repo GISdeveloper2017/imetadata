@@ -103,9 +103,12 @@ class CDetailParser(CParser):
             if CFile.is_dir(item_file_name_with_path):
                 params['dodfiletype'] = self.FileType_Dir
             params['dodobjectid'] = self.object_id
-            params['dodfilename'] = CFile.file_relation_path(
-                item_file_name_with_path,
-                self.file_info.file_path)
+            params['dodfilename'] = CFile.unify(
+                CFile.file_relation_path(
+                    item_file_name_with_path,
+                    self.file_info.file_path
+                )
+            )
             params['dodfileext'] = CFile.file_ext(item_file_name_with_path)
             params['dodfilesize'] = CFile.file_size(item_file_name_with_path)
             params['dodfilecreatetime'] = CFile.file_create_time(item_file_name_with_path)
