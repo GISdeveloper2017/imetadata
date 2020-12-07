@@ -531,3 +531,9 @@ class CResource:
     Plugins_Info_Module_Distribute_Engine = 'module.distribute.engine'
     Plugins_Info_Child_Layer_Plugins_Name = 'child_layer_plugins_name'
     Plugins_Info_Child_Layer_Data_Type = 'child_layer_data_type'
+
+    # 配置 入库插件的测试用例用
+    Name_Test_File_Type = 'test_file_type'
+    Name_Test_file_path = 'test_Name_Test_file_path'
+    Name_Test_object_confirm = 'test_object_confirm'
+    Name_Test_object_name = 'test_object_name'

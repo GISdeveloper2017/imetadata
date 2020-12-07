@@ -49,8 +49,8 @@ class CViewCreatorRaster(CViewCreator):
         month = CTime.format_str(create_time, '%m')
         day = CTime.format_str(create_time, '%d')
         sep = CFile.sep()  # 操作系统的不同处理分隔符不同
-        relative_path_part = r'{0}{6}{1}{6}{2}{6}{3}{6}{4}{6}{5}'.format(catalog, group, type, year, month, day,
-                                                                         sep)  # 相对路径格式
+        sep_list = [catalog, group, type, year, month, day]
+        relative_path_part = sep.join(sep_list)  # 相对路径格式
         view_relative_path_browse = r'{2}{0}{2}{1}_browse.png'.format(relative_path_part, self.object_id, sep)
         view_relative_path_thumb = r'{2}{0}{2}{1}_thumb.jpg'.format(relative_path_part, self.object_id, sep)
         view_relative_path_geotiff = r'{2}{0}{2}{1}_browse.tiff'.format(relative_path_part, self.object_id, sep)

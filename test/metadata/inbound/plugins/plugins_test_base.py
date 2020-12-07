@@ -25,8 +25,15 @@ class Plugins_Test_Base(CResource):
         return None
 
     @abstractmethod
-    def file_name_with_rel_path_list(self) -> list:
+    def test_file_info_list(self) -> list:
         return []
+
+    def get_test_file_info(self, test_file_info: dict):
+        file_type = CUtils.dict_value_by_name(test_file_info, self.Name_Test_File_Type, None)
+        test_file_with_rel_path = CUtils.dict_value_by_name(test_file_info, self.Name_Test_file_path, None)
+        correct_object_confirm = CUtils.dict_value_by_name(test_file_info, self.Name_Test_object_confirm, None)
+        correct_object_name = CUtils.dict_value_by_name(test_file_info, self.Name_Test_object_name, None)
+        return file_type, test_file_with_rel_path, correct_object_confirm, correct_object_name
 
     def init_before_test(self):
         plugins_info = self.create_plugins().get_information()
@@ -66,8 +73,9 @@ class Plugins_Test_Base(CResource):
     def test_classified(self):
         self.init_before_test()  # 初始化路径
 
-        for file_type, test_file_with_rel_path, correct_object_confirm, correct_object_name \
-                in self.file_name_with_rel_path_list():
+        for test_file_info in self.test_file_info_list():
+            file_type, test_file_with_rel_path, correct_object_confirm, correct_object_name = \
+                self.get_test_file_info(test_file_info)
             test_file_with_full_path = CFile.join_file(self._test_file_parent_path, test_file_with_rel_path)
             # 获取插件对象
             file_info, plugins_obj, metadata_parser = self.get_test_obj(file_type, test_file_with_full_path)
@@ -95,8 +103,9 @@ class Plugins_Test_Base(CResource):
     def test_metadata(self):
         self.init_before_test()  # 初始化路径
 
-        for file_type, test_file_with_rel_path, correct_object_confirm, correct_object_name \
-                in self.file_name_with_rel_path_list():
+        for test_file_info in self.test_file_info_list():
+            file_type, test_file_with_rel_path, correct_object_confirm, correct_object_name = \
+                self.get_test_file_info(test_file_info)
             if correct_object_confirm == self.Object_Confirm_IKnown:
                 test_file_with_full_path = CFile.join_file(self._test_file_parent_path, test_file_with_rel_path)
                 # 获取插件对象
@@ -119,8 +128,9 @@ class Plugins_Test_Base(CResource):
     def test_metadata_time(self):
         self.init_before_test()  # 初始化路径
 
-        for file_type, test_file_with_rel_path, correct_object_confirm, correct_object_name \
-                in self.file_name_with_rel_path_list():
+        for test_file_info in self.test_file_info_list():
+            file_type, test_file_with_rel_path, correct_object_confirm, correct_object_name = \
+                self.get_test_file_info(test_file_info)
             if correct_object_confirm == self.Object_Confirm_IKnown:
                 test_file_with_full_path = CFile.join_file(self._test_file_parent_path, test_file_with_rel_path)
                 # 获取插件对象
@@ -143,8 +153,9 @@ class Plugins_Test_Base(CResource):
     def test_metadata_spatial(self):
         self.init_before_test()  # 初始化路径
 
-        for file_type, test_file_with_rel_path, correct_object_confirm, correct_object_name \
-                in self.file_name_with_rel_path_list():
+        for test_file_info in self.test_file_info_list():
+            file_type, test_file_with_rel_path, correct_object_confirm, correct_object_name = \
+                self.get_test_file_info(test_file_info)
             if correct_object_confirm == self.Object_Confirm_IKnown:
                 test_file_with_full_path = CFile.join_file(self._test_file_parent_path, test_file_with_rel_path)
                 # 获取插件对象
@@ -167,8 +178,9 @@ class Plugins_Test_Base(CResource):
     def test_metadata_view(self):
         self.init_before_test()  # 初始化路径
 
-        for file_type, test_file_with_rel_path, correct_object_confirm, correct_object_name \
-                in self.file_name_with_rel_path_list():
+        for test_file_info in self.test_file_info_list():
+            file_type, test_file_with_rel_path, correct_object_confirm, correct_object_name = \
+                self.get_test_file_info(test_file_info)
             if correct_object_confirm == self.Object_Confirm_IKnown:
                 test_file_with_full_path = CFile.join_file(self._test_file_parent_path, test_file_with_rel_path)
                 # 获取插件对象
