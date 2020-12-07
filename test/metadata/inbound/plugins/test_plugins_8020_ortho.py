@@ -16,26 +16,26 @@ class Test_Plugins_8020_Ortho(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
         return plugins_8020_ortho(file_info)
 
-    def file_name_with_rel_path_list(self):
+    def test_file_info_list(self):
         return [
-            (
-                self.FileType_File,
-                '单景test{0}单景test.tif'.format(CFile.sep()),
-                self.Object_Confirm_IKnown,
-                '单景test'
-            ),
-            (
-                self.FileType_File,
-                '单景test_123{0}单景test_123.tif'.format(CFile.sep()),
-                self.Object_Confirm_IKnown,
-                '单景test_123'
-            ),
-            (
-                self.FileType_File,
-                '单景test{0}单景test_21at.xml'.format(CFile.sep()),
-                self.Object_Confirm_IKnown_Not,
-                None
-            )
+            {
+                self.Name_Test_File_Type: self.FileType_File,
+                self.Name_Test_file_path: '单景test{0}单景test.tif'.format(CFile.sep()),
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown,
+                self.Name_Test_object_name: '单景test'
+            },
+            {
+                self.Name_Test_File_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_Test_file_path: '单景test_123{0}单景test_123.tif'.format(CFile.sep()),
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown,
+                self.Name_Test_object_name: '单景test_123'
+            },
+            {
+                self.Name_Test_File_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_Test_file_path: '单景test{0}单景test_21at.xml'.format(CFile.sep()),
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
+                self.Name_Test_object_name: None
+            }
         ]
 
 
