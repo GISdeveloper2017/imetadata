@@ -50,16 +50,18 @@ class CMDTransformerDOM(CMDTransformer):
                 )
             else:
                 raise
-        except:
+        except Exception as error:
             super().metadata.set_metadata_bus(
                 self.Exception,
-                '元数据文件[{0}]格式不合法或解析异常, 无法处理! '.format(file_metadata_name_with_path),
+                '元数据文件[{0}]格式不合法或解析异常, 无法处理! 错误原因为{1}'
+                    .format(file_metadata_name_with_path, error.__str__()),
                 self.MetaDataFormat_Text,
                 ''
             )
             return CResult.merge_result(
                 self.Exception,
-                '元数据文件[{0}]格式不合法或解析异常, 无法处理! '.format(file_metadata_name_with_path)
+                '元数据文件[{0}]格式不合法或解析异常, 无法处理! 错误原因为{1}'
+                    .format(file_metadata_name_with_path, error.__str__())
             )
 
     def mdb_to_xml(self, file_metadata_name_with_path: str):
@@ -112,7 +114,7 @@ class CMDTransformerDOM(CMDTransformer):
                 xml_obj.set_attr(node_item, self.Name_Name, CUtils.any_2_str(row_name).lower())
                 xml_obj.set_element_text(node_item, table_data[0][field_index])  # 设置item节点与属性与内容
         except Exception as error:
-            raise Exception(error)
+            raise Exception(error.__str__())
         finally:
             if cur is not None:
                 cur.close()
