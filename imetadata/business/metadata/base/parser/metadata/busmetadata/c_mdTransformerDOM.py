@@ -53,14 +53,14 @@ class CMDTransformerDOM(CMDTransformer):
         except Exception as error:
             super().metadata.set_metadata_bus(
                 self.Exception,
-                '元数据文件[{0}]格式不合法或解析异常, 无法处理! 错误原因为{1}'
+                '元数据文件[{0}]格式不合法, 无法处理! 错误原因为{1}'
                     .format(file_metadata_name_with_path, error.__str__()),
                 self.MetaDataFormat_Text,
                 ''
             )
             return CResult.merge_result(
                 self.Exception,
-                '元数据文件[{0}]格式不合法或解析异常, 无法处理! 错误原因为{1}'
+                '元数据文件[{0}]格式不合法, 无法处理! 错误原因为{1}'
                     .format(file_metadata_name_with_path, error.__str__())
             )
 
@@ -73,28 +73,31 @@ class CMDTransformerDOM(CMDTransformer):
         conn = None  # 预定义连接与游标，方便释放
         cur = None
         try:
-            if CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Windows):
-                mdb = 'Driver={Microsoft Access Driver (*.mdb,*.accdb)};' + 'DBQ={0}'.format(
-                    file_metadata_name_with_path)  # win驱动，安装AccessDatabaseEngine_X64.exe驱动
-                conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
-            elif CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Linux):
-                pass
-                # 安装jaydebeapi3包，使用UCanAccess.jar
-                # ucanaccess_jars = [
-                #     "/UCanAccess-4.0.4-bin/ucanaccess-4.0.4.jar",
-                #     "/UCanAccess-4.0.4-bin/lib/commons-lang-2.6.jar",
-                #     "/UCanAccess-4.0.4-bin/lib/commons-logging-1.1.3.jar",
-                #     "/UCanAccess-4.0.4-bin/lib/hsqldb.jar",
-                #     "/UCanAccess-4.0.4-bin/lib/jackcess-2.1.11.jar",
-                # ]
-                # classpath = ":".join(ucanaccess_jars)
-                # conn = jaydebeapi.connect(
-                #     "net.ucanaccess.jdbc.UcanaccessDriver",
-                #     ["jdbc:ucanaccess://{0}".format(file_metadata_name_with_path), "", ""],
-                #     classpath
-                # )
-            else:
-                raise Exception('操作系统识别发生错误')
+            try:
+                if CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Windows):
+                    mdb = 'Driver={Microsoft Access Driver (*.mdb,*.accdb)};' + 'DBQ={0}'.format(
+                        file_metadata_name_with_path)  # win驱动，安装AccessDatabaseEngine_X64.exe驱动
+                    conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
+                elif CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Linux):
+                    pass
+                    # 安装jaydebeapi3包，使用UCanAccess.jar
+                    # ucanaccess_jars = [
+                    #     "/UCanAccess-4.0.4-bin/ucanaccess-4.0.4.jar",
+                    #     "/UCanAccess-4.0.4-bin/lib/commons-lang-2.6.jar",
+                    #     "/UCanAccess-4.0.4-bin/lib/commons-logging-1.1.3.jar",
+                    #     "/UCanAccess-4.0.4-bin/lib/hsqldb.jar",
+                    #     "/UCanAccess-4.0.4-bin/lib/jackcess-2.1.11.jar",
+                    # ]
+                    # classpath = ":".join(ucanaccess_jars)
+                    # conn = jaydebeapi.connect(
+                    #     "net.ucanaccess.jdbc.UcanaccessDriver",
+                    #     ["jdbc:ucanaccess://{0}".format(file_metadata_name_with_path), "", ""],
+                    #     classpath
+                    # )
+                else:
+                    raise Exception('操作系统识别发生错误')
+            except Exception as error:
+                raise Exception('mdb解析驱动异常:'+error.__str__())
 
             cur = conn.cursor()  # 游标
             sql = "SELECT * FROM " + self.object_name
