@@ -131,8 +131,11 @@ class CViewCreatorRaster(CViewCreator):
 
             # 制作拇指图
             # 设置拇指图尺寸
-            thumb_cols = 50
-            thumb_rows = 50
+            thumb_cols = 100
+            # thumb_rows = 50
+            scale = thumb_cols / cols
+            thumb_rows = rows * scale
+            thumb_rows = CUtils.to_integer(thumb_rows)
             scale1 = thumb_cols / cols
             scale2 = thumb_rows / rows
             geo_transform[1] = geo_transform[1] / scale1
@@ -152,7 +155,7 @@ class CViewCreatorRaster(CViewCreator):
 
             # 制作快视图
             # 设置快视图尺寸
-            browse_cols = 500
+            browse_cols = 1000
             scale = browse_cols / cols
             browse_rows = rows * scale
             browse_rows = CUtils.to_integer(browse_rows)
@@ -274,13 +277,3 @@ class CViewCreatorRaster(CViewCreator):
         del target_ds
         del out
         return view_path
-
-
-if __name__ == "__main__":
-    # 进程调用模式
-    out_list = []
-    out_list.append(r'D:\test\view\F47E001007BJ210M2017A_browse.png')
-    out_list.append(r'D:\test\view\F47E001007BJ210M2017A_thumb.jpg')
-    out_list.append(r'D:\test\view\F47E001007BJ210M2017A_browse.tiff')
-    view_creator = CViewCreatorRaster(r'D:\test\云南高分影像\F47\F47E001007BJ210M2017A.TIF')
-    result = CProcessUtils.processing_method(view_creator.process(), out_list)
