@@ -81,14 +81,20 @@ class distribution_guotu_object(distribution_guotu):
         # regionname:行政区  上面四个字段交插件处理
         self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
             sync_dict_list, 'centerx',
-            "st_x(st_centroid("
-            "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
-            "))".format(object_table_id), self.DataValueType_SQL)
+            '''
+            (select 
+            st_x(st_centroid(
+            (select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')
+            ))::decimal(8, 2))
+            '''.format(object_table_id), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'centery',
-            "st_y(st_centroid("
-            "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
-            "))".format(object_table_id), self.DataValueType_SQL)
+            '''
+            (select 
+            st_y(st_centroid(
+            (select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')
+            ))::decimal(8, 2))
+            '''.format(object_table_id), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'geomwkt',
             "st_astext("
