@@ -75,6 +75,12 @@ class distribution_guotu_dataset(distribution_guotu):
             sync_dict_list, 'imagedate',
             CUtils.to_day_format(dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date'), ''))
         # datacount:数据数量
+        self.add_value_to_sync_dict_list(
+            sync_dict_list, 'datacount',
+            '''
+            (select count(dsoid) FROM dm2_storage_object WHERE dsoparentobjid='{0}')
+            '''.format(object_table_id),
+            self.DataValueType_SQL)
         # secrecylevel:密级
         regioncode = dsometadataxml_xml.get_element_text_by_xpath_one('/root/RegionCode')
         self.add_value_to_sync_dict_list(  # regioncode:行政区码

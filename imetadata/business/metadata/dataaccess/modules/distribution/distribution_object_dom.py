@@ -130,7 +130,7 @@ class distribution_object_dom(distribution_guotu_object):
             sync_dict_list, 'mainrssource', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='wxmc']"))
         # 插件处理字段
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''))
+            sync_dict_list, 'datacount', 1)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'secrecylevel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='mj']"))
         # sync_dict['regioncode']  # 为空
@@ -218,7 +218,7 @@ class distribution_object_dom(distribution_guotu_object):
             sync_dict_list, 'mainrssource', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='卫星名称']"))
         # 插件处理字段
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''))
+            sync_dict_list, 'datacount', 1)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'secrecylevel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='密级']"))
         # sync_dict['regioncode']  # 为空
@@ -315,7 +315,7 @@ class distribution_object_dom(distribution_guotu_object):
         # sync_dict['mainrssource']  # 为空
         # 插件处理字段
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''))
+            sync_dict_list, 'datacount', 1)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'secrecylevel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='密级']"))
         # sync_dict['regioncode']  # 为空

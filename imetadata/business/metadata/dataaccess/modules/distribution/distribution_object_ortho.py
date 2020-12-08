@@ -70,7 +70,7 @@ class distribution_object_ortho(distribution_guotu_object):
         # sync_dict['cloudpercent'] = "''"
 
         # 数据量
-        # sync_dict['datacount'] = "''"
+        self.add_value_to_sync_dict_list(sync_dict, 'datacount', 1)
         # 密级
         # sync_dict['secrecylevel'] = "''"
         # 行政区码

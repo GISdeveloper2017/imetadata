@@ -55,7 +55,7 @@ class distribution_object_mosaic(distribution_guotu_object):
         self.add_value_to_sync_dict_list(sync_dict, 'dsometadatajson',
                                          object_table_data.value_by_name(0, 'dsometadataxml_bus', ''))
         # 数据量
-        # sync_dict['datacount'] = "''"
+        self.add_value_to_sync_dict_list(sync_dict, 'datacount', 1)
         # 密级
         # sync_dict['secrecylevel'] = "''"
         # 行政区码
