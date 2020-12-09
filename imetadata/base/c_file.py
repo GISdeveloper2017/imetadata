@@ -115,7 +115,7 @@ class CFile:
             real_file_name = CUtils.any_2_str(each_path)
             if real_file_name.startswith(r'/') or real_file_name.startswith('\\'):
                 real_file_name = real_file_name[1:len(real_file_name)]
-            result = os.path.join(result, real_file_name)
+            result = '{0}{1}{2}'.format(result, cls.sep(), real_file_name)
         return result
 
     @classmethod
@@ -318,7 +318,7 @@ class CFile:
             # files 同样是 list, 内容是该文件夹中所有的文件(不包括子目录)
             for root, dirs, files in os.walk(source_path):
                 for file in files:
-                    src_file = os.path.join(root, file)
+                    src_file = cls.join_file(root, file)
                     shutil.copy(src_file, target_path)
 
     @classmethod
