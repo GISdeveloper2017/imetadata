@@ -70,7 +70,7 @@ class distribution_object_dem_noframe(distribution_guotu_object):
             sync_dict_list, 'dsometadatajson', self._dataset.value_by_name(0, 'dsometadataxml_bus', ''))
         # 插件处理字段
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''))
+            sync_dict_list, 'datacount', 1)
         # sync_dict_list, 'secrecylevel'  # 为空
         # sync_dict['regioncode']  # 为空
         # sync_dict['regionname']  # 为空

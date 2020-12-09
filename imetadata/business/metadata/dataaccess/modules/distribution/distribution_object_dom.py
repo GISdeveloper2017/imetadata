@@ -35,8 +35,7 @@ class distribution_object_dom(distribution_guotu_object):
                 elif CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xls') \
                         or CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xlsx'):
                     return self.access_mdb_check_dict_xls()
-                else:
-                    return []
+        raise Exception("数据{0}业务元数据类型为'{1}'出现错误，没有可识别的类型".format(object_name, dsometadataxml_bus_type))
 
     def get_sync_dict_list(self, insert_or_updata) -> list:
         """
@@ -58,8 +57,7 @@ class distribution_object_dom(distribution_guotu_object):
                 elif CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xls') \
                         or CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xlsx'):
                     return self.get_sync_xls_dict_list(insert_or_updata)
-                else:
-                    return []
+        raise Exception("数据{0}业务元数据类型为'{1}'出现错误，没有可识别的类型".format(object_name, dsometadataxml_bus_type))
 
     def get_sync_mdb_dict_list(self, insert_or_updata) -> list:
         """
@@ -130,7 +128,7 @@ class distribution_object_dom(distribution_guotu_object):
             sync_dict_list, 'mainrssource', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='wxmc']"))
         # 插件处理字段
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''))
+            sync_dict_list, 'datacount', 1)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'secrecylevel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='mj']"))
         # sync_dict['regioncode']  # 为空
@@ -218,7 +216,7 @@ class distribution_object_dom(distribution_guotu_object):
             sync_dict_list, 'mainrssource', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='卫星名称']"))
         # 插件处理字段
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''))
+            sync_dict_list, 'datacount', 1)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'secrecylevel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='密级']"))
         # sync_dict['regioncode']  # 为空
@@ -315,7 +313,7 @@ class distribution_object_dom(distribution_guotu_object):
         # sync_dict['mainrssource']  # 为空
         # 插件处理字段
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'datacount', self._dataset.value_by_name(0, 'dso_volumn_now', ''))
+            sync_dict_list, 'datacount', 1)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'secrecylevel', metadataxml_bus_xml.get_element_text_by_xpath_one("//item[@name='密级']"))
         # sync_dict['regioncode']  # 为空

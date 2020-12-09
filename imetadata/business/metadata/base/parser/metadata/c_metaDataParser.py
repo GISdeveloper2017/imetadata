@@ -279,7 +279,7 @@ class CMetaDataParser(CParser):
                 where dsoid = :dsoid
                 ''', {
                     'dsoid': self.object_id,
-                    'dso_metadata_bus_result': metadata_extract_result,
+                    'dso_metadata_bus_result': metadata_bus_extract_result,
                     'dsometadata_bus_parsememo': metadata_bus_extract_memo,
                     'dsometadatatype_bus': metadata_bus_type,
                     'dsometadatatext_bus': metadata_bus_text
