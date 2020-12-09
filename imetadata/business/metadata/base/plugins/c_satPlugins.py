@@ -47,7 +47,6 @@ class CSatPlugins(CPlugins):
         information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
-        information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
         information[self.Plugins_Info_DetailEngine] = self.get_runtime_detail_engine()
         return information
 

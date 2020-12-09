@@ -195,6 +195,7 @@ class CDMBaseJob(CDBQueueJob):
                 , dm2_storage_directory.dsdid as query_object_file_id
                 , dm2_storage_directory.dsdparentid as query_object_file_parent_id
                 , dm2_storage_object.dsoparentobjid as query_object_owner_id
+                , dm2_storage.dstotheroption as query_object_storage_option
             from dm2_storage_object, dm2_storage_directory, dm2_storage  
             where 
                 dm2_storage_object.dsoid = dm2_storage_directory.dsd_object_id    
@@ -213,6 +214,7 @@ class CDMBaseJob(CDBQueueJob):
                 , dm2_storage_file.dsfid as query_object_file_id
                 , dm2_storage_file.dsfdirectoryid as query_object_file_parent_id
                 , dm2_storage_object.dsoparentobjid as query_object_owner_id
+                , dm2_storage.dstotheroption as query_object_storage_option
             from dm2_storage_object, dm2_storage_file, dm2_storage, dm2_storage_directory   
             where dm2_storage_object.dsoid = dm2_storage_file.dsf_object_id 
                 and dm2_storage_file.dsfstorageid = dm2_storage.dstid 

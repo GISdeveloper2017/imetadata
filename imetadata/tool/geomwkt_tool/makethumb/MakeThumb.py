@@ -1,12 +1,13 @@
 # coding:utf-8
+import logging
 import os
 import sys
-from osgeo import ogr, gdal, osr
 import urllib
-import logging
+
 import geoUtils
-import sqlHelp
 import mapfileHelper
+import sqlHelp
+from osgeo import ogr, gdal, osr
 
 PY3 = sys.version_info[0] >= 3
 if not PY3:

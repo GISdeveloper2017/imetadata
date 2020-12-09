@@ -8,6 +8,7 @@ import os
 import numpy as np
 from PIL import Image
 from osgeo import gdal, gdalconst
+
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger

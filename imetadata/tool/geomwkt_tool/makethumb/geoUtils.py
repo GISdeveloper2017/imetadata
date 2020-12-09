@@ -6,8 +6,9 @@
 @LastEditTime: 2020-07-29 17:33:45
 @Description: a python class to handle geo datasets
 '''
-import os,datetime
-from osgeo import ogr,osr,gdal
+import os
+
+from osgeo import ogr, osr, gdal
 
 
 # 获取shp文件四至，包括地理四至和投影四至

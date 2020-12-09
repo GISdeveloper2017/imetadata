@@ -190,6 +190,7 @@ class job_dm_inbound_qi_monitor(CTimeJob):
                     )   and dsometadataparsestatus = {0}
                         and dsodetailparsestatus = {0}
                         and dsotagsparsestatus = {0} 
+                        and dso_da_status = {0}
                     '''.format(self.ProcStatus_Finished),
                     {
                         'directory_id': ds_ib_directory_id,
@@ -209,6 +210,7 @@ class job_dm_inbound_qi_monitor(CTimeJob):
                     )   and dsometadataparsestatus = {0}
                         and dsodetailparsestatus = {0}
                         and dsotagsparsestatus = {0} 
+                        and dso_da_status = {0}
                     '''.format(self.ProcStatus_Finished),
                     {
                         'directory_id': ds_ib_directory_id,

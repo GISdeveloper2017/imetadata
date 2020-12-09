@@ -100,7 +100,7 @@ class CUtils(CResource):
             return result_int
 
     @classmethod
-    def list_2_str(cls, list_obj: list, prefix: str, seperator: str, suffix: str, ignore_empty: bool = False) -> str:
+    def list_2_str(cls, list_obj: list, prefix: str, separator: str, suffix: str, ignore_empty: bool = False) -> str:
         if list_obj is None:
             return ''
         elif len(list_obj) == 0:
@@ -116,7 +116,7 @@ class CUtils(CResource):
                 result = cls.str_append(
                     result,
                     '{0}{1}{2}'.format(prefix, list_text, suffix),
-                    seperator
+                    separator
                 )
             return result
 
@@ -565,14 +565,15 @@ class CUtils(CResource):
         :param split_sep_list:
         :return:
         """
+        if split_sep_list is None:
+            return [split_text]
+
         text_part_list = split_text.split(split_sep_list[0])
         for index in range(len(split_sep_list)):
             if index == 0:
                 continue
             result_list = cls.__split_list(text_part_list, split_sep_list[index])
             text_part_list = result_list
-        # for item in text_part_list:
-        #     print(item)
         return text_part_list
 
     @classmethod

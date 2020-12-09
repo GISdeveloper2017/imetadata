@@ -102,6 +102,10 @@ class CTimeScheduleExecute(CScheduleExecute):
             CLogger().info('调度Job已经移除...')
 
         if self.__cron_scheduler__ is not None:
-            self.__cron_scheduler__.shutdown()
-            self.__cron_scheduler__ = None
+            try:
+                # todo(王西亚) 这里会发生异常, 后期注意!
+                self.__cron_scheduler__.shutdown()
+                self.__cron_scheduler__ = None
+            except:
+                pass
             CLogger().info('调度器已经停止...')

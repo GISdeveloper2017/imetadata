@@ -23,7 +23,6 @@ class plugins_3002_mbtiles(CFilePlugins):
         information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = None
-        information[self.Plugins_Info_TagsEngine] = self.TagEngine_Global_Dim_In_MainName
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
 
         return information

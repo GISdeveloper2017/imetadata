@@ -67,6 +67,39 @@ application = CSettings(
                 'title': '数管常规目录设置, 包括元数据存储目录',
                 'view': '/Users/wangxiya/Documents/交换/9.数管/0.编目'
             },
+            'tags': {
+                'rule': [
+                    {
+                        'catalog': 'select gdtid AS id, gdttitle AS title, gdtquickcode AS quickcode FROM ro_global_dim_time where gdtparentid <> \'-1\'',
+                        'tag': 'id',
+                        'keyword': ['title', 'quickcode'],
+                        'data_sample': 'relation_main_name',
+                        'separator': ['\\', '_', '/', '-', ' ', '+']
+                    },
+                    {
+                        'catalog': 'SELECT gdsid AS ID, gdstitle AS title, gdsquickcode AS quickcode FROM ro_global_dim_space',
+                        'tag': 'id',
+                        'keyword': ['title', 'quickcode'],
+                        'data_sample': 'relation_main_name',
+                        'separator': ['\\', '_', '/', '-', ' ', '+'],
+                        'enable': False
+                    },
+                    {
+                        'catalog': 'SELECT gdcbid AS ID, gdcbtitle AS title, gdcbquickcode as quickcode FROM ro_global_dim_custom_bus',
+                        'tag': 'id',
+                        'keyword': ['title', 'quickcode'],
+                        'data_sample': 'relation_main_name',
+                        'separator': ['\\', '_', '/', '-', ' ', '+']
+                    },
+                    {
+                        'catalog': 'SELECT gdcid AS ID, gdctitle AS title FROM ro_global_dim_custom',
+                        'tag': 'id',
+                        'keyword': ['title'],
+                        'data_sample': 'relation_main_name',
+                        'separator': ['\\', '_', '/', '-', ' ', '+']
+                    }
+                ]
+            },
             'plugins': {
                 'title': '特殊目录下的文件识别配置',
                 'dir': [

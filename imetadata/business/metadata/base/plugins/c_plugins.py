@@ -175,6 +175,7 @@ class CPlugins(CResource):
         information[self.Plugins_Info_HasChildObj] = self.DB_False
         information[self.Plugins_Info_Group] = None
         information[self.Plugins_Info_Group_Title] = None
+        information[self.Plugins_Info_TagsEngine] = None
         information[self.Plugins_Info_Module_Distribute_Engine] = None  # 同步的引擎，值是发布同步用的类的名字
         return information
 
@@ -205,7 +206,7 @@ class CPlugins(CResource):
         if not isinstance(parser, CParserCustom):
             return parser.process()
 
-        return CResult.merge_result(self.Success, '处理完毕!')
+        return CResult.merge_result(self.Success, '标签处理完毕!')
 
     # @property 本属性存在问题，谨慎使用
     def object_detail_file_full_name_list(self) -> list:
@@ -219,7 +220,7 @@ class CPlugins(CResource):
         if not isinstance(parser, CParserCustom):
             return parser.process()
 
-        return CResult.merge_result(self.Success, '处理完毕!')
+        return CResult.merge_result(self.Success, '附属文件处理完毕!')
 
     def create_file_content(self):
         pass

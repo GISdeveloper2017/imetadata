@@ -211,6 +211,11 @@ class CResource:
     Name_Access = 'access'
     Name_Quality = 'quality'
     Name_Tag = 'tag'
+    Name_Tags = 'tags'
+
+    Name_Data_Sample = 'data_sample'
+    Name_Separator = 'separator'
+    Name_Enable = 'enable'
 
     Name_InBound = 'inbound'
     Name_OutBound = 'outbound'
@@ -254,6 +259,9 @@ class CResource:
     Name_Switch = 'switch'
     Name_Test = 'test'
 
+    Name_Dir = 'dir'
+    Name_Rule = 'rule'
+
     Switch_Use_Ready_Flag_File_Name = 'use_ready_flag_file_name'
     Switch_Inbound_After_QI_Immediately = 'inbound_after_qi_immediately'
 
@@ -270,7 +278,12 @@ class CResource:
     Path_Setting_Dir_Test_Data = '{0}.{1}'.format(Path_Setting_Dir_Test, Name_Data)
 
     Path_Setting_MetaData = 'metadata'
-    Path_Setting_MetaData_Plugins_Dir = '{0}.plugins.dir'.format(Path_Setting_MetaData)
+
+    Path_Setting_MetaData_Plugins = '{0}.{1}'.format(Path_Setting_MetaData, Name_Plugins)
+    Path_Setting_MetaData_Plugins_Dir = '{0}.{1}'.format(Path_Setting_MetaData_Plugins, Name_Dir)
+
+    Path_Setting_MetaData_Tags = '{0}.{1}'.format(Path_Setting_MetaData, Name_Tags)
+    Path_Setting_MetaData_Tags_Rule = '{0}.{1}'.format(Path_Setting_MetaData_Tags, Name_Rule)
 
     Path_Setting_MetaData_InBound = '{0}.{1}'.format(Path_Setting_MetaData, Name_InBound)
     Path_Setting_MetaData_InBound_ignore = '{0}.ignore'.format(Path_Setting_MetaData_InBound)
@@ -319,8 +332,9 @@ class CResource:
     DetailEngine_File_Of_Dir = 'file_of_dir'
     DetailEngine_All_File_Of_Dir = 'all_file_of_dir'
 
-    TagEngine_Global_Dim_In_RelationPath = 'global_dim_in_relation_path'
-    TagEngine_Global_Dim_In_MainName = 'global_dim_in_main_name'
+    Tag_DataSample_RelationPath = 'relation_path'
+    Tag_DataSample_MainName = 'main_name'
+    Tag_DataSample_RelationMainName = 'relation_main_name'
 
     QA_Result_Pass = 'pass'
     QA_Result_Warn = 'warn'

@@ -4,8 +4,10 @@
 # @File : c_mdTransformerDOM.py
 
 import re
+
 import pypyodbc
 import xlrd
+
 # import jaydebeapi
 from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult

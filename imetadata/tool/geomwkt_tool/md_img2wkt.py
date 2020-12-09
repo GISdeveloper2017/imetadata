@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import argparse
 import os
 import subprocess
-import argparse
-from osgeo import ogr
+
 from osgeo import gdal
+from osgeo import ogr
 
 
 # 判断文件夹是否存在，若不存在则创建

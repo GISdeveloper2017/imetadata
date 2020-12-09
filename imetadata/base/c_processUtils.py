@@ -19,19 +19,23 @@ class CProcessUtils:
     def process_id_exist(cls, process_id: int, include_zombie: bool = False) -> bool:
         """
         检查指定进程标识是否在运行
+        注意: 有可能在循环检查process的过程中, process正在退出, 导致process.status()方法出现异常
         :param process_id: 进程id=pid
         :param include_zombie: 是否包含僵尸进程
         :return:
         """
         real_process_id = int(process_id)
         for process in psutil.process_iter():
-            if process.pid == real_process_id:
-                if include_zombie:
-                    return True
-                elif process.status() == 'running':
-                    return True
-                else:
-                    return False
+            try:
+                if process.pid == real_process_id:
+                    if include_zombie:
+                        return True
+                    elif process.is_running():
+                        return process.status() == 'running'
+                    else:
+                        return False
+            except:
+                continue
 
         return False
 

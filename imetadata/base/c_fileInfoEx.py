@@ -12,10 +12,15 @@ class CFileInfoEx(CFileInfo):
     # 入库规则
     __rule_content: str
 
+    __file_main_name_with_rel_path: str
     __file_name_with_rel_path: str
     __file_path_with_rel_path: str
 
     __root_path: str
+
+    @property
+    def file_main_name_with_rel_path(self):
+        return self.__file_main_name_with_rel_path
 
     @property
     def file_name_with_rel_path(self):
@@ -33,6 +38,10 @@ class CFileInfoEx(CFileInfo):
         super().__init__(file_type, file_name_with_full_path)
         self.__root_path = root_path
 
+        self.__file_main_name_with_rel_path = CFile.file_relation_path(
+            self.file_main_name_with_full_path,
+            self.__root_path
+        )
         self.__file_name_with_rel_path = CFile.file_relation_path(
             self.file_name_with_full_path,
             self.__root_path
