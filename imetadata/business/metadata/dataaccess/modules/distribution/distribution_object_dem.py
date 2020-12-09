@@ -35,8 +35,7 @@ class distribution_object_dem(distribution_guotu_object):
                 elif CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xls') \
                         or CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xlsx'):
                     return self.access_mdb_check_dict_xls()
-                else:
-                    return []
+        raise Exception("数据{0}业务元数据类型为'{1}'出现错误，没有可识别的类型".format(object_name, dsometadataxml_bus_type))
 
     def get_sync_dict_list(self, insert_or_updata) -> list:
         """
@@ -44,6 +43,7 @@ class distribution_object_dem(distribution_guotu_object):
         本方法的写法为强规则，调用add_value_to_sync_dict_list配置
         第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
         """
+        object_name = self._obj_name
         dsometadataxml_bus = self._dataset.value_by_name(0, 'dsometadataxml_bus', '')
         xml = CXml()
         xml.load_xml(dsometadataxml_bus)
@@ -57,8 +57,7 @@ class distribution_object_dem(distribution_guotu_object):
                 elif CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xls') \
                         or CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xlsx'):
                     return self.get_sync_xls_dict_list(insert_or_updata)
-                else:
-                    return []
+        raise Exception("数据{0}业务元数据类型为'{1}'出现错误，没有可识别的类型".format(object_name, dsometadataxml_bus_type))
 
     def get_sync_mdb_dict_list(self, insert_or_updata) -> list:
         """

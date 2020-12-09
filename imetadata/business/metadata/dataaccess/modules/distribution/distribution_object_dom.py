@@ -35,8 +35,7 @@ class distribution_object_dom(distribution_guotu_object):
                 elif CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xls') \
                         or CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xlsx'):
                     return self.access_mdb_check_dict_xls()
-                else:
-                    return []
+        raise Exception("数据{0}业务元数据类型为'{1}'出现错误，没有可识别的类型".format(object_name, dsometadataxml_bus_type))
 
     def get_sync_dict_list(self, insert_or_updata) -> list:
         """
@@ -58,8 +57,7 @@ class distribution_object_dom(distribution_guotu_object):
                 elif CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xls') \
                         or CUtils.equal_ignore_case(dsometadataxml_bus_type, 'xlsx'):
                     return self.get_sync_xls_dict_list(insert_or_updata)
-                else:
-                    return []
+        raise Exception("数据{0}业务元数据类型为'{1}'出现错误，没有可识别的类型".format(object_name, dsometadataxml_bus_type))
 
     def get_sync_mdb_dict_list(self, insert_or_updata) -> list:
         """
