@@ -39,7 +39,7 @@ class Plugins_Test_Base(CResource):
         plugins_info = self.create_plugins().get_information()
         plugins_catalog = CUtils.dict_value_by_name(plugins_info, CPlugins.Plugins_Info_Catalog_Title, '')
         plugins_group = CUtils.dict_value_by_name(plugins_info, CPlugins.Plugins_Info_Group_Title, '')
-        plugins_type = CUtils.dict_value_by_name(plugins_info, CPlugins.Plugins_Info_Type_Title, '')
+        plugins_type = CUtils.dict_value_by_name(plugins_info, CPlugins.Plugins_Info_Type, '')
         self._test_file_root_path = settings.application.xpath_one(self.Path_Setting_Dir_Test_Data, '')
         self._test_file_parent_path = CFile.join_file(
             settings.application.xpath_one(self.Path_Setting_Dir_Test_Data, ''),

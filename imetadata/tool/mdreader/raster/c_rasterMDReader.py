@@ -9,6 +9,7 @@ import math
 import psutil
 from osgeo import gdal, osr
 
+from imetadata.base.c_utils import CUtils
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
@@ -104,59 +105,48 @@ class CRasterMDReader(CMDReader):
 
             # 投影信息
             projection = raster_ds.GetProjection()
-            if projection is None:
-                message = '文件[{0}]读取文件投影信息失败!'.format(self.__file_name_with_path__)
-                json_raster.set_value_of_name('result', self.Failure)
-                json_raster.set_value_of_name('message', message)
-                # 判断路径是否存在，不存在则创建
-                if CFile.check_and_create_directory(file_name_with_path):
-                    json_raster.to_file(file_name_with_path)
-                return CResult.merge_result(CResult.Failure,
-                                            '文件[{0}]读取文件投影信息失败!'.format(self.__file_name_with_path__))
             # 定义coordinate子对象
             json_coordinate = CJson()
-            spatial = osr.SpatialReference()
-            if spatial.ImportFromWkt(projection) == gdal.CE_None:
-                proj_wkt = spatial.ExportToWkt()
-                json_coordinate.set_value_of_name('wkt', proj_wkt)
+            if not CUtils.equal_ignore_case(projection, ''):
+                spatial = osr.SpatialReference()
+                if spatial.ImportFromWkt(projection) == gdal.CE_None:
+                    proj_wkt = spatial.ExportToWkt()
+                    json_coordinate.set_value_of_name('wkt', proj_wkt)
+                else:
+                    json_coordinate.set_value_of_name('wkt', projection)
+                proj4 = spatial.ExportToProj4()
+                json_coordinate.set_value_of_name('proj4', proj4)
+                spatial.MorphToESRI()
+                esri = spatial.ExportToWkt()
+                json_coordinate.set_value_of_name('esri', esri)
+                spatial = None
             else:
-                json_coordinate.set_value_of_name('wkt', projection)
-            proj4 = spatial.ExportToProj4()
-            json_coordinate.set_value_of_name('proj4', proj4)
-            spatial.MorphToESRI()
-            esri = spatial.ExportToWkt()
-            json_coordinate.set_value_of_name('esri', esri)
-            spatial = None
+                json_coordinate.set_value_of_name('wkt', None)
+                json_coordinate.set_value_of_name('proj4', None)
+                json_coordinate.set_value_of_name('esri', None)
             json_raster.set_value_of_name('coordinate', json_coordinate.json_obj)
 
             # 仿射变换信息
             geo_transform = raster_ds.GetGeoTransform()
-            if geo_transform is None:
-                message = '文件[{0}]读取文件仿射变换信息失败!'.format(self.__file_name_with_path__)
-                json_raster.set_value_of_name('result', self.Failure)
-                json_raster.set_value_of_name('message', message)
-                # 判断路径是否存在，不存在则创建
-                if CFile.check_and_create_directory(file_name_with_path):
-                    json_raster.to_file(file_name_with_path)
-                return CResult.merge_result(CResult.Failure,
-                                            '文件[{0}]读取仿射变换信息失败!'.format(self.__file_name_with_path__))
-            # 定义origin、pixelsize、boundingbox子节点
-            if geo_transform[2] == 0 and geo_transform[4] == 0:
-                (json_origin, json_pixel, json_bounding) = self.get_geotramsform_by_raster(geo_transform, image_size_x,
-                                                                                           image_size_y)
-                json_raster.set_value_of_name('origin', json_origin.json_obj)
-                json_raster.set_value_of_name('pixelsize', json_pixel.json_obj)
-                json_raster.set_value_of_name('boundingbox', json_bounding.json_obj)
-            else:
-                (json_geo, json_bounding) = self.get_geotramsform_by_raster(geo_transform, image_size_x, image_size_y)
-                json_raster.set_value_of_name('geotransform', json_geo.json_obj)
-                json_raster.set_value_of_name('boundingbox', json_bounding.json_obj)
+            if geo_transform is not None:
+                # 定义origin、pixelsize、boundingbox子节点
+                if geo_transform[2] == 0 and geo_transform[4] == 0:
+                    (json_origin, json_pixel, json_bounding) = self.get_geotramsform_by_raster(geo_transform, image_size_x,
+                                                                                               image_size_y)
+                    json_raster.set_value_of_name('origin', json_origin.json_obj)
+                    json_raster.set_value_of_name('pixelsize', json_pixel.json_obj)
+                    json_raster.set_value_of_name('boundingbox', json_bounding.json_obj)
+                else:
+                    (json_geo, json_bounding) = self.get_geotramsform_by_raster(geo_transform, image_size_x, image_size_y)
+                    json_raster.set_value_of_name('geotransform', json_geo.json_obj)
+                    json_raster.set_value_of_name('boundingbox', json_bounding.json_obj)
 
             # wgs84坐标系转换
             json_wgs84 = self.transform_to_WGS84(geo_transform, image_size_x, image_size_y, projection)
             json_raster.set_value_of_name('wgs84', json_wgs84.json_obj)
 
             # GCPs信息
+            # 注意：这个节点没测试过，可能有bug
             gcp_count = raster_ds.GetGCPCount()
             if gcp_count > 0:
                 gcp_projection = raster_ds.GetGCPProjection()
@@ -289,36 +279,44 @@ class CRasterMDReader(CMDReader):
         json_wgs84_coordinate.set_value_of_name('esri', wgs84_esri)
         json_wgs84.set_value_of_name('coordinate', json_wgs84_coordinate.json_obj)
 
-        point_left_top_x = geo_transform[0]
-        point_left_top_y = geo_transform[3]
-        point_right_bottom_x = geo_transform[0] + image_size_x * geo_transform[1] + image_size_y * geo_transform[2]
-        point_right_bottom_y = geo_transform[3] + image_size_x * geo_transform[4] + image_size_y * geo_transform[5]
-        rb = (0, 0)
-        lu = (0, 0)
-        if projection.strip() != '':
-            source_projection = osr.SpatialReference(wkt=projection)
-            source = source_projection.GetAttrValue('GEOGCS', 0)
-            prosrs = osr.SpatialReference()
-            prosrs.ImportFromWkt(projection)
-            geosrs = prosrs.CloneGeogCS()
-            ct = osr.CreateCoordinateTransformation(prosrs, geosrs)
-            if ct is not None:
-                rb = ct.TransformPoint(point_right_bottom_x, point_right_bottom_y)
-                lu = ct.TransformPoint(point_left_top_x, point_left_top_y)
-                json_bounding = CJson()
-                json_bounding.set_value_of_name('left', lu[0])
-                json_bounding.set_value_of_name('top', lu[1])
-                json_bounding.set_value_of_name('right', rb[0])
-                json_bounding.set_value_of_name('bottom', rb[1])
-                json_wgs84.set_value_of_name('boundingbox', json_bounding.json_obj)
-                json_wgs84.set_value_of_name('msg', 'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换成功！'.format(source))
+        if geo_transform is not None:
+            point_left_top_x = geo_transform[0]
+            point_left_top_y = geo_transform[3]
+            point_right_bottom_x = geo_transform[0] + image_size_x * geo_transform[1] + image_size_y * geo_transform[2]
+            point_right_bottom_y = geo_transform[3] + image_size_x * geo_transform[4] + image_size_y * geo_transform[5]
+            rb = (0, 0)
+            lu = (0, 0)
+            if not CUtils.equal_ignore_case(projection, ''):
+                source_projection = osr.SpatialReference(wkt=projection)
+                source = source_projection.GetAttrValue('GEOGCS', 0)
+                prosrs = osr.SpatialReference()
+                prosrs.ImportFromWkt(projection)
+                geosrs = prosrs.CloneGeogCS()
+                ct = osr.CreateCoordinateTransformation(prosrs, geosrs)
+                if ct is not None:
+                    rb = ct.TransformPoint(point_right_bottom_x, point_right_bottom_y)
+                    lu = ct.TransformPoint(point_left_top_x, point_left_top_y)
+                    json_bounding = CJson()
+                    json_bounding.set_value_of_name('left', lu[0])
+                    json_bounding.set_value_of_name('top', lu[1])
+                    json_bounding.set_value_of_name('right', rb[0])
+                    json_bounding.set_value_of_name('bottom', rb[1])
+                    json_wgs84.set_value_of_name('boundingbox', json_bounding.json_obj)
+                    json_wgs84.set_value_of_name('msg', 'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换成功！'.format(source))
+                    json_wgs84.set_value_of_name('result', self.Success)
+                else:
+                    json_wgs84.set_value_of_name('msg',
+                                                 'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(
+                                                     source))
+                    json_wgs84.set_value_of_name('result', self.Failure)
             else:
                 json_wgs84.set_value_of_name('msg',
-                                             'boundingbox四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(
-                                                 source))
+                                             'boundingbox四至范围从原坐标系转wgs_84坐标系转换失败！失败原因：文件不存在coordinate信息！')
+                json_wgs84.set_value_of_name('result', self.Failure)
         else:
             json_wgs84.set_value_of_name('msg',
-                                         'boundingbox四至范围从原坐标系转wgs_84坐标系转换失败！失败原因：文件不存在coordinate信息！')
+                                         'boundingbox四至范围从原坐标系转wgs_84坐标系转换失败！失败原因：文件不存在仿射变换信息！')
+            json_wgs84.set_value_of_name('result', self.Failure)
         return json_wgs84
 
     def get_other_metadata_by_raster(self, other_metadata: dict) -> CJson:
@@ -599,22 +597,22 @@ class CRasterMDReader(CMDReader):
 
 if __name__ == '__main__':
     # CRasterMDReader('/aa/bb/cc.img').get_metadata_2_file('/aa/bb/cc.json')
-    # CRasterMDReader(r'D:\test\入库存储\dem\fenfu\2772.0-509.0.tif').get_metadata_2_file(r'D:\test\raster_test\2772.0-509.0.json')
-    CRasterMDReader(r'D:\test\入库存储1\云南高分影像\F47\F47E001007BJ210M2017A.TIF').get_metadata_2_file(
-        r'D:\test\raster_test\F47E001007BJ210M2017A.json')
-    # CRasterMDReader(r'D:\test\DOM\广西影像数据\2772.0-509.0\2772.0-509.0.img').get_metadata_2_file(
-    #     r'D:\test\raster_test\2772.0-509.0-1.json')
+    # CRasterMDReader(r"D:\test\混合存储\镶嵌影像\石嘴山市-3.img").get_metadata_2_file(r'D:\test\raster_test\石嘴山市-3.json')
+    # CRasterMDReader(r'D:\test\入库存储1\云南高分影像\F47\F47E001007BJ210M2017A.TIF').get_metadata_2_file(
+    #     r'D:\test\raster_test\F47E001007BJ210M2017A.json')
+    # CRasterMDReader(r"D:\test\混合存储\wsiearth-tif\wsiearth.tif").get_metadata_2_file(
+    #     r'D:\test\raster_test\wsiearth.json')
     # CRasterMDReader(r'D:\test\DOM\湖北单个成果数据\H49G001026\H49G001026.tif').get_metadata_2_file(
     #     r'D:\test\raster_test\H49G001026.json')
     # CRasterMDReader(r'D:\test\DOM\湖北单个成果数据\H49G001026\HG.tif').get_metadata_2_file(
     #     r'D:\test\raster_test\HG.json')
     # CRasterMDReader(r'D:\test\DOM\湖南标准分幅成果数据\G49G001030\G49G001030.tif').get_metadata_2_file(
     #     r'D:\test\raster_test\G49G001030.json')
-    # CRasterMDReader(r'D:\test\卫星数据\单目录单数据\GF1_PMS1_E65.2_N26.6_20130927_L1A0000090284\GF1_PMS1_E65.2_N26'
-    #                 r'.6_20130927_L1A0000090284-PAN1.tiff').get_metadata_2_file(
-    #     r'D:\test\raster_test\GF1_PMS1_E65.2_N26.6_20130927_L1A0000090284-PAN1.json')
-    # CRasterMDReader(r'D:\test\卫星数据\一目录单数据\GF1_PMS1_E85.9_N44.1_20140821_L1A0000311315-PAN1.tiff').get_metadata_2_file(
-    #     r'D:\test\raster_test\GF1_PMS1_E85.9_N44.1_20140821_L1A0000311315-PAN1_dem.json')
+    CRasterMDReader(r'D:\test\混合存储\卫星数据\单目录单数据\GF1_PMS1_E65.2_N26.6_20130927_L1A0000090284\GF1_PMS1_E65.2_N26'
+                    r'.6_20130927_L1A0000090284-MSS1.tiff').get_metadata_2_file(
+        r'D:\test\raster_test\GF1_PMS1_E65.2_N26.6_20130927_L1A0000090284-MSS1.json')
+    CRasterMDReader(r"D:\test\混合存储\卫星数据\一目录单数据\GF1_PMS1_E85.9_N44.1_20140821_L1A0000311315-MSS1.tiff").\
+        get_metadata_2_file(r'D:\test\raster_test\GF1_PMS1_E85.9_N44.1_20140821_L1A0000311315-MSS1.json')
 
     # 循环测试内存占用情况
     # process_id = CSys.get_execute_process_id()
