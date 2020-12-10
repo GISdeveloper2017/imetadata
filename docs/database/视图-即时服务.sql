@@ -213,7 +213,7 @@ COMMENT ON VIEW public.view_dm2_object_filedetail
 CREATE OR REPLACE VIEW public.view_dm2_object_stat
  AS
 SELECT dm2_storage_object_def.dsodtypecode as dsodcode,
-    dm2_storage_object_def.dsodgroup,
+    1 as dsocatalog,
     detail.objectsize,
         --CASE dm2_storage_object.dsolastprocess_status
         --    WHEN '01'::text THEN 0::numeric
@@ -275,7 +275,7 @@ SELECT dm2_storage_object_def.dsodtypecode as dsodcode,
   WHERE objfile.object_confirm = '-1'::integer AND objfile.object_valid = '-1'::integer AND dm2_storage_object_def.dsodgroup in ('land_data','raster','vector')
 UNION ALL
  SELECT dm2_storage_object_def.dsodtypecode as dsodcode,
-    dm2_storage_object_def.dsodgroup,
+    2 as dsocatalog,
     dataset_detail.objectsize,
        -- CASE dm2_storage_object.dsolastprocess_status
          --   WHEN '01'::text THEN 0::numeric
