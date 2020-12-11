@@ -2,10 +2,8 @@
 # @Time : 2020/10/27 14:39
 # @Author : 赵宇飞
 # @File : c_mdTransformerThirdSurvey.py
-import pypyodbc
 
 from imetadata.base.c_result import CResult
-from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformer import CMDTransformer
@@ -67,18 +65,7 @@ class CMDTransformerThirdSurvey(CMDTransformer):
         conn = None  # 预定义连接与游标，方便释放
         cur = None
         try:
-            try:
-                if CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Windows):
-                    mdb = 'Driver={Microsoft Access Driver (*.mdb,*.accdb)};' + 'DBQ={0}'.format(
-                        file_metadata_name_with_path)  # win驱动，安装AccessDatabaseEngine_X64.exe驱动
-                    conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
-                elif CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Linux):
-                    conn = pypyodbc.connect('DSN=mymdb')  # linux配置，需要配置mdbtools, unixODBC, libmdbodbc
-                else:
-                    raise Exception('操作系统识别发生错误')
-            except Exception as error:
-                raise Exception('mdb解析驱动异常:'+error.__str__())
-
+            conn = self.get_mdb_connect(file_metadata_name_with_path)
             cur = conn.cursor()  # 游标
 
             xml_obj = CXml()  # 建立xml对象

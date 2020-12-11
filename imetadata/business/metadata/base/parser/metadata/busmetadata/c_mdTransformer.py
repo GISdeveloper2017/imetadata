@@ -7,6 +7,7 @@ from imetadata.business.metadata.base.content.c_virtualContent import CVirtualCo
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.c_parser import CParser
 from imetadata.business.metadata.base.parser.metadata.c_metadata import CMetaData
+import pypyodbc
 
 
 class CMDTransformer(CParser):
@@ -42,3 +43,18 @@ class CMDTransformer(CParser):
             self.Success,
             '文件[{0}]成功加载! '.format(self.transformer_src_filename)
         )
+
+    def get_mdb_connect(self, file_metadata_name_with_path):
+        """
+        :return:
+        """
+        try:
+            # win下需要安装AccessDatabaseEngine_X64.exe驱动
+            # linux下需要安装mdbtools与unixODBC-2.3.9.tar与gdal，gdal拥有pgeo驱动
+            # 并将odbcinst.ini文件的设置一个连接名为Driver=Microsoft Access Driver (*.mdb)的项目
+            mdb = 'Driver=Microsoft Access Driver (*.mdb);' + 'DBQ={0}'.format(
+                file_metadata_name_with_path)  # win驱动，安装AccessDatabaseEngine_X64.exe驱动
+            conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
+        except Exception as error:
+            raise Exception('mdb解析驱动异常:' + error.__str__())
+        return conn

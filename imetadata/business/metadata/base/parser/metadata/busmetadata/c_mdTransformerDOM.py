@@ -4,14 +4,9 @@
 # @File : c_mdTransformerDOM.py
 
 import re
-
-import pypyodbc
 import xlrd
-
-# import jaydebeapi
 from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
-from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformer import CMDTransformer
@@ -75,33 +70,9 @@ class CMDTransformerDOM(CMDTransformer):
         conn = None  # 预定义连接与游标，方便释放
         cur = None
         try:
-            try:
-                if CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Windows):
-                    mdb = 'Driver={Microsoft Access Driver (*.mdb,*.accdb)};' + 'DBQ={0}'.format(
-                        file_metadata_name_with_path)  # win驱动，安装AccessDatabaseEngine_X64.exe驱动
-                    conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
-                elif CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Linux):
-                    pass
-                    # 安装jaydebeapi3包，使用UCanAccess.jar
-                    # ucanaccess_jars = [
-                    #     "/UCanAccess-4.0.4-bin/ucanaccess-4.0.4.jar",
-                    #     "/UCanAccess-4.0.4-bin/lib/commons-lang-2.6.jar",
-                    #     "/UCanAccess-4.0.4-bin/lib/commons-logging-1.1.3.jar",
-                    #     "/UCanAccess-4.0.4-bin/lib/hsqldb.jar",
-                    #     "/UCanAccess-4.0.4-bin/lib/jackcess-2.1.11.jar",
-                    # ]
-                    # classpath = ":".join(ucanaccess_jars)
-                    # conn = jaydebeapi.connect(
-                    #     "net.ucanaccess.jdbc.UcanaccessDriver",
-                    #     ["jdbc:ucanaccess://{0}".format(file_metadata_name_with_path), "", ""],
-                    #     classpath
-                    # )
-                else:
-                    raise Exception('操作系统识别发生错误')
-            except Exception as error:
-                raise Exception('mdb解析驱动异常:'+error.__str__())
-
+            conn = self.get_mdb_connect(file_metadata_name_with_path)
             cur = conn.cursor()  # 游标
+
             sql = "SELECT * FROM " + self.object_name
             cur.execute(sql)
             table_data = cur.fetchall()
@@ -185,4 +156,4 @@ class CMDTransformerDOM(CMDTransformer):
 
 if __name__ == '__main__':
     pass
-    # file_metadata_name_with_path = r'D:\wor\测试数据\数据入库3\DOM\湖北单个成果数据\H49G001026\H49G001026.mat'
+    # file_metadata_name_with_path = r'D:\work\测试数据\国土行业\国土数据\DOM\湖南标准分幅成果数据\G49G001030\G49G001030.mdb'
