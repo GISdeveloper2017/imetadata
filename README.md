@@ -1571,6 +1571,8 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 ## 数据分析
 ### 场景
 1. 用户入库的数据, 可通过自动化分析, 分析结果入库或发布为ogc服务
+
+***
 # 数据库设计
 ## dm2_storage
 ### 简述
@@ -1615,3 +1617,36 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 说明:
 
 
+***
+# 依赖第三方部件
+## tika
+### 简介:
+1. apache tika
+The Apache Tika™ toolkit detects and extracts metadata and text from over a thousand different file types 
+(such as PPT, XLS, and PDF). All of these file types can be parsed through a single interface, 
+making Tika useful for search engine indexing, content analysis, translation, and much more. 
+
+### 支持数据格式:
+[完整数据格式列表](https://tika.apache.org/1.24/formats.html#Full_list_of_Supported_Formats)
+
+### 安装:
+1. 安装java\jdk
+1. 安装tika
+
+### 启动:
+#### macos
+1. 客户端启动
+    ```
+    在/usr/local/bin下运行tika
+    将启动tika的java客户端
+    ```
+   如果需要直接使用客户端的jar, 则需要在如下目录中查找
+   /usr/local/Cellar/tika/1.24.1_1/libexec
+   有两个jar包:
+   * tika-app-1.24.1.jar: 客户端应用程序
+   * tika-server-1.24.1.jar: 服务器应用程序
+1. 服务器启动
+    ```
+    在/usr/local/bin下运行tika-rest-server
+    将启动tika的rest服务器
+    ```
