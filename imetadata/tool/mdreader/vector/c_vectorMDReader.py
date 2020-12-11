@@ -99,11 +99,13 @@ class CVectorMDReader(CMDReader):
             else:
                 list_json_layers = []
                 for layer_temp in layer_list:
+                    print('图层对象: {0}'.format(layer_temp))
                     layer_name = layer_temp.GetName()
                     json_layer = CJson()
                     list_json_layers.append(json_layer.json_obj)
                     # name节点
                     json_layer.set_value_of_name("name", layer_name)
+                    json_layer.set_value_of_name("description", layer_name)
                     # print(layer_name)
                     # projwkt 节点
                     json_proj_wkt = self.get_projwkt_by_layer(layer_temp)
@@ -315,7 +317,7 @@ class CVectorMDReader(CMDReader):
         for i in range(iLayerCount):
             layer = shp_ds.GetLayer(i)
             layer_name = layer.GetName()
-            # print('第{0}个图层：{1}'.format(i,layer_name))
+            # print('第{0}个图层：{1}'.format(i, layer_name))
             if driver.name == 'OpenFileGDB':
                 if layer_name.startswith('T_1_'):
                     continue
@@ -357,7 +359,9 @@ if __name__ == '__main__':
     # CVectorMDReader('/aa/bb/cc1.shp').get_metadata_2_file('/aa/bb/cc1.json')
     # CVectorMDReader('/aa/bb/cc2.gdb').get_metadata_2_file('/aa/bb/cc2.json')
     # CVectorMDReader(r'D:\data\0生态审计\少量数据测试_修改后\重大工程项目_曲靖市_2019.shp').get_metadata_2_file(r'C:\app\cc1.json')
-    CVectorMDReader(r'D:\test\入库存储\gdb数据集\FileGeodb.gdb').get_metadata_2_file(r'D:\test\vector_test\FileGeodb.json')
+    CVectorMDReader(
+        r'/Users/wangxiya/Documents/我的测试数据/31.混合存储/测试数据/通用数据/矢量数据集/生态治理和水土保持监测数据库_黑岱沟露天煤矿_10017699_2020d1_2020-01-01.mdb').get_metadata_2_file(
+        r'/Users/wangxiya/Documents/我的测试数据/31.混合存储/测试数据/通用数据/矢量数据集/生态治理和水土保持监测数据库_黑岱沟露天煤矿_10017699_2020d1_2020-01-01.json')
     # CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb.gdb').get_metadata_2_file(r'C:\app2\cc4.json')
     # CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb_noLayer.gdb').get_metadata_2_file(r'M:\app\cc4.json')
     # CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb_error.gdb').get_metadata_2_file(r'C:\app\cc6.json')

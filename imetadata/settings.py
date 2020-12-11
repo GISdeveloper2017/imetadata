@@ -30,7 +30,7 @@ application = CSettings(
             'srid': 4326
         },
         'directory': {
-            'work': '/Users/wangxiya/Documents/交换/9.数管/9.工作目录',
+            'work': '/Users/wangxiya/Documents/我的测试数据/90.工作',
             'test': {
                 'data': '/Users/wangxiya/Documents/我的测试数据/31.混合存储/数据测试'
             }
@@ -65,7 +65,7 @@ application = CSettings(
             'title': '数管配置',
             'directory': {
                 'title': '数管常规目录设置, 包括元数据存储目录',
-                'view': '/Users/wangxiya/Documents/交换/9.数管/0.编目'
+                'view': '/Users/wangxiya/Documents/我的测试数据/80.快视图'
             },
             'tags': {
                 'rule': [
