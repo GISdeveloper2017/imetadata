@@ -16,7 +16,7 @@ class plugins_6002_mdb(CVectorFilePlugins):
         information = super().get_information()
         information[self.Plugins_Info_Type] = 'mdb'
         # information[self.Plugins_Info_Name] = 'mdb'
-        information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
+        information[self.Plugins_Info_DetailEngine] = self.DetailEngine_File_itself
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Vector
         information[self.Plugins_Info_BusMetaDataEngine] = None
         # information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector

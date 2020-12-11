@@ -261,6 +261,11 @@ class CResource:
 
     Name_Dir = 'dir'
     Name_Rule = 'rule'
+    Name_Mode = 'mode'
+
+    Name_Server = 'server'
+    Name_Client = 'client'
+    Name_Url = 'url'
 
     Switch_Use_Ready_Flag_File_Name = 'use_ready_flag_file_name'
     Switch_Inbound_After_QI_Immediately = 'inbound_after_qi_immediately'
@@ -276,6 +281,19 @@ class CResource:
     Path_Setting_Dir_WorkDir = '{0}.{1}'.format(Path_Setting_Dir, Name_Work)
     Path_Setting_Dir_Test = '{0}.{1}'.format(Path_Setting_Dir, Name_Test)
     Path_Setting_Dir_Test_Data = '{0}.{1}'.format(Path_Setting_Dir_Test, Name_Data)
+
+    Path_Setting_Dependence = 'dependence'
+
+    Path_Setting_Dependence_Tika = '{0}.tika'.format(Path_Setting_Dependence)
+    Path_Setting_Dependence_Tika_Enable = '{0}.{1}'.format(Path_Setting_Dependence_Tika, Name_Enable)
+    Path_Setting_Dependence_Tika_Mode = '{0}.{1}'.format(Path_Setting_Dependence_Tika_Enable, Name_Mode)
+    Path_Setting_Dependence_Tika_Server = '{0}.{1}'.format(Path_Setting_Dependence_Tika, Name_Server)
+    Path_Setting_Dependence_Tika_Server_Url = '{0}.{1}'.format(Path_Setting_Dependence_Tika_Server, Name_Url)
+    Path_Setting_Dependence_Tika_Client = '{0}.{1}'.format(Path_Setting_Dependence_Tika, Name_Client)
+    Path_Setting_Dependence_Tika_Client_App = '{0}.{1}'.format(Path_Setting_Dependence_Tika_Client, Name_Application)
+
+    Path_Setting_Dependence_Arcpy = '{0}.arcpy'.format(Path_Setting_Dependence)
+    Path_Setting_Dependence_Arcpy_Enable = '{0}.{1}'.format(Path_Setting_Dependence_Arcpy, Name_Enable)
 
     Path_Setting_MetaData = 'metadata'
 
@@ -321,12 +339,16 @@ class CResource:
     MetaDataEngine_Raster = 'raster'
     MetaDataEngine_Vector = 'vector'
     MetaDataEngine_Document = 'document'
+    # MetaDataEngine_Document_Tika 是 MetaDataEngine_Document 的一种实现
+    MetaDataEngine_Document_Tika = 'document_tika'
     MetaDataEngine_Spatial_Layer = 'spatial_layer'
+
     BrowseEngine_Raster = 'raster'
     BrowseEngine_Vector = 'vector'
     BrowseEngine_Document = 'document'
 
     DetailEngine_Same_File_Main_Name = 'same_file_main_name'
+    DetailEngine_File_itself = 'file_itself'
     DetailEngine_File_Of_Same_Dir = 'file_of_same_dir'
     DetailEngine_All_File_Of_Same_Dir = 'all_file_of_same_dir'
     DetailEngine_File_Of_Dir = 'file_of_dir'
@@ -423,9 +445,10 @@ class CResource:
     Path_21AT_MD_Content_ProductType = '/root/ProductType'
     Path_21AT_MD_Content_ProductName = '/root/DSName'
 
-    # DataGroup_Sat_raster = 'sat_raster' # 卫星的不能只能GF1 GF2...
+    DataGroup_Sat_raster = 'sat_raster'  # 卫星的不能只能GF1 GF2...
     DataGroup_Industry_Land_Data = 'land_data'
     DataGroup_Industry_Land_DataSet = 'land_dataset'
+    DataGroup_Document = 'document'
     DataGroup_Raster = 'raster'
     DataGroup_Raster_DataSet = 'raster_dataset'
     DataGroup_Vector = 'vector'
@@ -473,8 +496,6 @@ class CResource:
     Path_IB_Option_CheckFileLocked = '{0}.check_file_locked'.format(Path_IB_Option)
 
     def data_group_title(self, group_name: str):
-        # if group_name.lower() == self.DataGroup_Sat_raster:
-        #     return '卫星影像'
         if group_name.lower() == self.DataGroup_Industry_Land_Data:
             return '国土数据'
         elif group_name.lower() == self.DataGroup_Industry_Land_DataSet:
@@ -487,8 +508,10 @@ class CResource:
             return '矢量'
         elif group_name.lower() == self.DataGroup_Vector_DataSet:
             return '矢量数据集'
+        elif group_name.lower() == self.DataGroup_Document:
+            return '文档'
         else:
-            return None
+            return '卫星影像'
 
     def data_catalog_title(self, catalog_name: str):
         if catalog_name.lower() == self.DataCatalog_Land:

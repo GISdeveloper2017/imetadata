@@ -172,10 +172,13 @@ class CPlugins(CResource):
         information[self.Plugins_Info_Title] = information[self.Plugins_Info_ID]
         information[self.Plugins_Info_ViewEngine] = None
         information[self.Plugins_Info_SpatialEngine] = None
+        information[self.Plugins_Info_MetaDataEngine] = None
+        information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_HasChildObj] = self.DB_False
         information[self.Plugins_Info_Group] = None
         information[self.Plugins_Info_Group_Title] = None
         information[self.Plugins_Info_TagsEngine] = None
+        information[self.Plugins_Info_DetailEngine] = None
         information[self.Plugins_Info_Module_Distribute_Engine] = None  # 同步的引擎，值是发布同步用的类的名字
         return information
 

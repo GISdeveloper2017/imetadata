@@ -72,6 +72,8 @@ class CJson:
         return demjson.encode(self.__json_obj)
 
     def to_file(self, filename):
+        if not CFile.check_and_create_directory(filename):
+            raise PathNotCreateException(CFile.file_path(filename))
         demjson.encode_to_file(filename, self.__json_obj, overwrite=True)
 
     def set_value_of_name(self, name, value):

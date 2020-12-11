@@ -201,6 +201,26 @@ application = CSettings(
             'stocktaking': {
                 'title': '盘点配置'
             }
+        },
+        'dependence': {
+            'arcpy': {
+                'title': '依赖arcpy, 系统可以对元数据进行更加详细的提取, 支持对gdb,mdb等空间数据图层的别名的解析, 并进行业务标签的自动归类, enable设置为False, 表示无法依赖该工具, 系统将仅仅支持图层名称的解析, 不支持别名',
+                'enable': False,
+                'python_dir': None,
+                'version': 10.1
+            },
+            'tika': {
+                'title': '依赖tika, 系统可以对常用的文档进行元数据解析, enable设置为False, 表示无法依赖该工具, 文档的元数据将无法提取, 保持为空',
+                'enable': True,
+                'mode': 'server',
+                'mode_title': '模式可以设置为client/server, server表示使用tika的rest server进行解析, client表示使用客户端app进行解析, 使用何种方式, 必须进一步配置server和client属性',
+                'server': {
+                    'url': 'http://localhost:9998/tika'
+                },
+                'client': {
+                    'application': '/usr/local/Cellar/tika/1.24.1_1/libexec/tika-app-1.24.1.jar'
+                }
+            }
         }
     }
 )
