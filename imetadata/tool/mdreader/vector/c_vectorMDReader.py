@@ -8,6 +8,7 @@ from osgeo import ogr, osr, gdal
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
+from imetadata.base.c_utils import CUtils
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
 from imetadata.tool.mdreader.c_mdreader import CMDReader
@@ -173,12 +174,13 @@ class CVectorMDReader(CMDReader):
         if spatialRef is None:
             json_wgs84.set_value_of_name('msg',
                                          'extent四至范围从原坐标系转wgs_84坐标系转换失败！失败原因：文件读取空间参考失败！')
+            json_wgs84.set_value_of_name('result', self.Failure)
         else:
             proj_wkt = spatialRef.ExportToWkt()
             extent = layer.GetExtent()
             rb = (0, 0)
             lu = (0, 0)
-            if proj_wkt.strip() != '':
+            if not CUtils.equal_ignore_case(proj_wkt, ''):
                 source_projection = osr.SpatialReference(wkt=proj_wkt)
                 source = source_projection.GetAttrValue('GEOGCS', 0)
                 prosrs = osr.SpatialReference()
@@ -195,13 +197,16 @@ class CVectorMDReader(CMDReader):
                     json_bounding.set_value_of_name('miny', rb[1])
                     json_wgs84.set_value_of_name('extent', json_bounding.json_obj)
                     json_wgs84.set_value_of_name('msg', 'extent四至范围从{0}坐标系转wgs_84坐标系转换成功！'.format(source))
+                    json_wgs84.set_value_of_name('result', self.Success)
                 else:
                     json_wgs84.set_value_of_name('msg',
                                                  'extent四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(
                                                      source))
+                    json_wgs84.set_value_of_name('result', self.Failure)
             else:
                 json_wgs84.set_value_of_name('msg',
                                              'extent四至范围从原坐标系转wgs_84坐标系转换失败！失败原因：文件不存在wkt信息！')
+                json_wgs84.set_value_of_name('result', self.Failure)
         return json_wgs84
 
     def get_attributes_by_vectorlayer(self, layer) -> CJson:
