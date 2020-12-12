@@ -6,8 +6,10 @@
 import time
 from multiprocessing import Queue, Lock, Event
 
+from imetadata import settings
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_processUtils import CProcessUtils
+from imetadata.base.c_utils import CUtils
 from imetadata.service.c_process import CProcess
 
 
@@ -20,15 +22,27 @@ class CSentinel(CProcess):
     __control_center_objects_locker__: Lock = None
     __sentinel_callback_queue__: Queue = None
     __stop_event__: Event = None
+    __control_center_params: dict = None
 
-    def __init__(self, control_center_objects_locker, control_center_objects, stop_event, sentinel_callback_queue):
+    def __init__(self, control_center_objects_locker, control_center_objects, stop_event, sentinel_callback_queue,
+                 control_center_params):
         super().__init__()
         self.__control_center_objects__ = control_center_objects
         self.__control_center_objects_locker__ = control_center_objects_locker
         self.__stop_event__ = stop_event
         self.__sentinel_callback_queue__ = sentinel_callback_queue
+        self.__control_center_params = control_center_params
 
     def run(self):
+        # 此时, 才在sentinel的进程中
+        host_settings_dict = CUtils.dict_value_by_name(
+            self.__control_center_params,
+            self.NAME_CMD_SETTINGS,
+            None
+        )
+        settings.application.load_obj(host_settings_dict)
+        settings.application.init_sys_path()
+
         while True:
             # 在终止进程时，部分进程将得到信号，进入运行机制，但此之前，停止信号应该已经设置！！！进程将直接结束
             if self.__stop_event__.is_set():

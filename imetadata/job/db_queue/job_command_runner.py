@@ -8,6 +8,7 @@ from __future__ import absolute_import
 import time
 from multiprocessing import Queue, Lock, Manager
 
+from imetadata import settings
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
 from imetadata.database.c_factory import CFactory
@@ -25,8 +26,12 @@ class job_command_runner(CDBQueueJob):
         self.__cmd_queue__ = Queue()
         self.__locker__ = Lock()
         self.__shared_control_center_info__ = Manager().dict()
-        self.__control_center_obj__ = CControlCenter(self.__cmd_queue__, self.__locker__,
-                                                     self.__shared_control_center_info__)
+        self.__shared_control_center_info__[self.NAME_CMD_SETTINGS] = settings.application.json_obj
+        self.__control_center_obj__ = CControlCenter(
+            self.__cmd_queue__,
+            self.__locker__,
+            self.__shared_control_center_info__
+        )
         self.__control_center_obj__.start()
         CLogger().debug('控制中心进程{0}已经启动！'.format(self.__control_center_obj__.pid))
         time.sleep(5)

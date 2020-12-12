@@ -5,7 +5,9 @@
 
 from multiprocessing import Event
 
+from imetadata import settings
 from imetadata.base.c_logger import CLogger
+from imetadata.base.c_utils import CUtils
 from imetadata.schedule.c_cronWorkerExecute import CCronWorkerExecute
 from imetadata.schedule.c_dateWorkerExecute import CDateWorkerExecute
 from imetadata.schedule.c_dbQueueWorkerExecute import CDBQueueWorkerExecute
@@ -44,6 +46,11 @@ class CWorker(CProcess):
             return True
 
     def run(self):
+        # 此时, 才在worker的进程中
+        host_settings_dict = CUtils.dict_value_by_name(self.__params__, self.NAME_CMD_SETTINGS, None)
+        settings.application.load_obj(host_settings_dict)
+        settings.application.init_sys_path()
+
         # 在终止进程时，部分进程将得到信号，进入运行机制，但此之前，停止信号应该已经设置！！！进程将直接结束
         if not self.accept_stop_message():
             self.__runner__ = self.get_or_create_worker_execute(self.__cmd_id__, self.__cmd_trigger__,

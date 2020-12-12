@@ -139,7 +139,21 @@ where dsometadataparsestatus = {1}
                 plugins_obj.get_information()
             )
             process_result = plugins_obj.parser_metadata(metadata_parser)
+            if CResult.result_success(process_result):
+                all_step_success = (metadata_parser.metadata.metadata_extract_result == self.DB_True)
+                all_step_success = all_step_success and (
+                        metadata_parser.metadata.metadata_bus_extract_result == self.DB_True)
+                all_step_success = all_step_success and (
+                        metadata_parser.metadata.metadata_view_extract_result == self.DB_True)
+                all_step_success = all_step_success and (
+                        metadata_parser.metadata.metadata_time_extract_result == self.DB_True)
+                all_step_success = all_step_success and (
+                        metadata_parser.metadata.metadata_spatial_extract_result == self.DB_True)
+                if all_step_success:
+                    self.db_update_object_status(dso_id, process_result, is_retry_mission)
+                    return process_result
 
+            process_result = CResult.merge_result(self.Failure, '部分步骤执行出现错误!')
             self.db_update_object_status(dso_id, process_result, is_retry_mission)
             return process_result
         except Exception as error:
@@ -150,7 +164,7 @@ where dsometadataparsestatus = {1}
                     error.__str__()
                 )
             )
-            self.db_update_object_status(dso_id, process_result, is_retry_mission)
+            self.db_update_object_exception(dso_id, process_result, is_retry_mission)
             return process_result
         finally:
             plugins_obj.destroy_virtual_content()
@@ -161,8 +175,49 @@ where dsometadataparsestatus = {1}
                 '''
                 update dm2_storage_object
                 set dsometadataparsestatus = {0}
-                  , dsometadataparsememo = :dsometadataparsememo
                   , dso_metadataparser_retry = 0
+                  , dsolastmodifytime = now()
+                where dsoid = :dsoid
+                '''.format(self.ProcStatus_Finished),
+                {
+                    'dsoid': dso_id
+                }
+            )
+        elif is_retry_mission:
+            CFactory().give_me_db(self.get_mission_db_id()).execute(
+                '''
+                update dm2_storage_object
+                set dsometadataparsestatus = {0}
+                  , dsolastmodifytime = now()
+                  , dso_metadataparser_retry = dso_metadataparser_retry + 1
+                where dsoid = :dsoid
+                '''.format(self.ProcStatus_Error),
+                {
+                    'dsoid': dso_id
+                }
+            )
+        else:
+            CFactory().give_me_db(self.get_mission_db_id()).execute(
+                '''
+                update dm2_storage_object
+                set dsometadataparsestatus = {0}
+                  , dsolastmodifytime = now()
+                  , dso_metadataparser_retry = 0
+                where dsoid = :dsoid
+                '''.format(self.ProcStatus_Error),
+                {
+                    'dsoid': dso_id
+                }
+            )
+
+    def db_update_object_exception(self, dso_id, process_result, is_retry_mission):
+        if CResult.result_success(process_result):
+            CFactory().give_me_db(self.get_mission_db_id()).execute(
+                '''
+                update dm2_storage_object
+                set dsometadataparsestatus = {0}
+                  , dso_metadataparser_retry = 0
+                  , dsometadataparsememo = :dsometadataparsememo
                   , dsolastmodifytime = now()
                 where dsoid = :dsoid
                 '''.format(self.ProcStatus_Finished),

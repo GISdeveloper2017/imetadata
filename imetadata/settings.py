@@ -21,8 +21,8 @@ application = CSettings(
     {
         'application': {
             'debug': -1,
-            'directory': '',
-            'name': ''
+            'directory': '/Users/wangxiya/Documents/Develop/tsdb',
+            'name': 'tsdb'
         },
         'databases': [
             {

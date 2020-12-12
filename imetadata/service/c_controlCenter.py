@@ -9,6 +9,7 @@ import signal as base_signal
 import time
 from multiprocessing import Process, Queue, Lock, Event, Manager
 
+from imetadata import settings
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_processUtils import CProcessUtils
 from imetadata.base.c_sys import CSys
@@ -27,6 +28,7 @@ class CControlCenter(CProcess):
     __command_queue__: Queue = None
 
     __control_center_manager__: Manager = None
+    __control_center_params: dict = None
     __control_center_objects__: dict = None
     __control_center_objects_locker__: Lock = None
 
@@ -65,17 +67,34 @@ class CControlCenter(CProcess):
             base_signal.signal(base_signal.SIGCHLD, self.wait_child)
 
         CLogger().info('控制中心进程[{0}]启动运行...'.format(self.pid))
+        # 此时, 才在controlCenter的进程中
+        host_settings_dict = CUtils.dict_value_by_name(
+            self.__shared_control_center_info__,
+            self.NAME_CMD_SETTINGS,
+            None
+        )
+        settings.application.load_obj(host_settings_dict)
+        settings.application.init_sys_path()
 
         CLogger().info('控制中心进程[{0}]启动哨兵值守进程...'.format(self.pid))
         self.__control_center_manager__ = Manager()
+        self.__control_center_params = self.__control_center_manager__.dict()
         self.__control_center_objects__ = self.__control_center_manager__.dict()
         self.__control_center_objects_locker__ = self.__control_center_manager__.Lock()
 
         self.__sentinel_manager__ = Manager()
         self.__sentinel_queue__ = self.__sentinel_manager__.Queue()
         self.__sentinel_stop_event__ = self.__sentinel_manager__.Event()
-        self.__sentinel_process__ = CSentinel(self.__control_center_objects_locker__, self.__control_center_objects__,
-                                              self.__sentinel_stop_event__, self.__sentinel_queue__)
+
+        self.__control_center_params[self.NAME_CMD_SETTINGS] = host_settings_dict
+
+        self.__sentinel_process__ = CSentinel(
+            self.__control_center_objects_locker__,
+            self.__control_center_objects__,
+            self.__sentinel_stop_event__,
+            self.__sentinel_queue__,
+            self.__control_center_params
+        )
         self.__sentinel_process__.daemon = True
         self.__sentinel_process__.start()
 
@@ -203,6 +222,7 @@ class CControlCenter(CProcess):
         params[self.NAME_CMD_ALGORITHM] = cmd_algorithm
         params[self.NAME_CMD_TRIGGER] = cmd_trigger
         params[self.NAME_CMD_PARAMS] = cmd_params
+        params[self.NAME_CMD_SETTINGS] = settings.application.json_obj
 
         stop_event = self.__control_center_manager__.Event()
         subprocess_list = self.__control_center_manager__.list()

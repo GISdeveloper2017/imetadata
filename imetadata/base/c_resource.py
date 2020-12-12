@@ -63,6 +63,7 @@ class CResource:
     NAME_CMD_TRIGGER = 'cmd_trigger'
     NAME_CMD_ALGORITHM = 'cmd_algorithm'
     NAME_CMD_PARAMS = 'cmd_params'
+    NAME_CMD_SETTINGS = 'cmd_settings'
 
     Name_Application = 'application'
     Name_Debug = 'debug'
@@ -267,6 +268,7 @@ class CResource:
     Name_Server = 'server'
     Name_Client = 'client'
     Name_Url = 'url'
+    Name_Timeout = 'timeout'
 
     Switch_Use_Ready_Flag_File_Name = 'use_ready_flag_file_name'
     Switch_Inbound_After_QI_Immediately = 'inbound_after_qi_immediately'
@@ -294,6 +296,7 @@ class CResource:
     Path_Setting_Dependence_Tika_Mode = '{0}.{1}'.format(Path_Setting_Dependence_Tika_Enable, Name_Mode)
     Path_Setting_Dependence_Tika_Server = '{0}.{1}'.format(Path_Setting_Dependence_Tika, Name_Server)
     Path_Setting_Dependence_Tika_Server_Url = '{0}.{1}'.format(Path_Setting_Dependence_Tika_Server, Name_Url)
+    Path_Setting_Dependence_Tika_Server_Timeout = '{0}.{1}'.format(Path_Setting_Dependence_Tika_Server, Name_Timeout)
     Path_Setting_Dependence_Tika_Client = '{0}.{1}'.format(Path_Setting_Dependence_Tika, Name_Client)
     Path_Setting_Dependence_Tika_Client_App = '{0}.{1}'.format(Path_Setting_Dependence_Tika_Client, Name_Application)
 

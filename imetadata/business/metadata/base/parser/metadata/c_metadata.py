@@ -84,8 +84,30 @@ class CMetaData(CResource):
     def time_information(self) -> CJson:
         return self.__time_information__
 
+    @property
+    def metadata_extract_result(self):
+        return self.__metadata_extract_result__
+
+    @property
+    def metadata_bus_extract_result(self):
+        return self.__metadata_bus_extract_result__
+
+    @property
+    def metadata_view_extract_result(self):
+        return self.__metadata_view_extract_result__
+
+    @property
+    def metadata_time_extract_result(self):
+        return self.__metadata_time_extract_result__
+
+    @property
+    def metadata_spatial_extract_result(self):
+        return self.__metadata_spatial_extract_result__
+
     def metadata(self):
-        if self.__metadata_type__ == self.MetaDataFormat_Json:
+        if self.__metadata_extract_result__ == self.DB_False:
+            return self.__metadata_extract_result__, self.__metadata_extract_memo__, self.__metadata_type__, None
+        elif self.__metadata_type__ == self.MetaDataFormat_Json:
             return self.__metadata_extract_result__, self.__metadata_extract_memo__, self.__metadata_type__, self.__metadata_json__.to_json()
         elif self.__metadata_type__ == self.MetaDataFormat_XML:
             return self.__metadata_extract_result__, self.__metadata_extract_memo__, self.__metadata_type__, self.__metadata_xml__.to_xml()

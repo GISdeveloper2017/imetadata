@@ -29,11 +29,14 @@ class CMDExtractorDocument_Tika(CMDExtractorDocument):
         tika_dependence_mode = settings.application.xpath_one(self.Path_Setting_Dependence_Tika_Mode, self.Name_Server)
         if CUtils.equal_ignore_case(tika_dependence_mode, self.Name_Server):
             tika_server_url = settings.application.xpath_one(self.Path_Setting_Dependence_Tika_Server_Url, None)
+            tika_server_connect_timeout = settings.application.xpath_one(
+                self.Path_Setting_Dependence_Tika_Server_Timeout, 30)
             if CUtils.equal_ignore_case(tika_server_url, ''):
                 return default_result
 
             try:
-                parsed = TikaServer.from_file(in_file_fullname, tika_server_url)
+                parsed = TikaServer.from_file(in_file_fullname, tika_server_url,
+                                              requestOptions={'timeout': tika_server_connect_timeout})
                 meta_data_dict = parsed["metadata"]
                 json_obj = CJson()
                 json_obj.load_obj(meta_data_dict)
@@ -57,6 +60,14 @@ class CMDExtractorDocument_Tika(CMDExtractorDocument):
             tika_application = settings.application.xpath_one(self.Path_Setting_Dependence_Tika_Client_App, None)
             if CUtils.equal_ignore_case(tika_application, ''):
                 return default_result
+
+            if not CFile.file_or_path_exist(tika_application):
+                return CResult.merge_result(
+                    self.Failure,
+                    '文档[{0}]的元数据无法提取, 详细原因为: [依赖中间件{1}文件不存在, 请修正后重试!]'.format(
+                        in_file_fullname, tika_application
+                    )
+                )
 
             try:
                 tika_client = TikaApplication(file_jar=tika_application)
