@@ -47,6 +47,10 @@ class CFile:
         return input_file_path
 
     @classmethod
+    def file_abs_path(cls, file_name_with_path: str) -> str:
+        return os.path.abspath(file_name_with_path)
+
+    @classmethod
     def file_main_name(cls, file_name_with_path: str):
         filename_without_path = cls.file_name(file_name_with_path)
 

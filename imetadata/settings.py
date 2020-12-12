@@ -20,11 +20,20 @@ from imetadata.base.c_settings import CSettings
 application = CSettings(
     {
         'application': {
-            'debug': -1
+            'debug': -1,
+            'directory': '',
+            'name': ''
         },
         'databases': [
-            {'id': '0', 'type': 'postgresql',
-             'host': '127.0.0.1', 'port': '5432', 'database': 'test', 'username': 'postgres', 'password': 'postgres'}
+            {
+                'id': '0',
+                'type': 'postgresql',
+                'host': '127.0.0.1',
+                'port': '5432',
+                'database': 'atplatform4',
+                'username': 'postgres',
+                'password': 'postgres'
+            }
         ],
         'spatial': {
             'srid': 4326

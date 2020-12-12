@@ -61,7 +61,7 @@ class CControlCenter(CProcess):
         CLogger().info('处理SIGCHLD消息结束...')
 
     def run(self):
-        if not CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Windows):
+        if not CUtils.equal_ignore_case(CSys.get_platform_system_name(), self.OS_Windows):
             base_signal.signal(base_signal.SIGCHLD, self.wait_child)
 
         CLogger().info('控制中心进程[{0}]启动运行...'.format(self.pid))

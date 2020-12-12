@@ -3,9 +3,11 @@
 # @Author : 王西亚 
 # @File : init.py.py
 
+import os
 import argparse
 import logging
 
+from imetadata import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_object import CObject
@@ -18,7 +20,7 @@ from imetadata.database.c_factory import CFactory
 class CApplicationInit(CResource):
     def register_dm_metadata_plugins(self):
         sql_register_dm_metadata_plugins_clear = '''
-        truncate table dm2_storage_object_def
+        truncate table dm2_storage_object_def cascade
         '''
 
         sql_unregister_dm_metadata_plugins = '''
@@ -56,7 +58,7 @@ class CApplicationInit(CResource):
 
     def register_dm_modules(self):
         sql_register_dm_metadata_modules_clear = '''
-        truncate table dm2_modules
+        truncate table dm2_modules cascade
         '''
 
         sql_register_dm_metadata_modules = '''
@@ -66,14 +68,14 @@ class CApplicationInit(CResource):
 
         CFactory().give_me_db().execute(sql_register_dm_metadata_modules_clear)
 
-        modules_root_dir = CSys.get_dataaccess_modules_root_dir()
+        modules_root_dir = CSys.get_metadata_data_access_modules_root_dir()
         module_file_name_list = CFile.file_or_subpath_of_path(modules_root_dir)
         for module_file_name in module_file_name_list:
             if CFile.is_file(CFile.join_file(modules_root_dir, module_file_name)) and (
                     not (str(module_file_name)).startswith('_')):
                 module_name = CFile.file_main_name(module_file_name)
                 module_obj = CObject.create_module_instance(
-                    CSys.get_dataaccess_modules_package_root_name(),
+                    CSys.get_metadata_data_access_modules_root_name(),
                     module_name,
                     CResource.DB_Server_ID_Default,
                     '',
@@ -92,7 +94,7 @@ class CApplicationInit(CResource):
 
     def register_dm_metadata_quality_group(self):
         sql_register_dm_metadata_modules_clear = '''
-        truncate table dm2_quality_group
+        truncate table dm2_quality_group cascade
         '''
 
         sql_register_dm_metadata_modules = '''
@@ -135,5 +137,38 @@ if __name__ == "__main__":
                             datefmt="%m/%d/%Y %H:%M:%S %p")
 
     CLogger().info('开始初始化工作...')
+    application_dir = CFile.file_path(CFile.file_abs_path(__file__))
+    application_name = CFile.file_main_name(application_dir)
+    settings.application.set_app_information(application_dir, application_name)
     start_init()
     CLogger().info('初始化工作已经成功完成...')
+
+    # print(__file__)
+    # application_dir = CFile.file_path(CFile.file_abs_path(__file__))
+    # application_name = CFile.file_main_name(application_dir)
+    # settings.application.set_app_information(application_dir, application_name)
+    # print('*'*15)
+    # print(CSys.get_execute_filename())
+    # print(CSys.get_project_dir())
+    # print(CSys.get_application_name())
+    # print('*' * 15)
+    # print(CSys.get_imetadata_dir())
+    # print(CSys.get_job_root_dir())
+    # print(CSys.get_business_root_dir())
+    # print(CSys.get_metadata_root_dir())
+    # print(CSys.get_inbound_root_dir())
+    # print(CSys.get_plugins_root_dir())
+    # print(CSys.get_dataaccess_root_dir())
+    # print(CSys.get_metadata_data_access_modules_root_dir())
+    # print('*' * 15)
+    # print(CSys.get_work_root_dir())
+    # print(CSys.get_metadata_view_root_dir())
+    # print('*' * 15)
+    # print(CSys.get_application_package_name())
+    # print(CSys.get_job_package_root_name())
+    # print(CSys.get_business_package_root_name())
+    # print(CSys.get_metadata_package_root_name())
+    # print(CSys.get_inbound_package_root_name())
+    # print(CSys.get_plugins_package_root_name())
+    # print(CSys.get_dataaccess_package_root_name())
+    # print(CSys.get_metadata_data_access_modules_root_name())

@@ -4,6 +4,8 @@
 import argparse
 import logging
 
+from imetadata import settings
+from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.schedule.c_controlCenterExecute import CControlCenterExecute
 
@@ -38,5 +40,8 @@ if __name__ == "__main__":
                             datefmt="%m/%d/%Y %H:%M:%S %p")
 
     CLogger().info('start run_schedule')
+    application_dir = CFile.file_path(CFile.file_abs_path(__file__))
+    application_name = CFile.file_main_name(application_dir)
+    settings.application.set_app_information(application_dir, application_name)
     start_schedule_creator()
     CLogger().info('end run_schedule')

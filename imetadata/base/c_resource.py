@@ -54,6 +54,7 @@ class CResource:
     OS_MacOS = 'Darwin'
 
     Application_Name = 'imetadata'
+    Name_IMetaData = 'imetadata'
     SYSTEM_NAME_MISSION_ID = '{system.mission.id}'
 
     NAME_CMD_COMMAND = 'cmd_command'
@@ -274,6 +275,10 @@ class CResource:
     Path_MD_Rule_Plugins_Dir = '/root/plugins/dir/plugin'
     Path_MD_Rule_Plugins_File = '/root/plugins/file/plugin'
 
+    Path_Setting_Application = Name_Application
+    Path_Setting_Application_Dir = '{0}.{1}'.format(Path_Setting_Application, Name_Directory)
+    Path_Setting_Application_Name = '{0}.{1}'.format(Path_Setting_Application, Name_Name)
+
     Path_Setting_Spatial = 'spatial'
     Path_Setting_Spatial_Srid = '{0}.srid'.format(Path_Setting_Spatial)
 
@@ -296,6 +301,9 @@ class CResource:
     Path_Setting_Dependence_Arcpy_Enable = '{0}.{1}'.format(Path_Setting_Dependence_Arcpy, Name_Enable)
 
     Path_Setting_MetaData = 'metadata'
+
+    Path_Setting_MetaData_Dir = '{0}.{1}'.format(Path_Setting_MetaData, Name_Directory)
+    Path_Setting_MetaData_Dir_View = '{0}.{1}'.format(Path_Setting_MetaData_Dir, Name_View)
 
     Path_Setting_MetaData_Plugins = '{0}.{1}'.format(Path_Setting_MetaData, Name_Plugins)
     Path_Setting_MetaData_Plugins_Dir = '{0}.{1}'.format(Path_Setting_MetaData_Plugins, Name_Dir)

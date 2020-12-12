@@ -15,33 +15,32 @@ class CSys(CResource):
         pass
 
     @classmethod
-    def get_os_name(cls):
+    def get_platform_system_name(cls):
         return platform.system()
 
     @classmethod
     def get_project_dir(cls):
-        cur_path = os.path.abspath(os.path.dirname(__file__))
-        return cur_path[:cur_path.find(cls.get_application_name()) + len(cls.get_application_name())]
+        return settings.application.xpath_one(cls.Path_Setting_Application_Dir, '')
 
     @classmethod
     def get_application_name(cls):
-        return cls.Application_Name
+        return settings.application.xpath_one(cls.Path_Setting_Application_Name, '')
 
     @classmethod
-    def get_application_dir(cls):
-        return os.path.join(cls.get_project_dir(), cls.get_application_name())
+    def get_imetadata_dir(cls):
+        return os.path.join(cls.get_project_dir(), cls.Name_IMetaData)
 
     @classmethod
     def get_application_package_name(cls):
-        return cls.Application_Name
+        return cls.Name_IMetaData
 
     @classmethod
     def get_job_root_dir(cls):
-        return os.path.join(cls.get_application_dir(), cls.NAME_JOB)
+        return os.path.join(cls.get_imetadata_dir(), cls.NAME_JOB)
 
     @classmethod
     def get_job_package_root_name(cls):
-        return '{0}.{1}'.format(cls.get_application_name(), cls.NAME_JOB)
+        return '{0}.{1}'.format(cls.get_application_package_name(), cls.NAME_JOB)
 
     @classmethod
     def get_execute_filename(cls):
@@ -52,16 +51,16 @@ class CSys(CResource):
         return os.getpid()
 
     @classmethod
-    def get_execute_os_name(cls):
+    def get_os_name(cls):
         return os.name
 
     @classmethod
     def get_business_root_dir(cls):
-        return os.path.join(cls.get_application_dir(), cls.Name_Business)
+        return os.path.join(cls.get_imetadata_dir(), cls.Name_Business)
 
     @classmethod
     def get_business_package_root_name(cls):
-        return '{0}.{1}'.format(cls.get_application_name(), cls.Name_Business)
+        return '{0}.{1}'.format(cls.get_application_package_name(), cls.Name_Business)
 
     @classmethod
     def get_metadata_root_dir(cls):
@@ -76,10 +75,6 @@ class CSys(CResource):
         return os.path.join(cls.get_metadata_root_dir(), cls.Name_DataAccess)
 
     @classmethod
-    def get_dataaccess_modules_root_dir(cls):
-        return os.path.join(cls.get_dataaccess_root_dir(), cls.Name_Modules)
-
-    @classmethod
     def get_metadata_package_root_name(cls):
         return '{0}.{1}'.format(cls.get_business_package_root_name(), cls.Name_MetaData)
 
@@ -90,10 +85,6 @@ class CSys(CResource):
     @classmethod
     def get_dataaccess_package_root_name(cls):
         return '{0}.{1}'.format(cls.get_metadata_package_root_name(), cls.Name_DataAccess)
-
-    @classmethod
-    def get_dataaccess_modules_package_root_name(cls):
-        return '{0}.{1}'.format(cls.get_dataaccess_package_root_name(), cls.Name_Modules)
 
     @classmethod
     def get_plugins_root_dir(cls):
@@ -113,10 +104,7 @@ class CSys(CResource):
 
     @classmethod
     def get_metadata_view_root_dir(cls):
-        rt_path = settings.application.xpath_one(
-            '{0}.{1}.{2}'.format(cls.ModuleName_MetaData, cls.Name_Directory, cls.Name_View),
-            None
-        )
+        rt_path = settings.application.xpath_one(cls.Path_Setting_MetaData_Dir_View, None)
         if CUtils.equal_ignore_case(CUtils.any_2_str(rt_path), ''):
             rt_path = os.path.join(cls.get_project_dir(), cls.Name_View)
 
@@ -124,29 +112,8 @@ class CSys(CResource):
 
     @classmethod
     def get_metadata_data_access_modules_root_dir(cls):
-        return os.path.join(cls.get_metadata_root_dir(), cls.Name_DataAccess, cls.Name_Modules)
+        return os.path.join(cls.get_dataaccess_root_dir(), cls.Name_Modules)
 
     @classmethod
     def get_metadata_data_access_modules_root_name(cls):
-        return '{0}.{1}.{2}'.format(cls.get_metadata_package_root_name(), cls.Name_DataAccess, cls.Name_Modules)
-
-
-if __name__ == '__main__':
-    print(CSys.get_plugins_package_root_name())
-    # print(CSys.get_project_dir())
-    # print(CSys.get_metadata_root_dir())
-    print(CSys.get_plugins_root_dir())
-    print(CSys.get_metadata_data_access_modules_root_name())
-    print(CSys.get_metadata_data_access_modules_root_dir())
-    print(CSys.get_job_package_root_name())
-    print(CSys.get_job_root_dir())
-    print(CSys.get_work_root_dir())
-    print(CSys.get_execute_os_name())
-    print('操作系统:{0}'.format(CSys.get_os_name()))
-
-    if platform.system() == 'Windows':
-        print('Windows系统')
-    elif platform.system() == 'Linux':
-        print('Linux系统')
-    else:
-        print('其他')
+        return '{0}.{1}'.format(cls.get_dataaccess_package_root_name(), cls.Name_Modules)
