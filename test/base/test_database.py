@@ -26,7 +26,7 @@ class Test_DataBase:
             factory = CFactory()
             db = factory.give_me_db('0')
 
-            dataset = db.all_row("select * from dm2_storage where dstid = '1'")
+            dataset = db.all_row("select * from dm2_storage where dstid = '01'")
             assert dataset.size() == 1
         except DBException as err:
             assert False
@@ -42,21 +42,12 @@ class Test_DataBase:
 
 if __name__ == '__main__':
     sql_available_storage = '''
-    select dm2_storage.dstid, dm2_storage.dsttitle, dm2_storage.dst_volumn_max, dm2_storage.dst_volumn_max - coalesce(stat.file_size_sum, 0) as free_space
-    from dm2_storage left join (
-        select dsfstorageid, sum(dsffilesize) as file_size_sum
-        from dm2_storage_file left join dm2_storage
-            on dm2_storage_file.dsfstorageid = dm2_storage.dstid
-        where dm2_storage.dsttype = 'core'
-        group by dsfstorageid
-        ) stat on dm2_storage.dstid = stat.dsfstorageid
-    where dm2_storage.dsttype = 'core'
-    order by dm2_storage.dst_volumn_max desc        
+    select dsttitle as "TITLE" from dm2_storage   
     '''
     ds_available_storage = CFactory().give_me_db().all_row(sql_available_storage)
 
     for storage_index in range(0, ds_available_storage.size()):
-        print(ds_available_storage.value_by_name(storage_index, 'dsttitle', ''))
+        print(ds_available_storage.value_by_name(storage_index, 'TITLE', ''))
     # sql = '''
     # insert into test(id, string, clob, blob) values(:id, :string, :clob, :blob)
     # '''

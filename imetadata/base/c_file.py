@@ -62,6 +62,16 @@ class CFile:
             return file_info[0]
 
     @classmethod
+    def change_file_ext(cls, file_name_with_path: str, file_ext: str):
+        """
+        改变文件的扩展名, 注意, 新扩展名不带前导点
+        :param file_name_with_path:
+        :param file_ext:
+        :return:
+        """
+        return '{0}.{1}'.format(cls.file_main_name(file_name_with_path), file_ext)
+
+    @classmethod
     def check_and_create_directory(cls, file_name_with_path: str) -> bool:
         return cls.check_and_create_directory_itself(cls.file_path(file_name_with_path))
 

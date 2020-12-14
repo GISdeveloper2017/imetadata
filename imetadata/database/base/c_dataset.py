@@ -1,79 +1,50 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
+from imetadata.base.c_dataSetBase import CDataSetBase
 from imetadata.base.c_file import CFile
 from imetadata.base.exceptions import PathNotCreateException
 
 
-class CDataSet:
-    __data__ = None
-
+class CDataSet(CDataSetBase):
     def __init__(self, data=None):
-        self.__data__ = data
+        super().__init__()
+        self._data = data
 
-    def __value_by_index(self, row: int, index: int):
-        return self.__data__[row][index]
+    def _value_by_index(self, row: int, index: int):
+        return self._data[row][index]
 
-    def __value_by_name(self, row: int, name: str):
-        return self.__data__[row][name]
+    def _value_by_name(self, row: int, name: str):
+        return self._data[row][name]
 
     def record(self, row: int) -> dict:
-        return self.__data__[row]
-
-    def value_by_index(self, row: int, index: int, default_value):
-        if self.__data__ is None:
-            return default_value
-
-        try:
-            value = self.__value_by_index(row, index)
-            if value is None:
-                return default_value
-            else:
-                return value
-        except:
-            return default_value
-
-    def value_by_name(self, row: int, name: str, default_value):
-        if self.__data__ is None:
-            return default_value
-
-        try:
-            value = self.__value_by_name(row, name.lower())
-            if value is None:
-                return default_value
-            else:
-                return value
-        except:
-            return default_value
+        return self._data[row]
 
     def size(self) -> int:
         """
         记录总数
         :return:
         """
-        if self.__data__ is None:
+        if self._data is None:
             return 0
 
-        return len(self.__data__)
+        return len(self._data)
 
     def field_count(self) -> int:
         """
         字段个数
         :return:
         """
-        if self.__data__ is None:
+        if self._data is None:
             return 0
 
-        row_data = self.__data__[0]
+        row_data = self._data[0]
         return len(row_data)
 
-    def is_empty(self) -> bool:
-        return self.size() == 0
-
     def blob2file(self, row: int, name: str, file_name: str):
-        if self.__data__ is None:
+        if self._data is None:
             return
 
-        value = self.__value_by_name(row, name.lower())
+        value = self._value_by_name(row, name)
         if value is None:
             return
 

@@ -413,7 +413,7 @@ class CResource:
 
     Encoding_UTF8 = 'UTF-8'
     Encoding_GBK = 'GBK'
-    Encoding_GBK2312 = 'GBK2312'
+    Encoding_GB2312 = 'GB2312'
 
     value_type_string = 'string'  # 文本类型
     value_type_date = 'date'  # 日期类型
