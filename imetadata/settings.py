@@ -220,7 +220,7 @@ application = CSettings(
             },
             'tika': {
                 'title': '依赖tika, 系统可以对常用的文档进行元数据解析, enable设置为False, 表示无法依赖该工具, 文档的元数据将无法提取, 保持为空',
-                'enable': True,
+                'enable': False,
                 'mode': 'server',
                 'mode_title': '模式可以设置为client/server, server表示使用tika的rest server进行解析, client表示使用客户端app进行解析, 使用何种方式, 必须进一步配置server和client属性',
                 'server': {
