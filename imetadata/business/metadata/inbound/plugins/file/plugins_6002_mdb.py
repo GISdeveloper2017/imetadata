@@ -59,14 +59,6 @@ class plugins_6002_mdb(CVectorFilePlugins):
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
         设置解析json格式元数据的检验规则列表, 为空表示无检查规则
-        :param parser:
-        :return:
-        """
-        return []
-
-    def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
-        """
-        设置解析json格式元数据的检验规则列表, 为空表示无检查规则
         完成 负责人 李宪
         :param parser:
         :return:

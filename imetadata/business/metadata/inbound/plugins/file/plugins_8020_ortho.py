@@ -12,8 +12,7 @@ from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins
 class plugins_8020_ortho(CFilePlugins_GUOTU_21AT):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'ortho'
-        information[self.Plugins_Info_Type_Title] = '单景正射'
+        information[self.Plugins_Info_Type] = '单景正射'
         information[self.Plugins_Info_Type_Code] = '020101'
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_ortho'
         return information
