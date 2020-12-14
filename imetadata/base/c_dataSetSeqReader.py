@@ -33,6 +33,10 @@ class CDataSetSeqReader:
         return self._record
 
     @abstractmethod
+    def record_as_dict(self) -> dict:
+        return None
+
+    @abstractmethod
     def first(self) -> bool:
         return False
 

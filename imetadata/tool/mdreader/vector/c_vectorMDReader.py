@@ -230,6 +230,7 @@ class CVectorMDReader(CMDReader):
                 # 构建单个字段的json对象
                 json_column = CJson()
                 json_column.set_value_of_name("name", name)
+                json_column.set_value_of_name("description", name)
                 json_column.set_value_of_name("type", type_code)
                 json_column.set_value_of_name("width", width)
                 json_column.set_value_of_name("precision", precision)

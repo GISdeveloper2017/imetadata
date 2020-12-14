@@ -215,6 +215,8 @@ class CResource:
     Name_Tag = 'tag'
     Name_Tags = 'tags'
 
+    Name_Geometry = 'geometry'
+
     Name_Data_Sample = 'data_sample'
     Name_Separator = 'separator'
     Name_Enable = 'enable'

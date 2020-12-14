@@ -10,7 +10,7 @@ from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 from imetadata.base.exceptions import FileCanNotOpenException
 from imetadata.tool.datasets.base.c_datasets_base import CDataSetsBase
-from imetadata.tool.datasets.base.vector.c_vector_dataset import CVectorDataSet
+from imetadata.tool.datasets.base.vector.c_vector_dataset import CVectorDataSetSeqReader
 
 
 class CVectorDataSets(CDataSetsBase):
@@ -57,10 +57,10 @@ class CVectorDataSets(CDataSetsBase):
         self._active = False
         self._data_obj = None
 
-    def layer_by_index(self, index) -> CVectorDataSet:
+    def layer_by_index(self, index) -> CVectorDataSetSeqReader:
         return self.item_by_index(index)
 
-    def layer_by_name(self, name) -> CVectorDataSet:
+    def layer_by_name(self, name) -> CVectorDataSetSeqReader:
         for layer_index in range(self.size()):
             dataset = self.layer_by_index(layer_index)
             if CUtils.equal_ignore_case(dataset.dataset_name, name):
@@ -79,8 +79,7 @@ class CVectorDataSets(CDataSetsBase):
             if not self._layer_is_dataset(layer_obj):
                 continue
 
-            vector_dataset = CVectorDataSet(layer_obj)
-            self.add(vector_dataset)
+            self.add(CVectorDataSetSeqReader(layer_obj))
 
     def _layer_is_dataset(self, layer_obj) -> bool:
         """

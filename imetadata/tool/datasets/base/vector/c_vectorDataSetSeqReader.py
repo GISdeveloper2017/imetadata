@@ -3,10 +3,11 @@
 # @Author : 王西亚 
 # @File : c_vector_dataset.py
 from imetadata.base.c_dataSetSeqReader import CDataSetSeqReader
+from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 
 
-class CVectorDataSet(CDataSetSeqReader):
+class CVectorDataSetSeqReader(CDataSetSeqReader):
     def __init__(self, vector_layer_obj):
         super().__init__()
         self._data = vector_layer_obj
@@ -15,6 +16,14 @@ class CVectorDataSet(CDataSetSeqReader):
     @property
     def dataset_name(self):
         return self._name
+
+    def record_as_dict(self) -> dict:
+        result = dict()
+        result[CResource.Name_ID] = self.f_id()
+        result[CResource.Name_Geometry] = self.geometry()
+        for field_index in range(self.field_count()):
+            result[self.field_name_by_index(field_index)] = self.value_by_index(field_index, None)
+        return result
 
     def first(self) -> bool:
         # 对图层进行初始化，如果对图层进行了过滤操作，执行这句后，之前的过滤全部清空
