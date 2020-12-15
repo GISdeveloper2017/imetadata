@@ -9,7 +9,7 @@ from imetadata.base.c_utils import CUtils
 from imetadata.database.base.c_dataset import CDataSet
 
 
-class CVectorDataSetSeqReader(CDataSetSeqReader):
+class CDBDataSetSeqReader(CDataSetSeqReader):
     def __init__(self, dataset: CDataSet):
         super().__init__()
         self._data = dataset

@@ -163,6 +163,7 @@ class CResource:
     Name_Result = 'result'
     Name_Message = 'message'
 
+    Name_Layer = 'layer'
     Name_Layers = 'layers'
 
     Success = -1
@@ -214,6 +215,11 @@ class CResource:
     Name_Quality = 'quality'
     Name_Tag = 'tag'
     Name_Tags = 'tags'
+    Name_Table = 'table'
+    Name_Vector = 'vector'
+    Name_Vector_DataSet = 'vector_dataset'
+    Name_Query = 'query'
+    Name_ShapeFile = 'shapefile'
 
     Name_Geometry = 'geometry'
 
@@ -231,7 +237,7 @@ class CResource:
     Name_SQL = 'sql'
     Name_NotNull = 'notnull'
     Name_Null = 'null'
-
+    Name_Target = 'target'
     Name_Value = 'value'
 
     Name_Get = 'get'

@@ -10,7 +10,7 @@ from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 from imetadata.base.exceptions import FileCanNotOpenException
 from imetadata.tool.datasets.base.c_datasets_base import CDataSetsBase
-from imetadata.tool.datasets.base.vector.c_vector_dataset import CVectorDataSetSeqReader
+from imetadata.tool.datasets.base.vector.c_vectorDataSetSeqReader import CVectorDataSetSeqReader
 
 
 class CVectorDataSets(CDataSetsBase):
