@@ -113,7 +113,19 @@ class CColumn:
                 CResource.Name_Value: src_array
             }
 
-    def set_geometry(self, wkt: str, srid: int):
+    def set_array_str(self, array_text: str):
+        """
+        设置value为数组
+        :param array_text:
+        :return:
+        """
+        self._value = {
+            CResource.Name_Text: array_text,
+            CResource.Name_Type: CResource.DataValueType_Value,
+            CResource.Name_Value: array_text
+        }
+
+    def set_geometry(self, wkt: str, srid):
         """
         设置value为几何多边形
         . value 将存储dict字典
@@ -124,6 +136,7 @@ class CColumn:
         """
         self._value = {
             CResource.Name_Text: wkt,
-            CResource.Name_Srid: srid,
             CResource.Name_Type: CResource.DataValueType_Value
         }
+        if srid is not None:
+            self._value[CResource.Name_Srid] = srid

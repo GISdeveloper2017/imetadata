@@ -16,7 +16,12 @@ class CDBDataSetSeqReader(CDataSetSeqReader):
         self.__record_index = -1
 
     def record_as_dict(self) -> dict:
-        return self._data.record(self.__record_index)
+        data_record = self._data.record(self.__record_index)
+        result = dict()
+        key_list = data_record.keys()
+        for key in key_list:
+            result[CUtils.any_2_str(key).lower()] = CUtils.dict_value_by_name(data_record, key, None, False)
+        return result
 
     def first(self) -> bool:
         if self._data.is_empty():
@@ -43,3 +48,6 @@ class CDBDataSetSeqReader(CDataSetSeqReader):
 
     def field_count(self) -> int:
         return self._data.field_count()
+
+    def field_name(self, field_index: int) -> str:
+        return self._data.field_name(field_index)

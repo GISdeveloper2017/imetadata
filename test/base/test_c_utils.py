@@ -22,3 +22,17 @@ class Test_CUtils:
         result_alpha = CUtils.alpha_text(text_alpha)
         print(result_alpha)
         assert result_alpha == 'nhabczg'
+
+    def test_dict_value_by_name(self):
+        dict_value = {
+            'name': 'test',
+            'srid': None,
+            'value': 5
+        }
+        srid = CUtils.dict_value_by_name(dict_value, 'srid', 4326)
+        assert srid == 4326
+
+    def test_replace_placeholder(self):
+        holder_text = '${0}'.format('value')
+        holder_text = CUtils.replace_placeholder(holder_text, {'value': 'wangxiya'})
+        assert holder_text == 'wangxiya'

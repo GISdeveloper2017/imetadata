@@ -129,7 +129,7 @@ class CResource:
     Name_Record = 'record'
 
     Name_Source = 'source'
-
+    Name_Encoding = 'encoding'
     Name_Format = 'format'
     Name_Size = 'size'
     Name_Length = 'length'
@@ -211,6 +211,7 @@ class CResource:
     Name_Level = 'level'
     Name_Group = 'group'
     Name_Type = 'type'
+    Name_Common = 'common'
     Name_Access = 'access'
     Name_Quality = 'quality'
     Name_Tag = 'tag'
@@ -220,13 +221,13 @@ class CResource:
     Name_Vector_DataSet = 'vector_dataset'
     Name_Query = 'query'
     Name_ShapeFile = 'shapefile'
-
+    Name_Pipe = 'pipe'
     Name_Geometry = 'geometry'
-
+    Name_Option = 'option'
     Name_Data_Sample = 'data_sample'
     Name_Separator = 'separator'
     Name_Enable = 'enable'
-
+    Name_Field = 'field'
     Name_InBound = 'inbound'
     Name_OutBound = 'outbound'
 
@@ -239,7 +240,7 @@ class CResource:
     Name_Null = 'null'
     Name_Target = 'target'
     Name_Value = 'value'
-
+    Name_Array = 'array'
     Name_Get = 'get'
     Name_Set = 'set'
     Name_Set_Method = 'set_method'
@@ -254,7 +255,7 @@ class CResource:
     Name_List = 'list'
     Name_Custom = 'custom'
     Name_Root = 'root'
-
+    Name_Binary = 'binary'
     Name_Keyword = 'keyword'
 
     Name_Img = 'img'

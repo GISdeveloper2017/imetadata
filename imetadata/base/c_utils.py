@@ -57,6 +57,9 @@ class CUtils(CResource):
         :param safe:
         :return:
         """
+        if dict_obj is None:
+            return text
+
         if safe:
             return Template(text).safe_substitute(dict_obj)
         else:

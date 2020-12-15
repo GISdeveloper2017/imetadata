@@ -94,5 +94,13 @@ class CDataSetSeqReader:
         """
         return 0
 
+    @abstractmethod
+    def field_name(self, field_index: int) -> str:
+        """
+        字段名称
+        :return:
+        """
+        return ''
+
     def is_empty(self) -> bool:
         return self.size() == 0

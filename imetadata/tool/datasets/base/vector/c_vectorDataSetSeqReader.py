@@ -22,7 +22,7 @@ class CVectorDataSetSeqReader(CDataSetSeqReader):
         result[CResource.Name_ID] = self.f_id()
         result[CResource.Name_Geometry] = self.geometry()
         for field_index in range(self.field_count()):
-            result[self.field_name_by_index(field_index)] = self.value_by_index(field_index, None)
+            result[self.field_name(field_index).lower()] = self.value_by_index(field_index, None)
         return result
 
     def first(self) -> bool:
@@ -53,7 +53,7 @@ class CVectorDataSetSeqReader(CDataSetSeqReader):
 
     def _value_by_name(self, name: str):
         for field_index in range(self.field_count()):
-            if CUtils.equal_ignore_case(self.field_name_by_index(field_index), name):
+            if CUtils.equal_ignore_case(self.field_name(field_index), name):
                 return self._value_by_index(field_index)
 
         return None
@@ -74,5 +74,5 @@ class CVectorDataSetSeqReader(CDataSetSeqReader):
     def field_obj_by_index(self, index: int):
         return self._data.GetLayerDefn().GetFieldDefn(index)
 
-    def field_name_by_index(self, index: int):
-        return self.field_obj_by_index(index).GetNameRef()
+    def field_name(self, field_index: int):
+        return self.field_obj_by_index(field_index).GetNameRef()

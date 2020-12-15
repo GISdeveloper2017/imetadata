@@ -56,3 +56,13 @@ class CDataSet(CDataSetBase):
             f.write(value)
         finally:
             f.close()
+
+    def field_name(self, field_index: int) -> str:
+        if self.is_empty():
+            return super(CDataSet, self).field_name(field_index)
+        row_record = self._data[0]
+        row_record_key_list = list(row_record.keys())
+        if 0 <= field_index < len(row_record_key_list):
+            return row_record_key_list[field_index]
+        else:
+            return super(CDataSet, self).field_name(field_index)

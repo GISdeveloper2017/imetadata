@@ -122,7 +122,7 @@ if __name__ == '__main__':
         print('{0}-{1}'.format(vector_dataset.dataset_name, vector_dataset.size()))
         print('*' * 10)
         for field_index in range(vector_dataset.field_count()):
-            print('{0}.{1}'.format(vector_dataset.dataset_name, vector_dataset.field_name_by_index(field_index)))
+            print('{0}.{1}'.format(vector_dataset.dataset_name, vector_dataset.field_name(field_index)))
 
     vector_dataset = vector_datasets.layer_by_index(0)
     print('*' * 30)
@@ -135,7 +135,7 @@ if __name__ == '__main__':
                 print(
                     '{0}.{1}={2}'.format(
                         vector_dataset.dataset_name,
-                        vector_dataset.field_name_by_index(field_index),
+                        vector_dataset.field_name(field_index),
                         vector_dataset.value_by_index(field_index, '')
                     )
                 )

@@ -202,8 +202,10 @@ class CTable(CResource):
                                         self.Name_Srid: CUtils.dict_value_by_name(
                                             column.value,
                                             self.Name_Srid,
-                                            settings.application.xpath_one(self.Path_Setting_Spatial_Srid,
-                                                                           self.SRID_WGS84)
+                                            settings.application.xpath_one(
+                                                self.Path_Setting_Spatial_Srid,
+                                                self.SRID_WGS84
+                                            )
                                         )
                                     }
                                 )
