@@ -140,7 +140,7 @@ if __name__ == "__main__":
     application_dir = CFile.file_path(CFile.file_abs_path(__file__))
     application_name = CFile.file_main_name(application_dir)
     settings.application.set_app_information(application_dir, application_name)
-    # start_init()
+    start_init()
     CLogger().info('初始化工作已经成功完成...')
 
     print(__file__)
