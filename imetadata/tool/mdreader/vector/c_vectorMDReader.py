@@ -35,10 +35,9 @@ class CVectorMDReader(CMDReader):
         # 定义矢量的json对象
         json_vector = CJson()
 
-        if CUtils.equal_ignore_case(CFile.file_ext(self.__file_name_with_path__), self.Transformer_DOM_MDB):
+        vector_ds = ogr.Open(self.__file_name_with_path__)
+        if vector_ds is None:
             vector_ds = ogr.Open(self.__file_name_with_path__.encode('gbk'), 0)
-        else:
-            vector_ds = ogr.Open(self.__file_name_with_path__)
 
         if vector_ds is None:
             message = '文件[{0}]打开失败!'.format(self.__file_name_with_path__)
@@ -133,7 +132,7 @@ class CVectorMDReader(CMDReader):
                     json_wgs84 = self.transform_to_WGS84(layer_temp)
                     json_layer.set_value_of_name('wgs84', json_wgs84.json_obj)
                 json_vector.set_value_of_name('layers', list_json_layers)
-            json_shp_str = json_vector.to_json()
+            # json_shp_str = json_vector.to_json()
             # print(json_shp_str)
             # 判断路径是否存在，不存在则创建
             if CFile.check_and_create_directory(file_name_with_path):
@@ -204,7 +203,8 @@ class CVectorMDReader(CMDReader):
                     json_wgs84.set_value_of_name('result', self.Success)
                 else:
                     json_wgs84.set_value_of_name('msg',
-                                                 'extent四至范围从{0}坐标系转wgs_84坐标系转换失败！失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(
+                                                 'extent四至范围从{0}坐标系转wgs_84坐标系转换失败！'
+                                                 '失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(
                                                      source))
                     json_wgs84.set_value_of_name('result', self.Failure)
             else:
@@ -245,11 +245,11 @@ class CVectorMDReader(CMDReader):
         return json_attributes
 
     def get_extent_by_vectorlayer(self, layer) -> CJson:
-        '''
-          构建图层四至范围的json对象
+        """
+        构建图层四至范围的json对象
         @param layer:
         @return:
-        '''
+        """
         json_extent = CJson()
         extent = layer.GetExtent()
         # print('extent:', extent)
@@ -264,11 +264,11 @@ class CVectorMDReader(CMDReader):
         return json_extent
 
     def get_geometry_by_vectorlayer(self, layer) -> CJson:
-        '''
-          构建图层图形类型的json对象
+        """
+        构建图层图形类型的json对象
         @param layer:
         @return:
-        '''
+        """
         json_geometry = CJson()
         geomtype = layer.GetGeomType()  # 数字
         json_geometry.set_value_of_name("type", geomtype)
@@ -285,11 +285,11 @@ class CVectorMDReader(CMDReader):
         return json_geometry
 
     def get_projwkt_by_layer(self, layer) -> CJson:
-        '''
-            根据图层对象获取空间参考的wkt对象节点
+        """
+        根据图层对象获取空间参考的wkt对象节点
         @param layer:
         @return:
-        '''
+        """
         json_proj_wkt = CJson()
         spatialRef = layer.GetSpatialRef()
         if spatialRef is None:
@@ -352,7 +352,7 @@ class CVectorMDReader(CMDReader):
         json_shp.set_value_of_name('datasource', json_datasource.json_obj)
         json_shp.set_value_of_name('layer_count', '1')
 
-        list_layers = []
+        list_layers = list()
         list_layers.append(json_datasource.json_obj)
         json_shp.set_value_of_name('layers', list_layers)
         json_shp.set_value_of_name('valid', True)
@@ -362,11 +362,11 @@ class CVectorMDReader(CMDReader):
         print(json_shp_str)
 
     def getMemSize(self, pid):
-        '''
-            根据进程号来获取进程的内存大小 MB
+        """
+        根据进程号来获取进程的内存大小 MB
         @param pid:
         @return:
-        '''
+        """
         process = psutil.Process(pid)
         memInfo = process.memory_full_info()
         return memInfo.uss / 1024 / 1024
@@ -377,8 +377,14 @@ if __name__ == '__main__':
     # CVectorMDReader('/aa/bb/cc2.gdb').get_metadata_2_file('/aa/bb/cc2.json')
     # CVectorMDReader(r'D:\data\0生态审计\少量数据测试_修改后\重大工程项目_曲靖市_2019.shp').get_metadata_2_file(r'C:\app\cc1.json')
     CVectorMDReader(
-        r'/Users/wangxiya/Documents/我的测试数据/31.混合存储/测试数据/通用数据/矢量数据集/生态治理和水土保持监测数据库_黑岱沟露天煤矿_10017699_2020d1_2020-01-01.mdb').get_metadata_2_file(
-        r'/Users/wangxiya/Documents/我的测试数据/31.混合存储/测试数据/通用数据/矢量数据集/生态治理和水土保持监测数据库_黑岱沟露天煤矿_10017699_2020d1_2020-01-01.json')
+        r'/Users/wangxiya/Documents/我的测试数据/'
+        r'31.混合存储/测试数据/通用数据/矢量数据集/'
+        r'生态治理和水土保持监测数据库_黑岱沟露天煤矿_10017699_2020d1_2020-01-01.mdb'
+    ).get_metadata_2_file(
+        r'/Users/wangxiya/Documents/我的测试数据/'
+        r'31.混合存储/测试数据/通用数据/矢量数据集/'
+        r'生态治理和水土保持监测数据库_黑岱沟露天煤矿_10017699_2020d1_2020-01-01.json'
+    )
     # CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb.gdb').get_metadata_2_file(r'C:\app2\cc4.json')
     # CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb_noLayer.gdb').get_metadata_2_file(r'M:\app\cc4.json')
     # CVectorMDReader(r'D:\data\0生态审计\其他\新建文件夹2333\gdb测试\gdb\FileGeodb_error.gdb').get_metadata_2_file(r'C:\app\cc6.json')

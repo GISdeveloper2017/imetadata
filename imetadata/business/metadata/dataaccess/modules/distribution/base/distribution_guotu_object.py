@@ -24,7 +24,7 @@ class distribution_guotu_object(distribution_guotu):
         temporary_dict = dict()
         temporary_dict['dso_time'] = self._dataset.value_by_name(0, 'dso_time', '')
         temporary_dict['dso_browser'] = self._dataset.value_by_name(0, 'dso_browser', '')
-        temporary_dict['dso_browser'] = self._dataset.value_by_name(0, 'dso_browser', '')
+        temporary_dict['dso_thumb'] = self._dataset.value_by_name(0, 'dso_thumb', '')
         temporary_dict['dso_geo_wgs84'] = self._dataset.value_by_name(0, 'dso_geo_wgs84', '')
         temporary_dict['dso_prj_proj4'] = self._dataset.value_by_name(0, 'dso_prj_proj4', '')
         for key, value in temporary_dict.items():
