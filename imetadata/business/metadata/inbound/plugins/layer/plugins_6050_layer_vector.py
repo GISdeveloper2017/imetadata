@@ -7,6 +7,13 @@ from imetadata.business.metadata.base.plugins.industry.child.c_vectorChildPlugin
 
 
 class plugins_6050_layer_vector(CVectorChildPlugins):
+    def get_information(self) -> dict:
+        information = super().get_information()
+        information[self.Plugins_Info_BusMetaDataEngine] = None
+        information[self.Plugins_Info_DetailEngine] = None
+        information[self.Plugins_Info_SpatialEngine] = self.MetaDataEngine_Vector
+        return information
+
     def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
         """
         设置解析json格式元数据的检验规则列表, 为空表示无检查规则
