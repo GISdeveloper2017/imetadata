@@ -35,7 +35,11 @@ class CVectorMDReader(CMDReader):
         # 定义矢量的json对象
         json_vector = CJson()
 
-        vector_ds = ogr.Open(self.__file_name_with_path__)
+        if CUtils.equal_ignore_case(CFile.file_ext(self.__file_name_with_path__), self.Transformer_DOM_MDB):
+            vector_ds = ogr.Open(self.__file_name_with_path__.encode('gbk'), 0)
+        else:
+            vector_ds = ogr.Open(self.__file_name_with_path__)
+
         if vector_ds is None:
             message = '文件[{0}]打开失败!'.format(self.__file_name_with_path__)
             json_vector.set_value_of_name('result', self.Failure)
@@ -326,6 +330,13 @@ class CVectorMDReader(CMDReader):
             # print('第{0}个图层：{1}'.format(i, layer_name))
             if driver.name == 'OpenFileGDB':
                 if layer_name.startswith('T_1_'):
+                    continue
+            elif CUtils.equal_ignore_case(driver.name, 'PGeo'):
+                if layer_name.upper().endswith('_SHAPE_INDEX'):
+                    continue
+                elif CUtils.equal_ignore_case(layer_name, 'Selections'):
+                    continue
+                elif CUtils.equal_ignore_case(layer_name, 'SelectedObjects'):
                     continue
             layer_count_real = layer_count_real + 1
             layer_list.append(layer)

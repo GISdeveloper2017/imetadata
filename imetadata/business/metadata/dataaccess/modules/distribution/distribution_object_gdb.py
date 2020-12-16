@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/11/23 15:51
 # @Author : 赵宇飞
-# @File : distribution_dataset_gdb.py
+# @File : distribution_object_gdb.py
 import datetime
 
 from imetadata.base.c_utils import CUtils
@@ -16,7 +16,7 @@ class distribution_dataset_gdb(distribution_guotu):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = 'GDB数据集'
-        info['table_name'] = 'ap3_product_rsp_vp_ds'
+        info['table_name'] = 'ap3_product_rsp_vp_detail'
         return info
 
     def get_sync_dict_list(self, insert_or_updata) -> list:
