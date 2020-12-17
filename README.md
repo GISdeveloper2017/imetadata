@@ -1512,7 +1512,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
                         1. dpdf_object_date
                         1. dpdf_object_fp
                         1. dpdf_processType=new
-        1. 删除dp_v_qfg_layer_file表中, 所有Layer下的记录, dpdf_processType=delete的记录???
+        1. 删除dp_v_qfg_layer_file表中, 所有Layer下的记录, dpdf_processType=delete的记录(不删除, 改为由服务系统清理缓存后删除)
         1. 根据dp_v_qfg_layer_file表中对象的投影坐标信息, 重新计算dp_v_qfg_layer_file.dpdf_group_id字段, 该字段记录着dp_v_qfg_layer
             中应该发布的物理层
     1. 检查当前layer下, dp_v_qfg_layer_file的记录数

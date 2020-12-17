@@ -46,6 +46,9 @@ class CVectorDataSets(CDataSetsBase):
         self._data_obj = ogr.Open(self.data_file_or_path, 0)
 
         if self._data_obj is None:
+            self._data_obj = ogr.Open(self.data_file_or_path.encode(CResource.Encoding_GBK), 0)
+
+        if self._data_obj is None:
             raise FileCanNotOpenException(self.data_file_or_path)
 
         self._active = True
@@ -108,8 +111,8 @@ class CVectorDataSets(CDataSetsBase):
 
 
 if __name__ == '__main__':
-    # file_name = '/Users/wangxiya/Documents/我的测试数据/31.混合存储/测试数据/通用数据/矢量数据集/生态治理和水土保持监测数据库_黑岱沟露天煤矿_10017699_2020d1_2020-01-01.mdb'
-    file_name = '/Users/wangxiya/Documents/我的测试数据/31.混合存储/测试数据/通用数据/矢量/矢量数据/正确数据/生态治理和水土保持监测数据库_利民煤矿_10017574_2020d1_2020-08-05/取排口.shp'
+    file_name = '/Users/wangxiya/Documents/我的测试数据/31.混合存储/测试数据/通用数据/矢量数据集/生态治理和水土保持监测数据库_黑岱沟露天煤矿_10017699_2020d1_2020-01-01.mdb'
+    # file_name = '/Users/wangxiya/Documents/我的测试数据/31.混合存储/测试数据/通用数据/矢量/矢量数据/正确数据/生态治理和水土保持监测数据库_利民煤矿_10017574_2020d1_2020-08-05/取排口.shp'
     cpg_file_name = CFile.change_file_ext(file_name, 'cpg')
     encoding = CResource.Encoding_GBK
     if CFile.file_or_path_exist(cpg_file_name):
