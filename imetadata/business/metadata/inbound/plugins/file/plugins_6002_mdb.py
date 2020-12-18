@@ -21,6 +21,7 @@ class plugins_6002_mdb(CVectorFilePlugins):
         information[self.Plugins_Info_BusMetaDataEngine] = None
         # information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector
         # information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_mdb'
         information[self.Plugins_Info_Child_Layer_Data_Type] = 'layer'
         information[self.Plugins_Info_Child_Layer_Plugins_Name] = 'plugins_6050_layer_vector'
         return information

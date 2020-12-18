@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/11/23 15:51
 # @Author : 赵宇飞
-# @File : distribution_object_gdb.py
+# @File : distribution_dataset_gdb.py
 import datetime
 
 from imetadata.base.c_utils import CUtils
@@ -10,7 +10,7 @@ from imetadata.business.metadata.dataaccess.modules.distribution.base.distributi
     distribution_vector_with_layers_object
 
 
-class distribution_object_gdb(distribution_vector_with_layers_object):
+class distribution_dataset_gdb(distribution_vector_with_layers_object):
     """
     完成 王学谦 数据检索分发模块对gdb数据集类型数据
     """
@@ -45,5 +45,8 @@ class distribution_object_gdb(distribution_vector_with_layers_object):
         self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
             sync_dict_list, 'imagedatetag',
             object_table_data.value_by_name(0, 'query_directory_lastmodifytime', '').replace(r'[-/\.年月日]', '')[:8])
+        if insert_or_updata:
+            self.add_value_to_sync_dict_list(
+                sync_dict_list, 'isdel', '0')
 
         return sync_dict_list

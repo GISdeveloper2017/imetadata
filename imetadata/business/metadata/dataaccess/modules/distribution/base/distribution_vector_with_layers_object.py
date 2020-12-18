@@ -13,7 +13,6 @@ class distribution_vector_with_layers_object(distribution_guotu):
     """
     对象的处理基类（即时服务）
     """
-
     def information(self) -> dict:
         info = super().information()
         return info
@@ -60,8 +59,6 @@ class distribution_vector_with_layers_object(distribution_guotu):
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'dstype', '1')
         if insert_or_updata:
-            self.add_value_to_sync_dict_list(
-                sync_dict_list, 'isdel', '0')
             now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'addtime', now_time)

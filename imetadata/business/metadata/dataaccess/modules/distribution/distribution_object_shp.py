@@ -8,7 +8,7 @@ from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_guotu import distribution_guotu
 
 
-class distribution_object_vector(distribution_guotu):
+class distribution_object_shp(distribution_guotu):
     """
     完成 王学谦 数据检索分发模块对shp类型数据
     """
