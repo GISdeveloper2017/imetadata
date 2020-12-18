@@ -288,6 +288,7 @@ class CResource:
 
     Path_Setting_Application = Name_Application
     Path_Setting_Application_Dir = '{0}.{1}'.format(Path_Setting_Application, Name_Directory)
+    Path_Setting_Application_ID = '{0}.{1}'.format(Path_Setting_Application, Name_ID)
     Path_Setting_Application_Name = '{0}.{1}'.format(Path_Setting_Application, Name_Name)
 
     Path_Setting_Spatial = 'spatial'

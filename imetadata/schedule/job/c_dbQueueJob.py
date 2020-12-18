@@ -3,6 +3,7 @@
 
 from abc import abstractmethod
 
+from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.database.base.c_dataset import CDataSet
@@ -73,6 +74,7 @@ class CDBQueueJob(CJob):
 
             return db.one_row(mission_info_sql)
         except:
+            CLogger().debug('任务抢占查询语句有误, 请修正! 详细错误信息为: {0}'.format(mission_seize_sql))
             return CDataSet()
 
     def abnormal_mission_restart(self):

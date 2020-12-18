@@ -1071,5 +1071,19 @@ alter table dm2_quality_group
 
 
 /*
-
+    2020-12-17
+    . 优化并行处理任务启动机制
+        . 支持多节点分别管理
+        . 支持多组进行分别控制
 */
+
+alter table sch_center
+    add column scServer varchar(100);
+comment on column sch_center.scServer is '服务器';
+
+alter table sch_center
+    add scCommand varchar(100);
+comment on column sch_center.scCommand is '命令';
+
+create index idx_sch_center_mission_id on sch_center_mission (scmid);
+
