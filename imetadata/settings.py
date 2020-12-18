@@ -20,7 +20,7 @@ from imetadata.base.c_settings import CSettings
 application = CSettings(
     {
         'application': {
-            'id': 'tsdb_node_1',
+            'id': None,
             'debug': -1,
             'directory': '/Users/wangxiya/Documents/Develop/tsdb',
             'name': 'tsdb'

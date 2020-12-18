@@ -1069,7 +1069,6 @@ comment on column dm2_quality_group.dqgtitle is '描述';
 alter table dm2_quality_group
     owner to postgres;
 
-
 /*
     2020-12-17
     . 优化并行处理任务启动机制
