@@ -8,14 +8,15 @@ from imetadata.base.c_utils import CUtils
 
 
 class CVectorDataSetSeqReader(CDataSetSeqReader):
-    def __init__(self, vector_layer_obj):
+    def __init__(self, vector_layer_obj, mdb_flag):
         super().__init__()
         self._data = vector_layer_obj
         self._name = CUtils.any_2_str(vector_layer_obj.GetName())
+        self._mdb_flag = mdb_flag  # 用于解决mdb中文问题
 
     @property
     def dataset_name(self):
-        return self._name
+        return self.mdb_chinese_conversion(self._name)
 
     def record_as_dict(self) -> dict:
         result = dict()
@@ -63,8 +64,8 @@ class CVectorDataSetSeqReader(CDataSetSeqReader):
 
     def _value_by_index(self, index: int):
         if self._record.IsFieldSetAndNotNull(index):
-            return self._record.GetFieldAsString(index)
-
+            return self.mdb_chinese_conversion(self._record.GetFieldAsString(index))
+            # return self._record.GetFieldAsString(index)
         return None
 
     def field_count(self) -> int:
@@ -75,4 +76,13 @@ class CVectorDataSetSeqReader(CDataSetSeqReader):
         return self._data.GetLayerDefn().GetFieldDefn(index)
 
     def field_name(self, field_index: int):
-        return self.field_obj_by_index(field_index).GetNameRef()
+        return self.mdb_chinese_conversion(self.field_obj_by_index(field_index).GetNameRef())
+
+    def mdb_chinese_conversion(self, content):
+        """
+        因win下gdal读取mdb的中文内容存在编码异常，所以用此方法解决这个问题
+        """
+        if self._mdb_flag:
+            return CUtils.conversion_chinese_code(content)
+        else:
+            return content

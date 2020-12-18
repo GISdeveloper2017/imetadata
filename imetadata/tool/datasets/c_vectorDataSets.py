@@ -45,15 +45,17 @@ class CVectorDataSets(CDataSetsBase):
 
         self._data_obj = ogr.Open(self.data_file_or_path, 0)
 
+        mdb_flag = False
         if self._data_obj is None:
             self._data_obj = ogr.Open(self.data_file_or_path.encode(CResource.Encoding_GBK), 0)
+            mdb_flag = True
 
         if self._data_obj is None:
             raise FileCanNotOpenException(self.data_file_or_path)
 
         self._active = True
 
-        self._parser_datasets()
+        self._parser_datasets(mdb_flag)
 
     def close(self):
         self.clear()
@@ -71,7 +73,7 @@ class CVectorDataSets(CDataSetsBase):
 
         return None
 
-    def _parser_datasets(self):
+    def _parser_datasets(self, mdb_flag):
         layer_count = self._data_obj.GetLayerCount()
         for i in range(layer_count):
             layer_obj = self._data_obj.GetLayerByIndex(i)
@@ -82,7 +84,7 @@ class CVectorDataSets(CDataSetsBase):
             if not self._layer_is_dataset(layer_obj):
                 continue
 
-            self.add(CVectorDataSetSeqReader(layer_obj))
+            self.add(CVectorDataSetSeqReader(layer_obj, mdb_flag))
 
     def _layer_is_dataset(self, layer_obj) -> bool:
         """

@@ -608,7 +608,9 @@ class CUtils(CResource):
             return pinyin.get_initial(src_text, delimiter="").lower().strip().replace(' ', '')
 
     @classmethod
-    def conversion_chinese_code(cls, str_text, encode_type='utf-8', decode_type='gbk') -> str:
+    def conversion_chinese_code(cls, str_text,
+                                encode_type=CResource.Encoding_UTF8,
+                                decode_type=CResource.Encoding_GBK) -> str:
         """
         转换中文编码
         :param str_text:
