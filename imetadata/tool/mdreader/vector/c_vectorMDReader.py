@@ -35,9 +35,11 @@ class CVectorMDReader(CMDReader):
         # 定义矢量的json对象
         json_vector = CJson()
 
+        mdb_flag = False
         vector_ds = ogr.Open(self.__file_name_with_path__)
         if vector_ds is None:
             vector_ds = ogr.Open(self.__file_name_with_path__.encode('gbk'), 0)
+            mdb_flag = True
 
         if vector_ds is None:
             message = '文件[{0}]打开失败!'.format(self.__file_name_with_path__)
@@ -104,7 +106,10 @@ class CVectorMDReader(CMDReader):
                 list_json_layers = []
                 for layer_temp in layer_list:
                     print('图层对象: {0}'.format(layer_temp))
-                    layer_name = layer_temp.GetName()
+                    if mdb_flag:
+                        layer_name = CUtils.conversion_chinese_code(layer_temp.GetName())
+                    else:
+                        layer_name = layer_temp.GetName()
                     json_layer = CJson()
                     list_json_layers.append(json_layer.json_obj)
                     # name节点
@@ -126,13 +131,13 @@ class CVectorMDReader(CMDReader):
                     json_extent = self.get_extent_by_vectorlayer(layer_temp)
                     json_layer.set_value_of_name("extent", json_extent.json_obj)
                     # attributes节点
-                    json_attributes = self.get_attributes_by_vectorlayer(layer_temp)
+                    json_attributes = self.get_attributes_by_vectorlayer(layer_temp, mdb_flag)
                     json_layer.set_value_of_name("attributes", json_attributes.json_obj)
                     # wgs84节点
                     json_wgs84 = self.transform_to_WGS84(layer_temp)
                     json_layer.set_value_of_name('wgs84', json_wgs84.json_obj)
                 json_vector.set_value_of_name('layers', list_json_layers)
-            # json_shp_str = json_vector.to_json()
+            json_shp_str = json_vector.to_json()
             # print(json_shp_str)
             # 判断路径是否存在，不存在则创建
             if CFile.check_and_create_directory(file_name_with_path):
@@ -213,10 +218,11 @@ class CVectorMDReader(CMDReader):
                 json_wgs84.set_value_of_name('result', self.Failure)
         return json_wgs84
 
-    def get_attributes_by_vectorlayer(self, layer) -> CJson:
+    def get_attributes_by_vectorlayer(self, layer, mdb_flag=False) -> CJson:
         """
         构建图层字段属性的josn对象
         @param layer:
+        @param mdb_flag:
         @return:
         """
         json_attributes = CJson()
@@ -226,7 +232,10 @@ class CVectorMDReader(CMDReader):
         if field_count > 0:
             for i in range(field_count):
                 field_defn = layer_defn.GetFieldDefn(i)
-                name = field_defn.GetName()
+                if mdb_flag:
+                    name = CUtils.conversion_chinese_code(field_defn.GetName())
+                else:
+                    name = field_defn.GetName()
                 type_code = field_defn.GetType()
                 width = field_defn.GetWidth()
                 precision = field_defn.GetPrecision()

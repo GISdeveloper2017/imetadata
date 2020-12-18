@@ -607,6 +607,20 @@ class CUtils(CResource):
         else:
             return pinyin.get_initial(src_text, delimiter="").lower().strip().replace(' ', '')
 
+    @classmethod
+    def conversion_chinese_code(cls, str_text, encode_type='utf-8', decode_type='gbk') -> str:
+        """
+        转换中文编码
+        :param str_text:
+        :param encode_type:
+        :param decode_type:
+        :return:
+        """
+        str_text = cls.any_2_str(str_text) \
+            .encode(encode_type, "surrogateescape") \
+            .decode(decode_type)
+        return str_text
+
 
 if __name__ == '__main__':
     text = "to_jsonb(${value})"
