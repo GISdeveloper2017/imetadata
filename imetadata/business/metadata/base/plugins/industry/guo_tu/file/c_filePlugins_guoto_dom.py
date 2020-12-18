@@ -28,7 +28,7 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
         """
         if self.metadata_bus_transformer_type is None:
             parser.metadata.set_metadata_bus(self.DB_True, '', self.MetaDataFormat_Text, '')
-            return CResult.merge_result(self.Success, '本数据无业务元数据, 无须解析!')
+            return CResult.merge_result(self.Exception, '对象{0}无业务元数据文件，请检查对象业务元数据文件是否存在元数据!'.format(self.file_info.file_main_name))
 
         transformer = CMDTransformerDOM(
             parser.object_id,

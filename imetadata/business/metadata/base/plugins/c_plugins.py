@@ -373,6 +373,7 @@ class CPlugins(CResource):
             else:
                 return result
         else:
+            parser.metadata.set_metadata(self.DB_True, None, self.MetaDataFormat_Text, None)
             return CResult.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
 
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
@@ -381,6 +382,7 @@ class CPlugins(CResource):
         :param parser:
         :return:
         """
+        parser.metadata.set_metadata_bus(self.DB_True, None, self.MetaDataFormat_Text, None)
         return CResult.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
 
     def parser_metadata_after_qa(self, parser: CMetaDataParser):
