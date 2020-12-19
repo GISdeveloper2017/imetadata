@@ -512,9 +512,9 @@ class CResource:
     FileFormat_TXT = 'txt'
     FileFormat_Binary = 'bin'
 
-    Path_IB_Root = 'root'
-    Path_IB_Option = '{0}.option'.format(Path_IB_Root)
-    Path_IB_Option_CheckFileLocked = '{0}.check_file_locked'.format(Path_IB_Option)
+    Path_IB_Control = 'control'
+    Path_IB_Switch = '{0}.switch'.format(Path_IB_Control)
+    Path_IB_Switch_CheckFileLocked = '{0}.check_file_locked'.format(Path_IB_Switch)
 
     def data_group_title(self, group_name: str):
         if group_name.lower() == self.DataGroup_Industry_Land_Data:

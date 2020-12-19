@@ -622,27 +622,6 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
         * 快视图
         * 拇指图
 
-###### 数据库设计
-1. dm2_storage_inbound
-    * dsiOtherOption
-        * 类型: jsonb
-        * 意义: 入库的特殊处理
-        * 示例:
-            ```json
-            {
-                "root": {
-                    "option": {
-                        "check_file_locked": 0,
-                        "check_file_locked_comment": "0=False;-1=True. 是否在入库前, 检查所有文件是否被锁定. 注意: 如果是切片, 这个过程耗时会很长! "
-                    } 
-                },
-                "notify": {
-                    "module_comment": "module属性如果设置内容, 类型为字符串数组, 表明该批次仅仅通知数组中指定的模块标识!!! 如果不设置, 则应将module设置为null!!!",
-                    "module": null
-                }
-            }         
-            ```
-    
 ### 数管与第三方系统的发布设计
 #### 发布权限和规则
 ##### 数管部分
@@ -762,7 +741,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
     1. 可以考虑针对特定模块, 重新检查; 还是所有模块重新检查
     1. 可以考虑是针对系统检查的结果进行重新检查(人为审核通过的, 不再重新检查), 还是所有都重新检查(人为审核通过的, 也重置, 重新检查)
 
-#### 数据库设计
+#### 数据库编辑
 1. 在数据对象表中, 增加三个字段:
     1. dso_da_status(int): 发布规则审核-状态
     1. dso_da_proc_id(varchar): 发布规则审核-并行标识
@@ -1399,55 +1378,6 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 1. 对外提供服务的ogcService, 在服务发布系统内部可能为集群或发布为多份
 1. 允许服务发布系统通过预切片或实时切片提高服务能力, 但信息不得对外提供反馈    
 
-#### 数据库设计
-##### dp_v_qfg
-###### 简述
-###### 字段
-1. dpid
-    * 类型: varchar
-    * 意义: 标识
-1. dpStatus
-    * 类型: int
-    * 意义: 状态
-        * 0: 成功完成发布
-        * 1: 等待发布
-        * 2: 发布中-正在处理
-        * ...
-        * 5: 发布中-等待发布为ogc服务
-        * 6: 发布中-正在筹备ogc服务发布前的预备工作
-        * 61: 发布中-筹备ogc服务发布前的预备工作失败; 重试请更改为5
-        * 7: 发布中-已经提交给ogc服务器, 等待处理完成
-        * 81: 发布中-已经提交给ogc服务器, 但ogc服务器发布失败
-        * ...
-1. dpProcessID
-    * 类型: varchar
-    * 意义: 并行处理标识
-
-##### dp_v_qfg_layer
-###### 简述
-###### 字段
-1. dpid
-    * 类型: varchar
-    * 意义: 标识
-1. dplayer_object
-    * 类型: jsonb
-    * 意义: 图层所需要的数据对象类型
-    * 示例:
-        ```json
-        {
-            "id": ["plugins_3000_gdb"]
-            , "name": ["dom", "dem"]
-            , "type": ["vector"]
-            , "data_type": ["file"]
-            , "group": ["industry_data"]
-            , "tag": ["aa", "bb"]
-        }
-        ```
-        **注意: 大小写不敏感**
-        **上述条件对应为object_def表中的dsodid\dsodname\dsodtype\dsodgroupname**
-        
-##### dp_v_qfg_layer_file
-
 #### 调度设计
 ##### 服务发布调度
 1. 名称: job_d2s_service_deploy
@@ -1574,47 +1504,141 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 
 ***
 # 数据库设计
+
+## dm2_storage_inbound
+
+### 字段
+1. dsiOtherOption
+    * 类型: jsonb
+    * 意义: 入库的特殊处理
+    * 示例:
+        ```json
+        {
+            "control": {
+                "switch": {
+                    "check_file_locked": 0,
+                    "check_file_locked_comment": "0=False;-1=True. 是否在入库前, 检查所有文件是否被锁定. 注意: 如果是切片, 这个过程耗时会很长! "
+                } 
+            },
+            "notify": {
+                "module_comment": "module属性如果设置内容, 类型为字符串数组, 表明该批次仅仅通知数组中指定的模块标识!!! 如果不设置, 则应将module设置为null!!!",
+                "module": null,
+                "module.other": ["module_distribution"]
+            },
+            "property": {
+                "project": "天津测绘局数据管理项目",
+                "period": "第一期",
+                "year": "2020"
+            }
+        }         
+        ```
+    * 说明: 
+        * control
+            * 控制入库流程的配置选项
+            * 内容:
+                * switch
+                    * 开关选项, 下面的内容, 大部分由开关组成
+                    * 内容:
+                        * check_file_locked: 0=False;-1=True. 是否在入库前, 检查所有文件是否被锁定. 注意: 如果是切片, 这个过程耗时会很长! 
+        * notify
+            * 本批次的数据, 在通知子系统时, 可以设置具体通知的子系统名称
+            * 默认设置为null, 表明本批次数据将通知所有子系统
+            * 可以设置module为具体数组, 控制系统仅仅通知特定的几个子系统. 本设置主要为了在第一次通知失败时, 通过修正质检选项, 重新通知子系统时使用
+        * property
+            * 本批次数据的属性
+            * 部分项目将在入库时, 为该批次数据, 指定特定的属性, 如所属项目等
+            * 可以将项目中的该类特殊属性存储在这里, 并在同步算法中, 通过入库标识, 将directory\file\object信息和property关联在一起
+
 ## dm2_storage
 ### 简述
 存储
 
 ### 字段
-#### dstUniPath
-1. 类型: varchar
-1. 意义: 全局路径
-    * 一般使用NAS等外置存储时, 该值为\\xxx.xxx.xxx.xxx\ShareStorage
-    * 第三方应用, 使用该路径, 结合对象的存储目录, 计算出实体数据存储的目录
+1. dstUniPath
+    1. 类型: varchar
+    1. 意义: 全局路径
+        * 一般使用NAS等外置存储时, 该值为\\xxx.xxx.xxx.xxx\ShareStorage
+        * 第三方应用, 使用该路径, 结合对象的存储目录, 计算出实体数据存储的目录
 
-#### dstOwnerPath
-1. 类型: varchar
-1. 意义: 私有路径
-    * 如果数管系统部署在linux下, 则该值为\\xxx.xxx.xxx.xxx\ShareStorage映射到操作系统的路径
-    * 如果数管系统部署在windows下, 则该值与dstUniPath值相同
+1. dstOwnerPath
+    1. 类型: varchar
+    1. 意义: 私有路径
+        * 如果数管系统部署在linux下, 则该值为\\xxx.xxx.xxx.xxx\ShareStorage映射到操作系统的路径
+        * 如果数管系统部署在windows下, 则该值与dstUniPath值相同
 
-#### dstOtherOption
-1. 类型: JsonB
-1. 示例:
-```json
-{
-    "inbound": {
-        "filter" :{
-            "directory": {
-                "white_list" : "*",
-                "black_list": "" 
-            },
-            "file": {
-                "white_list" : "*.*",
-                "black_list": "*.abc" 
+1. dstOtherOption
+    1. 类型: JsonB
+    1. 示例:
+    ```json
+    {
+        "inbound": {
+            "filter" :{
+                "directory": {
+                    "white_list" : "*",
+                    "black_list": "" 
+                },
+                "file": {
+                    "white_list" : "*.*",
+                    "black_list": "*.abc" 
+                }
             }
+        },
+        "mount": {
+            "username": "username",
+            "password": "password"
         }
-    },
-    "mount": {
-        "username": "username",
-        "password": "password"
     }
-}
-```
-1. 说明:
+    ```
+    1. 说明:
+
+
+## dp_v_qfg
+### 简述
+### 字段
+1. dpid
+    * 类型: varchar
+    * 意义: 标识
+1. dpStatus
+    * 类型: int
+    * 意义: 状态
+        * 0: 成功完成发布
+        * 1: 等待发布
+        * 2: 发布中-正在处理
+        * ...
+        * 5: 发布中-等待发布为ogc服务
+        * 6: 发布中-正在筹备ogc服务发布前的预备工作
+        * 61: 发布中-筹备ogc服务发布前的预备工作失败; 重试请更改为5
+        * 7: 发布中-已经提交给ogc服务器, 等待处理完成
+        * 81: 发布中-已经提交给ogc服务器, 但ogc服务器发布失败
+        * ...
+1. dpProcessID
+    * 类型: varchar
+    * 意义: 并行处理标识
+
+## dp_v_qfg_layer
+### 简述
+### 字段
+1. dpid
+    * 类型: varchar
+    * 意义: 标识
+1. dplayer_object
+    * 类型: jsonb
+    * 意义: 图层所需要的数据对象类型
+    * 示例:
+        ```json
+        {
+            "id": ["plugins_3000_gdb"]
+            , "name": ["dom", "dem"]
+            , "type": ["vector"]
+            , "data_type": ["file"]
+            , "group": ["industry_data"]
+            , "tag": ["aa", "bb"]
+        }
+        ```
+        **注意: 大小写不敏感**
+        **上述条件对应为object_def表中的dsodid\dsodname\dsodtype\dsodgroupname**
+        
+## dp_v_qfg_layer_file
 
 
 ***

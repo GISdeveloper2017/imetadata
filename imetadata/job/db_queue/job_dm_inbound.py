@@ -132,7 +132,7 @@ where dsistatus = {1}
                 return result
 
             dest_ib_subpath = CFile.unify(dest_ib_subpath)
-            if CJson.json_attr_value(ds_ib_option, self.Path_IB_Option_CheckFileLocked, self.DB_False) == self.DB_True:
+            if CJson.json_attr_value(ds_ib_option, self.Path_IB_Switch_CheckFileLocked, self.DB_False) == self.DB_True:
                 src_ib_files_not_locked, message = self.check_src_ib_files_not_locked(ds_src_root_path, src_path)
                 if not src_ib_files_not_locked:
                     result = CResult.merge_result(self.Failure, message)

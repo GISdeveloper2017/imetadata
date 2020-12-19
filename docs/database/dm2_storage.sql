@@ -1086,9 +1086,15 @@ comment on column sch_center.scCommand is '命令';
 
 create index idx_sch_center_mission_id on sch_center_mission (scmid);
 
+truncate table sch_center;
+update sch_center_mission
+set scmcenterid = null;
+
 /*
     2020-12-19
-    考虑到最后, 还是需要在directory\file\object等信息中, 需要增加入库标识
+    . 考虑到最后, 还是需要在directory\file\object等信息中, 需要增加入库标识
+    . 在数据附属文件中, 增加文件个数\子目录个数和类型字段, 同时增加Other字段, 以jsonb方式存储其他扩展属性, 为下一步扫描处理预留空间
+    . 优化部分数据表, 增加索引, 提高检索效率
 */
 
 alter table dm2_storage_directory
@@ -1103,4 +1109,128 @@ alter table dm2_storage_object
     add column dso_ib_id varchar(100);
 comment on column dm2_storage_object.dso_ib_id is '入库标识';
 
+alter table dm2_storage_obj_detail
+    drop column dodfiletype;
+alter table dm2_storage_obj_detail
+    add dodfiletype varchar(100) default 'file';
+comment on column dm2_storage_obj_detail.dodfiletype is '文件类型';
+
+alter table dm2_storage_obj_detail
+    add dodfilecount bigint default 1;
+comment on column dm2_storage_obj_detail.dodfilecount is '文件个数';
+
+alter table dm2_storage_obj_detail
+    add doddircount bigint default 0;
+comment on column dm2_storage_obj_detail.doddircount is '目录个数';
+
+alter table dm2_storage_obj_detail
+    add dodother jsonb;
+comment on column dm2_storage_obj_detail.dodother is '其他属性';
+
+create index idx_dm2_storage_directory_user_id
+    on dm2_storage_directory (dsduserid);
+
+create index idx_dm2_storage_file_user_id
+    on dm2_storage_file (dsfuserid);
+
+create index idx_dm2_storage_directory_ib_id
+    on dm2_storage_directory (dsd_ib_id);
+
+create index idx_dm2_storage_file_ib_id
+    on dm2_storage_file (dsf_ib_id);
+
+create index idx_dm2_storage_directory_bus_status
+    on dm2_storage_directory (dsd_bus_status);
+
+create index idx_dm2_storage_file_bus_status
+    on dm2_storage_file (dsf_bus_status);
+
+create index idx_dm2_storage_object_name
+    on dm2_storage_object (dsoobjectname);
+create index idx_dm2_storage_object_proj4
+    on dm2_storage_object (dso_prj_proj4);
+create index idx_dm2_storage_object_ib_id
+    on dm2_storage_object (dso_ib_id);
+create index idx_dm2_storage_object_bus_status
+    on dm2_storage_object (dso_bus_status);
+
+
+/*
+    思考服务发布的数据库设计-----------------------------注意: 暂不启用!!!!!!!
+    . 从服务发布节点开始设计
+
+*/
+
+drop table if exists gis_server;
+create table if not exists gis_server
+(
+    gsid      varchar(100) not null
+        constraint dp_v_qfg_pkey
+            primary key,
+    gstitle   varchar(100) not null,
+    gshost    varchar(100),
+    gsoptions jsonb,
+    gsmemo    varchar(1000)
+);
+
+comment on table gis_server is 'GIS_server服务器';
+
+comment on column gis_server.gsid is '标示';
+comment on column gis_server.gstitle is '标题';
+comment on column gis_server.gshost is '服务器ip';
+comment on column gis_server.gsoptions is '其他配置';
+comment on column gis_server.gsmemo is '备注';
+
+alter table gis_server
+    owner to postgres;
+
+
+drop table if exists gis_storage;
+create table if not exists gis_storage
+(
+    gsid          varchar(100) not null
+        constraint dp_v_qfg_pkey primary key,
+    gsServerID    varchar(100) not null,
+    gsStorageID   varchar(100) not null,
+    gsStatus      int default 1,
+    gsMountProcID varchar(100),
+    gsMountMemo   text
+);
+
+comment on table gis_storage is 'GIS服务器';
+
+comment on column gis_storage.gsid is '标示';
+comment on column gis_storage.gsServerID is '服务器标识';
+comment on column gis_storage.gsStorageID is '存储标识';
+comment on column gis_storage.gsStatus is '状态';
+comment on column gis_storage.gsMountProcID is '并行连接标识';
+comment on column gis_storage.gsMountMemo is '连接结果';
+
+alter table gis_storage
+    owner to postgres;
+
+
+drop table if exists gis_service;
+create table if not exists gis_service
+(
+    gsid           varchar(100) not null
+        constraint dp_v_qfg_pkey primary key,
+    gsServerID     varchar(100) not null,
+    gsServiceID    varchar(100) not null,
+    gsStatus       int default 1,
+    gsDeployProcID varchar(100),
+    gsDeployMemo   text
+);
+
+comment on table gis_service is 'GIS服务器';
+
+comment on column gis_service.gsid is '标示';
+comment on column gis_service.gsServerID is '服务器标识';
+comment on column gis_service.gsServiceID is '服务标识';
+comment on column gis_service.gsStatus is '状态';
+comment on column gis_service.gsDeployProcID is '并行发布标识';
+comment on column gis_service.gsDeployMemo is '发布结果';
+
+alter table gis_service
+    owner to postgres;
 
