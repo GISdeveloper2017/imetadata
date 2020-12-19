@@ -1086,3 +1086,21 @@ comment on column sch_center.scCommand is '命令';
 
 create index idx_sch_center_mission_id on sch_center_mission (scmid);
 
+/*
+    2020-12-19
+    考虑到最后, 还是需要在directory\file\object等信息中, 需要增加入库标识
+*/
+
+alter table dm2_storage_directory
+    add column dsd_ib_id varchar(100);
+comment on column dm2_storage_directory.dsd_ib_id is '入库标识';
+
+alter table dm2_storage_file
+    add column dsf_ib_id varchar(100);
+comment on column dm2_storage_file.dsf_ib_id is '入库标识';
+
+alter table dm2_storage_object
+    add column dso_ib_id varchar(100);
+comment on column dm2_storage_object.dso_ib_id is '入库标识';
+
+

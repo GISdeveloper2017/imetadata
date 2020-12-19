@@ -746,8 +746,16 @@ class CPlugins(CResource):
                                                 '元数据文件[{0}]格式不合法, 无法处理! '.format(
                                                     self.file_info.file_name_with_full_path))
             else:
+                parser.metadata.set_metadata(
+                    self.DB_False,
+                    CResult.result_message(result)
+                )
                 return result
         else:
+            parser.metadata.set_metadata(
+                self.DB_True,
+                '元数据引擎未设置, 将在子类中自行实现! '
+            )
             return CResult.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
 
     def parser_metadata_view_after_qa(self, parser: CMetaDataParser):
@@ -796,8 +804,16 @@ class CPlugins(CResource):
                         self.Exception,
                         '元数据文件[{0}]格式不合法, 无法处理! '.format(self.file_info.file_name_with_full_path))
             else:
+                parser.metadata.set_metadata_view(
+                    self.DB_False,
+                    CResult.result_message(result)
+                )
                 return result
         else:
+            parser.metadata.set_metadata_view(
+                self.DB_True,
+                '文件[{0}]的快视图元数据引擎未设置! '.format(self.file_info.file_name_with_full_path)
+            )
             return CResult.merge_result(self.Success, '可视元数据引擎未设置, 将在子类中自行实现! ')
 
     def parser_metadata_with_qa(self, parser: CMetaDataParser):

@@ -77,7 +77,7 @@ class CViewCreatorRaster(CViewCreator):
             result = CResult.merge_result_info(result, self.Name_Thumb, view_relative_path_thumb)
             result = CResult.merge_result_info(result, self.Name_Browse_GeoTiff, view_relative_path_geotiff)
         else:
-            result = CResult.merge_result(self.Failure, CResult.result_message(result_view))
+            result = result_view
         return result
 
     def create_view_json(self, params_json: CJson):
@@ -107,10 +107,11 @@ class CViewCreatorRaster(CViewCreator):
         # 注册所有驱动，支持中文
         gdal.AllRegister()
         gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
+
+        # <editor-fold desc="重采样">
+        # 获取并检查影像文件
+        source_ds = gdal.Open(image_path, gdalconst.GA_ReadOnly)
         try:
-            # <editor-fold desc="重采样">
-            # 获取并检查影像文件
-            source_ds = gdal.Open(image_path, gdalconst.GA_ReadOnly)
             if source_ds is None:
                 CLogger().warning('文件[{0}]打开失败！请检查！'.format(image_path))
                 return CResult.merge_result(self.Failure, '文件[{0}]打开失败！请检查！'.format(image_path))
@@ -144,60 +145,69 @@ class CViewCreatorRaster(CViewCreator):
 
             # 配置拇指图内存临时文件thumb_ds
             thumb_ds = driver_mem.Create("", xsize=thumb_cols, ysize=thumb_rows, bands=band_count, eType=data_type)
-            thumb_ds.SetProjection(projection)
-            thumb_ds.SetGeoTransform(geo_transform)
-            for index in range(band_count):
-                in_band = source_ds.GetRasterBand(index + 1)
-                data = in_band.ReadAsArray(buf_xsize=thumb_cols, buf_ysize=thumb_rows)
-                out_band = thumb_ds.GetRasterBand(index + 1)
-                out_band.WriteArray(data)
-                out_band.FlushCache()
-                out_band.ComputeBandStats(False)
+            try:
+                thumb_ds.SetProjection(projection)
+                thumb_ds.SetGeoTransform(geo_transform)
+                for index in range(band_count):
+                    in_band = source_ds.GetRasterBand(index + 1)
+                    data = in_band.ReadAsArray(buf_xsize=thumb_cols, buf_ysize=thumb_rows)
+                    out_band = thumb_ds.GetRasterBand(index + 1)
+                    out_band.WriteArray(data)
+                    out_band.FlushCache()
+                    out_band.ComputeBandStats(False)
 
-            # 制作快视图
-            # 设置快视图尺寸
-            browse_cols = 1000
-            scale = browse_cols / cols
-            browse_rows = rows * scale
-            browse_rows = CUtils.to_integer(browse_rows)
-            geo_transform[1] = geo_transform[1] / scale
-            geo_transform[5] = geo_transform[5] / scale
+                # 制作快视图
+                # 设置快视图尺寸
+                browse_cols = 1000
+                scale = browse_cols / cols
+                browse_rows = rows * scale
+                browse_rows = CUtils.to_integer(browse_rows)
+                geo_transform[1] = geo_transform[1] / scale
+                geo_transform[5] = geo_transform[5] / scale
 
-            # 如果已存在同名影像，则删除之
-            if os.path.exists(geotiff_path) and os.path.isfile(geotiff_path):  # 如果已存在同名影像
-                os.remove(geotiff_path)
-            # 配置快视图内存临时文件browse_ds
-            CFile.check_and_create_directory(geotiff_path)  # 创建目录
-            browse_ds = driver_GeoTiff.Create(geotiff_path, xsize=browse_cols, ysize=browse_rows, bands=band_count,
-                                              eType=data_type)
-            browse_ds.SetProjection(projection)
-            browse_ds.SetGeoTransform(geo_transform)
-            for index in range(band_count):
-                in_band = source_ds.GetRasterBand(index + 1)
-                data = in_band.ReadAsArray(buf_xsize=browse_cols, buf_ysize=browse_rows)
-                out_band = browse_ds.GetRasterBand(index + 1)
-                out_band.WriteArray(data)
-                out_band.FlushCache()
-                out_band.ComputeBandStats(False)
-            # </editor-fold>
+                # 如果已存在同名影像，则删除之
+                if os.path.exists(geotiff_path) and os.path.isfile(geotiff_path):  # 如果已存在同名影像
+                    os.remove(geotiff_path)
+                # 配置快视图内存临时文件browse_ds
+                CFile.check_and_create_directory(geotiff_path)  # 创建目录
+                browse_ds = driver_GeoTiff.Create(geotiff_path, xsize=browse_cols, ysize=browse_rows, bands=band_count,
+                                                  eType=data_type)
+                if browse_ds is None:
+                    CLogger().warning('文件[{0}]处理失败！GeoTiff驱动无法创建, 生成快视图、拇指图失败！'.format(image_path))
+                    return CResult.merge_result(self.Failure,
+                                                '文件[{0}]处理失败！GeoTiff驱动无法创建, 生成快视图、拇指图失败！'.format(image_path))
 
-            # 由重采样后的影像制作快视图、拇指图
-            browse_path = self.image2view(browse_ds, browse_path)
-            thumb_path = self.image2view(thumb_ds, thumb_path)
+                try:
+                    browse_ds.SetProjection(projection)
+                    browse_ds.SetGeoTransform(geo_transform)
+                    for index in range(band_count):
+                        in_band = source_ds.GetRasterBand(index + 1)
+                        data = in_band.ReadAsArray(buf_xsize=browse_cols, buf_ysize=browse_rows)
+                        out_band = browse_ds.GetRasterBand(index + 1)
+                        out_band.WriteArray(data)
+                        out_band.FlushCache()
+                        out_band.ComputeBandStats(False)
+                    # </editor-fold>
 
-            if os.path.exists(thumb_path) and os.path.exists(browse_path) and os.path.exists(geotiff_path):
-                CLogger().info('文件[{0}]的快视图、拇指图制作成功!'.format(image_path))
-                return CResult.merge_result(self.Success, '文件[{0}]快视图、拇指图制作成功!'.format(image_path))
-            else:
-                CLogger().warning('文件[{0}]处理失败！未生成相应的快视图、拇指图！'.format(image_path))
-                return CResult.merge_result(self.Failure, '文件[{0}]处理失败！未生成相应的快视图、拇指图！'.format(image_path))
+                    # 由重采样后的影像制作快视图、拇指图
+                    browse_path = self.image2view(browse_ds, browse_path)
+                    thumb_path = self.image2view(thumb_ds, thumb_path)
+
+                    if os.path.exists(thumb_path) and os.path.exists(browse_path) and os.path.exists(geotiff_path):
+                        CLogger().info('文件[{0}]的快视图、拇指图制作成功!'.format(image_path))
+                        return CResult.merge_result(self.Success, '文件[{0}]快视图、拇指图制作成功!'.format(image_path))
+                    else:
+                        CLogger().warning('文件[{0}]处理失败！未生成相应的快视图、拇指图！'.format(image_path))
+                        return CResult.merge_result(self.Failure, '文件[{0}]处理失败！未生成相应的快视图、拇指图！'.format(image_path))
+                finally:
+                    del browse_ds
+            finally:
+                del thumb_ds
         except Exception as error:
-            CLogger().warning('影像数据的快视图、拇指图信息处理出现异常，错误信息为：{0}'.format(error.__str__))
-            return CResult.merge_result(self.Failure, '影像数据的快视图、拇指图信息处理出现异常，错误信息为：{0}!'.format(error.__str__))
+            CLogger().warning('影像数据的快视图、拇指图信息处理出现异常，错误信息为：{0}'.format(error.__str__()))
+            return CResult.merge_result(self.Failure, '影像数据的快视图、拇指图信息处理出现异常，错误信息为：{0}!'.format(error.__str__()))
         finally:
             del source_ds
-            del thumb_ds
-            del browse_ds
 
     def image2view(self, target_ds, view_path: str) -> str:
         """

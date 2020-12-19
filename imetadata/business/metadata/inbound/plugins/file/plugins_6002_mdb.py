@@ -176,6 +176,17 @@ class plugins_6002_mdb(CVectorFilePlugins):
                 )
             )
 
+        mdb_ib_id = CFactory().give_me_db(self.file_info.db_server_id).one_value(
+            '''
+            select dso_ib_id
+            from dm2_storage_object
+            where dsoid = :object_id
+            ''',
+            {
+                'object_id': parser.object_id
+            }
+        )
+
         error_message_list = []
         table = CTable()
         table.load_info(self.file_info.db_server_id, self.TableName_DM_Object)
@@ -228,6 +239,7 @@ class plugins_6002_mdb(CVectorFilePlugins):
                 table.column_list.column_by_name('dsoalphacode').set_value(CUtils.alpha_text(layer_name))
                 table.column_list.column_by_name('dsoaliasname').set_value(layer_name)
                 table.column_list.column_by_name('dsoparentobjid').set_value(parser.object_id)
+                table.column_list.column_by_name('dso_ib_id').set_value(mdb_ib_id)
 
                 table.column_list.column_by_name('dsometadatatext').set_value(layer_metadata_text)
                 table.column_list.column_by_name('dsometadatajson').set_value(layer_metadata_text)

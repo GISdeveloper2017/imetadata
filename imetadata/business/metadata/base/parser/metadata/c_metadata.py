@@ -176,6 +176,8 @@ class CMetaData(CResource):
         self.__metadata_view_extract_result__ = result
         self.__metadata_view_extract_memo__ = memo
         if view_metadata_type is None:
+            self.__browse_img_file_name__ = None
+            self.__thumb_img_file_name__ = None
             return
 
         if view_metadata_type == CResource.View_MetaData_Type_Browse:

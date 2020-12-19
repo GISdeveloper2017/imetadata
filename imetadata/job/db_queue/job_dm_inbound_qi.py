@@ -54,6 +54,7 @@ where dsiStatus = {1}
 
     def process_mission(self, dataset, is_retry_mission: bool) -> str:
         """
+        :param is_retry_mission:
         :param dataset:
         :return:
         """
@@ -81,7 +82,7 @@ where dsiStatus = {1}
 
             ib_full_directory = CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
 
-            super().clear_anything_in_directory(ds_storage_id, ds_ib_directory_name)
+            self.clear_anything_in_directory(ds_storage_id, ds_ib_directory_name)
             metadata_rule_file_name = CFile.join_file(ib_full_directory, self.FileName_MetaData_Rule)
             metadata_rule_content = ''
             if CFile.file_or_path_exist(metadata_rule_file_name):
@@ -113,7 +114,7 @@ where dsiStatus = {1}
             )
 
             if path_obj.white_black_valid():
-                path_obj.db_check_and_update()
+                path_obj.db_check_and_update(ds_ib_id)
 
                 result = CResult.merge_result(
                     self.Success,
@@ -131,7 +132,7 @@ where dsiStatus = {1}
             result = CResult.merge_result(
                 self.Failure,
                 '目录[{0}]的入库质检任务创建过程出现错误, 详细错误为: [{1}]'.format(
-                    ib_full_directory,
+                    CFile.join_file(ds_storage_root_dir, ds_ib_directory_name),
                     error.__str__()
                 )
             )

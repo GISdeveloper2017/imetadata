@@ -21,7 +21,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
             self._ds_file_or_path = engine.one_row('''
             select dsfid, dsfstorageid, dsfdirectoryid, dsffilerelationname, dsffilename, dsffilemainname, dsfext, 
                 dsffilecreatetime, dsffilemodifytime, dsffilevalid, 
-                dsf_object_type, dsf_object_confirm, dsf_object_id, dsffilesize, dsfparentobjid
+                dsf_object_type, dsf_object_confirm, dsf_object_id, dsffilesize, dsfparentobjid, dsf_ib_id
             from dm2_storage_file
             where dsfstorageid = :dsfStorageID and dsfdirectoryid = :dsfDirectoryId and dsffilerelationname = :dsfFileRelationName
             ''', {'dsfStorageID': self.storage_id, 'dsfDirectoryId': self.parent_id,
@@ -34,12 +34,12 @@ class CDMFileInfo(CDMFilePathInfoEx):
             self._ds_file_or_path = engine.one_row('''
                 select dsfid, dsfstorageid, dsfdirectoryid, dsffilerelationname, dsffilename, dsffilemainname, dsfext, 
                     dsffilecreatetime, dsffilemodifytime, dsffilevalid, 
-                    dsf_object_type, dsf_object_confirm, dsf_object_id, dsffilesize, dsfparentobjid
+                    dsf_object_type, dsf_object_confirm, dsf_object_id, dsffilesize, dsfparentobjid, dsf_ib_id
                 from dm2_storage_file
                 where dsfid = :dsfID
                 ''', {'dsfid': self.my_id})
 
-    def db_check_and_update(self):
+    def db_check_and_update(self, ib_id):
         """
         检查并更新dm2_storage_file表中记录
         :return:
@@ -52,21 +52,35 @@ class CDMFileInfo(CDMFilePathInfoEx):
                                         CUtils.any_2_str(self.file_modify_time)) and (
                     db_file_size == self.file_size):
                 CLogger().info('文件[{0}]的大小和最后修改时间, 和库中登记的没有变化, 文件将被设置为忽略刷新! '.format(self.file_name_with_full_path))
-                CFactory().give_me_db(self.db_server_id).execute('''
-                    update dm2_storage_file set dsfScanStatus = 0, dsffilevalid = -1
+                CFactory().give_me_db(self.db_server_id).execute(
+                    '''
+                    update dm2_storage_file 
+                    set dsfScanStatus = 0, dsffilevalid = -1, dsf_ib_id = :ib_id
                     where dsfid = :dsfid 
-                    ''', {'dsfid': self.my_id})
+                    ''',
+                    {
+                        'dsfid': self.my_id,
+                        'ib_id': ib_id
+                    }
+                )
             else:
                 CLogger().info('文件[{0}]的大小和最后修改时间, 和库中登记的有变化, 文件将被设置为重新刷新! '.format(self.file_name_with_full_path))
-                CFactory().give_me_db(self.db_server_id).execute('''
-                    update dm2_storage_file set dsfScanStatus = 1, dsffilevalid = -1
+                CFactory().give_me_db(self.db_server_id).execute(
+                    '''
+                    update dm2_storage_file 
+                    set dsfScanStatus = 1, dsffilevalid = -1, dsf_ib_id = :ib_id
                     where dsfid = :dsfid 
-                    ''', {'dsfid': self.my_id})
+                    ''',
+                    {
+                        'dsfid': self.my_id,
+                        'ib_id': ib_id
+                    }
+                )
         else:
             CLogger().info('文件[{0}]未在库中登记, 系统将登记该记录! '.format(self.file_name_with_full_path))
-            self.db_insert()
+            self.__db_insert(ib_id)
 
-    def db_insert(self):
+    def __db_insert(self, ib_id):
         """
         将当前目录, 创建一条新记录到dm2_storage_directory表中
         :return:
@@ -76,12 +90,12 @@ class CDMFileInfo(CDMFilePathInfoEx):
             dsfid, dsfstorageid, dsfdirectoryid, dsffilerelationname, dsffilename, dsffilemainname, dsfext
             , dsffilecreatetime, dsffilemodifytime, dsfaddtime, dsflastmodifytime, dsffilevalid
             , dsfscanstatus, dsfprocessid, dsf_object_type, dsf_object_confirm, dsf_object_id
-            , dsffilesize, dsfparentobjid) 
+            , dsffilesize, dsfparentobjid, dsf_ib_id) 
         values(
             :dsfid, :dsfstorageid, :dsfdirectoryid, :dsffilerelationname, :dsffilename, :dsffilemainname, :dsfext
             , :dsffilecreatetime, :dsffilemodifytime, now(), now(), -1
             , 1, null, null, 0, null
-            , :dsffilesize, :dsfparentobjid)
+            , :dsffilesize, :dsfparentobjid, :dsf_ib_id)
         '''
         params = dict()
         params['dsfid'] = self.my_id
@@ -95,6 +109,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
         params['dsffilemodifytime'] = self.file_modify_time
         params['dsffilesize'] = self.file_size
         params['dsfparentobjid'] = self.owner_obj_id
+        params['dsf_ib_id'] = ib_id
         CFactory().give_me_db(self.db_server_id).execute(sql_insert, params)
 
     def db_update_status_on_file_invalid(self):
@@ -130,8 +145,11 @@ class CDMFileInfo(CDMFilePathInfoEx):
                 db_object_type = self.ds_file_or_path.value_by_name(0, 'dsf_object_type', '')
                 CLogger().debug(
                     '系统发现文件[{0}]的大小或最后修改时间有变化, 将删除它关联的对象{1}.{2}, 重新识别'.format(
-                        self.file_main_name, db_object_type,
-                        db_object_id))
+                        self.file_main_name,
+                        db_object_type,
+                        db_object_id
+                    )
+                )
                 self.db_delete_object_by_id(db_object_id)
 
         object_confirm = self.Object_Confirm_IUnKnown
@@ -150,15 +168,19 @@ class CDMFileInfo(CDMFilePathInfoEx):
                     , dsffilevalid = -1, dsffilesize = :dsfFileSize, dsffilemodifytime = :fileModifyTime
                 where dsfid = :dsfid
                 '''
-            CFactory().give_me_db(self.db_server_id).execute(sql_update_file_object, {'dsfid': self.my_id,
-                                                                                      'dsf_object_confirm': object_confirm,
-                                                                                      'dsfFileSize': self.file_size,
-                                                                                      'fileModifyTime': CUtils.any_2_str(
-                                                                                          self.file_modify_time)})
+            CFactory().give_me_db(self.db_server_id).execute(
+                sql_update_file_object,
+                {
+                    'dsfid': self.my_id,
+                    'dsf_object_confirm': object_confirm,
+                    'dsfFileSize': self.file_size,
+                    'fileModifyTime': CUtils.any_2_str(self.file_modify_time)
+                }
+            )
         else:
             sql_insert_object = '''
-                insert into dm2_storage_object(dsoid, dsoobjectname, dsoobjecttype, dsodatatype, dsoalphacode, dsoaliasname, dsoparentobjid) 
-                values(:dsoid, :dsoobjectname, :dsoobjecttype, :dsodatatype, :dsoalphacode, :dsoaliasname, :dsoparentobjid)
+                insert into dm2_storage_object(dsoid, dsoobjectname, dsoobjecttype, dsodatatype, dsoalphacode, dsoaliasname, dsoparentobjid, dso_ib_id) 
+                values(:dsoid, :dsoobjectname, :dsoobjecttype, :dsodatatype, :dsoalphacode, :dsoaliasname, :dsoparentobjid, :dso_ib_id)
                 '''
 
             new_dso_id = db_object_id
@@ -181,6 +203,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
                 params['dsoalphacode'] = CUtils.alpha_text(object_name)
                 params['dsoaliasname'] = object_name
                 params['dsoparentobjid'] = self.owner_obj_id
+                params['dso_ib_id'] = self.ds_file_or_path.value_by_name(0, 'dsf_ib_id', None)
                 engine.session_execute(session, sql_insert_object, params)
 
                 params = dict()

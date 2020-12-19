@@ -22,7 +22,7 @@ class CDMPathInfo(CDMFilePathInfoEx):
             self._ds_file_or_path = engine.one_row(
                 'select dsdid, dsdparentid, dsddirectory, dsddirtype, dsddirectoryname, dsd_object_type, \
                         dsd_object_confirm, dsd_object_id, dsd_directory_valid, dsdpath, dsddircreatetime, \
-                        dsddirlastmodifytime, dsdparentobjid, dsdscanrule from dm2_storage_directory \
+                        dsddirlastmodifytime, dsdparentobjid, dsdscanrule, dsd_ib_id from dm2_storage_directory \
                         where dsdstorageid = :dsdStorageID and dsddirectory = :dsdDirectory',
                 {'dsdStorageID': self.storage_id, 'dsdDirectory': self.file_name_with_rel_path})
             if not self.ds_file_or_path.is_empty():
@@ -33,7 +33,7 @@ class CDMPathInfo(CDMFilePathInfoEx):
             self._ds_file_or_path = engine.one_row(
                 'select dsdid, dsdparentid, dsddirectory, dsddirtype, dsddirectoryname, dsd_object_type, \
                         dsd_object_confirm, dsd_object_id, dsd_directory_valid, dsdpath, dsddircreatetime, \
-                        dsddirlastmodifytime, dsdparentobjid, dsdscanrule from dm2_storage_directory \
+                        dsddirlastmodifytime, dsdparentobjid, dsdscanrule, dsd_ib_id from dm2_storage_directory \
                         where dsdid = :dsdID',
                 {'dsdid': self.my_id})
 
@@ -130,8 +130,8 @@ class CDMPathInfo(CDMFilePathInfoEx):
             )
         else:
             sql_insert_object = '''
-                insert into dm2_storage_object(dsoid, dsoobjectname, dsoobjecttype, dsodatatype, dsoalphacode, dsoaliasname, dsoparentobjid) 
-                values(:dsoid, :dsoobjectname, :dsoobjecttype, :dsodatatype, :dsoalphacode, :dsoaliasname, :dsoparentobjid)
+                insert into dm2_storage_object(dsoid, dsoobjectname, dsoobjecttype, dsodatatype, dsoalphacode, dsoaliasname, dsoparentobjid, dso_ib_id) 
+                values(:dsoid, :dsoobjectname, :dsoobjecttype, :dsodatatype, :dsoalphacode, :dsoaliasname, :dsoparentobjid, :dso_ib_id)
                 '''
 
             new_dso_id = db_object_id
@@ -159,6 +159,7 @@ class CDMPathInfo(CDMFilePathInfoEx):
                 params['dsoalphacode'] = CUtils.alpha_text(object_name)
                 params['dsoaliasname'] = object_name
                 params['dsoparentobjid'] = self.owner_obj_id
+                params['dso_ib_id'] = self.ds_file_or_path.value_by_name(0, 'dsd_ib_id', None)
                 engine.session_execute(session, sql_insert_object, params)
 
                 params = dict()
@@ -261,7 +262,7 @@ class CDMPathInfo(CDMFilePathInfoEx):
         finally:
             engine.session_close(session)
 
-    def db_check_and_update(self):
+    def db_check_and_update(self, ib_id):
         """
         检查并更新dm2_storage_directory表中记录
         :return:
@@ -272,21 +273,35 @@ class CDMPathInfo(CDMFilePathInfoEx):
             if CUtils.equal_ignore_case(CUtils.any_2_str(db_path_modify_time),
                                         CUtils.any_2_str(self.file_modify_time)):
                 CLogger().info('目录[{0}]的最后修改时间, 和库中登记的没有变化, 子目录将被设置为忽略刷新! '.format(self.file_name_with_full_path))
-                CFactory().give_me_db(self.db_server_id).execute('''
-                    update dm2_storage_directory set dsdScanStatus = 0, dsdScanFileStatus = 0, dsd_directory_valid = -1
+                CFactory().give_me_db(self.db_server_id).execute(
+                    '''
+                    update dm2_storage_directory 
+                    set dsdScanStatus = 0, dsdScanFileStatus = 0, dsd_directory_valid = -1, dsd_ib_id = :ib_id
                     where dsdid = :dsdid 
-                    ''', {'dsdid': self.my_id})
+                    ''',
+                    {
+                        'dsdid': self.my_id,
+                        'ib_id': ib_id
+                    }
+                )
             else:
                 CLogger().info('目录[{0}]的最后修改时间, 和库中登记的有变化, 子目录将被设置为重新刷新! '.format(self.file_name_with_full_path))
-                CFactory().give_me_db(self.db_server_id).execute('''
-                    update dm2_storage_directory set dsdScanStatus = 1, dsdScanFileStatus = 1, dsd_directory_valid = -1
+                CFactory().give_me_db(self.db_server_id).execute(
+                    '''
+                    update dm2_storage_directory 
+                    set dsdScanStatus = 1, dsdScanFileStatus = 1, dsd_directory_valid = -1, dsd_ib_id = :ib_id
                     where dsdid = :dsdid 
-                    ''', {'dsdid': self.my_id})
+                    ''',
+                    {
+                        'dsdid': self.my_id,
+                        'ib_id': ib_id
+                    }
+                )
         else:
             CLogger().info('目录[{0}]未在库中登记, 系统将登记该记录! '.format(self.file_name_with_full_path))
-            self.db_insert()
+            self.__db_insert(ib_id)
 
-    def db_insert(self):
+    def __db_insert(self, ib_id):
         """
         将当前目录, 创建一条新记录到dm2_storage_directory表中
         :return:
@@ -294,10 +309,10 @@ class CDMPathInfo(CDMFilePathInfoEx):
         sql_insert = '''
         insert into dm2_storage_directory(dsdid, dsdparentid, dsdstorageid, dsddirectory, dsddirtype, dsdlastmodifytime, 
             dsddirectoryname, dsdpath, dsddircreatetime, dsddirlastmodifytime, dsdparentobjid, 
-            dsdscanstatus, dsdscanfilestatus, dsdscandirstatus, dsd_directory_valid) 
+            dsdscanstatus, dsdscanfilestatus, dsdscandirstatus, dsd_directory_valid, dsd_ib_id) 
         values(:dsdid, :dsdparentid, :dsdstorageid, :dsddirectory, :dsddirtype, now(), 
             :dsddirectoryname, :dsdpath, :dsddircreatetime, :dsddirlastmodifytime, :dsdparentobjid,
-            1, 1, 1, -1)
+            1, 1, 1, -1, :ib_id)
         '''
         params = dict()
         params['dsdid'] = self.my_id
@@ -310,4 +325,5 @@ class CDMPathInfo(CDMFilePathInfoEx):
         params['dsddircreatetime'] = self.file_create_time
         params['dsddirlastmodifytime'] = self.file_modify_time
         params['dsdparentobjid'] = self.owner_obj_id
+        params['ib_id'] = ib_id
         CFactory().give_me_db(self.db_server_id).execute(sql_insert, params)
