@@ -146,6 +146,8 @@ class CPlugins(CResource):
         if self.file_info is not None:
             self.__metadata_rule_obj.load_xml(self.file_info.rule_content)
 
+        self._object_detail_file_full_name_list = []
+
     @property
     def file_content(self):
         return self._file_content
@@ -211,7 +213,7 @@ class CPlugins(CResource):
 
         return CResult.merge_result(self.Success, '标签处理完毕!')
 
-    # @property 本属性存在问题，谨慎使用
+    # @property  # 本属性存在问题，谨慎使用
     def object_detail_file_full_name_list(self) -> list:
         return self._object_detail_file_full_name_list
 
