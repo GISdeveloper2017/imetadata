@@ -81,6 +81,10 @@ class CAudit(CResource):
             if value_list is not None:
                 result_list.append(cls.__a_check_value_in_list__(result_template, value, title_prefix, value_list))
 
+            value_list = CUtils.dict_value_by_name(qa_items, cls.Name_Not_List, None)
+            if value_list is not None:
+                result_list.append(cls.__a_check_value_not_in_list__(result_template, value, title_prefix, value_list))
+
             value_sql = CUtils.dict_value_by_name(qa_items, cls.Name_SQL, None)
             if value_sql is not None:
                 value_sql_db_server_id = CUtils.dict_value_by_name(qa_items, cls.Name_DataBase,
@@ -229,6 +233,27 @@ class CAudit(CResource):
             result_dict[cls.Name_Result] = cls.QA_Result_Pass
         else:
             result_dict[cls.Name_Message] = '{0}的值[{1}], 不在指定列表中, 请检查修正!'.format(title_prefix, value)
+
+        return result_dict
+
+    @classmethod
+    def __a_check_value_not_in_list__(cls, result_template: dict, value, title_prefix, value_list: list):
+        """
+        根据规则, 验证值的合法性
+        注意: 值有可能为None!
+        完成 负责人 赵宇飞 这里对值在列表中存在性检验
+        :param result_template: 检查结果的模板
+        :param value: 待检验的值, 可能为None
+        :param title_prefix: 提示文本的前缀
+        :param value_list: 检查value的必须存在于指定的列表
+        :return:
+        """
+        result_dict = copy.deepcopy(result_template)
+        if CUtils.list_count(value_list, value) == 0:
+            result_dict[cls.Name_Message] = '{0}的值在不指定列表中, 符合要求!'.format(title_prefix)
+            result_dict[cls.Name_Result] = cls.QA_Result_Pass
+        else:
+            result_dict[cls.Name_Message] = '{0}的值[{1}], 在指定列表中, 请检查修正!'.format(title_prefix, value)
 
         return result_dict
 

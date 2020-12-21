@@ -253,6 +253,7 @@ class CResource:
     Name_XPath = 'xpath'
     Name_Attr_Name = 'attr_name'
     Name_List = 'list'
+    Name_Not_List = 'not_list'
     Name_Custom = 'custom'
     Name_Root = 'root'
     Name_Binary = 'binary'

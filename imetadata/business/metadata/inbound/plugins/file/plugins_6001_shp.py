@@ -161,5 +161,16 @@ class plugins_6001_shp(CVectorFilePlugins):
                 self.Name_Title: 'miny',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Not_List: ['0'],
+                self.Name_XPath: 'layers[0].features.count',
+                self.Name_ID: 'features_count',
+                self.Name_Title: 'features_count',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Warn
             }
         ]

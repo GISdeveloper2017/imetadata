@@ -128,13 +128,13 @@ class CVectorMDReader(CMDReader):
                     json_geometry = self.get_geometry_by_vectorlayer(layer_temp)
                     json_layer.set_value_of_name("geometry", json_geometry.json_obj)
                     # extent节点
-                    json_extent = self.get_extent_by_vectorlayer(layer_temp)
+                    json_extent = self.get_extent_by_vectorlayer(layer_temp, feature_count)
                     json_layer.set_value_of_name("extent", json_extent.json_obj)
                     # attributes节点
                     json_attributes = self.get_attributes_by_vectorlayer(layer_temp, mdb_flag)
                     json_layer.set_value_of_name("attributes", json_attributes.json_obj)
                     # wgs84节点
-                    json_wgs84 = self.transform_to_WGS84(layer_temp)
+                    json_wgs84 = self.transform_to_WGS84(layer_temp, feature_count)
                     json_layer.set_value_of_name('wgs84', json_wgs84.json_obj)
                 json_vector.set_value_of_name('layers', list_json_layers)
             json_shp_str = json_vector.to_json()
@@ -159,10 +159,11 @@ class CVectorMDReader(CMDReader):
             vector_ds.Destroy()
             vector_ds = None
 
-    def transform_to_WGS84(self, layer) -> CJson:
+    def transform_to_WGS84(self, layer, feature_count) -> CJson:
         """
         wgs84坐标系转换结果（wgs84节点）
         :param layer:
+        :param feature_count:
         :return:
         """
         json_wgs84 = CJson()
@@ -178,44 +179,55 @@ class CVectorMDReader(CMDReader):
         json_wgs84_coordinate.set_value_of_name('esri', wgs84_esri)
         json_wgs84.set_value_of_name('coordinate', json_wgs84_coordinate.json_obj)
 
-        spatialRef = layer.GetSpatialRef()
-        if spatialRef is None:
+        if feature_count == 0:
+            json_bounding = CJson()
+            json_bounding.set_value_of_name('minx', 0)
+            json_bounding.set_value_of_name('maxy', 0)
+            json_bounding.set_value_of_name('maxx', 0)
+            json_bounding.set_value_of_name('miny', 0)
+            json_wgs84.set_value_of_name('extent', json_bounding.json_obj)
             json_wgs84.set_value_of_name('msg',
-                                         'extent四至范围从原坐标系转wgs_84坐标系转换失败！失败原因：文件读取空间参考失败！')
-            json_wgs84.set_value_of_name('result', self.Failure)
+                                         'feature数量为0，不进行坐标系转换')
+            json_wgs84.set_value_of_name('result', self.Success)
         else:
-            proj_wkt = spatialRef.ExportToWkt()
-            extent = layer.GetExtent()
-            rb = (0, 0)
-            lu = (0, 0)
-            if not CUtils.equal_ignore_case(proj_wkt, ''):
-                source_projection = osr.SpatialReference(wkt=proj_wkt)
-                source = source_projection.GetAttrValue('GEOGCS', 0)
-                prosrs = osr.SpatialReference()
-                prosrs.ImportFromWkt(proj_wkt)
-                geosrs = prosrs.CloneGeogCS()
-                ct = osr.CreateCoordinateTransformation(prosrs, geosrs)
-                if ct is not None:
-                    rb = ct.TransformPoint(extent[1], extent[2])
-                    lu = ct.TransformPoint(extent[0], extent[3])
-                    json_bounding = CJson()
-                    json_bounding.set_value_of_name('minx', lu[0])
-                    json_bounding.set_value_of_name('maxy', lu[1])
-                    json_bounding.set_value_of_name('maxx', rb[0])
-                    json_bounding.set_value_of_name('miny', rb[1])
-                    json_wgs84.set_value_of_name('extent', json_bounding.json_obj)
-                    json_wgs84.set_value_of_name('msg', 'extent四至范围从{0}坐标系转wgs_84坐标系转换成功！'.format(source))
-                    json_wgs84.set_value_of_name('result', self.Success)
+            spatialRef = layer.GetSpatialRef()
+            if spatialRef is None:
+                json_wgs84.set_value_of_name('msg',
+                                             'extent四至范围从原坐标系转wgs_84坐标系转换失败！失败原因：文件读取空间参考失败！')
+                json_wgs84.set_value_of_name('result', self.Failure)
+            else:
+                proj_wkt = spatialRef.ExportToWkt()
+                extent = layer.GetExtent()
+                rb = (0, 0)
+                lu = (0, 0)
+                if not CUtils.equal_ignore_case(proj_wkt, ''):
+                    source_projection = osr.SpatialReference(wkt=proj_wkt)
+                    source = source_projection.GetAttrValue('GEOGCS', 0)
+                    prosrs = osr.SpatialReference()
+                    prosrs.ImportFromWkt(proj_wkt)
+                    geosrs = prosrs.CloneGeogCS()
+                    ct = osr.CreateCoordinateTransformation(prosrs, geosrs)
+                    if ct is not None:
+                        rb = ct.TransformPoint(extent[1], extent[2])
+                        lu = ct.TransformPoint(extent[0], extent[3])
+                        json_bounding = CJson()
+                        json_bounding.set_value_of_name('minx', lu[0])
+                        json_bounding.set_value_of_name('maxy', lu[1])
+                        json_bounding.set_value_of_name('maxx', rb[0])
+                        json_bounding.set_value_of_name('miny', rb[1])
+                        json_wgs84.set_value_of_name('extent', json_bounding.json_obj)
+                        json_wgs84.set_value_of_name('msg', 'extent四至范围从{0}坐标系转wgs_84坐标系转换成功！'.format(source))
+                        json_wgs84.set_value_of_name('result', self.Success)
+                    else:
+                        json_wgs84.set_value_of_name('msg',
+                                                     'extent四至范围从{0}坐标系转wgs_84坐标系转换失败！'
+                                                     '失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(
+                                                         source))
+                        json_wgs84.set_value_of_name('result', self.Failure)
                 else:
                     json_wgs84.set_value_of_name('msg',
-                                                 'extent四至范围从{0}坐标系转wgs_84坐标系转换失败！'
-                                                 '失败原因：构建坐标转换关系失败！可能是地方坐标系，无法转换。'.format(
-                                                     source))
+                                                 'extent四至范围从原坐标系转wgs_84坐标系转换失败！失败原因：文件不存在wkt信息！')
                     json_wgs84.set_value_of_name('result', self.Failure)
-            else:
-                json_wgs84.set_value_of_name('msg',
-                                             'extent四至范围从原坐标系转wgs_84坐标系转换失败！失败原因：文件不存在wkt信息！')
-                json_wgs84.set_value_of_name('result', self.Failure)
         return json_wgs84
 
     def get_attributes_by_vectorlayer(self, layer, mdb_flag=False) -> CJson:
@@ -253,23 +265,30 @@ class CVectorMDReader(CMDReader):
         layer_defn = None
         return json_attributes
 
-    def get_extent_by_vectorlayer(self, layer) -> CJson:
+    def get_extent_by_vectorlayer(self, layer, feature_count) -> CJson:
         """
         构建图层四至范围的json对象
         @param layer:
+        @param feature_count:
         @return:
         """
         json_extent = CJson()
-        extent = layer.GetExtent()
-        # print('extent:', extent)
-        if extent is not None:
-            # print('ul:', extent[0], extent[3])
-            # print('lr:', extent[1], extent[2])
-            json_extent.set_value_of_name("minx", extent[0])
-            json_extent.set_value_of_name("maxx", extent[1])
-            json_extent.set_value_of_name("miny", extent[2])
-            json_extent.set_value_of_name("maxy", extent[3])
-        extent = None
+        if feature_count == 0:
+            json_extent.set_value_of_name("minx", 0)
+            json_extent.set_value_of_name("maxx", 0)
+            json_extent.set_value_of_name("miny", 0)
+            json_extent.set_value_of_name("maxy", 0)
+        else:
+            extent = layer.GetExtent()
+            # print('extent:', extent)
+            if extent is not None:
+                # print('ul:', extent[0], extent[3])
+                # print('lr:', extent[1], extent[2])
+                json_extent.set_value_of_name("minx", extent[0])
+                json_extent.set_value_of_name("maxx", extent[1])
+                json_extent.set_value_of_name("miny", extent[2])
+                json_extent.set_value_of_name("maxy", extent[3])
+            extent = None
         return json_extent
 
     def get_geometry_by_vectorlayer(self, layer) -> CJson:
