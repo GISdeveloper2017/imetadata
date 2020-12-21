@@ -128,7 +128,7 @@ class CPlugins(CResource):
 
     _object_confirm: int
     _object_name: str
-    _object_detail_file_full_name_list = []
+    _object_detail_file_full_name_list: list
 
     metadata_bus_transformer_type = None
     metadata_bus_src_filename_with_path = None
