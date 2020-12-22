@@ -97,8 +97,8 @@ class Plugins_Test_Base(CResource):
             )
             assert flag
 
-    @allure.story("业务元数据")  # 三级标题
-    @allure.title("业务元数据")  # 方法标题
+    @allure.story("影像元数据")  # 三级标题
+    @allure.title("影像元数据")  # 方法标题
     @allure.description("测试metadata方法")  # 描述
     def test_metadata(self):
         self.init_before_test()  # 初始化路径
@@ -113,14 +113,39 @@ class Plugins_Test_Base(CResource):
                 # 执行测试
                 plugins_obj.parser_metadata_with_qa(metadata_parser)
                 # 获取结果
-                result_with_qa, message_with_qa, metadata_bus_type, metadata_bus \
-                    = metadata_parser.metadata.metadata_bus()
+                result_with_qa, message_with_qa, metadata_type, metadata \
+                    = metadata_parser.metadata.metadata()
                 # 录入测试信息
-                allure.attach('处理信息为{0},业务元数据类型为{1},业务元数据内容为{2}'
-                              .format(message_with_qa, metadata_bus_type, metadata_bus),
+                allure.attach('元数据处理信息为{0},元数据类型为{1},元数据内容为{2},'
+                              .format(message_with_qa, metadata_type, metadata),
                               '{0}'.format(test_file_with_rel_path),
                               allure.attachment_type.TEXT)
                 assert result_with_qa
+
+    @allure.story("业务元数据")  # 三级标题
+    @allure.title("业务元数据")  # 方法标题
+    @allure.description("测试metadata_bus方法")  # 描述
+    def test_metadata_bus(self):
+        self.init_before_test()  # 初始化路径
+
+        for test_file_info in self.test_file_info_list():
+            file_type, test_file_with_rel_path, correct_object_confirm, correct_object_name = \
+                self.get_test_file_info(test_file_info)
+            if correct_object_confirm == self.Object_Confirm_IKnown:
+                test_file_with_full_path = CFile.join_file(self._test_file_parent_path, test_file_with_rel_path)
+                # 获取插件对象
+                file_info, plugins_obj, metadata_parser = self.get_test_obj(file_type, test_file_with_full_path)
+                # 执行测试
+                plugins_obj.parser_metadata_with_qa(metadata_parser)
+                # 获取结果
+                result_with_bus_qa, message_with_bus_qa, metadata_bus_type, metadata_bus \
+                    = metadata_parser.metadata.metadata_bus()
+                # 录入测试信息
+                allure.attach('业务元数据处理信息为{0},业务元数据类型为{1},业务元数据内容为{2}'
+                              .format(message_with_bus_qa, metadata_bus_type, metadata_bus),
+                              '{0}'.format(test_file_with_rel_path),
+                              allure.attachment_type.TEXT)
+                assert result_with_bus_qa
 
     @allure.story("时间元数据")  # 三级标题
     @allure.title("时间元数据")  # 方法标题

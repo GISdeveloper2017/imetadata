@@ -12,7 +12,7 @@ from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
 @allure.feature("单景影像")  # 模块标题
-class Test_Plugins_8020_Ortho(Plugins_Test_Base):
+class Test_plugins_8020_ortho(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
         return plugins_8020_ortho(file_info)
 
@@ -25,14 +25,44 @@ class Test_Plugins_8020_Ortho(Plugins_Test_Base):
                 self.Name_Test_object_name: '单景test'
             },
             {
-                self.Name_Test_File_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_Test_File_Type: self.FileType_File,
+                self.Name_Test_file_path: '单景test{0}单景test.tfw'.format(CFile.sep()),
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
+                self.Name_Test_object_name: None
+            },
+            {
+                self.Name_Test_File_Type: self.FileType_File,
+                self.Name_Test_file_path: '单景test{0}单景test.txt'.format(CFile.sep()),
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
+                self.Name_Test_object_name: None
+            },
+            {
+                self.Name_Test_File_Type: self.FileType_File,
+                self.Name_Test_file_path: '单景test{0}单景test_21at.xml'.format(CFile.sep()),
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
+                self.Name_Test_object_name: None
+            },
+            {
+                self.Name_Test_File_Type: self.FileType_File,
                 self.Name_Test_file_path: '单景test_123{0}单景test_123.tif'.format(CFile.sep()),
                 self.Name_Test_object_confirm: self.Object_Confirm_IKnown,
                 self.Name_Test_object_name: '单景test_123'
             },
             {
-                self.Name_Test_File_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_Test_file_path: '单景test{0}单景test_21at.xml'.format(CFile.sep()),
+                self.Name_Test_File_Type: self.FileType_File,
+                self.Name_Test_file_path: '单景test_123{0}单景test_123.tfw'.format(CFile.sep()),
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
+                self.Name_Test_object_name: None
+            },
+            {
+                self.Name_Test_File_Type: self.FileType_File,
+                self.Name_Test_file_path: '单景test_123{0}单景test_123.txt'.format(CFile.sep()),
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
+                self.Name_Test_object_name: None
+            },
+            {
+                self.Name_Test_File_Type: self.FileType_File,
+                self.Name_Test_file_path: '单景test_123{0}单景test_123_21at.xml'.format(CFile.sep()),
                 self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             }
