@@ -69,7 +69,7 @@ class CRasterFilePlugins(CFilePlugins):
                         self.Name_Min: -90,
                         self.Name_Max: 90
                     },
-                self.Name_XPath: 'boundingbox.top',
+                self.Name_XPath: 'wgs84.boundingbox.top',
                 self.Name_ID: 'top',
                 self.Name_Title: '经纬度坐标',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -85,7 +85,7 @@ class CRasterFilePlugins(CFilePlugins):
                         self.Name_Min: -180,
                         self.Name_Max: 180
                     },
-                self.Name_XPath: 'boundingbox.left',
+                self.Name_XPath: 'wgs84.boundingbox.left',
                 self.Name_ID: 'left',
                 self.Name_Title: '经纬度坐标',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -100,7 +100,7 @@ class CRasterFilePlugins(CFilePlugins):
                         self.Name_Min: -180,
                         self.Name_Max: 180
                     },
-                self.Name_XPath: 'boundingbox.right',
+                self.Name_XPath: 'wgs84.boundingbox.right',
                 self.Name_ID: 'right',
                 self.Name_Title: '经纬度坐标',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -115,7 +115,7 @@ class CRasterFilePlugins(CFilePlugins):
                         self.Name_Min: -90,
                         self.Name_Max: 90
                     },
-                self.Name_XPath: 'boundingbox.bottom',
+                self.Name_XPath: 'wgs84.boundingbox.bottom',
                 self.Name_ID: 'bottom',
                 self.Name_Title: '经纬度坐标',
                 self.Name_Group: self.QA_Group_Data_Integrity,
