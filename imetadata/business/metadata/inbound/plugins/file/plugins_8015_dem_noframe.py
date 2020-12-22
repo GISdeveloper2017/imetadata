@@ -4,7 +4,9 @@
 # @File : plugins_8015_dem_noframe.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfoEx import CFileInfoEx
+from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerCommon import CMDTransformerCommon
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.guo_tu.file.c_filePlugins_guoto_21at import \
     CFilePlugins_GUOTU_21AT
@@ -82,7 +84,6 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
         :param parser:
         :return:
         """
-        super().qa_file_custom(parser)
         metadata_main_name_with_path = CFile.join_file(self.file_info.file_path, self.file_info.file_main_name)
         check_file_metadata_bus_exist = False
         ext = self.Transformer_XML
@@ -114,6 +115,28 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
                     self.Name_Message: '业务元数据[{0}]存在'.format(self.metadata_bus_src_filename_with_path)
                 }
             )
+
+    def init_metadata_bus(self, parser: CMetaDataParser) -> str:
+        """
+        提取xml格式的业务元数据, 加载到parser的metadata对象中
+        完成 负责人 王学谦 在这里将业务元数据***Y/M/P.xml, 存储到parser.metadata.set_metadata_bus_file中
+        :param parser:
+        :return:
+        """
+        if self.metadata_bus_src_filename_with_path is None:
+            parser.metadata.set_metadata_bus(self.DB_True, '', self.MetaDataFormat_Text, '')
+            return CResult.merge_result(self.Success, '本数据无业务元数据, 无须解析!')
+
+        transformer = CMDTransformerCommon(
+            parser.object_id,
+            parser.object_name,
+            parser.file_info,
+            parser.file_content,
+            parser.metadata,
+            self.metadata_bus_transformer_type,
+            self.metadata_bus_src_filename_with_path
+        )
+        return transformer.process()
 
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """

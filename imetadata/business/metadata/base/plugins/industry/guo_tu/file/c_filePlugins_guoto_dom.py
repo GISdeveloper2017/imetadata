@@ -19,50 +19,6 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_dom'
         return information
 
-    def init_metadata_bus(self, parser: CMetaDataParser) -> str:
-        """
-        提取xml格式的业务元数据, 加载到parser的metadata对象中
-        完成 负责人 王学谦 在这里将dom的元数据, 转换为xml, 存储到parser.metadata.set_metadata_bus_file中
-        :param parser:
-        :return:
-        """
-        if self.metadata_bus_transformer_type is None:
-            parser.metadata.set_metadata_bus(self.DB_True, '', self.MetaDataFormat_Text, '')
-            return CResult.merge_result(self.Exception, '对象{0}无业务元数据文件，请检查对象业务元数据文件是否存在元数据!'.format(self.file_info.file_main_name))
-
-        transformer = CMDTransformerDOM(
-            parser.object_id,
-            parser.object_name,
-            parser.file_info,
-            parser.file_content,
-            parser.metadata,
-            self.metadata_bus_transformer_type,
-            self.metadata_bus_src_filename_with_path
-        )
-        return transformer.process()
-
-    def init_qa_file_list(self, parser: CMetaDataParser) -> list:
-        """
-        初始化默认的, 文件的质检列表
-        完成 负责人 李宪
-        质检项目应包括并不限于如下内容:
-        1. 实体数据的附属文件是否完整, 实体数据是否可以正常打开和读取
-        1. 元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
-        1. 业务元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
-        示例:
-        return [
-            {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
-             self.Name_Title: '全色文件', self.Name_Type: self.QualityAudit_Type_Error}
-            , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()), self.Name_ID: 'mss_tif',
-               self.Name_Title: '多光谱文件', self.Name_Type: self.QualityAudit_Type_Error}
-        ]
-        :param parser:
-        :return:
-        """
-        list_qa = list()
-        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))
-        return list_qa
-
     def qa_file_custom(self, parser: CMetaDataParser):
         """
         自定义的文件存在性质检, 发生在元数据解析之前
@@ -104,6 +60,52 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
                     self.Name_Message: '业务元数据[{0}]存在'.format(self.metadata_bus_src_filename_with_path)
                 }
             )
+
+    def init_metadata_bus(self, parser: CMetaDataParser) -> str:
+        """
+        提取xml格式的业务元数据, 加载到parser的metadata对象中
+        完成 负责人 王学谦 在这里将dom的元数据, 转换为xml, 存储到parser.metadata.set_metadata_bus_file中
+        :param parser:
+        :return:
+        """
+        if self.metadata_bus_transformer_type is None:
+            return CResult.merge_result(
+                self.Failure,
+                '数据{0}无业务元数据文件，请检查数据业务元数据文件是否存在!'.format(self.file_info.file_main_name)
+            )
+
+        transformer = CMDTransformerDOM(
+            parser.object_id,
+            parser.object_name,
+            parser.file_info,
+            parser.file_content,
+            parser.metadata,
+            self.metadata_bus_transformer_type,
+            self.metadata_bus_src_filename_with_path
+        )
+        return transformer.process()
+
+    def init_qa_file_list(self, parser: CMetaDataParser) -> list:
+        """
+        初始化默认的, 文件的质检列表
+        完成 负责人 李宪
+        质检项目应包括并不限于如下内容:
+        1. 实体数据的附属文件是否完整, 实体数据是否可以正常打开和读取
+        1. 元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
+        1. 业务元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
+        示例:
+        return [
+            {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
+             self.Name_Title: '全色文件', self.Name_Type: self.QualityAudit_Type_Error}
+            , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()), self.Name_ID: 'mss_tif',
+               self.Name_Title: '多光谱文件', self.Name_Type: self.QualityAudit_Type_Error}
+        ]
+        :param parser:
+        :return:
+        """
+        list_qa = list()
+        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))
+        return list_qa
 
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """

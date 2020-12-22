@@ -27,8 +27,10 @@ class CFilePlugins_GUOTU_21AT(CFilePlugins_GUOTU):
         :return:
         """
         if self.metadata_bus_src_filename_with_path is None:
-            parser.metadata.set_metadata_bus(self.DB_True, '', self.MetaDataFormat_Text, '')
-            return CResult.merge_result(self.Success, '本数据无业务元数据, 无须解析!')
+            return CResult.merge_result(
+                self.Failure,
+                '数据{0}无业务元数据文件，请检查数据业务元数据文件是否存在!'.format(self.file_info.file_main_name)
+            )
 
         transformer = CMDTransformerCommon(
             parser.object_id,
