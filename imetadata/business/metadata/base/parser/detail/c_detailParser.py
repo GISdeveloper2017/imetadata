@@ -106,7 +106,7 @@ class CDetailParser(CParser):
             params['dodfilename'] = CFile.unify(
                 CFile.file_relation_path(
                     item_file_name_with_path,
-                    self.file_info.file_path
+                    self.file_info.root_path
                 )
             )
             params['dodfileext'] = CFile.file_ext(item_file_name_with_path)
