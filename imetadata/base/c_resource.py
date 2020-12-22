@@ -186,6 +186,7 @@ class CResource:
     Name_Distribution = 'distribution'
 
     FileExt_Py = 'py'
+    FileExt_Mbtiles = 'mbtiles'
 
     FileType_Unknown = 'none'
     FileType_File = 'file'

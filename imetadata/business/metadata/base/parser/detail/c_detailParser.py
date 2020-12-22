@@ -2,7 +2,6 @@
 # @Time : 2020/9/24 10:33 
 # @Author : 王西亚 
 # @File : c_detailParser.py
-
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
@@ -10,6 +9,7 @@ from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.c_parser import CParser
 from imetadata.database.c_factory import CFactory
+import os
 
 
 class CDetailParser(CParser):
@@ -94,6 +94,7 @@ class CDetailParser(CParser):
 
             params = dict()
             file_relation_name = CFile.file_relation_path(item_file_name_with_path, self.file_info.root_path)
+            (root_path_to_storage, inbound_name) = os.path.split(self.file_info.root_path)
             if CUtils.equal_ignore_case(query_file_relation_name, file_relation_name):
                 params['dodid'] = self.object_id
             else:
@@ -106,7 +107,7 @@ class CDetailParser(CParser):
             params['dodfilename'] = CFile.unify(
                 CFile.file_relation_path(
                     item_file_name_with_path,
-                    self.file_info.root_path
+                    root_path_to_storage
                 )
             )
             params['dodfileext'] = CFile.file_ext(item_file_name_with_path)

@@ -24,9 +24,15 @@ class Test_plugins_3002_mbtiles(Plugins_Test_Base):
         return [
             {
                 self.Name_Test_File_Type: self.FileType_Dir,
-                self.Name_Test_file_path: 'mbtiles',
+                self.Name_Test_file_path: 'mbtiles{0}hdqimage201510_0.mbtiles'.format(CFile.sep()),
                 self.Name_Test_object_confirm: self.Object_Confirm_IKnown,
-                self.Name_Test_object_name: 'mbtiles'
+                self.Name_Test_object_name: 'hdqimage201510_0'
+            },
+            {
+                self.Name_Test_File_Type: self.FileType_Dir,
+                self.Name_Test_file_path: 'mbtiles{0}hdqimage201510.xml'.format(CFile.sep()),
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
+                self.Name_Test_object_name: None
             }
         ]
 
