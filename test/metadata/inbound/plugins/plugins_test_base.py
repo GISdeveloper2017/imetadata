@@ -111,6 +111,7 @@ class Plugins_Test_Base(CResource):
                 # 获取插件对象
                 file_info, plugins_obj, metadata_parser = self.get_test_obj(file_type, test_file_with_full_path)
                 # 执行测试
+                plugins_obj.classified()  # 测试数据集业务元数据时需要执行
                 plugins_obj.parser_metadata_with_qa(metadata_parser)
                 # 获取结果
                 result_with_qa, message_with_qa, metadata_type, metadata \
@@ -136,6 +137,7 @@ class Plugins_Test_Base(CResource):
                 # 获取插件对象
                 file_info, plugins_obj, metadata_parser = self.get_test_obj(file_type, test_file_with_full_path)
                 # 执行测试
+                plugins_obj.classified()  # 测试数据集业务元数据时需要执行
                 plugins_obj.parser_metadata_with_qa(metadata_parser)
                 # 获取结果
                 result_with_bus_qa, message_with_bus_qa, metadata_bus_type, metadata_bus \
@@ -161,6 +163,7 @@ class Plugins_Test_Base(CResource):
                 # 获取插件对象
                 file_info, plugins_obj, metadata_parser = self.get_test_obj(file_type, test_file_with_full_path)
                 # 执行测试
+                plugins_obj.classified()  # 测试数据集业务元数据时需要执行
                 plugins_obj.parser_metadata_with_qa(metadata_parser)
                 plugins_obj.parser_metadata_time_after_qa(metadata_parser)
                 # 获取结果
