@@ -7,6 +7,7 @@ from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.c_parserCustom import CParserCustom
+from imetadata.business.metadata.base.parser.metadata.metadata.c_mdExtractorAttachedFile import CMDExtractorAttachedFile
 from imetadata.business.metadata.base.parser.metadata.metadata.c_mdExtractorDocument import CMDExtractorDocument
 from imetadata.business.metadata.base.parser.metadata.metadata.c_mdExtractorDocument_tika import \
     CMDExtractorDocument_Tika
@@ -31,5 +32,7 @@ class CMDExtractorMng(CResource):
             return CMDExtractorDocument(object_id, object_name, file_info, file_content)
         elif CUtils.equal_ignore_case(input_parser_type, cls.MetaDataEngine_Spatial_Layer):
             return CMDExtractorSpatialLayer(object_id, object_name, file_info, file_content)
+        elif CUtils.equal_ignore_case(input_parser_type, cls.MetaDataEngine_Attached_File):
+            return CMDExtractorAttachedFile(object_id, object_name, file_info, file_content)
         else:
             return CParserCustom(object_id, object_name, file_info)

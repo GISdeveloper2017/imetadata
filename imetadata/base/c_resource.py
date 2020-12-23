@@ -366,6 +366,7 @@ class CResource:
     # MetaDataEngine_Document_Tika 是 MetaDataEngine_Document 的一种实现
     MetaDataEngine_Document_Tika = 'document_tika'
     MetaDataEngine_Spatial_Layer = 'spatial_layer'
+    MetaDataEngine_Attached_File = 'attached_file'  # 加给元数据为附属的文本文件的数据用，目前有切片
 
     BrowseEngine_Raster = 'raster'
     BrowseEngine_Vector = 'vector'

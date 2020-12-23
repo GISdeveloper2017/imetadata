@@ -8,6 +8,8 @@ from imetadata.business.metadata.base.content.c_virtualContent import CVirtualCo
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.c_parserCustom import CParserCustom
 from imetadata.business.metadata.base.parser.metadata.c_metadata import CMetaData
+from imetadata.business.metadata.base.parser.metadata.spatial.c_spatialExtractorAttachedFile import \
+    CSpatialExtractorAttachedFile
 from imetadata.business.metadata.base.parser.metadata.spatial.c_spatialExtractorRaster import CSpatialExtractorRaster
 from imetadata.business.metadata.base.parser.metadata.spatial.c_spatialExtractorVector import CSpatialExtractorVector
 
@@ -22,5 +24,7 @@ class CSpatialExtractorMng(CResource):
             return CSpatialExtractorRaster(object_id, object_name, file_info, file_content, metadata)
         elif CUtils.equal_ignore_case(input_parser_type, cls.MetaDataEngine_Vector):
             return CSpatialExtractorVector(object_id, object_name, file_info, file_content, metadata)
+        elif CUtils.equal_ignore_case(input_parser_type, cls.MetaDataEngine_Attached_File):
+            return CSpatialExtractorAttachedFile(object_id, object_name, file_info, file_content, metadata)
         else:
             return CParserCustom(object_id, object_name, file_info)
