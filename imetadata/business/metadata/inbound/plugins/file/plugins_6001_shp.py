@@ -33,7 +33,7 @@ class plugins_6001_shp(CVectorFilePlugins):
                 self._object_name = None
             else:
                 self._object_confirm = self.Object_Confirm_IUnKnown
-                self._object_name = self._object_name
+                self._object_name = None
 
         return self._object_confirm, self._object_name
 

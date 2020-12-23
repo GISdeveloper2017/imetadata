@@ -26,7 +26,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}正确数据{0}'
                                           'BJ2_GF1_GF2_SPOT_KUNMING_20170204_20171116_CGCS2000_1_FBZXQK.dbf'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -34,7 +34,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}正确数据{0}'
                                           'BJ2_GF1_GF2_SPOT_KUNMING_20170204_20171116_CGCS2000_1_FBZXQK.prj'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -42,7 +42,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}正确数据{0}'
                                           'BJ2_GF1_GF2_SPOT_KUNMING_20170204_20171116_CGCS2000_1_FBZXQK.sbn'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -50,7 +50,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}正确数据{0}'
                                           'BJ2_GF1_GF2_SPOT_KUNMING_20170204_20171116_CGCS2000_1_FBZXQK.sbx'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -74,7 +74,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}正确数据{0}'
                                           'BJ2_GF1_GF2_SPOT_KUNMING_20170204_20171116_CGCS2000_1_FBZXQK.shx'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -82,7 +82,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}正确数据{0}'
                                           'BJ2_GF1_GF2_SPOT_KUNMING_20170204_20171116_CGCS2000_6_FBZXQK.dbf'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -90,7 +90,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}正确数据{0}'
                                           'BJ2_GF1_GF2_SPOT_KUNMING_20170204_20171116_CGCS2000_6_FBZXQK.prj'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -98,7 +98,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}正确数据{0}'
                                           'BJ2_GF1_GF2_SPOT_KUNMING_20170204_20171116_CGCS2000_6_FBZXQK.sbn'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -106,7 +106,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}正确数据{0}'
                                           'BJ2_GF1_GF2_SPOT_KUNMING_20170204_20171116_CGCS2000_6_FBZXQK.sbx'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -130,7 +130,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}正确数据{0}'
                                           'BJ2_GF1_GF2_SPOT_KUNMING_20170204_20171116_CGCS2000_6_FBZXQK.shx'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -138,7 +138,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}错误数据{0}'
                                           'BJ2_PL_昌平区_20190608_20190614_WGS84_FBZXQK.dbf'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -146,7 +146,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}错误数据{0}'
                                           'BJ2_PL_昌平区_20190608_20190614_WGS84_FBZXQK.prj'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -154,7 +154,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}错误数据{0}'
                                           'BJ2_PL_昌平区_20190608_20190614_WGS84_FBZXQK.sbn'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -170,7 +170,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}错误数据{0}'
                                           'BJ2_PL_昌平区_20190608_20190614_WGS84_FBZXQK.sbx'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -178,7 +178,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}错误数据{0}'
                                           'BJ2_PL_昌平区_20190608_20190614_WGS84_FBZXQK.shx'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -186,7 +186,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}错误数据{0}'
                                           'qb_wv_kunming_20080318_20121214_cgcs2000_FBZXQK.dbf'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -194,7 +194,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}错误数据{0}'
                                           'qb_wv_kunming_20080318_20121214_cgcs2000_FBZXQK.prj'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -202,7 +202,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}错误数据{0}'
                                           'qb_wv_kunming_20080318_20121214_cgcs2000_FBZXQK.sbn'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -210,7 +210,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}错误数据{0}'
                                           'qb_wv_kunming_20080318_20121214_cgcs2000_FBZXQK.sbx'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
@@ -226,7 +226,7 @@ class Test_plugins_6001_shp(Plugins_Test_Base):
                 self.Name_Test_file_path: '矢量数据{0}错误数据{0}'
                                           'qb_wv_kunming_20080318_20121214_cgcs2000_FBZXQK.shx'
                     .format(CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
+                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
                 self.Name_Test_object_name: None
             },
             {
