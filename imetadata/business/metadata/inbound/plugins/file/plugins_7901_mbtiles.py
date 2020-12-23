@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/9/17 16:51 
 # @Author : 王西亚 
-# @File : plugins_3002_mbtiles.py
+# @File : plugins_7901_mbtiles.py
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
@@ -11,8 +11,7 @@ from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CM
 from imetadata.business.metadata.base.plugins.c_filePlugins import CFilePlugins
 
 
-class plugins_3002_mbtiles(CFilePlugins):
-    __metadata_xml_file_name__ = None
+class plugins_7901_mbtiles(CFilePlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
@@ -30,7 +29,7 @@ class plugins_3002_mbtiles(CFilePlugins):
         return information
 
     def classified(self):
-        super().classified()
+
         file_main_name = self.file_info.file_main_name
         file_ext = self.file_info.file_ext  # 初始化需要的参数
         file_object_name = file_main_name[:]
@@ -41,6 +40,7 @@ class plugins_3002_mbtiles(CFilePlugins):
                     or CUtils.text_match_re(file_main_name, r'(?i)^\S+[12]\d{3}[_][0]$'):  # 结尾为0
                 self._object_confirm = self.Object_Confirm_IKnown
                 self._object_name = file_main_name
+                self.add_file_to_detail_list()
             elif CUtils.text_match_re(file_main_name, r'(?i)^\S+[12]\d{3}[01HQ]\d[_]\d+$') \
                     or CUtils.text_match_re(file_main_name, r'(?i)^\S+[12]\d{3}[_]\d+$'):  # 结尾为单个字母的情况
                 self._object_confirm = self.Object_Confirm_IKnown_Not

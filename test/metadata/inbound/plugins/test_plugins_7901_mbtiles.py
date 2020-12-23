@@ -5,20 +5,18 @@
 import allure
 import pytest
 
-from imetadata import settings
 from imetadata.base.c_file import CFile
-from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
-from imetadata.business.metadata.inbound.plugins.dir.plugins_3002_mbtiles import plugins_3002_mbtiles
+from imetadata.business.metadata.inbound.plugins.file.plugins_7901_mbtiles import plugins_7901_mbtiles
 from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
 #  运行前建议注释掉CPlugins类中parser_metadata_with_qa方法中853行，不然新建的layer污染数据库
-@allure.feature("gdb")  # 模块标题
-class Test_plugins_3002_mbtiles(Plugins_Test_Base):
+@allure.feature("mbtiles")  # 模块标题
+class Test_plugins_7901_mbtiles(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
-        return plugins_3002_mbtiles(file_info)
+        return plugins_7901_mbtiles(file_info)
 
     def test_file_info_list(self):
         return [
