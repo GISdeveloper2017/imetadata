@@ -2,6 +2,8 @@
 # @Time : 2020/9/22 15:25 
 # @Author : 王西亚 
 # @File : plugins_6001_shp.py.py
+from imetadata.base.c_file import CFile
+from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.common.c_vectorFilePlugins import CVectorFilePlugins
 
@@ -16,16 +18,24 @@ class plugins_6001_shp(CVectorFilePlugins):
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_shp'
         return information
 
-    def get_classified_character(self):
-        """
-        设置识别的特征
-        :return:
-        [0]: 特征串
-        [1]: 特征串的类型
-            TextMatchType_Common: 常规通配符, 如 *.txt
-            TextMatchType_Regex: 正则表达式
-        """
-        return '*.shp', self.TextMatchType_Common
+    def classified(self):
+        file_main_name = self.file_info.file_main_name
+        file_ext = self.file_info.file_ext  # 初始化需要的参数
+        file_object_name = file_main_name[:]
+        file_main_name_with_path = CFile.join_file(self.file_info.file_path, file_object_name)
+
+        if CUtils.equal_ignore_case(file_ext, self.Name_Shp):
+            self._object_confirm = self.Object_Confirm_IKnown
+            self._object_name = file_main_name
+        else:
+            if CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Shp)):
+                self._object_confirm = self.Object_Confirm_IKnown_Not
+                self._object_name = None
+            else:
+                self._object_confirm = self.Object_Confirm_IUnKnown
+                self._object_name = self._object_name
+
+        return self._object_confirm, self._object_name
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """

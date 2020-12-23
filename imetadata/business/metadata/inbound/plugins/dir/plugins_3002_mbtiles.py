@@ -21,8 +21,8 @@ class plugins_3002_mbtiles(CFilePlugins):
         information[self.Plugins_Info_Catalog] = self.DataCatalog_Common
         information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
         information[self.Plugins_Info_MetaDataEngine] = None
-        information[self.Plugins_Info_BusMetaDataEngine] = None
-        information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
+        information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
+        information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
 
         return information
 
@@ -34,10 +34,12 @@ class plugins_3002_mbtiles(CFilePlugins):
         file_main_name_with_path = CFile.join_file(self.file_info.file_path, file_object_name)
 
         if CUtils.equal_ignore_case(file_ext, self.FileExt_Mbtiles):
-            if CUtils.text_match_re(file_main_name, r'(?i)^\S+\d{4}[01]\d[_][0]$'):  # 结尾为0
+            if CUtils.text_match_re(file_main_name, r'(?i)^\S+[12]\d{3}[01HQ]\d[_][0]$') \
+                    or CUtils.text_match_re(file_main_name, r'(?i)^\S+[12]\d{3}[_][0]$'):  # 结尾为0
                 self._object_confirm = self.Object_Confirm_IKnown
                 self._object_name = file_main_name
-            elif CUtils.text_match_re(file_main_name, r'(?i)^\S+\d{4}[01]\d[_]\d+$'):  # 结尾为单个字母的情况
+            elif CUtils.text_match_re(file_main_name, r'(?i)^\S+[12]\d{3}[01HQ]\d[_]\d+$') \
+                    or CUtils.text_match_re(file_main_name, r'(?i)^\S+[12]\d{3}[_]\d+$'):  # 结尾为单个字母的情况
                 self._object_confirm = self.Object_Confirm_IKnown_Not
                 self._object_name = None
             else:
@@ -75,4 +77,6 @@ class plugins_3002_mbtiles(CFilePlugins):
                 file_detail_mbtiles,
                 CFile.MatchType_Common)  # 模糊匹配文件列表
             for list_file_fullname in list_file_fullname_xq:
-                self.add_file_to_details(list_file_fullname)  # 将文件加入到附属文件列表中
+                if not CUtils.equal_ignore_case(CFile.file_main_name(list_file_fullname),
+                                                self.file_info.file_main_name):
+                    self.add_file_to_details(list_file_fullname)  # 将文件加入到附属文件列表中
