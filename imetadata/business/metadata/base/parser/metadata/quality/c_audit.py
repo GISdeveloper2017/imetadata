@@ -363,7 +363,7 @@ class CAudit(CResource):
         return result_dict
 
     @classmethod
-    def text_is_date_bus(self, text, db_server_id):
+    def text_is_date_bus(cls, text, db_server_id):
         """
         判断时间类型，包含季度，半年度（从数据库中获取判断）
         """
