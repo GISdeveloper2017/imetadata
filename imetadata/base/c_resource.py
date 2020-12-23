@@ -202,6 +202,7 @@ class CResource:
     Storage_Type_Mix = 'mix'
 
     IB_Bus_Status_InBound = 'inbound'
+    IB_Bus_Status_Not_InBound = 'not_inbound'
     IB_Bus_Status_Online = 'online'
 
     Name_ID = 'id'
@@ -371,7 +372,8 @@ class CResource:
     BrowseEngine_Document = 'document'
 
     DetailEngine_Same_File_Main_Name = 'same_file_main_name'
-    DetailEngine_File_itself = 'file_itself'
+    DetailEngine_File_Itself = 'file_itself'
+    DetailEngine_Directory_Itself = 'directory_itself'
     DetailEngine_File_Of_Same_Dir = 'file_of_same_dir'
     DetailEngine_All_File_Of_Same_Dir = 'all_file_of_same_dir'
     DetailEngine_File_Of_Dir = 'file_of_dir'

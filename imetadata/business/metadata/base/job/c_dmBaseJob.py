@@ -23,12 +23,13 @@ class CDMBaseJob(CDBQueueJob):
             metadata_item_value = CXml.get_element_text(metadata_item).lower().strip()
             params[metadata_item_name] = metadata_item_value
 
-    def clear_anything_in_directory(self, ds_storage_id, ds_ib_directory_name):
+    def clear_anything_in_directory(self, ds_ib_id, ds_storage_id, ds_ib_directory_name):
         """
         在入库前, 清除已经入库的所有对象
         . 包括子对象
         . 包括对象附属文件
         . 包括待入库目录本身
+        :param ds_ib_id: 入库批次编号
         :param ds_storage_id:
         :param ds_ib_directory_name:
         :return:
@@ -39,144 +40,48 @@ class CDMBaseJob(CDBQueueJob):
                     '''
                     delete from dm2_storage_obj_detail
                     where dodobjectid in (
-                      select dsd_object_id
-                      from dm2_storage_directory
-                      where dsdstorageid = :StorageID 
-                        and position(:SubDirectory in dsddirectory) = 1
-                        and dsd_bus_status = :bus_status
-                        and dsd_object_id is not null
+                      select dsoid
+                      from dm2_storage_object
+                      where dso_ib_id = :ib_id 
+                        and dso_bus_status = :bus_status
                     )
                     ''',
                     {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, ''),
-                        'bus_status': self.IB_Bus_Status_InBound
-                    }
-                ),
-                (
-                    '''
-                    delete from dm2_storage_obj_detail
-                    where dodobjectid in (
-                      select dsf_object_id
-                      from dm2_storage_file
-                      where dsfstorageid = :StorageID 
-                        and position(:SubDirectory in dsffilerelationname) = 1
-                        and dsf_bus_status = :bus_status
-                        and dsf_object_id is not null
-                    )
-                    ''',
-                    {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, ''),
+                        'ib_id': ds_ib_id,
                         'bus_status': self.IB_Bus_Status_InBound
                     }
                 ),
                 (
                     '''
                     delete from dm2_storage_object
-                    where dsoparentobjid in (
-                      select dsd_object_id
-                      from dm2_storage_directory
-                      where dsdstorageid = :StorageID 
-                        and position(:SubDirectory in dsddirectory) = 1
-                        and dsd_bus_status = :bus_status
-                        and dsd_object_id is not null
-                    ) and dso_bus_status = :bus_status
+                    where dso_ib_id = :ib_id 
+                        and dso_bus_status = :bus_status
                     ''',
                     {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, ''),
-                        'bus_status': self.IB_Bus_Status_InBound
-                    }
-                ),
-                (
-                    '''
-                    delete from dm2_storage_object
-                    where dsoparentobjid in (
-                      select dsf_object_id
-                      from dm2_storage_file
-                      where dsfstorageid = :StorageID 
-                        and position(:SubDirectory in dsffilerelationname) = 1
-                        and dsf_bus_status = :bus_status
-                        and dsf_object_id is not null
-                    ) and dso_bus_status = :bus_status
-                    ''',
-                    {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, ''),
-                        'bus_status': self.IB_Bus_Status_InBound
-                    }
-                ),
-                (
-                    '''
-                    delete from dm2_storage_object
-                    where dsoid in (
-                      select dsd_object_id
-                      from dm2_storage_directory
-                      where dsdstorageid = :StorageID 
-                        and position(:SubDirectory in dsddirectory) = 1
-                        and dsd_bus_status = :bus_status
-                        and dsd_object_id is not null
-                    ) and dso_bus_status = :bus_status
-                    ''',
-                    {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, ''),
-                        'bus_status': self.IB_Bus_Status_InBound
-                    }
-                ),
-                (
-                    '''
-                    delete from dm2_storage_object
-                    where dsoid in (
-                      select dsf_object_id
-                      from dm2_storage_file
-                      where dsfstorageid = :StorageID 
-                        and position(:SubDirectory in dsffilerelationname) = 1
-                        and dsf_bus_status = :bus_status
-                        and dsf_object_id is not null
-                    ) and dso_bus_status = :bus_status
-                    ''',
-                    {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, ''),
+                        'ib_id': ds_ib_id,
                         'bus_status': self.IB_Bus_Status_InBound
                     }
                 ),
                 (
                     '''
                     delete from dm2_storage_file
-                    where dsfstorageid = :StorageID 
-                        and position(:SubDirectory in dsffilerelationname) = 1
+                    where dsf_ib_id = :ib_id 
                         and dsf_bus_status = :bus_status
                     ''',
                     {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, ''),
+                        'ib_id': ds_ib_id,
                         'bus_status': self.IB_Bus_Status_InBound
                     }
                 ),
                 (
                     '''
                     delete from dm2_storage_directory
-                    where dsdstorageid = :StorageID 
-                        and position(:SubDirectory in dsddirectory) = 1
+                    where dsd_ib_id = :ib_id 
                         and dsd_bus_status = :bus_status
                     ''',
                     {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, ''),
+                        'ib_id': ds_ib_id,
                         'bus_status': self.IB_Bus_Status_InBound
-                    }
-                ),
-                (
-                    '''
-                    delete from dm2_storage_directory
-                    where dsdstorageid = :StorageID and dsddirectory = :SubDirectory
-                    ''',
-                    {
-                        'StorageID': ds_storage_id,
-                        'SubDirectory': ds_ib_directory_name
                     }
                 )
             ]

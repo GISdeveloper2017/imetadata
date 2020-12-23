@@ -2,6 +2,8 @@
 # @Time : 2020/9/24 10:33 
 # @Author : 王西亚 
 # @File : c_detailParser.py
+import os
+
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
@@ -9,7 +11,6 @@ from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.c_parser import CParser
 from imetadata.database.c_factory import CFactory
-import os
 
 
 class CDetailParser(CParser):
@@ -17,12 +18,14 @@ class CDetailParser(CParser):
     __detail_file_match_text__: str
     __detail_file_match_type__: int = CFile.MatchType_Common
     __detail_file_recurse__: bool = False
+    _only_stat_file: bool = False
 
     _file_custom_list: list
 
     def __init__(self, object_id: str, object_name: str, file_info: CDMFilePathInfoEx, file_custom_list: list):
         super().__init__(object_id, object_name, file_info)
         self._file_custom_list = file_custom_list
+        self._only_stat_file = False
 
     def process(self) -> str:
         """
@@ -31,15 +34,20 @@ class CDetailParser(CParser):
         """
         self._before_process()
 
-        if not CUtils.equal_ignore_case(self.__detail_file_path__, ''):
-            list_file_fullname = CFile.file_or_dir_fullname_of_path(
-                self.__detail_file_path__,
-                self.__detail_file_recurse__,
-                self.__detail_file_match_text__,
-                self.__detail_file_match_type__)
-            result = self.__inbound_object_detail_of_schema(list_file_fullname)
+        if self._only_stat_file:
+            result = self.__stat_object_detail_of_schema()
             if not CResult.result_success(result):
                 return result
+        else:
+            if not CUtils.equal_ignore_case(self.__detail_file_path__, ''):
+                list_file_fullname = CFile.file_or_dir_fullname_of_path(
+                    self.__detail_file_path__,
+                    self.__detail_file_recurse__,
+                    self.__detail_file_match_text__,
+                    self.__detail_file_match_type__)
+                result = self.__inbound_object_detail_of_schema(list_file_fullname)
+                if not CResult.result_success(result):
+                    return result
 
         if len(self._file_custom_list) > 0:
             return self.inbound_object_detail_of_custom(self._file_custom_list)
@@ -62,16 +70,6 @@ class CDetailParser(CParser):
         return self.__inbound_object_detail_of_schema(list_file_fullname)
 
     def __inbound_object_detail_of_schema(self, list_file_fullname):
-        # sql_detail_insert = '''
-        # INSERT INTO dm2_storage_obj_detail(
-        #     dodid, dodobjectid, dodfilename, dodfileext, dodfilesize,
-        #     dodfilecreatetime, dodfilemodifytime,
-        #     dodlastmodifytime, dodstorageid, dodfilerelationname, dodfiletype)
-        # VALUES (
-        #     :dodid, :dodobjectid, :dodfilename, :dodfileext, :dodfilesize,
-        #     :dodfilecreatetime, :dodfilemodifytime, now(),
-        #     :dodstorageid, :dodfilerelationname, :dodfiletype)
-        # '''
         sql_detail_insert = '''
         INSERT INTO dm2_storage_obj_detail(
             dodid, dodobjectid, dodfilename, dodfileext, dodfilesize, 
@@ -85,7 +83,7 @@ class CDetailParser(CParser):
 
         sql_detail_insert_params_list = []
 
-        query_storage_id = self.file_info.storage_id
+        # query_storage_id = self.file_info.storage_id
         query_file_relation_name = self.file_info.file_name_with_rel_path
         for item_file_name_with_path in list_file_fullname:
             CLogger().debug(item_file_name_with_path)
@@ -134,6 +132,66 @@ class CDetailParser(CParser):
             delete from dm2_storage_obj_detail where dodobjectid = '{0}'
         '''.format(self.object_id)
         CFactory().give_me_db(self.file_info.db_server_id).execute(sql_detail_delete)  # 先删除detail表中对应的记录
+
+    def __stat_object_detail_of_schema(self) -> str:
+        """
+        将数据附属文件的统计信息入库
+        . 仅适用于Directory_Itself模式
+        :return:
+        """
+        result_sub_dir_count, result_file_count, result_file_size_sum = CFile.stat_of_path(
+            self.__detail_file_path__,
+            self.__detail_file_recurse__,
+            self.__detail_file_match_text__,
+            self.__detail_file_match_type__
+        )
+
+        query_file_relation_name = self.file_info.file_name_with_rel_path
+        params = dict()
+        file_relation_name = CFile.file_relation_path(self.__detail_file_path__, self.file_info.root_path)
+        (root_path_to_storage, inbound_name) = os.path.split(self.file_info.root_path)
+        if CUtils.equal_ignore_case(query_file_relation_name, file_relation_name):
+            params['dodid'] = self.object_id
+        else:
+            params['dodid'] = CUtils.one_id()
+
+        params['dodfiletype'] = self.FileType_Dir
+        params['dodfileext'] = None
+
+        if CFile.is_file(self.__detail_file_path__):
+            params['dodfiletype'] = self.FileType_File
+            params['dodfileext'] = CFile.file_ext(self.__detail_file_path__)
+
+        params['dodobjectid'] = self.object_id
+        params['dodfilename'] = CFile.unify(
+            CFile.file_relation_path(
+                self.__detail_file_path__,
+                root_path_to_storage
+            )
+        )
+
+        params['doddircount'] = result_sub_dir_count
+        params['dodfilecount'] = result_file_count
+        params['dodfilesize'] = result_file_size_sum
+        params['dodfilecreatetime'] = CFile.file_create_time(self.__detail_file_path__)
+        params['dodfilemodifytime'] = CFile.file_modify_time(self.__detail_file_path__)
+
+        try:
+            CFactory().give_me_db(self.file_info.db_server_id).execute(
+                '''
+                INSERT INTO dm2_storage_obj_detail(
+                    dodid, dodobjectid, dodfilename, dodfileext, dodfilesize, doddircount, dodfilecount,
+                    dodfilecreatetime, dodfilemodifytime, dodlastmodifytime, dodfiletype)
+                VALUES (
+                    :dodid, :dodobjectid, :dodfilename, :dodfileext, :dodfilesize, :doddircount, :dodfilecount,
+                    :dodfilecreatetime, :dodfilemodifytime, now(), :dodfiletype)
+                ''',
+                params
+            )
+            return CResult.merge_result(self.Success, '处理完毕!')
+        except Exception as error:
+            CLogger().warning('数据库处理出现异常, 错误信息为: {0}'.format(error.__str__()))
+            return CResult.merge_result(self.Failure, '数据库处理出现异常, 错误信息为: {0}'.format(error.__str__()))
 
 
 if __name__ == '__main__':

@@ -82,7 +82,7 @@ where dsiStatus = {1}
 
             ib_full_directory = CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
 
-            self.clear_anything_in_directory(ds_storage_id, ds_ib_directory_name)
+            self.clear_anything_in_directory(ds_ib_id, ds_storage_id, ds_ib_directory_name)
             metadata_rule_file_name = CFile.join_file(ib_full_directory, self.FileName_MetaData_Rule)
             metadata_rule_content = ''
             if CFile.file_or_path_exist(metadata_rule_file_name):

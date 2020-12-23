@@ -279,7 +279,7 @@ class CFile:
             is_recurse_subpath: bool = False, match_str: str = '*',
             match_type: int = MatchType_Common):
         """
-            私有方法，递归路径获取路径下的所有文件和文件夹的全文件名，仅供内部函数file_or_dir_fullname_of_path调用
+        私有方法，递归路径获取路径下的所有文件和文件夹的全文件名，仅供内部函数file_or_dir_fullname_of_path调用
         @param result_file_fullname_list:
         @param path:
         @param is_recurse_subpath:
@@ -300,7 +300,7 @@ class CFile:
     def file_or_dir_fullname_of_path(cls, path: str, is_recurse_subpath: bool = False, match_str: str = '*',
                                      match_type: int = MatchType_Common):
         """
-            公共方法：根据路径获取文件和文件夹的全文件名，根据参数is_recurse_subpath支持是否递归子目录
+        公共方法：根据路径获取文件和文件夹的全文件名，根据参数is_recurse_subpath支持是否递归子目录
         @param path: 扫描的目录
         @param is_recurse_subpath: 是否递归子目录
         @param match_str:
@@ -312,6 +312,74 @@ class CFile:
             cls.__file_or_dir_fullname_of_path_recurse(list_file_fullname, path, is_recurse_subpath, match_str,
                                                        match_type)
         return list_file_fullname
+
+    @classmethod
+    def __stat_of_path(
+            cls,
+            path: str,
+            is_recurse_subpath: bool,
+            match_str: str,
+            match_type: int,
+            sub_dir_count: int,
+            file_count: int,
+            file_size_sum: int
+    ):
+        """
+        公共方法：根据路径获取路径下的统计信息，根据参数is_recurse_subpath支持是否递归子目录
+        @param path: 扫描的目录
+        @param is_recurse_subpath: 是否递归子目录
+        @param match_str:
+        @param match_type:
+        @return:
+        统计信息包括:
+        1. 子目录个数
+        2. 文件个数
+        3. 文件总大小
+        """
+        result_sub_dir_count = sub_dir_count
+        result_file_count = file_count
+        result_file_size_sum = file_size_sum
+        list_file_name = cls.file_or_subpath_of_path(path, match_str, match_type)
+        for file_name_temp in list_file_name:
+            file_fullname_temp = cls.join_file(path, file_name_temp)
+            if cls.is_file(file_fullname_temp):
+                result_file_count = result_file_count + 1
+                result_file_size_sum = result_file_size_sum + cls.file_size(file_fullname_temp)
+            else:
+                result_sub_dir_count = result_sub_dir_count + 1
+                if is_recurse_subpath:
+                    result_sub_dir_count, result_file_count, result_file_size_sum = cls.__stat_of_path(
+                        file_fullname_temp,
+                        is_recurse_subpath,
+                        match_str,
+                        match_type,
+                        result_sub_dir_count,
+                        result_file_count,
+                        result_file_size_sum
+                    )
+        return result_sub_dir_count, result_file_count, result_file_size_sum
+
+    @classmethod
+    def stat_of_path(cls, path: str, is_recurse_subpath: bool = False, match_str: str = '*',
+                     match_type: int = MatchType_Common):
+        """
+        公共方法：根据路径获取路径下的统计信息，根据参数is_recurse_subpath支持是否递归子目录
+
+        @param path: 扫描的目录
+        @param is_recurse_subpath: 是否递归子目录
+        @param match_str:
+        @param match_type:
+        @return:
+        统计信息包括:
+        1. 子目录个数
+        2. 文件个数
+        3. 文件总大小
+        """
+
+        if cls.is_dir(path):
+            return cls.__stat_of_path(path, is_recurse_subpath, match_str, match_type, 0, 0, 0)
+        else:
+            return 0, 1, cls.file_size(path)
 
     @classmethod
     def copy_file_to(cls, file_name_with_path: str, target_path: str):

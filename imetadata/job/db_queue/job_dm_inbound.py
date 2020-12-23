@@ -70,17 +70,14 @@ where dsistatus = {1}
         ds_ib_batch_no = dataset.value_by_name(0, 'query_ib_batchno', '')
         ds_ib_option = dataset.value_by_name(0, 'query_ib_option', '')
 
-        src_need_storage_size = self.get_storage_size(ds_src_storage_id, ds_ib_directory_name, ds_ib_option)
+        src_need_storage_size = self.get_storage_size(ds_ib_id, ds_src_storage_id, ds_ib_directory_name, ds_ib_option)
         src_path = CFile.join_file(ds_src_root_path, ds_ib_directory_name)
         src_dataset_metadata_filename = CFile.join_file(src_path, self.FileName_MetaData_Bus_21AT)
 
         CLogger().debug('入库的目录为: {0}.{1}'.format(ds_ib_id, ds_ib_directory_name))
         try:
             # 检查所有文件与元数据是否相符
-            all_ib_file_or_path_existed = self.check_all_ib_file_or_path_existed(
-                ds_src_storage_id,
-                ds_ib_directory_name
-            )
+            all_ib_file_or_path_existed = self.check_all_ib_file_or_path_existed(ds_ib_id)
             if not CResult.result_success(all_ib_file_or_path_existed):
                 self.update_ib_result(ds_ib_id, all_ib_file_or_path_existed)
                 return all_ib_file_or_path_existed
@@ -145,7 +142,7 @@ where dsistatus = {1}
                 ds_ib_directory_name
             )
 
-            # 至此, 数据入库前的检查处理完毕
+            # --------------------------------------------------------------至此, 数据入库前的检查处理完毕
             # 移动源目录至目标目录
             result = self.ib_files_move(proc_ib_src_path, proc_ib_dest_path)
             if not CResult.result_success(result):
@@ -185,68 +182,39 @@ where dsistatus = {1}
             self.update_ib_result(ds_ib_id, result)
             return result
 
-    def get_storage_size(self, storage_id: str, relation_dir: str, ib_option) -> int:
+    def get_storage_size(self, ds_ib_id: str, storage_id: str, relation_dir: str, ib_option) -> int:
         """
         获取指定存储指定路径下的数据所需要的存储量
+        . file表中未识别为数据的文件, dsf_object_confirm=2
+        . object表中的存储量
+        :param ds_ib_id: 入库批次编号: inbound.dsiid
         :param ib_option: 入库的个性化要求, 其中包含是全部入库, 还是质检通过的入库, 或者人工选择后入库等配置选项, 会影响到存储大小的计算
         :param storage_id:
         :param relation_dir:
         :return:
         """
-        all_file_size = 0
-
-        sql_stat_not_inbound_file_size = '''
-        select sum(dm2_storage_file.dsffilesize)
-        from dm2_storage_file left join dm2_storage_directory on dm2_storage_file.dsfdirectoryid = dm2_storage_directory.dsdid
-        where dm2_storage_directory.dsdstorageid = :dsdStorageID
-            and position(:dsdSubDirectory in dm2_storage_directory.dsddirectory) = 1
-        '''
-        dataset = CFactory().give_me_db(self.get_mission_db_id()).all_row(
-            sql_stat_not_inbound_file_size,
-            {'dsdStorageID': storage_id, 'dsdSubDirectory': relation_dir}
+        # 文件中不认识的部分, 加上已经识别的对象的大小
+        inbound_file_size = CFactory().give_me_db(self.get_mission_db_id()).one_value(
+            '''
+            select sum(dsffilesize)
+            from dm2_storage_file 
+            where dsf_ib_id = :ib_id
+                and dsf_object_confirm = 0
+            ''',
+            {'ib_id': ds_ib_id},
+            0
+        ) + CFactory().give_me_db(self.get_mission_db_id()).one_value(
+            '''
+            select sum(dso_volumn_now)
+            from dm2_storage_object 
+            where dso_ib_id = :ib_id
+                and dso_bus_status = '{0}'
+            '''.format(self.IB_Bus_Status_InBound),
+            {'ib_id': ds_ib_id},
+            0
         )
-        if not dataset.is_empty():
-            all_file_size = dataset.value_by_index(0, 0, 0)
 
-        not_inbound_file_size = 0
-        # sql_stat_not_inbound_file_size = '''
-        # select sum(dm2_storage_obj_detail.dodfilesize)
-        # from dm2_storage_obj_detail
-        #     left join dm2_storage_object on dm2_storage_object.dsoid = dm2_storage_obj_detail.dodobjectid
-        # where (
-        #     dm2_storage_object.dsoid in (
-        #         select dsd_object_id
-        #         from dm2_storage_directory
-        #         where dsdstorageid = :StorageID
-        #             and dsd_object_id is not null
-        #             and position(:SubDirectory in dsddirectory) = 1
-        #     ) or dm2_storage_object.dsoid in (
-        #         select dsf_object_id
-        #         from dm2_storage_file
-        #         where dsfdirectoryid in (
-        #             select dsdid
-        #             from dm2_storage_directory
-        #             where dsdstorageid = :StorageID and position(:SubDirectory in dsddirectory) = 1
-        #         )
-        #     )
-        # ) and (
-        #     coalesce(
-        #         json_extract_path_text(
-        #             dm2_storage_object.dsootheroption,
-        #             'inbound', 'allow'
-        #         ),
-        #         'pass'
-        #     ) = 'pass'
-        # )
-        # '''
-        # dataset = CFactory().give_me_db(self.get_mission_db_id()).all_row(
-        #     sql_stat_not_inbound_file_size,
-        #     {'StorageID': storage_id, 'SubDirectory': relation_dir}
-        # )
-        # if not dataset.is_empty():
-        #     not_inbound_file_size = dataset.value_by_index(0, 0, 0)
-
-        return all_file_size - not_inbound_file_size
+        return inbound_file_size
 
     def get_ib_schema(self, dataset_type, ib_option):
         """
@@ -438,6 +406,7 @@ where dsistatus = {1}
         """
         移动源文件到目标路径下
         . 注意: 在将源目录下的文件和子目录, 移动至目标目录下
+        todo(优化) 如何得知两个目录在一个存储上, 而使用目录的移动替代. 只有不同的存储, 才使用本方法!!!
         :param dest_dir:
         :param src_dir:
         :return:
@@ -474,11 +443,11 @@ where dsistatus = {1}
 
         :param ib_id: 入库记录标识 dm2_storage_inbound.dsiid
         :param src_storage_id: 待入库存储标识 dm2_storage_inbound.dsistorageid
-        :param src_dir_id:
-        :param src_ib_directory_name:镶嵌影像
-        :param dest_ib_storage_id:
-        :param desc_ib_dir_id:
-        :param dest_ib_subpath:
+        :param src_dir_id: 入库目录标识
+        :param src_ib_directory_name: 入库目录名称
+        :param dest_ib_storage_id: 入库目标存储标识
+        :param desc_ib_dir_id: 入库目标目录标识
+        :param dest_ib_subpath: 入库目标子目录(迁入的子目录)
         :return:
         """
         # 将文件的路径, 修正为新的的路径
@@ -487,44 +456,59 @@ where dsistatus = {1}
         set dsfstorageid = :dest_storage_id
             , dsffilerelationname = '{0}'||dsffilerelationname
             , dsf_bus_status = '{1}'
-        where dsfdirectoryid in (
-            select dsdid
-            from dm2_storage_directory
-            where dsdstorageid = :src_storage_id
-                and position(:src_directory in dsddirectory) = 1
-        )
+        where dsf_ib_id = :ib_id
         '''.format(dest_ib_subpath, self.IB_Bus_Status_Online)
         params_move_file = {
-            'dest_storage_id': dest_ib_storage_id,
-            'src_storage_id': src_storage_id,
-            'src_directory': src_ib_directory_name
+            'ib_id': ib_id
         }
 
-        # 将子目录和存储, 更新到目标存储和目录下
+        # 将目录, 更新到目标存储和目录下
         sql_move_directory_metadata = '''
         update dm2_storage_directory
         set dsdstorageid = :dest_storage_id
             , dsddirectory = '{0}'||dsddirectory
             , dsd_bus_status = '{1}'
-        where dsdstorageid = :src_storage_id
-            and position(:src_directory in dsddirectory) = 1
+        where dsd_ib_id = :ib_id
         '''.format(dest_ib_subpath, self.IB_Bus_Status_Online)
         params_move_directory_metadata = {
-            'dest_storage_id': dest_ib_storage_id,
-            'src_storage_id': src_storage_id,
-            'src_directory': src_ib_directory_name
+            'ib_id': ib_id
         }
 
-        # 将根目录的父目录, 更新为存储的根目录
-        sql_link_parent_dir_to_root = '''
+        # 将目录, 更新到目标存储和目录下
+        sql_move_directory_metadata = '''
         update dm2_storage_directory
-        set dsdparentid = :storage_root_id
-            , dsd_bus_status = '{0}'
-        where dsdid = :src_root_dir_id
+        set dsdstorageid = :dest_storage_id
+            , dsddirectory = '{0}'||dsddirectory
+            , dsd_bus_status = '{1}'
+        where dsd_ib_id = :ib_id
+        '''.format(dest_ib_subpath, self.IB_Bus_Status_Online)
+        params_move_directory_metadata = {
+            'ib_id': ib_id
+        }
+
+        # 将数据附属文件, 更新到目标目录下
+        sql_move_obj_detail_metadata = '''
+        update dm2_storage_obj_detail
+        set dodfilename = '{0}'||dodfilename
+        where dodobjectid in 
+            (
+                select dsoid
+                from dm2_storage_object
+                where dso_ib_id = :ib_id
+            )
+        '''.format(dest_ib_subpath)
+        params_move_obj_detail_metadata = {
+            'ib_id': ib_id
+        }
+
+        # 更新对象状态
+        sql_move_obj_metadata = '''
+        update dm2_storage_object
+        set dso_bus_status = '{0}'
+        where dso_ib_id = :ib_id
         '''.format(self.IB_Bus_Status_Online)
-        params_link_parent_dir_to_root = {
-            'storage_root_id': dest_ib_storage_id,
-            'src_root_dir_id': src_dir_id
+        params_move_obj_metadata = {
+            'ib_id': ib_id
         }
 
         # 将入库记录中的目标存储标识进行更新
@@ -539,8 +523,10 @@ where dsistatus = {1}
         }
 
         commands = [
-            (sql_move_file, params_move_file), (sql_move_directory_metadata, params_move_directory_metadata),
-            (sql_link_parent_dir_to_root, params_link_parent_dir_to_root),
+            (sql_move_file, params_move_file),
+            (sql_move_directory_metadata, params_move_directory_metadata),
+            (sql_move_obj_detail_metadata, params_move_obj_detail_metadata),
+            (sql_move_obj_metadata, params_move_obj_metadata),
             (sql_update_ib_target_storage, params_update_ib_target_storage)
         ]
         try:
@@ -569,7 +555,7 @@ where dsistatus = {1}
                 {'ib_id': ib_id, 'ib_message': CResult.result_message(result)}
             )
 
-    def check_all_ib_file_or_path_existed(self, storage_id, directory_name):
+    def check_all_ib_file_or_path_existed(self, ib_id):
         """
         判断待入库数据的元数据, 与实体数据是否相符
         . 返回CResult
@@ -588,16 +574,10 @@ where dsistatus = {1}
             , dm2_storage_file.dsffilemodifytime as file_modify_time
         from dm2_storage_file left join dm2_storage
             on dm2_storage.dstid = dm2_storage_file.dsfstorageid
-        where dsfdirectoryid in (
-            select dsdid
-            from dm2_storage_directory
-            where dsdstorageid = :storage_id
-                and position(:directory in dsddirectory) = 1
-        )        
+        where dsf_ib_id = :ib_id       
         '''
         params_all_ib_file = {
-            'storage_id': storage_id,
-            'directory': directory_name
+            'ib_id': ib_id
         }
         ds_ib_file = CFactory().give_me_db(self.get_mission_db_id()).all_row(sql_all_ib_file, params_all_ib_file)
         for ds_ib_file_index in range(ds_ib_file.size()):
@@ -633,6 +613,14 @@ where dsistatus = {1}
             return CResult.merge_result(self.Success, '所有文件均存在, 且与库中记录统一! ')
 
     def ib_log(self, ib_id, storage_id, directory_name):
+        """
+        记录入库的日志
+        . 注意: 如用户对入库日志记录有要求, 可在此进行dm2_storage_inbound_log表结构的调整, 和日志记录的完善.
+        :param ib_id:
+        :param storage_id:
+        :param directory_name:
+        :return:
+        """
         sql_log_clear_old = '''
         delete from dm2_storage_inbound_log where dsilownerid = :ib_id
         '''
@@ -651,16 +639,10 @@ where dsistatus = {1}
             left join dm2_storage on dm2_storage.dstid = dm2_storage_file.dsfstorageid
             left join dm2_storage_directory on dm2_storage_directory.dsdid = dm2_storage_file.dsfdirectoryid
             left join dm2_storage_object on dm2_storage_object.dsoid = dm2_storage_file.dsf_object_id
-        where dsfdirectoryid in (
-            select dsdid
-            from dm2_storage_directory
-            where dsdstorageid = :storage_id
-                and position(:directory in dsddirectory) = 1
-        )        
+        where dsf_ib_id = :ib_id
         '''.format(ib_id)
         params_log_ib_file = {
-            'storage_id': storage_id,
-            'directory': directory_name
+            'ib_id': ib_id
         }
         try:
             CFactory().give_me_db(self.get_mission_db_id()).execute_batch(
@@ -685,127 +667,30 @@ where dsistatus = {1}
         sql_update_file = '''
         update dm2_storage_file
         set dsf_bus_status = '{0}'
-        where dsfdirectoryid in (
-            select dsdid
-            from dm2_storage_directory
-            where dsdstorageid = :storage_id
-                and position(:src_directory in dsddirectory) = 1
-        )
+        where dsf_ib_id = :ib_id
         '''.format(self.IB_Bus_Status_Online)
         params_update_file = {
-            'storage_id': storage_id,
-            'src_directory': ib_directory_name
+            'ib_id': ib_id
         }
 
         # 更新子目录状态
         sql_update_directory = '''
         update dm2_storage_directory
         set dsd_bus_status = '{0}'
-        where dsdstorageid = :storage_id
-            and (
-                position(:src_directory in dsddirectory) = 1
-                or 
-                dsdid = :src_root_dir_id
-            )
+        where dsd_ib_id = :ib_id
         '''.format(self.IB_Bus_Status_Online)
         params_update_directory = {
-            'storage_id': storage_id,
-            'src_directory': CFile.join_file(ib_directory_name, ''),
-            'src_root_dir_id': ib_dir_id
+            'ib_id': ib_id
         }
 
         # 更新对象状态
-        sql_update_object_in_directory = '''
+        sql_update_object = '''
         update dm2_storage_object
         set dso_bus_status = '{0}'
-        where dsoid in (
-            select dsd_object_id
-            from dm2_storage_directory
-            where dsdstorageid = :storage_id
-                and (
-                    position(:src_directory in dsddirectory) = 1
-                    or 
-                    dsdid = :src_root_dir_id
-                )
-                and dsd_object_id is not null
-        )
+        where dso_ib_id = :ib_id
         '''.format(self.IB_Bus_Status_Online)
-        params_update_object_in_directory = {
-            'storage_id': storage_id,
-            'src_directory': CFile.join_file(ib_directory_name, ''),
-            'src_root_dir_id': ib_dir_id
-        }
-        # 更新对象状态
-        sql_update_object_of_file = '''
-        update dm2_storage_object
-        set dso_bus_status = '{0}'
-        where dsoid in (
-            select dsf_object_id
-            from dm2_storage_file
-            where dsfdirectoryid in (
-                select dsdid
-                from dm2_storage_directory
-                where dsdstorageid = :storage_id
-                and (
-                    position(:src_directory in dsddirectory) = 1
-                    or 
-                    dsdid = :src_root_dir_id
-                )
-            )
-            and dsf_object_id is not null
-        )
-        '''.format(self.IB_Bus_Status_Online)
-        params_update_object_of_file = {
-            'storage_id': storage_id,
-            'src_directory': CFile.join_file(ib_directory_name, ''),
-            'src_root_dir_id': ib_dir_id
-        }
-
-        # 更新子对象状态
-        sql_update_sub_object_in_directory = '''
-        update dm2_storage_object
-        set dso_bus_status = '{0}'
-        where dsoparentobjid in (
-            select dsd_object_id
-            from dm2_storage_directory
-            where dsdstorageid = :storage_id
-                and (
-                    position(:src_directory in dsddirectory) = 1
-                    or 
-                    dsdid = :src_root_dir_id
-                )
-                and dsd_object_id is not null
-        )
-        '''.format(self.IB_Bus_Status_Online)
-        params_update_sub_object_in_directory = {
-            'storage_id': storage_id,
-            'src_directory': CFile.join_file(ib_directory_name, ''),
-            'src_root_dir_id': ib_dir_id
-        }
-        # 更新子对象状态
-        sql_update_sub_object_of_file = '''
-        update dm2_storage_object
-        set dso_bus_status = '{0}'
-        where dsoparentobjid in (
-            select dsf_object_id
-            from dm2_storage_file
-            where dsfdirectoryid in (
-                select dsdid
-                from dm2_storage_directory
-                where dsdstorageid = :storage_id
-                and (
-                    position(:src_directory in dsddirectory) = 1
-                    or 
-                    dsdid = :src_root_dir_id
-                )
-            )
-            and dsf_object_id is not null
-        )
-        '''.format(self.IB_Bus_Status_Online)
-        params_update_sub_object_of_file = {
-            'storage_id': storage_id,
-            'src_directory': CFile.join_file(ib_directory_name, ''),
-            'src_root_dir_id': ib_dir_id
+        params_update_object = {
+            'ib_id': ib_id
         }
 
         # 将入库记录中的目标存储标识进行更新
@@ -820,11 +705,9 @@ where dsistatus = {1}
         }
 
         commands = [
-            (sql_update_file, params_update_file), (sql_update_directory, params_update_directory),
-            (sql_update_object_in_directory, params_update_object_in_directory),
-            (sql_update_object_of_file, params_update_object_of_file),
-            (sql_update_sub_object_in_directory, params_update_sub_object_in_directory),
-            (sql_update_sub_object_of_file, params_update_sub_object_of_file),
+            (sql_update_file, params_update_file),
+            (sql_update_directory, params_update_directory),
+            (sql_update_object, params_update_object),
             (sql_update_ib_target_storage, params_update_ib_target_storage)
         ]
         try:

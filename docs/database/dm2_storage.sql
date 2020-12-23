@@ -1156,6 +1156,114 @@ create index idx_dm2_storage_object_bus_status
 
 
 /*
+    2020-12-22
+    . 扩展dm2_storage_obj_detail.dodfilename的大小
+*/
+
+drop view if exists view_dm2_dataset_detail;
+drop view if exists view_dm2_object_filedetail;
+
+alter table dm2_storage_obj_detail
+    alter column dodfilename Type varchar(2000);
+
+create view view_dm2_object_filedetail(objectid, obj_detail_id, dodfilename, storageid, dps_object_fullname) as
+SELECT b.dps_object_id                                                                  AS objectid,
+       c.dodid                                                                          AS obj_detail_id,
+       c.dodfilename,
+       b.dps_object_storageid                                                           AS storageid,
+       ((b.storagepath::text || b.relatedir::text) || '\'::text) || c.dodfilename::text AS dps_object_fullname
+FROM ap3_product_rsp a,
+     view_dm2_object_dirandfile b,
+     dm2_storage_obj_detail c
+WHERE a.aprid::text = b.dps_object_id::text
+  AND b.dps_object_id::text = c.dodobjectid::text;
+
+comment on view view_dm2_object_filedetail is '该视图将根据产品的aprid，将产品的存储storage root路径和mount路径获取到';
+
+alter table view_dm2_object_filedetail
+    owner to postgres;
+
+
+
+create view view_dm2_dataset_detail
+            (obj_detail_id, object_id, dataset_objectid, storage_id, directory_id, dsoparentobjid, dodfilename,
+             dodfileext, dodfilesize, dstunipath, dsddirectory, datafullname_ip)
+as
+SELECT dm2_storage_obj_detail.dodid             AS obj_detail_id,
+       dm2_storage_obj_detail.dodobjectid       AS object_id,
+       dm2_storage_object.dsoparentobjid        AS dataset_objectid,
+       dm2_storage_directory.dsdstorageid       AS storage_id,
+       dm2_storage_directory.dsdid              AS directory_id,
+       dm2_storage_object.dsoparentobjid,
+       dm2_storage_obj_detail.dodfilename,
+       dm2_storage_obj_detail.dodfileext,
+       dm2_storage_obj_detail.dodfilesize,
+       dm2_storage.dstunipath,
+       dm2_storage_directory.dsddirectory,
+       ((dm2_storage.dstunipath::text || dm2_storage_directory.dsddirectory::text) || '\'::text) ||
+       dm2_storage_obj_detail.dodfilename::text AS datafullname_ip
+FROM dm2_storage_obj_detail
+         LEFT JOIN dm2_storage_object ON dm2_storage_object.dsoid::text = dm2_storage_obj_detail.dodobjectid::text
+         LEFT JOIN (SELECT dm2_storage_object_1.dsoid,
+                           dm2_storage_object_1.dsoobjectname,
+                           dm2_storage_object_1.dsoobjecttype,
+                           dm2_storage_object_1.dsodatatype,
+                           dm2_storage_object_1.dsometadatatext,
+                           dm2_storage_object_1.dsometadatajson,
+                           dm2_storage_object_1.dsometadatajson_bus,
+                           dm2_storage_object_1.dsometadataxml,
+                           dm2_storage_object_1.dsometadatatype,
+                           dm2_storage_object_1.dsometadataparsestatus,
+                           dm2_storage_object_1.dsometadataparseprocid,
+                           dm2_storage_object_1.dsotags,
+                           dm2_storage_object_1.dsolastmodifytime,
+                           dm2_storage_object_1.dsometadataparsememo,
+                           dm2_storage_object_1.dsodetailparsememo,
+                           dm2_storage_object_1.dsodetailparsestatus,
+                           dm2_storage_object_1.dsodetailparseprocid,
+                           dm2_storage_object_1.dsotagsparsememo,
+                           dm2_storage_object_1.dsotagsparsestatus,
+                           dm2_storage_object_1.dsotagsparseprocid,
+                           dm2_storage_object_1.dsoalphacode,
+                           dm2_storage_object_1.dsoaliasname,
+                           dm2_storage_object_1.dsoparentobjid,
+                           dm2_storage_object_1.dsometadataxml_bus,
+                           dm2_storage_object_1.dsometadatatext_bus,
+                           dm2_storage_object_1.dsometadatatype_bus,
+                           dm2_storage_object_1.dsometadata_bus_parsememo
+                    FROM dm2_storage_object dm2_storage_object_1) dataset_object
+                   ON dataset_object.dsoid::text = dm2_storage_object.dsoparentobjid::text
+         LEFT JOIN (SELECT dm2_storage_file.dsf_object_id       AS object_id,
+                           dm2_storage_file.dsffilename         AS object_name,
+                           dm2_storage_file.dsffilerelationname AS object_relationname,
+                           dm2_storage_file.dsfdirectoryid      AS object_directoryid,
+                           dm2_storage_file.dsfaddtime          AS object_addtime,
+                           dm2_storage_file.dsffilevalid        AS object_valid
+                    FROM dm2_storage_file
+                    WHERE dm2_storage_file.dsf_object_confirm = '-1'::integer
+                    UNION ALL
+                    SELECT dm2_storage_directory_1.dsd_object_id       AS object_id,
+                           dm2_storage_directory_1.dsddirectoryname    AS object_name,
+                           dm2_storage_directory_1.dsddirectory        AS object_relationname,
+                           dm2_storage_directory_1.dsdparentid         AS object_directoryid,
+                           dm2_storage_directory_1.dsdaddtime          AS object_addtime,
+                           dm2_storage_directory_1.dsd_directory_valid AS object_valid
+                    FROM dm2_storage_directory dm2_storage_directory_1
+                    WHERE dm2_storage_directory_1.dsd_object_confirm = '-1'::integer) objfile
+                   ON objfile.object_id::text = dm2_storage_object.dsoid::text
+         LEFT JOIN dm2_storage_directory ON objfile.object_directoryid::text = dm2_storage_directory.dsdid::text
+         LEFT JOIN dm2_storage ON dm2_storage.dstid::text = dm2_storage_directory.dsdstorageid::text
+         LEFT JOIN dm2_storage_object_def ON dataset_object.dsoobjecttype::text = dm2_storage_object_def.dsodid::text
+WHERE dm2_storage_object.dsoparentobjid IS NOT NULL
+  AND dm2_storage_object_def.dsodgroupname::text = 'land_dataset'::text;
+
+comment on view view_dm2_dataset_detail is '数据集所包含的所有文件信息，包括全路径，记录中obj_detail_id=object_id 的为主文件记录';
+
+alter table view_dm2_dataset_detail
+    owner to postgres;
+
+
+/*
     思考服务发布的数据库设计-----------------------------注意: 暂不启用!!!!!!!
     . 从服务发布节点开始设计
 
