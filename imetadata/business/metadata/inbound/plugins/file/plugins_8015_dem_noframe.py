@@ -170,6 +170,17 @@ class plugins_8015_dem_noframe(CFilePlugins_GUOTU_21AT):
                 },
                 {
                     self.Name_Type: self.QA_Type_XML_Node_Exist,
+                    self.Name_XPath: "//DataDate",
+                    self.Name_ID: 'DataDate',
+                    self.Name_Title: 'DataDate',
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Result: self.QA_Result_Error,
+                    self.Name_NotNull: True,
+                    self.Name_DataType: self.value_type_date,
+                    # self.Name_Width: 8
+                },
+                {
+                    self.Name_Type: self.QA_Type_XML_Node_Exist,
                     self.Name_NotNull: True,
                     self.Name_DataType: self.value_type_decimal_or_integer,
                     self.Name_Width: 8,
