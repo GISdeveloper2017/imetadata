@@ -67,7 +67,10 @@ class CAudit(CResource):
         if not CUtils.equal_ignore_case(value, ''):
             value_type = CUtils.dict_value_by_name(qa_items, cls.Name_DataType, None)
             if value_type is not None:
-                result_list.append(cls.__a_check_value_datatype__(result_template, value, title_prefix, value_type))
+                value_sql_db_server_id = CUtils.dict_value_by_name(qa_items, cls.Name_DataBase,
+                                                                   cls.DB_Server_ID_Default)
+                result_list.append(cls.__a_check_value_datatype__(result_template, value, title_prefix, value_type,
+                                                                  value_sql_db_server_id))
 
             value_range = CUtils.dict_value_by_name(qa_items, cls.Name_Range, None)
             if value_range is not None:
@@ -291,7 +294,7 @@ class CAudit(CResource):
         return result_dict
 
     @classmethod
-    def __a_check_value_datatype__(cls, result_template: dict, value, title_prefix, value_type):
+    def __a_check_value_datatype__(cls, result_template: dict, value, title_prefix, value_type, value_sql_db_server_id):
         """
         完成 赵宇飞 对字段值根据字段类型进行检验（正整数或正小数类型、数字类型（科学计数法/正负整数/正负小数）、文本类型、日期类型...）
         :param result_template: 检查结果的模板
@@ -309,7 +312,7 @@ class CAudit(CResource):
                 result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
                                                                                          value_type)
         elif CUtils.equal_ignore_case(value_type, cls.value_type_date):
-            if CUtils.text_is_date(value):
+            if cls.text_is_date_bus(value, value_sql_db_server_id):
                 result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
                 result_dict[cls.Name_Result] = cls.QA_Result_Pass
             else:
@@ -358,6 +361,26 @@ class CAudit(CResource):
                 result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
                                                                                          value_type)
         return result_dict
+
+    @classmethod
+    def text_is_date_bus(self, text, db_server_id):
+        """
+        判断时间类型，包含季度，半年度（从数据库中获取判断）
+        """
+        if CUtils.text_is_date(text):
+            return True
+        else:
+            # 从数据库中ro_globle_dim_time中判断
+            sql = '''
+            select gdtquickcode from ro_global_dim_time where gdtquickcode ='{0}'
+            '''.format(text)
+            try:
+                ds_row_count = CFactory().give_me_db(db_server_id).all_row(sql).size()
+                if ds_row_count > 0:
+                    return True
+            except Exception as error:
+                return False
+        return False
 
     @classmethod
     def __a_check_value_range__(cls, result_template, value, title_prefix, qa_items):
