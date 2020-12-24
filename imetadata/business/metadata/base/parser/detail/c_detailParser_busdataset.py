@@ -17,4 +17,4 @@ class CDetailParser_Busdataset(CDetailParser):
         self.__detail_file_path__ = self.file_info.file_name_with_full_path
         self.__detail_file_recurse__ = False
         self.__detail_file_match_type__ = CFile.MatchType_Common
-        self.__detail_file_match_text__ = 'metadata.21at'
+        self.__detail_file_match_text__ = self.FileName_MetaData_Bus_21AT
