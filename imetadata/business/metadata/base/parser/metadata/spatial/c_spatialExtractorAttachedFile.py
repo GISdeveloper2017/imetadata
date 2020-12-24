@@ -185,8 +185,7 @@ class CSpatialExtractorAttachedFile(CSpatialExtractor):
                 return result
                 # return CResult.merge_result(self.Success, '处理完毕!')
             else:
-                return CResult.merge_result(self.Success, 'extent四至范围从原坐标系转wgs_84坐标系转换失败！'
-                                                          '失败原因：文件读取空间参考失败！！')
+                return CResult.merge_result(self.Success, '处理完毕!')
         except Exception as error:
             CLogger().warning('矢量数据的空间信息处理出现异常, 错误信息为: {0}'.format(error.__str__))
             return CResult.merge_result(self.Failure, '矢量数据的空间信息处理出现异常,错误信息为：{0}!'.format(error.__str__))
