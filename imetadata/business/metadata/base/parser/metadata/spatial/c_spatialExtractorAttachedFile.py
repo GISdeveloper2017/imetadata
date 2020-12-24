@@ -52,21 +52,20 @@ class CSpatialExtractorAttachedFile(CSpatialExtractor):
             # file_main_name = CFile.file_main_name(file_name_with_full_path)
             # file_path = CFile.file_path(file_name_with_full_path)
             xml_obj = self.metadata.metadata_xml()
-
             # <editor-fold desc="1.空间坐标信息">
             wkt_info = 'POLYGON((min_x max_y,max_x max_y,max_x min_y,min_x min_y,min_x max_y))'
             # 四至坐标
             native_max_x = CUtils.to_decimal(
-                xml_obj.get_element_text_by_xpath_one('/TileMetadata/MaxLon', None)
+                xml_obj.get_element_text_by_xpath_one('/TileMetadata/MaxLon')
             )
             native_max_y = CUtils.to_decimal(
-                xml_obj.get_element_text_by_xpath_one('/TileMetadata/MaxLat', None)
+                xml_obj.get_element_text_by_xpath_one('/TileMetadata/MaxLat')
             )
             native_min_x = CUtils.to_decimal(
-                xml_obj.get_element_text_by_xpath_one('/TileMetadata/MinLon', None)
+                xml_obj.get_element_text_by_xpath_one('/TileMetadata/MinLon')
             )
             native_min_y = CUtils.to_decimal(
-                xml_obj.get_element_text_by_xpath_one('/TileMetadata/MinLat', None)
+                xml_obj.get_element_text_by_xpath_one('/TileMetadata/MinLat')
             )
             if (native_max_x is None) or (native_max_y is None) \
                     or (native_min_x is None) or (native_min_y is None):
@@ -99,10 +98,10 @@ class CSpatialExtractorAttachedFile(CSpatialExtractor):
             native_geom_filepath = CFile.join_file(file_path, file_main_name + '_native_geom.wkt')
             CFile.str_2_file(geom_native_wkt, native_geom_filepath)
 
-            projection = xml_obj.get_element_text_by_xpath_one('/TileMetadata/SpatialReference/PRJ', None)
+            projection = xml_obj.get_element_text_by_xpath_one('/TileMetadata/SpatialReference/PRJ')
             if (projection is not None) and (not CUtils.equal_ignore_case(projection, '')):
                 source_projection = osr.SpatialReference(wkt=projection)
-                source = source_projection.GetAttrValue('GEOGCS', 0)
+                source = source_projection.GetAttrValue('GEOGCS', 0)  # 坐标系名称
 
                 prosrs = osr.SpatialReference()
                 if prosrs.ImportFromWkt(projection) == gdal.CE_None:
@@ -113,82 +112,81 @@ class CSpatialExtractorAttachedFile(CSpatialExtractor):
                 native_proj4 = prosrs.ExportToProj4()
                 spatial = None
 
+                rb = (0, 0)
+                lu = (0, 0)
                 geosrs = prosrs.CloneGeogCS()
                 ct = osr.CreateCoordinateTransformation(prosrs, geosrs)
+                if ct is not None:
+                    rb = ct.TransformPoint(native_max_x, native_max_y)
+                    lu = ct.TransformPoint(native_min_x, native_min_y)
+                    wgs84_min_x = lu[0]
+                    wgs84_max_y = lu[1]
+                    wgs84_max_x = rb[0]
+                    wgs84_min_y = rb[1]
 
+                    dict_wgs84 = {'max_x': CUtils.any_2_str(wgs84_max_x),
+                                  'max_y': CUtils.any_2_str(wgs84_max_y),
+                                  'min_x': CUtils.any_2_str(wgs84_min_x),
+                                  'min_y': CUtils.any_2_str(wgs84_min_y)}
 
-        #
-        #     # wgs84转换后的四至坐标
-        #     wgs84_max_x = CUtils.to_decimal(json_obj.xpath_one('layers[0].wgs84.extent.maxx', None))
-        #     wgs84_max_y = CUtils.to_decimal(json_obj.xpath_one('layers[0].wgs84.extent.maxy', None))
-        #     wgs84_min_x = CUtils.to_decimal(json_obj.xpath_one('layers[0].wgs84.extent.minx', None))
-        #     wgs84_min_y = CUtils.to_decimal(json_obj.xpath_one('layers[0].wgs84.extent.miny', None))
-        #     if (wgs84_max_x is None) or (wgs84_max_y is None) or (wgs84_min_x is None) or (wgs84_min_y is None):
-        #         wgs84_center_wkt = None
-        #         wgs84_bbox_wkt = None
-        #         wgs84_geom_wkt = None
-        #     else:
-        #         dict_wgs84 = {'max_x': CUtils.any_2_str(wgs84_max_x),
-        #                       'max_y': CUtils.any_2_str(wgs84_max_y),
-        #                       'min_x': CUtils.any_2_str(wgs84_min_x),
-        #                       'min_y': CUtils.any_2_str(wgs84_min_y)}
-        #
-        #         # 中心坐标
-        #         center_x = (wgs84_max_x - wgs84_min_x) / 2 + wgs84_min_x
-        #         center_y = (wgs84_max_y - wgs84_min_y) / 2 + wgs84_min_y
-        #         wgs84_center_wkt = 'POINT({0} {1})'.format(center_x, center_y)
-        #
-        #         # 外边框、外包框
-        #         wgs84_bbox_wkt = wkt_info
-        #         for name, value in dict_wgs84.items():
-        #             wgs84_bbox_wkt = wgs84_bbox_wkt.replace(name, value)
-        #         wgs84_geom_wkt = wgs84_bbox_wkt
-        #
-        #     wgs84_center_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_center.wkt')
-        #     CFile.str_2_file(wgs84_center_wkt, wgs84_center_filepath)
-        #     wgs84_bbox_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_bbox.wkt')
-        #     CFile.str_2_file(wgs84_bbox_wkt, wgs84_bbox_filepath)
-        #     wgs84_geom_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_geom.wkt')
-        #     CFile.str_2_file(wgs84_geom_wkt, wgs84_geom_filepath)
-        #     # </editor-fold>
-        #
-        #     # <editor-fold desc="2.投影信息">
-        #     native_proj4 = json_obj.xpath_one('layers[0].wkt.proj4', None)
-        #     native_source = CResource.Prj_Source_Data
-        #
-        #     # 坐标系
-        #     native_coordinate = None
-        #     # 3度带/6度带
-        #     native_degree = None
-        #     # 投影方式
-        #     native_project = None
-        #     # 带号
-        #     native_zone = None
-        #
-        #     # 创建SpatialReference对象，导入wkt信息
-        #     spatial_ref = osr.SpatialReference(wkt=native_wkt)
-        #     if spatial_ref.IsProjected():
-        #         native_project = spatial_ref.GetAttrValue('PROJECTION')
-        #         native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
-        #         # native_degree = spatial_ref.GetAttrValue('GEOGCS|UNIT', 1)
-        #         native_degree, native_zone = self.get_prj_degree_zone(spatial_ref)
-        #     elif spatial_ref.IsGeocentric():
-        #         native_project = None
-        #         native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
-        #         native_degree = None
-        #         native_zone = None
-        #     # </editor-fold>
-        #
-        #     result = CResult.merge_result(self.Success, '处理完毕!')
-        #     result = CResult.merge_result_info(result, self.Name_Prj_Wkt, native_wkt)
-        #     result = CResult.merge_result_info(result, self.Name_Prj_Proj4, native_proj4)
-        #     result = CResult.merge_result_info(result, self.Name_Prj_Project, native_project)
-        #     result = CResult.merge_result_info(result, self.Name_Prj_Coordinate, native_coordinate)
-        #     result = CResult.merge_result_info(result, self.Name_Prj_Source, native_source)
-        #     result = CResult.merge_result_info(result, self.Name_Prj_Zone, native_zone)
-        #     result = CResult.merge_result_info(result, self.Name_Prj_Degree, native_degree)
-        #     return result
-        #     # return CResult.merge_result(self.Success, '处理完毕!')
+                    # 中心坐标
+                    center_x = (wgs84_max_x - wgs84_min_x) / 2 + wgs84_min_x
+                    center_y = (wgs84_max_y - wgs84_min_y) / 2 + wgs84_min_y
+                    wgs84_center_wkt = 'POINT({0} {1})'.format(center_x, center_y)
+
+                    # 外边框、外包框
+                    wgs84_bbox_wkt = wkt_info
+                    for name, value in dict_wgs84.items():
+                        wgs84_bbox_wkt = wgs84_bbox_wkt.replace(name, value)
+                    wgs84_geom_wkt = wgs84_bbox_wkt
+
+                    wgs84_center_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_center.wkt')
+                    CFile.str_2_file(wgs84_center_wkt, wgs84_center_filepath)
+                    wgs84_bbox_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_bbox.wkt')
+                    CFile.str_2_file(wgs84_bbox_wkt, wgs84_bbox_filepath)
+                    wgs84_geom_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_geom.wkt')
+                    CFile.str_2_file(wgs84_geom_wkt, wgs84_geom_filepath)
+                    # </editor-fold>
+
+                # <editor-fold desc="2.投影信息">
+                native_source = CResource.Prj_Source_Data
+
+                # 坐标系
+                native_coordinate = None
+                # 3度带/6度带
+                native_degree = None
+                # 投影方式
+                native_project = None
+                # 带号
+                native_zone = None
+
+                # 创建SpatialReference对象，导入wkt信息
+                spatial_ref = osr.SpatialReference(wkt=native_wkt)
+                if spatial_ref.IsProjected():
+                    native_project = spatial_ref.GetAttrValue('PROJECTION')
+                    native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
+                    # native_degree = spatial_ref.GetAttrValue('GEOGCS|UNIT', 1)
+                    native_degree, native_zone = self.get_prj_degree_zone(spatial_ref)
+                elif spatial_ref.IsGeocentric():
+                    native_project = None
+                    native_coordinate = spatial_ref.GetAttrValue('GEOGCS')
+                    native_degree = None
+                    native_zone = None
+                # </editor-fold>
+
+                result = CResult.merge_result(self.Success, '处理完毕!')
+                result = CResult.merge_result_info(result, self.Name_Prj_Wkt, native_wkt)
+                result = CResult.merge_result_info(result, self.Name_Prj_Proj4, native_proj4)
+                result = CResult.merge_result_info(result, self.Name_Prj_Project, native_project)
+                result = CResult.merge_result_info(result, self.Name_Prj_Coordinate, native_coordinate)
+                result = CResult.merge_result_info(result, self.Name_Prj_Source, native_source)
+                result = CResult.merge_result_info(result, self.Name_Prj_Zone, native_zone)
+                result = CResult.merge_result_info(result, self.Name_Prj_Degree, native_degree)
+                return result
+                # return CResult.merge_result(self.Success, '处理完毕!')
+            else:
+                return CResult.merge_result(self.Success, 'extent四至范围从原坐标系转wgs_84坐标系转换失败！'
+                                                          '失败原因：文件读取空间参考失败！！')
         except Exception as error:
             CLogger().warning('矢量数据的空间信息处理出现异常, 错误信息为: {0}'.format(error.__str__))
             return CResult.merge_result(self.Failure, '矢量数据的空间信息处理出现异常,错误信息为：{0}!'.format(error.__str__))

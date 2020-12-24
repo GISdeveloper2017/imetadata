@@ -17,7 +17,7 @@ class CMDExtractorAttachedFile(CMDExtractor):
 
         metadata_main_name_with_path = CFile.join_file(self.file_info.file_path, self.file_info.file_main_name)
         metadata_filename = '{0}.xml'.format(metadata_main_name_with_path[:-2])
-        format_metadata = self.Transformer_XML
+        format_metadata = self.MetaDataFormat_XML
 
         result = CResult.merge_result_info(result, self.Name_FileName, metadata_filename)
         return CResult.merge_result_info(result, self.Name_Format, format_metadata)
