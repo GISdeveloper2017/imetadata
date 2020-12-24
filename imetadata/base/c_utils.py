@@ -218,6 +218,19 @@ class CUtils(CResource):
         return True
 
     @classmethod
+    def text_is_date_month_nosep(cls, check_text: str) -> bool:
+        """
+        判断时间类型(只有月份，并且没有‘-’or‘/’，例如YYYYMM)
+        """
+        sep_list = ['-', '/']
+        for sep in sep_list:
+            if sep in check_text:
+                return False
+        if CUtils.text_is_date_month(check_text):
+            return True
+        return False
+
+    @classmethod
     def text_is_date_year(cls, check_text: str) -> bool:
         """
         TODO 赵宇飞 判断是否为年（不包含月日），如2020

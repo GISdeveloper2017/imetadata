@@ -80,6 +80,10 @@ class CAudit(CResource):
             if value_width is not None:
                 result_list.append(cls.__a_check_value_width__(result_template, value, title_prefix, value_width))
 
+            value_number = CUtils.dict_value_by_name(qa_items, cls.Name_Number, None)
+            if value_number is not None:
+                result_list.append(cls.__a_check_value_number__(result_template, value, title_prefix, value_number))
+
             value_list = CUtils.dict_value_by_name(qa_items, cls.Name_List, None)
             if value_list is not None:
                 result_list.append(cls.__a_check_value_in_list__(result_template, value, title_prefix, value_list))
@@ -219,6 +223,33 @@ class CAudit(CResource):
         return result_dict
 
     @classmethod
+    def __a_check_value_number__(cls, result_template: dict, value, title_prefix, value_number):
+        """
+        根据规则, 验证值的合法性
+        注意: 值有可能为None!
+        完成 负责人 李宪 这里对值进行了数量检验以及分隔符检验，分隔符必须为英文',',数量限制为value_count，例如value=‘GF1,GF2,GF3,GF4,GF5’用‘,’分割
+        :param result_template: 检查结果的模板
+        :param value: 待检验的值, 可能为None
+        :param title_prefix: 提示文本的前缀
+        :param value_number: 检查value的数量
+        :return:
+        """
+        result_dict = copy.deepcopy(result_template)
+        if value.endswith(','):
+            value = value.strip(',')
+            if value.count(',') > 0:
+                value_list = value.split(',', value_number)
+                value_mun = len(value_list)
+                if value_mun <= value_number:
+                    result_dict[cls.Name_Message] = '{0}的值的数量不超过{1}, 符合要求!'.format(title_prefix, value_number)
+                    result_dict[cls.Name_Result] = cls.QA_Result_Pass
+                else:
+                    result_dict[cls.Name_Message] = '{0}的值[{1}],宽度为[{2}]，不符合要求的宽度不超过[{3}], 请检查修正!'.format(title_prefix,
+                                                                                                          value, value_mun,
+                                                                                                          value_number)
+        return result_dict
+
+    @classmethod
     def __a_check_value_in_list__(cls, result_template: dict, value, title_prefix, value_list: list):
         """
         根据规则, 验证值的合法性
@@ -318,6 +349,20 @@ class CAudit(CResource):
             else:
                 result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
                                                                                          value_type)
+        elif CUtils.equal_ignore_case(value_type, cls.value_type_date_nosep):
+            if cls.text_is_date_nosep_bus(value, value_sql_db_server_id):
+                result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
+                                                                                         value_type)
+        elif CUtils.equal_ignore_case(value_type, cls.value_type_date_month_nosep):
+            if CUtils.text_is_date_month_nosep(value):
+                result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值【{1}】的类型不符合【{2}】类型, 请检查修正!'.format(title_prefix, value,
+                                                                                         value_type)
         elif CUtils.equal_ignore_case(value_type, cls.value_type_datetime):
             if CUtils.text_is_datetime(value):
                 result_dict[cls.Name_Message] = '{0}的值类型符合要求!'.format(title_prefix)
@@ -372,8 +417,32 @@ class CAudit(CResource):
         else:
             # 从数据库中ro_globle_dim_time中判断
             sql = '''
-            select gdtquickcode from ro_global_dim_time where gdtquickcode ='{0}'
+            select gdtquickcode from ro_global_dim_time where gdtid ='{0}'
             '''.format(text)
+            try:
+                ds_row_count = CFactory().give_me_db(db_server_id).all_row(sql).size()
+                if ds_row_count > 0:
+                    return True
+            except Exception as error:
+                return False
+        return False
+
+    @classmethod
+    def text_is_date_nosep_bus(cls, text, db_server_id):
+        """
+        判断时间类型(没有‘-’or‘/’)，包含季度，半年度（从数据库中获取判断）
+        """
+        sep_list = ['-', '/']
+        for sep in sep_list:
+            if sep in text:
+                return False
+        if CUtils.text_is_date(text):
+            return True
+        else:
+            # 从数据库中ro_globle_dim_time中判断
+            sql = '''
+                select gdtquickcode from ro_global_dim_time where gdtid ='{0}'
+                '''.format(text)
             try:
                 ds_row_count = CFactory().give_me_db(db_server_id).all_row(sql).size()
                 if ds_row_count > 0:

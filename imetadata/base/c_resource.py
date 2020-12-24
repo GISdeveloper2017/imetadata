@@ -237,6 +237,7 @@ class CResource:
     Name_PrimaryKey = 'primarykey'
     Name_DataType = 'datatype'
     Name_Width = 'width'
+    Name_Number = 'number'
     Name_SQL = 'sql'
     Name_NotNull = 'notnull'
     Name_Null = 'null'
@@ -437,6 +438,8 @@ class CResource:
 
     value_type_string = 'string'  # 文本类型
     value_type_date = 'date'  # 日期类型
+    value_type_date_nosep = 'date_nosep'  # 日期类型(没有‘-’or‘/’)
+    value_type_date_month_nosep = 'date_month_nosep'  # 日期类型(只包含YYYYMM日期类型，并且没有‘-’or‘/’)
     value_type_datetime = 'datetime'  # 日期时间类型
     value_type_date_or_datetime = 'date_or_datetime'  # 日期类型或日期时间类型
     value_type_decimal = 'decimal'  # 小数（包含负数）

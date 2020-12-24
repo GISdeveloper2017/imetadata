@@ -111,25 +111,15 @@ class C21ATBusDataSetPlugins(CDirPlugins):
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_XPath: "//BeginDate",
-                self.Name_ID: 'BeginDate',
-                self.Name_Title: 'BeginDate',
+                self.Name_XPath: "//ProductType",
+                self.Name_ID: 'ProductType',
+                self.Name_Title: 'ProductType',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date,
-                # self.Name_Width: 8
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_XPath: "//EndDate",
-                self.Name_ID: 'EndDate',
-                self.Name_Title: 'EndDate',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date,
-                # self.Name_Width: 8
+                self.Name_DataType: self.value_type_string,
+                self.Name_List: ['单景正射', '镶嵌影像', '国情影像_整景纠正', '国情影像_分幅影像', '三调影像', 'DOM', 'DEM_分幅', 'DEM_非分幅', '自定义影像'],
+                self.Name_Width: 38
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -139,8 +129,42 @@ class C21ATBusDataSetPlugins(CDirPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date,
+                self.Name_DataType: self.value_type_date_nosep,
                 # self.Name_Width: 8
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//ScaleDenominator",
+                self.Name_ID: 'ScaleDenominator',
+                self.Name_Title: 'ScaleDenominator',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_integer,
+                self.Name_List: [1000000,500000,250000,100000,50000,25000,10000,5000,2000,1000,500],
+                self.Name_Width: 38
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//Resolution",
+                self.Name_ID: 'Resolution',
+                self.Name_Title: 'Resolution',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 10
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//MajorSource",
+                self.Name_ID: 'MajorSource',
+                self.Name_Title: 'MajorSource',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Number: 5,
+                self.Name_Width: 38
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -162,51 +186,29 @@ class C21ATBusDataSetPlugins(CDirPlugins):
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_string,
-                self.Name_Width: 50
+                self.Name_Width: 20
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_XPath: "//Resolution",
-                self.Name_ID: 'Resolution',
-                self.Name_Title: 'Resolution',
+                self.Name_XPath: "//BeginDate",
+                self.Name_ID: 'BeginDate',
+                self.Name_Title: 'BeginDate',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 10
+                self.Name_DataType: self.value_type_date_month_nosep,
+                # self.Name_Width: 8
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_XPath: "//MajorSource",
-                self.Name_ID: 'MajorSource',
-                self.Name_Title: 'MajorSource',
+                self.Name_XPath: "//EndDate",
+                self.Name_ID: 'EndDate',
+                self.Name_Title: 'EndDate',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 38
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_XPath: "//ScaleDenominator",
-                self.Name_ID: 'ScaleDenominator',
-                self.Name_Title: 'ScaleDenominator',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 38
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_XPath: "//ProductType",
-                self.Name_ID: 'ProductType',
-                self.Name_Title: 'ProductType',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 38
+                self.Name_DataType: self.value_type_date_month_nosep,
+                # self.Name_Width: 8
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -216,6 +218,6 @@ class C21ATBusDataSetPlugins(CDirPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_DataType: self.value_type_string,
-                self.Name_Width: 500
+                self.Name_Width: 50
             }
         ]
