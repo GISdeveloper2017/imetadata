@@ -94,16 +94,27 @@ class CMetaDataParser(CParser):
             return
 
         for qa_item in list_qa:
-            list_result = CAudit.a_xml_attribute(
-                CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
-                CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
-                CUtils.dict_value_by_name(qa_item, self.Name_Group, self.QA_Group_Data_Integrity),
-                CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
-                self.metadata.metadata_xml(),
-                CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
-                CUtils.dict_value_by_name(qa_item, self.Name_Attr_Name, ''),
-                qa_item
-            )
+            if CUtils.dict_value_by_name(qa_item, self.Name_Attr_Name, None) is None:
+                list_result = CAudit.a_xml_element(
+                    CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Group, self.QA_Group_Data_Integrity),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
+                    self.metadata.metadata_xml(),
+                    CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
+                    qa_item
+                )
+            else:
+                list_result = CAudit.a_xml_attribute(
+                    CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Group, self.QA_Group_Data_Integrity),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
+                    self.metadata.metadata_xml(),
+                    CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Attr_Name, ''),
+                    qa_item
+                )
             for item_result in list_result:
                 self.metadata.quality.append_metadata_data_quality(item_result)
 
@@ -196,7 +207,6 @@ class CMetaDataParser(CParser):
     def process_default_spatial(self, engine_type):
         """
         内置的可视化元数据提取
-        :param parser:
         :param engine_type:
         :return:
         """
@@ -265,7 +275,8 @@ class CMetaDataParser(CParser):
 
         # 处理业务元数据
         try:
-            metadata_bus_extract_result, metadata_bus_extract_memo, metadata_bus_type, metadata_bus_text = self.metadata.metadata_bus()
+            metadata_bus_extract_result, metadata_bus_extract_memo, metadata_bus_type, metadata_bus_text \
+                = self.metadata.metadata_bus()
 
             CFactory().give_me_db(self.file_info.db_server_id).execute(
                 '''

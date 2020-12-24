@@ -119,3 +119,62 @@ class plugins_7901_mbtiles(CFilePlugins):
                     self.Name_Message: '业务元数据[{0}]存在'.format(self.metadata_bus_src_filename_with_path)
                 }
             )
+
+    def init_qa_metadata_xml_list(self, parser: CMetaDataParser) -> list:
+        """
+        初始化默认的, 元数据xml文件的检验列表
+        :param parser:
+        :return:
+        """
+        return [
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/TileMetadata/SpatialReference/PRJ",
+                self.Name_ID: 'SpatialReference',
+                self.Name_Title: 'SpatialReference',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Warn,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/TileMetadata/MinLon",
+                self.Name_ID: 'MinLon',
+                self.Name_Title: 'MinLon',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/TileMetadata/MaxLon",
+                self.Name_ID: 'MaxLon',
+                self.Name_Title: 'MaxLon',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/TileMetadata/MinLat",
+                self.Name_ID: 'MinLat',
+                self.Name_Title: 'MinLat',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/TileMetadata/MaxLat",
+                self.Name_ID: 'MaxLat',
+                self.Name_Title: 'MaxLat',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Result: self.QA_Result_Error
+            }
+        ]
