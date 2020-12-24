@@ -217,7 +217,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
 
                 engine.session_commit(session)
             except Exception as error:
-                CLogger().warning('数据库处理出现异常, 错误信息为: {0}'.format(error.__str__))
+                CLogger().warning('数据库处理出现异常, 错误信息为: {0}'.format(error.__str__()))
                 engine.session_rollback(session)
             finally:
                 engine.session_close(session)

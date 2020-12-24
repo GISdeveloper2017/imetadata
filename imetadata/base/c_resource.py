@@ -383,6 +383,7 @@ class CResource:
     DetailEngine_All_File_Of_Same_Dir = 'all_file_of_same_dir'
     DetailEngine_File_Of_Dir = 'file_of_dir'
     DetailEngine_All_File_Of_Dir = 'all_file_of_dir'
+    DetailEngine_Busdataset = 'busdataset'  # 用于入数据集的附属文件metadata.21at
 
     Tag_DataSample_RelationPath = 'relation_path'
     Tag_DataSample_MainName = 'main_name'

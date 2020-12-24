@@ -31,7 +31,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
             information[self.Plugins_Info_Catalog])  # '国土行业'
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
-        information[self.Plugins_Info_DetailEngine] = None
+        information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Busdataset
         information[self.Plugins_Info_HasChildObj] = self.DB_True
 
         return information
