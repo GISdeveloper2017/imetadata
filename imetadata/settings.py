@@ -77,6 +77,9 @@ application = CSettings(
                 'title': '数管常规目录设置, 包括元数据存储目录',
                 'view': '/Users/wangxiya/Documents/我的测试数据/80.快视图'
             },
+            'time': {
+                'query': 'select starttime, endtime from ro_global_dim_time where (gdtquickcode = :value or gdtTitle = :value) and gdtparentid <> \'-1\''
+            },
             'tags': {
                 'rule': [
                     {

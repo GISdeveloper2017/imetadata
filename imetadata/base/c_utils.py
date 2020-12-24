@@ -66,7 +66,7 @@ class CUtils(CResource):
             return Template(text).substitute(dict_obj)
 
     @classmethod
-    def equal_ignore_case(cls, str1: str, str2: str) -> bool:
+    def equal_ignore_case(cls, str1, str2) -> bool:
         return cls.any_2_str(str1).strip().lower() == cls.any_2_str(str2).strip().lower()
 
     @classmethod

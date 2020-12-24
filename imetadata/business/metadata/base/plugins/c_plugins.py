@@ -5,6 +5,7 @@
 
 from abc import abstractmethod
 
+from imetadata import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
@@ -607,11 +608,22 @@ class CPlugins(CResource):
                 time_text_standard = CUtils.standard_datetime_format(time_text, time_text)
                 if not CUtils.equal_ignore_case(time_text_standard, ''):
                     time_text_temp = time_text_standard.replace('-', '')
-                    # 从ro_global_dim_time表中识别是否有记录，如果有，则获取对应的开始时间、结束时间
-                    sql = '''
-                    select starttime, endtime from ro_global_dim_time where gdtquickcode ='{0}'
-                    '''.format(time_text_temp)
-                    ds_time = CFactory().give_me_db(self.file_info.db_server_id).one_row(sql)
+                    # 从配置中读取时间信息查询的SQL语句, 获取对应的开始时间、结束时间
+                    sql = settings.application.xpath_one(self.Path_Setting_MetaData_Time_Query, None)
+                    if CUtils.equal_ignore_case(sql, ''):
+                        parser.metadata.set_metadata_time(
+                            self.Failure,
+                            '系统设置中, 缺少时间信息解析的内容, 请修正后重试! '
+                        )
+                        return CResult.merge_result(
+                            self.Failure,
+                            '系统设置中, 缺少时间信息解析的内容, 请修正后重试! '
+                        )
+
+                    # sql = '''
+                    # select starttime, endtime from ro_global_dim_time where gdtquickcode ='{0}'
+                    # '''.format(time_text_temp)
+                    ds_time = CFactory().give_me_db(self.file_info.db_server_id).one_row(sql, {'value': time_text_temp})
                     starttime = ds_time.value_by_name(0, 'starttime', None)
                     endtime = ds_time.value_by_name(0, 'endtime', None)
                     if starttime is not None:

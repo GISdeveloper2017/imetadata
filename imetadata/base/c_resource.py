@@ -281,6 +281,7 @@ class CResource:
     Name_Client = 'client'
     Name_Url = 'url'
     Name_Timeout = 'timeout'
+    Name_Time = 'time'
 
     Switch_Use_Ready_Flag_File_Name = 'use_ready_flag_file_name'
     Switch_Inbound_After_QI_Immediately = 'inbound_after_qi_immediately'
@@ -323,6 +324,9 @@ class CResource:
 
     Path_Setting_MetaData_Plugins = '{0}.{1}'.format(Path_Setting_MetaData, Name_Plugins)
     Path_Setting_MetaData_Plugins_Dir = '{0}.{1}'.format(Path_Setting_MetaData_Plugins, Name_Dir)
+
+    Path_Setting_MetaData_Time = '{0}.{1}'.format(Path_Setting_MetaData, Name_Time)
+    Path_Setting_MetaData_Time_Query = '{0}.{1}'.format(Path_Setting_MetaData_Time, Name_Query)
 
     Path_Setting_MetaData_Tags = '{0}.{1}'.format(Path_Setting_MetaData, Name_Tags)
     Path_Setting_MetaData_Tags_Rule = '{0}.{1}'.format(Path_Setting_MetaData_Tags, Name_Rule)
