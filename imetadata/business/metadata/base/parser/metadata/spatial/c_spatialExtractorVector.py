@@ -66,7 +66,8 @@ class CSpatialExtractorVector(CSpatialExtractor):
             json_obj = self.metadata.metadata_json()
 
             # <editor-fold desc="1.空间坐标信息">
-            wkt_info = 'POLYGON((min_x max_y,max_x max_y,max_x min_y,min_x min_y,min_x max_y))'
+            wkt_info = 'POLYGON((${min_x} ${max_y},${max_x} ${max_y},' \
+                       '${max_x} ${min_y},${min_x} ${min_y},${min_x} ${max_y}))'
             features_count = CUtils.to_decimal(json_obj.xpath_one('layers[0].features.count', 0))
             if features_count == 0:
                 pass  # 如果features_count为0则geom全空
@@ -92,9 +93,7 @@ class CSpatialExtractorVector(CSpatialExtractor):
                     native_center_wkt = 'POINT({0} {1})'.format(center_x, center_y)
 
                     # 外边框、外包框
-                    native_bbox_wkt = wkt_info
-                    for name, value in dict_native.items():
-                        native_bbox_wkt = native_bbox_wkt.replace(name, value)
+                    native_bbox_wkt = CUtils.replace_placeholder(wkt_info[:], dict_native)
                     geom_native_wkt = native_bbox_wkt
 
                 file_path = self.file_content.work_root_dir
@@ -127,9 +126,7 @@ class CSpatialExtractorVector(CSpatialExtractor):
                     wgs84_center_wkt = 'POINT({0} {1})'.format(center_x, center_y)
 
                     # 外边框、外包框
-                    wgs84_bbox_wkt = wkt_info
-                    for name, value in dict_wgs84.items():
-                        wgs84_bbox_wkt = wgs84_bbox_wkt.replace(name, value)
+                    wgs84_bbox_wkt = CUtils.replace_placeholder(wkt_info[:], dict_wgs84)
                     wgs84_geom_wkt = wgs84_bbox_wkt
 
                 wgs84_center_filepath = CFile.join_file(file_path, file_main_name + '_wgs84_center.wkt')
@@ -179,5 +176,5 @@ class CSpatialExtractorVector(CSpatialExtractor):
             return result
             # return CResult.merge_result(self.Success, '处理完毕!')
         except Exception as error:
-            CLogger().warning('矢量数据的空间信息处理出现异常, 错误信息为: {0}'.format(error.__str__))
-            return CResult.merge_result(self.Failure, '矢量数据的空间信息处理出现异常,错误信息为：{0}!'.format(error.__str__))
+            CLogger().warning('矢量数据的空间信息处理出现异常, 错误信息为: {0}'.format(error.__str__()))
+            return CResult.merge_result(self.Failure, '矢量数据的空间信息处理出现异常,错误信息为：{0}!'.format(error.__str__()))
