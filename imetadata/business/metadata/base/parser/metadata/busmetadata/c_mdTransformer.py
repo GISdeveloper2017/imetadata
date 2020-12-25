@@ -3,6 +3,8 @@
 # @Author : 王西亚 
 # @File : c_mdTransformer.py
 from imetadata.base.c_result import CResult
+from imetadata.base.c_sys import CSys
+from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.content.c_virtualContent import CVirtualContent
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.c_parser import CParser
@@ -54,7 +56,10 @@ class CMDTransformer(CParser):
             # 并将odbcinst.ini文件的设置一个连接名为Driver=Microsoft Access Driver (*.mdb)的项目
             mdb = 'Driver=Microsoft Access Driver (*.mdb);' + 'DBQ={0}'.format(
                 file_metadata_name_with_path)  # win驱动，安装AccessDatabaseEngine_X64.exe驱动
-            conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
+            if CUtils.equal_ignore_case(CSys.get_os_name(), self.OS_Windows):
+                conn = pypyodbc.win_connect_mdb(mdb)  # 安装pypyodbc插件，本插件为python写的，可全平台
+            else:
+                conn = pypyodbc.connect(mdb)
         except Exception as error:
             raise Exception('mdb解析驱动异常:' + error.__str__())
         return conn
