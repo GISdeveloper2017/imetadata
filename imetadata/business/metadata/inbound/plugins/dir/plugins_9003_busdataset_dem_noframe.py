@@ -1,18 +1,18 @@
-# -*- coding: utf-8 -*- 
-# @Time : 2020/9/19 17:48 
-# @Author : 王西亚 
-# @File : plugins_9002_busdataset_dem.py
+# -*- coding: utf-8 -*-
+# @Time : 2020/9/19 17:48
+# @Author : 王西亚
+# @File : plugins_9003_busdataset_dem_noframe.py
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.c_21ATBusDataSetPlugins import C21ATBusDataSetPlugins
 
 
-class plugins_9002_busdataset_dem(C21ATBusDataSetPlugins):
+class plugins_9003_busdataset_dem_noframe(C21ATBusDataSetPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'DEM_分幅'
+        information[self.Plugins_Info_Type] = 'DEM_非分幅'
         information[self.Plugins_Info_Type_Title] = 'DEM数据集'
-        information[self.Plugins_Info_Type_Code] = '020106'
-        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_dem'
+        information[self.Plugins_Info_Type_Code] = '020108'
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_dem_noframe'
         return information
 
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
@@ -43,7 +43,8 @@ class plugins_9002_busdataset_dem(C21ATBusDataSetPlugins):
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_string,
-                self.Name_List: ['单景正射', '镶嵌影像', '国情影像_整景纠正', '国情影像_分幅影像', '三调影像', 'DOM', 'DEM_分幅', 'DEM_非分幅', '自定义影像'],
+                self.Name_List: ['单景正射', '镶嵌影像', '国情影像_整景纠正', '国情影像_分幅影像', '三调影像', 'DOM', 'DEM_分幅', 'DEM_非分幅',
+                                 '自定义影像'],
                 # self.Name_Width: 38
             },
             {

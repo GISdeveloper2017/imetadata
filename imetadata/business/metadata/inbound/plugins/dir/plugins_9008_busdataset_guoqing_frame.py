@@ -1,18 +1,18 @@
-# -*- coding: utf-8 -*- 
-# @Time : 2020/9/19 17:48 
-# @Author : 王西亚 
-# @File : plugins_9002_busdataset_dem.py
+# -*- coding: utf-8 -*-
+# @Time : 2020/11/05 17:10
+# @Author : 赵宇飞
+# @File : plugins_9007_busdataset_guoqing_frame.py
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.c_21ATBusDataSetPlugins import C21ATBusDataSetPlugins
 
 
-class plugins_9002_busdataset_dem(C21ATBusDataSetPlugins):
+class plugins_9008_busdataset_guoqing_frame(C21ATBusDataSetPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'DEM_分幅'
-        information[self.Plugins_Info_Type_Title] = 'DEM数据集'
-        information[self.Plugins_Info_Type_Code] = '020106'
-        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_dem'
+        information[self.Plugins_Info_Type] = '国情影像_分幅影像'
+        information[self.Plugins_Info_Type_Title] = '国情影像数据集'
+        information[self.Plugins_Info_Type_Code] = '020109'
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_guoqing_frame'
         return information
 
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
