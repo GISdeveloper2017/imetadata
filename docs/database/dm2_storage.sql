@@ -617,6 +617,7 @@ comment on column dm2_storage_object.dsoOtherOption is '其他';
 alter table dm2_storage_object add column dso_quality_summary jsonb;
 comment on column dm2_storage_object.dso_quality_summary is '质检概况';
 
+
 /*
     2020-10-23
     开始数据入库的数据表设计
@@ -892,21 +893,33 @@ comment on column dm2_storage_object_def.dsodcatalogtitle is '数据类别-标�
 alter table dm2_storage_object_def owner to postgres;
 
 create index idx_dm2_storage_object_def_id
-	on dm2_storage_object_def (dsodid);
+    on dm2_storage_object_def (dsodid);
 
 create index idx_dm2_storage_object_def_name
-	on dm2_storage_object_def (dsodname);
+    on dm2_storage_object_def (dsodname);
 
 create index idx_dm2_storage_object_def_type
-	on dm2_storage_object_def (dsodtype);
+    on dm2_storage_object_def (dsodtype);
 
-alter table dm2_storage_obj_na add column dson_object_access varchar(100);
+
+alter table dm2_storage_object_def
+    drop column dsodgroupname;
+
+alter table dm2_storage_object_def
+    add column dsodgroup varchar(100);
+comment on column dm2_storage_object_def.dsodgroup is '数管-定义-分组名称';
+
+alter table dm2_storage_obj_na
+    add column dson_object_access varchar(100);
 comment on column dm2_storage_obj_na.dson_object_access is '对象-访问权限';
-alter table dm2_storage_obj_na add column dson_audit_username varchar(100);
+alter table dm2_storage_obj_na
+    add column dson_audit_username varchar(100);
 comment on column dm2_storage_obj_na.dson_audit_username is '对象-审批人员';
-alter table dm2_storage_obj_na add column dson_audit_time timestamp(6);
+alter table dm2_storage_obj_na
+    add column dson_audit_time timestamp(6);
 comment on column dm2_storage_obj_na.dson_audit_time is '对象-审批时间';
-alter table dm2_storage_obj_na add column dson_lastmodify_time timestamp(6) default now();
+alter table dm2_storage_obj_na
+    add column dson_lastmodify_time timestamp(6) default now();
 comment on column dm2_storage_obj_na.dson_lastmodify_time is '最后修改时间';
 
 
@@ -1255,12 +1268,97 @@ FROM dm2_storage_obj_detail
          LEFT JOIN dm2_storage ON dm2_storage.dstid::text = dm2_storage_directory.dsdstorageid::text
          LEFT JOIN dm2_storage_object_def ON dataset_object.dsoobjecttype::text = dm2_storage_object_def.dsodid::text
 WHERE dm2_storage_object.dsoparentobjid IS NOT NULL
-  AND dm2_storage_object_def.dsodgroupname::text = 'land_dataset'::text;
+  AND dm2_storage_object_def.dsodgroup::text = 'land_dataset'::text;
 
 comment on view view_dm2_dataset_detail is '数据集所包含的所有文件信息，包括全路径，记录中obj_detail_id=object_id 的为主文件记录';
 
 alter table view_dm2_dataset_detail
     owner to postgres;
+
+
+/*
+    2020-12-25
+    . 为dm2_storage_obj_na和dm2_storage_object_def增加预留字段
+    . 为各个数据表优化效率
+*/
+alter table dm2_storage_obj_na
+    add column dson_otheroption jsonb;
+comment on column dm2_storage_obj_na.dson_otheroption is '其他属性';
+
+DROP INDEX if exists idx_dm2_storage_obj_na_otheroption;
+create index idx_dm2_storage_obj_na_otheroption
+    on dm2_storage_obj_na using gin (dson_otheroption);
+
+alter table dm2_storage_object_def
+    add column dsod_otheroption jsonb;
+comment on column dm2_storage_object_def.dsod_otheroption is '其他属性';
+DROP INDEX if exists idx_dm2_storage_object_def_otheroption;
+create index idx_dm2_storage_object_def_otheroption
+    on dm2_storage_object_def using gin (dsod_otheroption);
+
+DROP INDEX if exists idx_dm2_storage_otheroption;
+create index idx_dm2_storage_otheroption
+    on dm2_storage using gin (dstotheroption);
+
+DROP INDEX if exists idx_dm2_storage_directory_otheroption;
+create index idx_dm2_storage_directory_otheroption
+    on dm2_storage_directory using gin (dsdotheroption);
+
+DROP INDEX if exists idx_dm2_storage_file_otheroption;
+create index idx_dm2_storage_file_otheroption
+    on dm2_storage_file using gin (dsfotheroption);
+
+DROP INDEX if exists idx_dm2_storage_inbound_otheroption;
+create index idx_dm2_storage_inbound_otheroption
+    on dm2_storage_inbound using gin (dsiotheroption);
+
+DROP INDEX if exists idx_dm2_storage_inbound_procid;
+create index idx_dm2_storage_inbound_procid
+    on dm2_storage_inbound (dsiprocid);
+
+DROP INDEX if exists idx_dm2_storage_inbound_na_procid;
+create index idx_dm2_storage_inbound_na_procid
+    on dm2_storage_inbound (dsi_na_proc_id);
+
+DROP INDEX if exists idx_dm2_storage_obj_detail_other;
+create index idx_dm2_storage_obj_detail_other
+    on dm2_storage_obj_detail using gin (dodother);
+
+DROP INDEX if exists idx_dm2_storage_obj_detail_objectid;
+create index idx_dm2_storage_obj_detail_objectid
+    on dm2_storage_obj_detail (dodobjectid);
+
+DROP INDEX if exists idx_dm2_storage_object_dsometadataparseprocid;
+create index idx_dm2_storage_object_dsometadataparseprocid
+    on dm2_storage_object (dsometadataparseprocid);
+
+DROP INDEX if exists idx_dm2_storage_object_dsotagsparsestatus;
+create index idx_dm2_storage_object_dsotagsparsestatus
+    on dm2_storage_object (dsotagsparsestatus);
+
+DROP INDEX if exists idx_dm2_storage_object_dsodetailparsestatus;
+create index idx_dm2_storage_object_dsodetailparsestatus
+    on dm2_storage_object (dsodetailparsestatus);
+
+DROP INDEX if exists idx_dm2_storage_object_dso_da_proc_id;
+create index idx_dm2_storage_object_dso_da_proc_id
+    on dm2_storage_object (dso_da_proc_id);
+
+DROP INDEX if exists idx_dm2_storage_obj_detail_dodfiletype;
+create index idx_dm2_storage_obj_detail_dodfiletype
+    on dm2_storage_obj_detail (dodfiletype);
+
+DROP INDEX if exists idx_dm2_storage_object_dso_geo_bb_wgs84;
+create index idx_dm2_storage_object_dso_geo_bb_wgs84
+    on dm2_storage_object USING GIST (dso_geo_bb_wgs84);
+
+DROP INDEX if exists idx_dm2_storage_object_dso_geo_wgs84;
+create index idx_dm2_storage_object_dso_geo_wgs84
+    on dm2_storage_object USING GIST (dso_geo_wgs84);
+
+DROP INDEX if exists idx_dm2_storage_object_dso_center_wgs84;
+create index idx_dm2_storage_object_dso_center_wgs84
+    on dm2_storage_object USING GIST (dso_center_wgs84);
 
 
 /*

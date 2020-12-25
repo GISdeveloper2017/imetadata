@@ -26,7 +26,7 @@ class plugins_3001_gdb(CDirPlugins):
         information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Vector
         information[self.Plugins_Info_BusMetaDataEngine] = None
-        information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
+        information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Directory_Itself
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_dataset_gdb'
         information[self.Plugins_Info_Child_Layer_Data_Type] = 'layer'
         information[self.Plugins_Info_Child_Layer_Plugins_Name] = 'plugins_6050_layer_vector'

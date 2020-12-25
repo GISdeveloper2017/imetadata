@@ -23,9 +23,9 @@ class CDetailParser(CParser):
     _file_custom_list: list
 
     def __init__(self, object_id: str, object_name: str, file_info: CDMFilePathInfoEx, file_custom_list: list):
-        super().__init__(object_id, object_name, file_info)
         self._file_custom_list = file_custom_list
         self._only_stat_file = False
+        super().__init__(object_id, object_name, file_info)
 
     def process(self) -> str:
         """
@@ -92,7 +92,6 @@ class CDetailParser(CParser):
 
             params = dict()
             file_relation_name = CFile.file_relation_path(item_file_name_with_path, self.file_info.root_path)
-            (root_path_to_storage, inbound_name) = os.path.split(self.file_info.root_path)
             if CUtils.equal_ignore_case(query_file_relation_name, file_relation_name):
                 params['dodid'] = self.object_id
             else:
@@ -102,12 +101,7 @@ class CDetailParser(CParser):
             if CFile.is_dir(item_file_name_with_path):
                 params['dodfiletype'] = self.FileType_Dir
             params['dodobjectid'] = self.object_id
-            params['dodfilename'] = CFile.unify(
-                CFile.file_relation_path(
-                    item_file_name_with_path,
-                    root_path_to_storage
-                )
-            )
+            params['dodfilename'] = CFile.unify(file_relation_name)
             params['dodfileext'] = CFile.file_ext(item_file_name_with_path)
             params['dodfilesize'] = CFile.file_size(item_file_name_with_path)
             params['dodfilecreatetime'] = CFile.file_create_time(item_file_name_with_path)
@@ -149,7 +143,6 @@ class CDetailParser(CParser):
         query_file_relation_name = self.file_info.file_name_with_rel_path
         params = dict()
         file_relation_name = CFile.file_relation_path(self.__detail_file_path__, self.file_info.root_path)
-        (root_path_to_storage, inbound_name) = os.path.split(self.file_info.root_path)
         if CUtils.equal_ignore_case(query_file_relation_name, file_relation_name):
             params['dodid'] = self.object_id
         else:
@@ -163,12 +156,7 @@ class CDetailParser(CParser):
             params['dodfileext'] = CFile.file_ext(self.__detail_file_path__)
 
         params['dodobjectid'] = self.object_id
-        params['dodfilename'] = CFile.unify(
-            CFile.file_relation_path(
-                self.__detail_file_path__,
-                root_path_to_storage
-            )
-        )
+        params['dodfilename'] = CFile.unify(file_relation_name)
 
         params['doddircount'] = result_sub_dir_count
         params['dodfilecount'] = result_file_count
