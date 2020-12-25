@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/11/05 17:08
 # @Author : 赵宇飞
-# @File : plugins_9003_busdataset_ortho.py
+# @File : lugins_3003_busdataset_shp.py
 
 from imetadata.business.metadata.base.plugins.c_21ATBusDataSetPlugins import C21ATBusDataSetPlugins
 
