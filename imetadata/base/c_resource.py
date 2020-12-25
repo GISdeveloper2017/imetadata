@@ -328,6 +328,7 @@ class CResource:
 
     Path_Setting_MetaData_Time = '{0}.{1}'.format(Path_Setting_MetaData, Name_Time)
     Path_Setting_MetaData_Time_Query = '{0}.{1}'.format(Path_Setting_MetaData_Time, Name_Query)
+    Path_Setting_MetaData_Time_Server = '{0}.{1}'.format(Path_Setting_MetaData_Time, Name_Server)
 
     Path_Setting_MetaData_Tags = '{0}.{1}'.format(Path_Setting_MetaData, Name_Tags)
     Path_Setting_MetaData_Tags_Rule = '{0}.{1}'.format(Path_Setting_MetaData_Tags, Name_Rule)

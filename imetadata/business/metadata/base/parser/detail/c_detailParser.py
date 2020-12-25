@@ -25,6 +25,7 @@ class CDetailParser(CParser):
     def __init__(self, object_id: str, object_name: str, file_info: CDMFilePathInfoEx, file_custom_list: list):
         self._file_custom_list = file_custom_list
         self._only_stat_file = False
+        # 继承的方法, 必须在这里运行!!!
         super().__init__(object_id, object_name, file_info)
 
     def process(self) -> str:

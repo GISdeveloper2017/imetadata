@@ -610,6 +610,8 @@ class CPlugins(CResource):
                     time_text_temp = time_text_standard.replace('-', '')
                     # 从配置中读取时间信息查询的SQL语句, 获取对应的开始时间、结束时间
                     sql = settings.application.xpath_one(self.Path_Setting_MetaData_Time_Query, None)
+                    db_server_id = settings.application.xpath_one(self.Path_Setting_MetaData_Time_Server,
+                                                                  self.file_info.db_server_id)
                     if CUtils.equal_ignore_case(sql, ''):
                         parser.metadata.set_metadata_time(
                             self.Failure,
@@ -620,10 +622,7 @@ class CPlugins(CResource):
                             '系统设置中, 缺少时间信息解析的内容, 请修正后重试! '
                         )
 
-                    # sql = '''
-                    # select starttime, endtime from ro_global_dim_time where gdtquickcode ='{0}'
-                    # '''.format(time_text_temp)
-                    ds_time = CFactory().give_me_db(self.file_info.db_server_id).one_row(sql, {'value': time_text_temp})
+                    ds_time = CFactory().give_me_db(db_server_id).one_row(sql, {self.Name_Value: time_text_temp})
                     starttime = ds_time.value_by_name(0, 'starttime', None)
                     endtime = ds_time.value_by_name(0, 'endtime', None)
                     if starttime is not None:
