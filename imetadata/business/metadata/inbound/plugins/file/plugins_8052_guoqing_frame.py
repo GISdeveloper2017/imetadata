@@ -20,7 +20,7 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = '国情影像-分幅影像'
+        information[self.Plugins_Info_Type] = '国情影像_分幅影像'
         # information[self.Plugins_Info_Name] = 'guoqing_frame'
         information[self.Plugins_Info_Type_Code] = '02010301'
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_guoqing_frame'
