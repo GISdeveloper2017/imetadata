@@ -40,6 +40,7 @@ class CResource:
 
     Name_WKT = 'wkt'
     Name_Srid = 'srid'
+    Name_Description = 'description'
 
     Name_Text = 'text'
 

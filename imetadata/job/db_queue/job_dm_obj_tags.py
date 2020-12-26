@@ -34,7 +34,7 @@ where dsoid = (
 
     def get_mission_info_sql(self):
         return '''
-select dsoid, dsodatatype, dsoobjecttype, dsoobjectname 
+select dsoid, dsodatatype, dsoobjecttype, dsoobjectname, dsoaliasname 
 from dm2_storage_object 
 where dsotagsparseprocid = '{0}'
         '''.format(self.SYSTEM_NAME_MISSION_ID)
@@ -125,6 +125,7 @@ where dsotagsparsestatus = {1}
                         dso_id,
                         dso_object_name,
                         file_info_obj,
+                        dataset.value_by_name(0, 'dsoaliasname', ''),
                         tags_parser_rule
                     )
                 )

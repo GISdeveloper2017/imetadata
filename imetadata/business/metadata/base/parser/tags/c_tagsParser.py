@@ -2,6 +2,7 @@
 # @Time : 2020/9/25 08:05 
 # @Author : 王西亚 
 # @File : c_tagsParser.py
+from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
@@ -14,9 +15,11 @@ class CTagsParser(CParser):
     对标签进行处理
     """
 
-    def __init__(self, object_id: str, object_name: str, file_info: CDMFilePathInfoEx, tags_parser_rule):
+    def __init__(self, object_id: str, object_name: str, file_info: CDMFilePathInfoEx, file_alias_name,
+                 tags_parser_rule):
         super().__init__(object_id, object_name, file_info)
         self._tags_parser_rule = tags_parser_rule
+        self.__file_alias_name = file_alias_name
 
     def process(self) -> str:
         """
@@ -37,6 +40,7 @@ class CTagsParser(CParser):
             data_sample = CUtils.any_2_str(CUtils.dict_value_by_name(tags_parser, self.Name_Data_Sample, ''))
             separator = CUtils.dict_value_by_name(tags_parser, self.Name_Separator, None)
             enable = CUtils.dict_value_by_name(tags_parser, self.Name_Enable, True)
+            tag_data_alias_name_sample_str = None
 
             if not enable:
                 continue
@@ -54,11 +58,25 @@ class CTagsParser(CParser):
                 continue
 
             if CUtils.equal_ignore_case(data_sample, self.Tag_DataSample_MainName):
-                tag_data_sample_str = CUtils.any_2_str(self.file_info.file_main_name)
+                # 如果是主名, 则将对象名称和别名, 都以文件路径的格式, 补充在主名之后, 合并进行分类识别
+                tag_data_sample_str = CFile.join_file(
+                    CFile.join_file(
+                        CUtils.any_2_str(self.file_info.file_main_name),
+                        self.object_name
+                    ),
+                    self.__file_alias_name
+                )
             elif CUtils.equal_ignore_case(data_sample, self.Tag_DataSample_RelationPath):
                 tag_data_sample_str = CUtils.any_2_str(self.file_info.file_path_with_rel_path)
             else:
-                tag_data_sample_str = CUtils.any_2_str(self.file_info.file_main_name_with_rel_path)
+                # 如果是主名, 则将对象名称和别名, 都以文件路径的格式, 补充在相对路径的文件主名之后, 合并进行分类识别
+                tag_data_sample_str = CFile.join_file(
+                    CFile.join_file(
+                        CUtils.any_2_str(self.file_info.file_main_name_with_rel_path),
+                        self.object_name
+                    ),
+                    self.__file_alias_name
+                )
 
             try:
                 tag_data_sample_list = CUtils.split(tag_data_sample_str, separator)
@@ -74,8 +92,10 @@ class CTagsParser(CParser):
                 )
 
         if len(error_list) == 0:
-            return CResult.merge_result(self.Success,
-                                        '文件或目录[{0}]对象业务分类解析成功完成!'.format(self.file_info.file_main_name_with_rel_path))
+            return CResult.merge_result(
+                self.Success,
+                '文件或目录[{0}]对象业务分类解析成功完成!'.format(self.file_info.file_main_name_with_rel_path)
+            )
         else:
             error_message = '文件或目录[{0}]的业务分类解析处理完毕, 但解析过程中出现了错误, 具体如下: \n'.format(
                 self.file_info.file_main_name_with_rel_path)

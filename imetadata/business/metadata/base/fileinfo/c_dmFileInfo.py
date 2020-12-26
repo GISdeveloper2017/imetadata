@@ -16,6 +16,7 @@ class CDMFileInfo(CDMFilePathInfoEx):
         自定义初始化方法
         :return:
         """
+        super().custom_init()
         engine = CFactory().give_me_db(self.db_server_id)
         if self.my_id is None:
             self._ds_file_or_path = engine.one_row('''

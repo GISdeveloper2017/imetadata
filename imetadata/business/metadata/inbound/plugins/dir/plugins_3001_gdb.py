@@ -89,6 +89,8 @@ class plugins_3001_gdb(CDirPlugins):
             if CUtils.equal_ignore_case(layer_name, ''):
                 continue
 
+            layer_alias_name = CUtils.dict_value_by_name(layer, self.Name_Description, layer_name)
+
             layer_metadata_json = CJson()
             layer_metadata_json.set_value_of_name('datasource', json_data_source)
             layer_metadata_json.set_value_of_name('layer_count', 1)
@@ -130,7 +132,7 @@ class plugins_3001_gdb(CDirPlugins):
                     )
                 )
                 table.column_list.column_by_name('dsoalphacode').set_value(CUtils.alpha_text(layer_name))
-                table.column_list.column_by_name('dsoaliasname').set_value(layer_name)
+                table.column_list.column_by_name('dsoaliasname').set_value(layer_alias_name)
                 table.column_list.column_by_name('dsoparentobjid').set_value(parser.object_id)
                 table.column_list.column_by_name('dso_ib_id').set_value(gdb_ib_id)
 

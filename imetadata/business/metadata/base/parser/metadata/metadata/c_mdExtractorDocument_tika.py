@@ -35,8 +35,11 @@ class CMDExtractorDocument_Tika(CMDExtractorDocument):
                 return default_result
 
             try:
-                parsed = TikaServer.from_file(in_file_fullname, tika_server_url,
-                                              requestOptions={'timeout': tika_server_connect_timeout})
+                parsed = TikaServer.from_file(
+                    in_file_fullname,
+                    tika_server_url,
+                    requestOptions={'timeout': tika_server_connect_timeout}
+                )
                 meta_data_dict = parsed["metadata"]
                 json_obj = CJson()
                 json_obj.load_obj(meta_data_dict)
