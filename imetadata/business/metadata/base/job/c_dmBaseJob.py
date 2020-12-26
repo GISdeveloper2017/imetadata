@@ -88,6 +88,14 @@ class CDMBaseJob(CDBQueueJob):
         )
 
     def get_object_info(self, object_id, object_data_type):
+        """
+        通过给定的object_id, 获取实际数据对应的文件\目录的数据对象
+        注意:
+        . 如果是矢量数据集图层或影像数据集图层, 则返回的是图层所在的矢量数据集或影像数据集的数据信息
+        :param object_id:
+        :param object_data_type:
+        :return:
+        """
         sql_get_info = ''
         if CUtils.equal_ignore_case(object_data_type, self.FileType_Dir):
             sql_get_info = '''
