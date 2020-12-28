@@ -11,6 +11,7 @@ class CVectorChildPlugins(CSpatialChildPlugins):
         information = super().get_information()
         # information[self.Plugins_Info_Name] = 'vector_layer'
         information[self.Plugins_Info_Type] = 'vector_layer'
+        information[self.Plugins_Info_Type_Title] = '矢量数据集图层'
         information[self.Plugins_Info_DetailEngine] = None
         information[self.Plugins_Info_Group] = self.DataGroup_Vector
         information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group])

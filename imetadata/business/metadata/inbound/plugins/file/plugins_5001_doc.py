@@ -6,5 +6,10 @@ from imetadata.business.metadata.base.plugins.industry.common.c_documentFilePlug
 
 
 class plugins_5001_doc(CDocumentFilePlugins):
+    def get_information(self) -> dict:
+        information = super().get_information()
+        information[self.Plugins_Info_Type_Title] = 'Microsoft Word 文档'
+        return information
+
     def default_document_file_ext(self):
         return 'doc'

@@ -15,6 +15,7 @@ class CFilePlugins_GUOTU_DOM(CFilePlugins_GUOTU):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = 'DOM'
+        information[self.Plugins_Info_Type_Title] = 'DOM影像'
         information[self.Plugins_Info_Type_Code] = '020105'
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_dom'
         return information

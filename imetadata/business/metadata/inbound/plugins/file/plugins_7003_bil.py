@@ -10,6 +10,7 @@ class plugins_7003_bil(CRasterFilePlugins):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = 'bil'
+        information[self.Plugins_Info_Type_Title] = 'BIL影像文件'
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
         return information
 

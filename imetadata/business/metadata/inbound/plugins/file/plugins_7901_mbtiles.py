@@ -13,8 +13,8 @@ class plugins_7901_mbtiles(CFilePlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = '二十一世纪公司切片'
-        # information[self.Plugins_Info_Name] = '21at_mbtiles'
+        information[self.Plugins_Info_Type] = '21at_mbtiles'
+        information[self.Plugins_Info_Type_Title] = '二十一世纪公司切片'
         information[self.Plugins_Info_Type_Code] = None
         information[self.Plugins_Info_Group] = self.DataGroup_Raster
         information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group])

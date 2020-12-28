@@ -13,6 +13,7 @@ class plugins_8030_mosaic(CFilePlugins_GUOTU_21AT):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = '镶嵌影像'
+        information[self.Plugins_Info_Type_Title] = information[self.Plugins_Info_Type]
         # information[self.Plugins_Info_Name] = 'mosaic'
         information[self.Plugins_Info_Type_Code] = '020102'
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_mosaic'

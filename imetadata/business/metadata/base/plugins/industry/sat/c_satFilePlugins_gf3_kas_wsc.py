@@ -13,6 +13,7 @@ class CSatFilePlugins_gf3_kas_wsc(CSatPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = 'GF3_SAR'
+        information[self.Plugins_Info_Type_Title] = '高分三号SAR传感器'
         information[self.Plugins_Info_Group] = 'GF3'
         information[self.Plugins_Info_Group_Title] = '高分三号'
         return information

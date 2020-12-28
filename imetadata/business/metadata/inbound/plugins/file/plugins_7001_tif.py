@@ -10,6 +10,7 @@ class plugins_7001_tif(CRasterFilePlugins):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = 'tif'
+        information[self.Plugins_Info_Type_Title] = 'TIF影像文件'
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
         return information
 

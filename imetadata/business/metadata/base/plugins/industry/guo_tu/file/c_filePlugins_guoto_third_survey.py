@@ -17,6 +17,7 @@ class CFilePlugins_GUOTU_Third_Survey(CFilePlugins_GUOTU):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = '三调影像'
+        information[self.Plugins_Info_Type_Title] = information[self.Plugins_Info_Type]
         information[self.Plugins_Info_Type_Code] = '020104'
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_third_survey'
         return information

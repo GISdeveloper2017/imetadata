@@ -23,6 +23,7 @@ class plugins_8060_custom(CFilePlugins_GUOTU_21AT):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = '其它成果影像'
+        information[self.Plugins_Info_Type_Title] = information[self.Plugins_Info_Type]
         # information[self.Plugins_Info_Name] = 'custom'
         information[self.Plugins_Info_Type_Code] = '020107'
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_custom'

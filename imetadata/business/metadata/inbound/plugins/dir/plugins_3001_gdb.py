@@ -18,6 +18,7 @@ class plugins_3001_gdb(CDirPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = 'gdb'
+        information[self.Plugins_Info_Type_Title] = 'GDB矢量数据集'
         # information[self.Plugins_Info_Name] = 'gdb'
         information[self.Plugins_Info_Type_Code] = None
         information[self.Plugins_Info_Group] = self.DataGroup_Vector_DataSet
