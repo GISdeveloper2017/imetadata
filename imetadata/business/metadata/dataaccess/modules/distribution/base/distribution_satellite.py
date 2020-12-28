@@ -10,32 +10,21 @@ from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_base import distribution_base
 from imetadata.database.c_factory import CFactory
 from imetadata.database.tools.c_table import CTable
+import datetime
 
 
-class distribution_guotu(distribution_base):
+class distribution_satellite(distribution_base):
     """
-    国土即时服务的基础类
+    卫星即时服务的基础类
     """
-    _dict_sync = {}  # 构建通用sql的字段结果值，在_before_sync中处理获取
 
     def information(self) -> dict:
         info = super().information()
-        info['table_name'] = 'ap3_product_rsp'
+        info['metadata_table_name'] = 'ap_product_metadata'
+        info['ndi_table_name'] = 'ap_product_ndi'
         return info
 
     def access(self) -> str:
-        self._before_access()
-        result_do = self._do_access()
-        return result_do
-        # if not CResult.result_success(result_do):
-        #     return result_do
-        # return CResult.merge_result_info(result_do, self.Name_Access, self.DataAccess_Forbid)
-        # return CResult.merge_result_info(result_do, self.Name_Access, self.DataAccess_Pass)
-
-    def _before_access(self):
-        pass
-
-    def _do_access(self) -> str:
         try:
             quality_info_xml = self._quality_info  # 获取质检xml
             quality_summary = self._dataset.value_by_name(0, 'dso_quality_summary', '')
@@ -119,57 +108,79 @@ class distribution_guotu(distribution_base):
         return check_dict
 
     def sync(self) -> str:
-        self._before_sync()
-        result_do = self._do_sync()
-        return result_do
-
-    def _before_sync(self):
-        pass
-
-    def _do_sync(self) -> str:
         try:
-            table_name = CUtils.dict_value_by_name(self.information(), 'table_name', '')
+            metadata_table_name = CUtils.dict_value_by_name(self.information(), 'metadata_table_name', '')
+            ndi_table_name = CUtils.dict_value_by_name(self.information(), 'ndi_table_name', '')
             # 因此类插件的表格情况特殊，为双主键，且要先确定插入还是更新，所以不用table.if_exists()方法
-            sql_check = '''
-            select aprid from {0} where aprid='{1}'
-            '''.format(table_name, self._obj_id)
-            record_cheak = CFactory().give_me_db(self._db_id).one_row(sql_check).size()  # 查找记录数
-            if record_cheak == 0:  # 记录数为0则拼接插入语句
-                insert_or_updata = self.DB_True
-            else:  # 记录数不为0则拼接更新语句
-                insert_or_updata = self.DB_False
+            metadata_sql_check = '''
+            select id from {0} where id='{1}'
+            '''.format(metadata_table_name, self._obj_id)
+            metadata_record_cheak = CFactory().give_me_db(self._db_id).one_row(metadata_sql_check).size()  # 查找记录数
 
-            table = CTable()
-            table.load_info(self._db_id, table_name)
+            ndi_sql_check = '''
+            select id from {0} where id='{1}'
+            '''.format(ndi_table_name, self._obj_id)
+            ndi_record_cheak = CFactory().give_me_db(self._db_id).one_row(ndi_sql_check).size()  # 查找记录数
+
+            if (metadata_record_cheak == 0) and (ndi_record_cheak == 0):  # 记录数为0则拼接插入语句
+                insert_or_updata = self.DB_True
+            elif (metadata_record_cheak > 0) and (ndi_record_cheak > 0):  # 记录数不为0则拼接更新语句
+                insert_or_updata = self.DB_False
+            else:
+                return CResult.merge_result(
+                    self.Failure,
+                    '数据检索分发模块在进行数据同步时出现错误:同步的对象[{0}]在处理时出现异常, 详细情况: [{1}]!'.format(
+                        self._obj_name,
+                        '数据库中在存在异常数据，可能是垃圾数据未清理干净'
+                    )
+                )
+
+            metadata_table = CTable()
+            metadata_table.load_info(self._db_id, metadata_table_name)
+            metadata_table.column_list.column_by_name('id').set_value(self._obj_id)
+            metadata_table.column_list.column_by_name('fid').set_value(self._obj_id)
+            dsometadataxml = self._dataset.value_by_name(0, 'dsometadataxml_bus', '')
+            metadata_table.column_list.column_by_name('metaxml').set_value(dsometadataxml)
+            now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
+            metadata_table.column_list.column_by_name('addtime').set_value(now_time)
+            metadata_table.column_list.column_by_name('version').set_null()
+
+            ndi_table = CTable()
+            ndi_table.load_info(self._db_id, ndi_table_name)
             # insert_or_updatad的意义是要先确定是更新还是插入，不能把不该更新的，在插入时是默认值的参数更新
             for field_dict in self.get_sync_dict_list(insert_or_updata):
                 field_name = CUtils.dict_value_by_name(field_dict, 'field_name', '')  # 获取字段名
                 field_value = CUtils.dict_value_by_name(field_dict, 'field_value', '')  # 获取字段值
                 field_value_type = CUtils.dict_value_by_name(field_dict, 'field_value_type', '')  # 获取值类型
                 if CUtils.equal_ignore_case(field_value, ''):
-                    table.column_list.column_by_name(field_name).set_null()
+                    ndi_table.column_list.column_by_name(field_name).set_null()
                 elif CUtils.equal_ignore_case(field_value_type, self.DataValueType_Value):
-                    table.column_list.column_by_name(field_name).set_value(field_value)
+                    ndi_table.column_list.column_by_name(field_name).set_value(field_value)
                 elif CUtils.equal_ignore_case(field_value_type, self.DataValueType_SQL):
-                    table.column_list.column_by_name(field_name).set_sql(field_value)
+                    ndi_table.column_list.column_by_name(field_name).set_sql(field_value)
                 elif CUtils.equal_ignore_case(field_value_type, self.DataValueType_Array):
-                    table.column_list.column_by_name(field_name).set_array(field_value)
+                    ndi_table.column_list.column_by_name(field_name).set_array(field_value)
                 else:
                     pass
 
             # 不多执行table.if_exists()多查一次哭，所以不用savedata()方法
             if insert_or_updata:
-                result = table.insert_data()
+                metadata_result = metadata_table.insert_data()
+                ndi_result = ndi_table.insert_data()
             else:
-                result = table.update_data()
+                metadata_result = metadata_table.update_data()
+                ndi_result = ndi_table.update_data()
 
-            if CResult.result_success(result):
+            if CResult.result_success(metadata_result) and CResult.result_success(ndi_result):
                 return CResult.merge_result(
                     self.Success,
                     '对象[{0}]的同步成功! '.format(self._obj_name)
                 )
             else:
-                return result
+                if CResult.result_success(metadata_result):
+                    return ndi_result
+                else:
+                    return metadata_result
         except Exception as error:
             return CResult.merge_result(
                 self.Failure,
