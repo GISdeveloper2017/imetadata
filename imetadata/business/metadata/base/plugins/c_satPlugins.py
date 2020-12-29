@@ -8,6 +8,7 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
 from imetadata.base.c_time import CTime
 from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.content.c_virtualContent_Dir import CVirtualContentDir
 from imetadata.business.metadata.base.content.c_virtualContent_Package import CVirtualContentPackage
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
@@ -385,3 +386,52 @@ class CSatPlugins(CPlugins):
         :return:
         """
         pass
+
+    def metadata_bus_xml_to_dict(self, metadata_bus_xml: CXml) -> dict:
+        metadata_bus_dict = dict()
+        # 卫星，必填，从元数据组织定义，必须是标准命名的卫星名称
+        metadata_bus_dict['satelliteid'] = None
+        # 传感器 必填,从元数据组织定义，必须是标准命名的传感器名称
+        metadata_bus_dict['sensorid'] = None
+        # 中心维度 必填
+        metadata_bus_dict['centerlatitude'] = None
+        # 中心经度 必填
+        metadata_bus_dict['centerlongitude'] = None
+        # 左上角维度 必填
+        metadata_bus_dict['topleftlatitude'] = None
+        # 左上角经度 必填
+        metadata_bus_dict['topleftlongitude'] = None
+        # 右上角维度 必填
+        metadata_bus_dict['toprightlatitude'] = None
+        # 右上角经度 必填
+        metadata_bus_dict['toprightlongitude'] = None
+        # 右下角维度 必填
+        metadata_bus_dict['bottomrightlatitude'] = None
+        # 右下角经度 必填
+        metadata_bus_dict['bottomrightlongitude'] = None
+        # 左下角维度 必填
+        metadata_bus_dict['bottomleftlatitude'] = None
+        # 左下角经度 必填
+        metadata_bus_dict['bottomleftlongitude'] = None
+        # 斜视图,可空,不用质检
+        metadata_bus_dict['transformimg'] = None
+        # 影像获取时间 必填
+        metadata_bus_dict['centertime'] = None
+        # 分辨率(米) 对应卫星的默认值，从info里取
+        metadata_bus_dict['resolution'] = None
+        # 侧摆角
+        metadata_bus_dict['rollangle'] = 0
+        # 云量
+        metadata_bus_dict['cloudpercent'] = 0
+        # 坐标系 默认为null
+        metadata_bus_dict['dataum'] = None
+        # 轨道号
+        metadata_bus_dict['acquisition_id'] = None
+        # 发布来源 从info取
+        metadata_bus_dict['copyright'] = None
+        # 发布时间 必填
+        metadata_bus_dict['publishdate'] = None
+        # 备注 可空
+        metadata_bus_dict['remark'] = None
+
+        return metadata_bus_dict
