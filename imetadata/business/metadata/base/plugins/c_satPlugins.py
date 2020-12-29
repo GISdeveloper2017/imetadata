@@ -435,3 +435,219 @@ class CSatPlugins(CPlugins):
         metadata_bus_dict['remark'] = None
 
         return metadata_bus_dict
+
+    def qa_sat_metadata_bus_list(self) -> list:
+        return [
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'satelliteid',
+                self.Name_Title: '卫星名称',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 50
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'sensorid',
+                self.Name_Title: '传感器名称',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 50
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'centerlatitude',
+                self.Name_Title: '中心维度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'centerlongitude',
+                self.Name_Title: '中心经度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'topleftlatitude',
+                self.Name_Title: '左上角维度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'topleftlongitude',
+                self.Name_Title: '左上角经度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'toprightlatitude',
+                self.Name_Title: '右上角维度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'toprightlongitude',
+                self.Name_Title: '右上角经度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'bottomrightlatitude',
+                self.Name_Title: '右下角维度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'bottomrightlongitude',
+                self.Name_Title: '右下角经度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'bottomleftlatitude',
+                self.Name_Title: '左下角维度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'bottomleftlongitude',
+                self.Name_Title: '左下角经度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'centertime',
+                self.Name_Title: '影像获取时间',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_date
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'rollangle',
+                self.Name_Title: '侧摆角',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_decimal_or_integer
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'cloudpercent',
+                self.Name_Title: '云量',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_decimal_or_integer
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'publishdate',
+                self.Name_Title: '发布时间',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_date
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'acquisition_id',
+                self.Name_Title: '轨道号',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Warn,
+                self.Name_NotNull: True
+            }
+        ]
+
+    def qa_metadata_custom(self, parser: CMetaDataParser):
+        """
+        自定义的质检方法, 发生在元数据解析之后
+        :param parser:
+        :return:
+        """
+        metadata_bus_xml = parser.metadata.metadata_xml()
+        metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml)
+        parser.batch_qa_metadata_bus_sat(metadata_bus_dict, self.qa_sat_metadata_bus_list)

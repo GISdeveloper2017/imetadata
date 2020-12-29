@@ -100,9 +100,9 @@ class module_distribution(CDAModule):
         if class_classified_obj is not None:
             plugins_info = class_classified_obj.get_information()
             obj_type_code = CUtils.dict_value_by_name(plugins_info, class_classified_obj.Plugins_Info_Type_Code, '')
-            distribution_file_main_name = CUtils.dict_value_by_name(plugins_info,
-                                                                class_classified_obj.Plugins_Info_Module_Distribute_Engine,
-                                                                '')  # 对应同步文件的类名称
+            distribution_file_main_name = CUtils.dict_value_by_name(
+                plugins_info, class_classified_obj.Plugins_Info_Module_Distribute_Engine, ''
+            )  # 对应同步文件的类名称
             # 判断同步插件文件是否存在
             access_modules_root_dir = CSys.get_metadata_data_access_modules_root_dir()
             distribution_root_dir = CFile.join_file(access_modules_root_dir, self.Name_Distribution)

@@ -184,6 +184,26 @@ class CMetaDataParser(CParser):
             for item_result in list_result:
                 self.metadata.quality.append_metadata_bus_quality(item_result)
 
+    def batch_qa_metadata_bus_sat(self, metadata_bus_dict: dict, qa_sat_metadata_bus_list):
+        """
+        批量处理json格式的业务元数据中的质检项目
+        :return:
+        """
+        if len(metadata_bus_dict) == 0:
+            return
+
+        for qa_item in qa_sat_metadata_bus_list:
+            list_result = CAudit.a_dict_element(
+                CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                CUtils.dict_value_by_name(qa_item, self.Name_Group, self.QA_Group_Data_Integrity),
+                CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
+                metadata_bus_dict[CUtils.dict_value_by_name(qa_item, self.Name_ID, '')],
+                qa_item
+            )
+            for item_result in list_result:
+                self.metadata.quality.append_metadata_bus_quality(item_result)
+
     def process_default_metadata(self, metadata_engine_type):
         """
         内置的元数据提取

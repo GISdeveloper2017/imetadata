@@ -199,6 +199,21 @@ class CAudit(CResource):
             return [result_dict]
 
     @classmethod
+    def a_dict_element(cls, audit_id, audit_title, audit_group, audit_result, item_value, qa_items: dict) -> list:
+        """
+        判断一个json元数据中, 指定的jsonpath, 对应的element, 满足qa_items参数中的检测项目
+        :param audit_id:
+        :param audit_title:
+        :param audit_group:
+        :param audit_result:
+        :param item_value:
+        :param qa_items:
+        :return:
+        """
+        result_dict = cls.__init_audit_dict__(audit_id, audit_title, audit_group, audit_result)
+        return cls.__a_check_value__(result_dict, item_value, '元数据的[{0}]'.format(audit_title), qa_items)
+
+    @classmethod
     def __a_check_value_width__(cls, result_template: dict, value, title_prefix, value_width):
         """
         根据规则, 验证值的合法性
@@ -245,7 +260,8 @@ class CAudit(CResource):
                     result_dict[cls.Name_Result] = cls.QA_Result_Pass
                 else:
                     result_dict[cls.Name_Message] = '{0}的值[{1}],宽度为[{2}]，不符合要求的宽度不超过[{3}], 请检查修正!'.format(title_prefix,
-                                                                                                          value, value_mun,
+                                                                                                          value,
+                                                                                                          value_mun,
                                                                                                           value_number)
         return result_dict
 
