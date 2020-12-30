@@ -48,16 +48,16 @@ class distribution_guotu(distribution_base):
             # 文件与影像质检部分
             file_qa = quality_summary_json.xpath_one('total', '')
             image_qa = quality_summary_json.xpath_one('metadata.data', '')
-            if CUtils.equal_ignore_case(file_qa, self.QA_Result_Pass) \
-                    and CUtils.equal_ignore_case(image_qa, self.QA_Result_Pass):
-                pass
+            if CUtils.equal_ignore_case(file_qa, self.QA_Result_Error) \
+                    or CUtils.equal_ignore_case(image_qa, self.QA_Result_Error):
+                message = message + '[数据与其相关文件的质检存在error!请进行修正！]'
+                access_Forbid_flag = self.DB_True
             elif CUtils.equal_ignore_case(file_qa, self.QA_Result_Warn) \
                     or CUtils.equal_ignore_case(image_qa, self.QA_Result_Warn):
                 message = message + '[数据与其相关文件的质检存在warn!请进行检查！]'
                 access_Wait_flag = self.DB_True
             else:
-                message = message + '[数据与其相关文件的质检存在error!请进行修正！]'
-                access_Forbid_flag = self.DB_True
+                pass
 
             for qa_name, qa_id in self.access_check_dict().items():  # 循环写好的检查列表
                 # qa_id = CUtils.dict_value_by_name(access_check_dict, 'qa_id', '')  # 获取id
