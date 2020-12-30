@@ -184,7 +184,7 @@ class CMetaDataParser(CParser):
             for item_result in list_result:
                 self.metadata.quality.append_metadata_bus_quality(item_result)
 
-    def batch_qa_metadata_bus_sat(self, metadata_bus_dict: dict, qa_sat_metadata_bus_list):
+    def batch_qa_metadata_bus_dict(self, metadata_bus_dict: dict, qa_sat_metadata_bus_list):
         """
         批量处理json格式的业务元数据中的质检项目
         :return:

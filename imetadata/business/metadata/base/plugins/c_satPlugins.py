@@ -387,53 +387,136 @@ class CSatPlugins(CPlugins):
         """
         pass
 
-    def metadata_bus_xml_to_dict(self, metadata_bus_xml: CXml) -> dict:
-        metadata_bus_dict = dict()
-        # 卫星，必填，从元数据组织定义，必须是标准命名的卫星名称
-        metadata_bus_dict['satelliteid'] = None
-        # 传感器 必填,从元数据组织定义，必须是标准命名的传感器名称
-        metadata_bus_dict['sensorid'] = None
-        # 中心维度 必填
-        metadata_bus_dict['centerlatitude'] = None
-        # 中心经度 必填
-        metadata_bus_dict['centerlongitude'] = None
-        # 左上角维度 必填
-        metadata_bus_dict['topleftlatitude'] = None
-        # 左上角经度 必填
-        metadata_bus_dict['topleftlongitude'] = None
-        # 右上角维度 必填
-        metadata_bus_dict['toprightlatitude'] = None
-        # 右上角经度 必填
-        metadata_bus_dict['toprightlongitude'] = None
-        # 右下角维度 必填
-        metadata_bus_dict['bottomrightlatitude'] = None
-        # 右下角经度 必填
-        metadata_bus_dict['bottomrightlongitude'] = None
-        # 左下角维度 必填
-        metadata_bus_dict['bottomleftlatitude'] = None
-        # 左下角经度 必填
-        metadata_bus_dict['bottomleftlongitude'] = None
-        # 斜视图,可空,不用质检
-        metadata_bus_dict['transformimg'] = None
-        # 影像获取时间 必填
-        metadata_bus_dict['centertime'] = None
-        # 分辨率(米) 对应卫星的默认值，从info里取
-        metadata_bus_dict['resolution'] = None
-        # 侧摆角
-        metadata_bus_dict['rollangle'] = 0
-        # 云量
-        metadata_bus_dict['cloudpercent'] = 0
-        # 坐标系 默认为null
-        metadata_bus_dict['dataum'] = None
-        # 轨道号
-        metadata_bus_dict['acquisition_id'] = None
-        # 发布来源 从info取
-        metadata_bus_dict['copyright'] = None
-        # 发布时间 必填
-        metadata_bus_dict['publishdate'] = None
-        # 备注 可空
-        metadata_bus_dict['remark'] = None
+    def get_metadata_bus_configuration_list(self) -> list:
+        """
+        固定的列表，重写时不可缺项
+        """
+        return [
+            {
+                self.Name_ID: 'satelliteid',  # 卫星，必填，从元数据组织定义，必须是标准命名的卫星名称
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'sensorid',  # 传感器 必填,从元数据组织定义，必须是标准命名的传感器名称
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'centerlatitude',  # 中心维度 必填
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'centerlongitude',  # 中心经度 必填
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'topleftlatitude',  # 左上角维度 必填
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'topleftlongitude',  # 左上角经度 必填
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'toprightlatitude',  # 右上角维度 必填
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'toprightlongitude',  # 右上角经度 必填
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'bottomrightlatitude',  # 右下角维度 必填
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'bottomrightlongitude',  # 右下角经度 必填
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'bottomleftlatitude',  # 左下角维度 必填
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'bottomleftlongitude',  # 左下角经度 必填
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'transformimg',  # 斜视图,可空,不用质检
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'centertime',  # 影像获取时间 必填
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'rollangle',  # 侧摆角
+                self.Name_XPath: None,
+                self.Name_Value: 0
+            },
+            {
+                self.Name_ID: 'cloudpercent',  # 云量
+                self.Name_XPath: None,
+                self.Name_Value: 0
+            },
+            {
+                self.Name_ID: 'dataum',  # 坐标系 默认为null
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'acquisition_id',  # 轨道号
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'copyright',  # 发布来源 从info取
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'publishdate',  # 发布时间 必填
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'remark',  # 备注 可空
+                self.Name_XPath: None,
+                self.Name_Value: None
+            }
+        ]
 
+    def metadata_bus_xml_to_dict(self, metadata_bus_xml: CXml) -> dict:
+        metadata_bus_dict = super().metadata_bus_xml_to_dict(metadata_bus_xml)
+        for metadata_bus_configuration in self.get_metadata_bus_configuration_list():
+            metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, 'None')
+            metadata_bus_xpath = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_XPath, None)
+            metadata_bus_value = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Value, None)
+            if metadata_bus_xpath is not None:
+                metadata_bus_dict[metadata_bus_id] = \
+                    metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_xpath)
+            elif metadata_bus_value is not None:
+                metadata_bus_dict[metadata_bus_id] = metadata_bus_value
+            else:
+                metadata_bus_dict[metadata_bus_id] = None
         return metadata_bus_dict
 
     def qa_sat_metadata_bus_list(self) -> list:
@@ -650,4 +733,4 @@ class CSatPlugins(CPlugins):
         """
         metadata_bus_xml = parser.metadata.metadata_xml()
         metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml)
-        parser.batch_qa_metadata_bus_sat(metadata_bus_dict, self.qa_sat_metadata_bus_list)
+        parser.batch_qa_metadata_bus_dict(metadata_bus_dict, self.qa_sat_metadata_bus_list)

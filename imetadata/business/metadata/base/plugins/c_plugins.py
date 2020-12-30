@@ -1097,3 +1097,9 @@ class CPlugins(CResource):
                 self.file_info.file_name_with_full_path
             )
         )
+
+    def get_metadata_bus_configuration_list(self) -> list:
+        return list()
+
+    def metadata_bus_xml_to_dict(self, metadata_bus_xml: CXml) -> dict:
+        return dict()

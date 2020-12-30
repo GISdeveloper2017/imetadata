@@ -17,6 +17,8 @@ class distribution_base(CResource):
     _quality_info: CXml
     _dataset: CDataSet
 
+    _metadata_bus_dict = dict()
+
     def __init__(self, db_id, obj_id, obj_name, obj_type_code, quality, dataset):
         self._db_id = db_id
         self._obj_id = obj_id
@@ -62,3 +64,9 @@ class distribution_base(CResource):
             self.Success,
             '对象[{0}]的同步机制无效, 第三方系统将自行从数据中心提取最新数据! '.format(self._obj_name)
         )
+
+    def set_metadata_bus_dict(self, metadata_bus_dict):
+        self._metadata_bus_dict = metadata_bus_dict
+
+    def get_metadata_bus_dict(self):
+        return self._metadata_bus_dict

@@ -119,6 +119,15 @@ class module_distribution(CDAModule):
                     quality_info_xml,
                     dataset
                 )
+                try:
+                    dsometadataxml = dataset.value_by_name(0, 'dsometadataxml_bus', '')
+                    dsometadataxml_xml = CXml()
+                    dsometadataxml_xml.load_xml(dsometadataxml)
+                    metadata_bus_dict = class_classified_obj.metadata_bus_xml_to_dict(dsometadataxml_xml)
+                    distribution_obj.set_metadata_bus_dict(metadata_bus_dict)
+                except:
+                    pass
+
                 distribution_obj_real = distribution_obj
         if distribution_obj_real is None:
             # 注意, 这里默认为默认处理的同步插件，先预留
