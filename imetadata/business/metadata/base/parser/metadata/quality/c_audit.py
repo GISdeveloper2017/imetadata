@@ -4,6 +4,7 @@
 # @File : c_audit.py
 import copy
 
+from imetadata import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_gdalUtils import CGdalUtils
 from imetadata.base.c_json import CJson
@@ -432,11 +433,9 @@ class CAudit(CResource):
             return True
         else:
             # 从数据库中ro_globle_dim_time中判断
-            sql = '''
-            select gdtquickcode from ro_global_dim_time where gdtid ='{0}'
-            '''.format(text)
+            sql = settings.application.xpath_one(cls.Path_Setting_MetaData_Time_Query, None)    # 查询ro_globle_dim_time表中时间的sql
             try:
-                ds_row_count = CFactory().give_me_db(db_server_id).all_row(sql).size()
+                ds_row_count = CFactory().give_me_db(db_server_id).one_row(sql, {cls.Name_Value: text}).size()
                 if ds_row_count > 0:
                     return True
             except Exception as error:
@@ -456,11 +455,9 @@ class CAudit(CResource):
             return True
         else:
             # 从数据库中ro_globle_dim_time中判断
-            sql = '''
-                select gdtquickcode from ro_global_dim_time where gdtid ='{0}'
-                '''.format(text)
+            sql = settings.application.xpath_one(cls.Path_Setting_MetaData_Time_Query, None)    # 查询ro_globle_dim_time表中时间的sql
             try:
-                ds_row_count = CFactory().give_me_db(db_server_id).all_row(sql).size()
+                ds_row_count = CFactory().give_me_db(db_server_id).one_row(sql, {cls.Name_Value: text}).size()
                 if ds_row_count > 0:
                     return True
             except Exception as error:
