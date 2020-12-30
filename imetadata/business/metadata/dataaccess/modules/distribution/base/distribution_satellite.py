@@ -18,6 +18,7 @@ class distribution_satellite(distribution_base):
 
     def information(self) -> dict:
         info = super().information()
+        info[self.Name_Title] = '卫星数据'
         info['main_table_name'] = 'ap_product'
         info['metadata_table_name'] = 'ap_product_metadata'
         info['ndi_table_name'] = 'ap_product_ndi'
@@ -194,12 +195,12 @@ class distribution_satellite(distribution_base):
         ndi_table.column_list.column_by_name('sensorid').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'sensorid', '')
         )
-        ndi_table.column_list.column_by_name('centerlatitude').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', '')
-        )
-        ndi_table.column_list.column_by_name('centerlongitude').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', '')
-        )
+        # ndi_table.column_list.column_by_name('centerlatitude').set_value(
+        #     CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', '')
+        # )
+        # ndi_table.column_list.column_by_name('centerlongitude').set_value(
+        #     CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', '')
+        # )
         ndi_table.column_list.column_by_name('topleftlatitude').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', '')
         )

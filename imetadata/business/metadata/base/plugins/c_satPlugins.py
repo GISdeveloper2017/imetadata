@@ -49,6 +49,8 @@ class CSatPlugins(CPlugins):
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_DetailEngine] = self.get_runtime_detail_engine()
+
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_satellite_all'
         return information
 
     def create_file_content(self):
@@ -501,6 +503,26 @@ class CSatPlugins(CPlugins):
                 self.Name_ID: 'remark',  # 备注 可空
                 self.Name_XPath: None,
                 self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'producttype',  # 产品类型
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'productattribute',  # 产品属性
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'starttime',  # 开始时间
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'endtime',  # 结束时间
+                self.Name_XPath: None,
+                self.Name_Value: None
             }
         ]
 
@@ -547,7 +569,6 @@ class CSatPlugins(CPlugins):
                 self.Name_Title: '中心维度',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
                 self.Name_Range:
                     {
@@ -561,7 +582,6 @@ class CSatPlugins(CPlugins):
                 self.Name_Title: '中心经度',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_decimal_or_integer,
                 self.Name_Range:
                     {
@@ -688,7 +708,7 @@ class CSatPlugins(CPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date
+                self.Name_DataType: self.value_type_date_or_datetime
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -713,7 +733,7 @@ class CSatPlugins(CPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date
+                self.Name_DataType: self.value_type_date_or_datetime
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -722,6 +742,24 @@ class CSatPlugins(CPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Warn,
                 self.Name_NotNull: True
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'starttime',
+                self.Name_Title: '开始时间',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_date_or_datetime
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'endtime',
+                self.Name_Title: '结束时间',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_date_or_datetime
             }
         ]
 
@@ -731,6 +769,8 @@ class CSatPlugins(CPlugins):
         :param parser:
         :return:
         """
-        metadata_bus_xml = parser.metadata.metadata_xml()
+        metadata_bus_xml = parser.metadata.metadata_bus_xml()
         metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml)
-        parser.batch_qa_metadata_bus_dict(metadata_bus_dict, self.qa_sat_metadata_bus_list)
+        parser.batch_qa_metadata_bus_dict(metadata_bus_dict, self.qa_sat_metadata_bus_list())
+
+        # 把元数据copy到拇指图文件夹下
