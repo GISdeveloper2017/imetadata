@@ -119,7 +119,7 @@ class module_distribution(CDAModule):
                     quality_info_xml,
                     dataset
                 )
-                try:
+                try:  # 主要用于卫星插件的方法
                     dsometadataxml = dataset.value_by_name(0, 'dsometadataxml_bus', '')
                     dsometadataxml_xml = CXml()
                     dsometadataxml_xml.load_xml(dsometadataxml)

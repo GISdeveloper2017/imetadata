@@ -513,16 +513,6 @@ class CSatPlugins(CPlugins):
                 self.Name_ID: 'productattribute',  # 产品属性
                 self.Name_XPath: None,
                 self.Name_Value: None
-            },
-            {
-                self.Name_ID: 'starttime',  # 开始时间
-                self.Name_XPath: None,
-                self.Name_Value: None
-            },
-            {
-                self.Name_ID: 'endtime',  # 结束时间
-                self.Name_XPath: None,
-                self.Name_Value: None
             }
         ]
 
@@ -742,24 +732,6 @@ class CSatPlugins(CPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Warn,
                 self.Name_NotNull: True
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_ID: 'starttime',
-                self.Name_Title: '开始时间',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date_or_datetime
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_ID: 'endtime',
-                self.Name_Title: '结束时间',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date_or_datetime
             }
         ]
 
@@ -774,3 +746,17 @@ class CSatPlugins(CPlugins):
         parser.batch_qa_metadata_bus_dict(metadata_bus_dict, self.qa_sat_metadata_bus_list())
 
         # 把元数据copy到拇指图文件夹下
+        plugins_info = self.get_information()
+        info_type = CUtils.dict_value_by_name(plugins_info, self.Plugins_Info_Type, 'default')
+        group = CUtils.dict_value_by_name(plugins_info, self.Plugins_Info_Group, 'default')
+        catalog = CUtils.dict_value_by_name(plugins_info, self.Plugins_Info_Catalog, 'default')
+
+        create_time = CTime.today()
+        year = CTime.format_str(create_time, '%Y')
+        month = CTime.format_str(create_time, '%m')
+        day = CTime.format_str(create_time, '%d')
+        sep = CFile.sep()  # 操作系统的不同处理分隔符不同
+        sep_list = [catalog, group, info_type, year, month, day]
+        relative_path_part = r'{1}{0}'.format(sep.join(sep_list), sep)  # 相对路径格式
+        metadata_bus_full_path = CFile.join_file(self.file_content.view_root_dir, relative_path_part)
+        CFile.copy_file_to(self.metadata_bus_src_filename_with_path, metadata_bus_full_path)

@@ -97,12 +97,16 @@ class distribution_guotu_object(distribution_guotu):
             '''.format(object_table_id), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'geomwkt',
-            "st_astext("
-            "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')"
-            ")".format(object_table_id), self.DataValueType_SQL)
+            '''
+            st_astext(
+            (select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')
+            )
+            '''.format(object_table_id), self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'geomobj',
-            "(select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')".format(object_table_id),
+            '''
+            (select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')
+            '''.format(object_table_id),
             self.DataValueType_SQL)
 
         self.add_value_to_sync_dict_list(
@@ -115,8 +119,9 @@ class distribution_guotu_object(distribution_guotu):
         # resolution:分辨率，交插件处理
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imgsize',
-            "(select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail "
-            "where dodobjectid='{0}')".format(object_table_id),
+            '''
+            (select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail where dodobjectid='{0}')
+            '''.format(object_table_id),
             self.DataValueType_SQL)
         # colormodel:交插件处理
         # piexldepth:交插件处理
@@ -131,7 +136,7 @@ class distribution_guotu_object(distribution_guotu):
             "(select dso_geo_bb_wgs84 from dm2_storage_object where dsoid='{0}')".format(object_table_id),
             self.DataValueType_SQL)
         self.add_value_to_sync_dict_list(
-            sync_dict_list, 'proj', object_table_data.value_by_name(0, 'dso_prj_coordinate', ''))
+            sync_dict_list, 'proj', object_table_data.value_by_name(0, 'dso_prj_wkt', ''))
         # remark:暂时为空
         # ispublishservice:暂时为空
         self.add_value_to_sync_dict_list(

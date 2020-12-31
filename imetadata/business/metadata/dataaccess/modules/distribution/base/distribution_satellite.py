@@ -6,7 +6,6 @@ from imetadata.base.c_json import CJson
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_base import distribution_base
-from imetadata.database.c_factory import CFactory
 from imetadata.database.tools.c_table import CTable
 import datetime
 
@@ -91,28 +90,9 @@ class distribution_satellite(distribution_base):
 
     def sync(self) -> str:
         try:
-            main_table_name = CUtils.dict_value_by_name(self.information(), 'main_table_name', 'ap_product')
-            metadata_sql_check = '''
-            select id from {0} where id='{1}'
-            '''.format(main_table_name, self._obj_id)
-            main_record_cheak = CFactory().give_me_db(self._db_id).one_row(metadata_sql_check).size()  # 查找记录数
-
-            if main_record_cheak == 0:  # 记录数为0则拼接插入语句
-                insert_or_updata = self.DB_True
-            elif main_record_cheak > 0:  # 记录数不为0则拼接更新语句
-                insert_or_updata = self.DB_False
-            else:
-                return CResult.merge_result(
-                    self.Failure,
-                    '数据检索分发模块在进行数据同步时出现错误:同步的对象[{0}]在处理时出现异常, 详细情况: [{1}]!'.format(
-                        self._obj_name,
-                        '数据库中在存在异常数据，可能是垃圾数据未清理干净'
-                    )
-                )
-
-            main_result = self.process_main_table(insert_or_updata)
-            metadata_result = self.process_metadata_table(insert_or_updata)
-            ndi_result = self.process_ndi_table(insert_or_updata)
+            main_result = self.process_main_table()
+            metadata_result = self.process_metadata_table()
+            ndi_result = self.process_ndi_table()
 
             if not CResult.result_success(main_result):
                 return main_result
@@ -134,9 +114,10 @@ class distribution_satellite(distribution_base):
                 )
             )
 
-    def process_main_table(self, insert_or_updata):
+    def process_main_table(self):
         object_table_id = self._obj_id  # 获取oid
         object_table_data = self._dataset
+        metadata_bus_dict = self.get_metadata_bus_dict()
         main_table_name = CUtils.dict_value_by_name(self.information(), 'main_table_name', 'ap_product')
 
         main_table = CTable()
@@ -145,17 +126,99 @@ class distribution_satellite(distribution_base):
         main_table.column_list.column_by_name('productname').set_value(
             object_table_data.value_by_name(0, 'dsoobjectname', '')
         )
-        main_table.column_list.column_by_name('producttype').set_value(self._obj_type_code)
+        main_table.column_list.column_by_name('producttype').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'producttype', '')
+        )
         main_table.column_list.column_by_name('regioncode').set_null()
+        main_table.column_list.column_by_name('productattribute').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'productattribute', '')
+        )
 
-        if insert_or_updata:
-            result = main_table.insert_data()
-        else:
-            result = main_table.update_data()
+        centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', '')
+        centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', '')
+        if CUtils.equal_ignore_case(centerlatitude, '') or CUtils.equal_ignore_case(centerlongitude, ''):
+            topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', '')
+            topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', '')
+            bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', '')
+            bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', '')
+            centerlatitude = (float(topleftlatitude) + float(bottomrightlatitude)) / 2
+            centerlongitude = (float(topleftlongitude) + float(bottomrightlongitude)) / 2
+        centerlatitude = 'POINT({0} {1})'.format(centerlatitude, centerlongitude)
+        main_table.column_list.column_by_name('centerlonlat').set_value(centerlatitude)
+
+        main_table.column_list.column_by_name('geomwkt').set_sql(
+            '''
+            st_astext(
+            (select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')
+            )
+            '''.format(object_table_id)
+        )
+        main_table.column_list.column_by_name('geomobj').set_sql(
+            '''
+            (select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')
+            '''.format(object_table_id)
+        )
+        main_table.column_list.column_by_name('browserimg').set_value(
+            object_table_data.value_by_name(0, 'dso_browser', '')
+        )
+        main_table.column_list.column_by_name('thumbimg').set_value(
+            object_table_data.value_by_name(0, 'dso_thumb', '')
+        )
+        main_table.column_list.column_by_name('publishdate').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'publishdate', '')
+        )
+        main_table.column_list.column_by_name('copyright').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'copyright', '')
+        )
+
+        dso_time = object_table_data.value_by_name(0, 'dso_time', '')
+        dso_time_json = CJson()
+        dso_time_json.load_obj(dso_time)
+        main_table.column_list.column_by_name('imgdate').set_value(
+            dso_time_json.xpath_one('time', '')
+        )
+        main_table.column_list.column_by_name('starttime').set_value(
+            dso_time_json.xpath_one('start_time', '')
+        )
+        main_table.column_list.column_by_name('endtime').set_value(
+            dso_time_json.xpath_one('end_time', '')
+        )
+        main_table.column_list.column_by_name('resolution').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', '')
+        )
+        main_table.column_list.column_by_name('filesize').set_sql(
+            '''
+            (select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail where dodobjectid='{0}')
+            '''.format(object_table_id)
+        )
+
+        main_table.column_list.column_by_name('productid').set_value(object_table_id)
+        main_table.column_list.column_by_name('remark').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'remark', '')
+        )
+        main_table.column_list.column_by_name('extent').set_sql(
+            '''
+            (select dso_geo_bb_wgs84 from dm2_storage_object where dsoid='{0}')
+            '''.format(object_table_id)
+        )
+        # main_table.column_list.column_by_name('proj').set_value(
+        #     object_table_data.value_by_name(0, 'dso_prj_wkt', '')
+        # )
+
+        main_table.column_list.column_by_name('dataid').set_null()
+        main_table.column_list.column_by_name('shplog').set_null()
+        main_table.column_list.column_by_name('projectnames').set_null()
+
+        if not main_table.if_exists():
+            now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
+            main_table.column_list.column_by_name('addtime').set_value(now_time)
+            main_table.column_list.column_by_name('isdel').set_value(0)
+
+        result = main_table.save_data()
 
         return result
 
-    def process_metadata_table(self, insert_or_updata):
+    def process_metadata_table(self):
         object_table_id = self._obj_id  # 获取oid
         object_table_data = self._dataset
         metadata_table_name = CUtils.dict_value_by_name(
@@ -168,20 +231,19 @@ class distribution_satellite(distribution_base):
         metadata_table.column_list.column_by_name('fid').set_value(object_table_id)
         dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml_bus', '')
         metadata_table.column_list.column_by_name('metaxml').set_value(dsometadataxml)
-        now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
-        metadata_table.column_list.column_by_name('addtime').set_value(now_time)
         metadata_table.column_list.column_by_name('version').set_null()
+        metadata_table.column_list.column_by_name('otherxml').set_null()
 
-        if insert_or_updata:
-            result = metadata_table.insert_data()
-        else:
-            result = metadata_table.update_data()
+        if not metadata_table.if_exists():
+            now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
+            metadata_table.column_list.column_by_name('addtime').set_value(now_time)
+
+        result = metadata_table.save_data()
 
         return result
 
-    def process_ndi_table(self, insert_or_updata):
+    def process_ndi_table(self):
         object_table_id = self._obj_id  # 获取oid
-        object_table_data = self._dataset
         metadata_bus_dict = self.get_metadata_bus_dict()
         ndi_table_name = CUtils.dict_value_by_name(self.information(), 'ndi_table_name', 'ap_product_ndi')
 
@@ -195,42 +257,38 @@ class distribution_satellite(distribution_base):
         ndi_table.column_list.column_by_name('sensorid').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'sensorid', '')
         )
-        # ndi_table.column_list.column_by_name('centerlatitude').set_value(
-        #     CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', '')
-        # )
-        # ndi_table.column_list.column_by_name('centerlongitude').set_value(
-        #     CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', '')
-        # )
-        ndi_table.column_list.column_by_name('topleftlatitude').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', '')
-        )
-        ndi_table.column_list.column_by_name('topleftlongitude').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', '')
-        )
-        ndi_table.column_list.column_by_name('toprightlatitude').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', '')
-        )
-        ndi_table.column_list.column_by_name('toprightlongitude').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlongitude', '')
-        )
-        ndi_table.column_list.column_by_name('bottomrightlatitude').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', '')
-        )
-        ndi_table.column_list.column_by_name('bottomrightlongitude').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', '')
-        )
-        ndi_table.column_list.column_by_name('bottomleftlatitude').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlatitude', '')
-        )
-        ndi_table.column_list.column_by_name('bottomleftlongitude').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', '')
-        )
+        topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', '')
+        ndi_table.column_list.column_by_name('topleftlatitude').set_value(topleftlatitude)
+        topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', '')
+        ndi_table.column_list.column_by_name('topleftlongitude').set_value(topleftlongitude)
+        toprightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', '')
+        ndi_table.column_list.column_by_name('toprightlatitude').set_value(toprightlatitude)
+        toprightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlongitude', '')
+        ndi_table.column_list.column_by_name('toprightlongitude').set_value(toprightlongitude)
+        bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', '')
+        ndi_table.column_list.column_by_name('bottomrightlatitude').set_value(bottomrightlatitude)
+        bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', '')
+        ndi_table.column_list.column_by_name('bottomrightlongitude').set_value(bottomrightlongitude)
+        bottomleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlatitude', '')
+        ndi_table.column_list.column_by_name('bottomleftlatitude').set_value(bottomleftlatitude)
+        bottomleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', '')
+        ndi_table.column_list.column_by_name('bottomleftlongitude').set_value(bottomleftlongitude)
+        centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', '')
+        centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', '')
+        if CUtils.equal_ignore_case(centerlatitude, '') or CUtils.equal_ignore_case(centerlongitude, ''):
+            centerlatitude = (float(topleftlatitude) + float(bottomrightlatitude)) / 2
+            centerlongitude = (float(topleftlongitude) + float(bottomrightlongitude)) / 2
+        ndi_table.column_list.column_by_name('centerlatitude').set_value(centerlatitude)
+        ndi_table.column_list.column_by_name('centerlongitude').set_value(centerlongitude)
+
         ndi_table.column_list.column_by_name('transformimg').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'transformimg', '')
         )
-        # ndi_table.column_list.column_by_name('filesize').set_value(
-        #     CUtils.dict_value_by_name(metadata_bus_dict, 'filesize', '')
-        # )
+        ndi_table.column_list.column_by_name('filesize').set_sql(
+            '''
+            (select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail where dodobjectid='{0}')
+            '''.format(object_table_id)
+        )
         ndi_table.column_list.column_by_name('dataexist').set_value(0)
         ndi_table.column_list.column_by_name('centertime').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', '')
@@ -251,9 +309,6 @@ class distribution_satellite(distribution_base):
             CUtils.dict_value_by_name(metadata_bus_dict, 'acquisition_id', '')
         )
 
-        if insert_or_updata:
-            result = ndi_table.insert_data()
-        else:
-            result = ndi_table.update_data()
+        result = ndi_table.save_data()
 
         return result

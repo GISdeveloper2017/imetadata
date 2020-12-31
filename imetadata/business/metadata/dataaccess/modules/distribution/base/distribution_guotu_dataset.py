@@ -139,7 +139,7 @@ class distribution_guotu_dataset(distribution_guotu):
             "(select gds_geo_bbox from ro_global_dim_space where gdscode='{0}')".format(regioncode),
             self.DataValueType_SQL)
         # self.add_value_to_sync_dict_list(
-        #     sync_dict_list, 'proj', object_table_data.value_by_name(0, 'dso_prj_coordinate', ''), self.DB_True)
+        #     sync_dict_list, 'proj', object_table_data.value_by_name(0, 'dso_prj_wkt', ''), self.DB_True)
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'remark',
             dsometadataxml_xml.get_element_text_by_xpath_one('/root/Remark'))

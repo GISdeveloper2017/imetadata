@@ -211,16 +211,6 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                 self.Name_ID: 'productattribute',  # 产品属性
                 self.Name_XPath: '/ProductMetaData/ProductLevel',
                 self.Name_Value: None
-            },
-            {
-                self.Name_ID: 'starttime',  # 开始时间
-                self.Name_XPath: '/ProductMetaData/StartTime',
-                self.Name_Value: None
-            },
-            {
-                self.Name_ID: 'endtime',  # 结束时间
-                self.Name_XPath: '/ProductMetaData/EndTime',
-                self.Name_Value: None
             }
         ]
 
@@ -332,6 +322,7 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             }
         ]
 
+    # 原本的业务元数据质检
     # def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser):
     #     """
     #     初始化默认的, 业务元数据xml文件的检验列表
