@@ -103,12 +103,12 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                 self.Name_Value: 'wfv'
             },
             {
-                self.Name_ID: 'centerlatitude',  # 中心维度 必填
+                self.Name_ID: 'centerlatitude',  # 中心维度
                 self.Name_XPath: None,
                 self.Name_Value: None
             },
             {
-                self.Name_ID: 'centerlongitude',  # 中心经度 必填
+                self.Name_ID: 'centerlongitude',  # 中心经度
                 self.Name_XPath: None,
                 self.Name_Value: None
             },

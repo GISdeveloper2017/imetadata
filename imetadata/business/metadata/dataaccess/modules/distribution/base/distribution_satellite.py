@@ -201,9 +201,7 @@ class distribution_satellite(distribution_base):
             (select dso_geo_bb_wgs84 from dm2_storage_object where dsoid='{0}')
             '''.format(object_table_id)
         )
-        # main_table.column_list.column_by_name('proj').set_value(
-        #     object_table_data.value_by_name(0, 'dso_prj_wkt', '')
-        # )
+        main_table.column_list.column_by_name('proj').set_null()  # 原始数据保持空
 
         main_table.column_list.column_by_name('dataid').set_null()
         main_table.column_list.column_by_name('shplog').set_null()
