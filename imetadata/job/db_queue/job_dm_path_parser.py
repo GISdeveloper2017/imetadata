@@ -66,61 +66,38 @@ where dsdscanfilestatus = 2
         ds_id = dataset.value_by_name(0, 'query_dir_id', '')
         ds_storage_id = dataset.value_by_name(0, 'query_storage_id', '')
         inbound_id = dataset.value_by_name(0, 'query_dir_ib_id', None)
-        ds_storage_type = dataset.value_by_name(0, 'query_storage_type', self.Storage_Type_Core)
-
-        # 将所有子目录, 文件的可用性, 都改为未知
-        self.init_file_or_subpath_valid_unknown(ds_id)
         ds_subpath = dataset.value_by_name(0, 'query_subpath', '')
         ds_root_path = dataset.value_by_name(0, 'query_rootpath', '')
-
-        sql_get_rule = '''
-        select dsdScanRule
-        from dm2_storage_directory
-        where dsdStorageid = :dsdStorageID and Position(dsddirectory || '{0}' in :dsdDirectory) = 1
-            and dsdScanRule is not null
-        order by dsddirectory desc
-        limit 1
-        '''.format(CFile.sep())
-        rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(
-            sql_get_rule,
-            {
-                'dsdStorageID': ds_storage_id,
-                'dsdDirectory': ds_subpath
-            }
-        )
-        ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
 
         if ds_subpath == '':
             ds_subpath = ds_root_path
         else:
             ds_subpath = CFile.join_file(ds_root_path, ds_subpath)
 
-        check_inbound_subpath_ready_flag_file = CUtils.equal_ignore_case(
-            settings.application.xpath_one(
-                self.path_switch(
-                    self.Path_Setting_MetaData_InBound_Switch,
-                    self.Switch_Use_Ready_Flag_File_Name
-                ),
-                self.Name_OFF
-            ),
-            self.Name_ON
-        )
-        inbound_subpath = CUtils.equal_ignore_case(
-            ds_storage_type,
-            self.Storage_Type_InBound
-        ) and CUtils.equal_ignore_case(
-            ds_id,
-            ds_storage_id
-        )
-
-        CLogger().debug('处理的目录为: {0}'.format(ds_subpath))
+        # 将所有子目录, 文件的可用性, 都改为未知!!!!
+        self.init_file_or_subpath_valid_unknown(ds_id)
         try:
-            self.parser_file_or_subpath_of_path(
-                dataset, ds_id, ds_subpath, ds_rule_content,
-                check_inbound_subpath_ready_flag_file,
-                inbound_subpath,
-                inbound_id
+            sql_get_rule = '''
+            select dsdScanRule
+            from dm2_storage_directory
+            where dsdStorageid = :dsdStorageID 
+                and position((dsddirectory || '{0}') in :dsdDirectory) = 1
+                and dsdScanRule is not null
+            order by dsddirectory desc
+            limit 1
+            '''.format(CFile.sep())
+            rule_ds = CFactory().give_me_db(self.get_mission_db_id()).one_row(
+                sql_get_rule,
+                {
+                    'dsdStorageID': ds_storage_id,
+                    'dsdDirectory': ds_subpath
+                }
             )
+            ds_rule_content = rule_ds.value_by_name(0, 'dsScanRule', '')
+
+            CLogger().debug('处理的目录为: {0}'.format(ds_subpath))
+
+            self.parser_file_or_subpath_of_path(dataset, ds_id, ds_subpath, ds_rule_content, inbound_id)
             return CResult.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_subpath))
         except Exception as err:
             return CResult.merge_result(
@@ -133,13 +110,10 @@ where dsdscanfilestatus = 2
         finally:
             self.exchange_file_or_subpath_valid_unknown2invalid(ds_id)
 
-    def parser_file_or_subpath_of_path(self, dataset, ds_id, ds_path, ds_rule_content,
-                                       check_inbound_subpath_ready_flag_file, inbound_subpath, inbound_id):
+    def parser_file_or_subpath_of_path(self, dataset, ds_id, ds_path, ds_rule_content, inbound_id):
         """
         处理目录(完整路径)下的子目录和文件
         :param inbound_id: 入库标识
-        :param inbound_subpath:
-        :param check_inbound_subpath_ready_flag_file: 是否检查入库子目录
         :param ds_rule_content:
         :param dataset: 数据集
         :param ds_id: 路径标识
@@ -161,34 +135,21 @@ where dsdscanfilestatus = 2
                     CLogger().debug('子目录: {0}在指定的忽略入库名单中, 将不入库! '.format(file_name))
                     continue
 
-                path_should_inbound = True
-                if path_should_inbound:
-                    if check_inbound_subpath_ready_flag_file:
-                        path_should_inbound = self.check_inbound_subpath_ready(file_name_with_full_path)
+                path_obj = CDMPathInfo(
+                    self.FileType_Dir,
+                    file_name_with_full_path,
+                    dataset.value_by_name(0, 'query_storage_id', ''),
+                    None,
+                    ds_id,
+                    dataset.value_by_name(0, 'query_dir_parent_objid', None),
+                    self.get_mission_db_id(),
+                    ds_rule_content
+                )
 
-                if path_should_inbound:
-                    path_obj = CDMPathInfo(
-                        self.FileType_Dir,
-                        file_name_with_full_path,
-                        dataset.value_by_name(0, 'query_storage_id', ''),
-                        None,
-                        ds_id,
-                        dataset.value_by_name(0, 'query_dir_parent_objid', None),
-                        self.get_mission_db_id(),
-                        ds_rule_content
-                    )
-                    if inbound_subpath:
-                        # 注册到待入库请单中
-                        self.register_2_inbound_list(
-                            ds_storage_id,
-                            path_obj.my_id,
-                            CFile.file_relation_path(file_name_with_full_path, ds_path)
-                        )
-
-                    if path_obj.white_black_valid():
-                        path_obj.db_check_and_update(inbound_id)
-                    else:
-                        CLogger().info('目录[{0}]未通过黑白名单检验, 不允许入库! '.format(file_name_with_full_path))
+                if path_obj.white_black_valid():
+                    path_obj.db_check_and_update(inbound_id)
+                else:
+                    CLogger().info('目录[{0}]未通过黑白名单检验, 不允许入库! '.format(file_name_with_full_path))
             elif CFile.is_file(file_name_with_full_path):
                 if CUtils.list_count(ignore_file_array, file_name) > 0:
                     CLogger().debug('子目录: {0}在指定的忽略入库名单中, 将不入库! '.format(file_name))
@@ -251,35 +212,6 @@ where dsdscanfilestatus = 2
                     set dsffilevalid = {0}
                     where dsfdirectoryid = :id and dsffilevalid = {1}
                     '''.format(self.File_Status_Invalid, self.File_Status_Unknown), {'id': ds_id})
-
-    def check_inbound_subpath_ready(self, inbound_path) -> bool:
-        inbound_ready_flag_filename_with_path = CFile.join_file(inbound_path, self.FileName_Ready_21AT)
-
-        if CFile.file_or_path_exist(inbound_ready_flag_filename_with_path):
-            return True
-        else:
-            CLogger().debug(
-                '子目录[{0}]下没有找到入库标识文件[{1}], 表明数据还没有准备好, 暂不入库! '.format(inbound_path, self.FileName_Ready_21AT))
-            return False
-
-    def register_2_inbound_list(self, storage_id: str, directory_id: str, directory: str):
-        database = CFactory().give_me_db(self.get_mission_db_id())
-        new_batch_no = database.seq_next_value(self.Seq_Type_Date_AutoInc)
-        sql_register_2_inbound_list = '''
-        insert into dm2_storage_inbound(dsiid, dsistorageid, dsidirectory, dsibatchno, dsistatus, dsidirectoryid) 
-        VALUES(:dsiid, :storageid, :directory, :batch_no, :status, :directory_id) 
-        '''
-        database.execute(
-            sql_register_2_inbound_list,
-            {
-                'dsiid': CUtils.one_id(),
-                'storageid': storage_id,
-                'directory': directory,
-                'batch_no': new_batch_no,
-                'directory_id': directory_id,
-                'status': self.ProcStatus_WaitConfirm
-            }
-        )
 
 
 if __name__ == '__main__':

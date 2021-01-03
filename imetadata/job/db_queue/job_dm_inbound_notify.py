@@ -82,27 +82,11 @@ where dsi_na_status = 2
             sql_ib_need_notify_object = '''
             select dsoid, dsoobjecttype, dsoobjectname, dso_da_result
             from dm2_storage_object 
-            where (
-                dm2_storage_object.dsoid in (
-                    select dsd_object_id
-                    from dm2_storage_directory
-                    where dsdstorageid = :StorageID
-                        and dsd_object_id is not null
-                        and position(:SubDirectory in dsddirectory) = 1
-                ) or dm2_storage_object.dsoid in (
-                    select dsf_object_id
-                    from dm2_storage_file
-                    where dsfdirectoryid in (
-                        select dsdid
-                        from dm2_storage_directory
-                        where dsdstorageid = :StorageID and position(:SubDirectory in dsddirectory) = 1
-                    )
-                )
-            )
+            where dso_ib_id = :ib_id
             '''
             dataset = CFactory().give_me_db(self.get_mission_db_id()).all_row(
                 sql_ib_need_notify_object,
-                {'StorageID': ds_storage_id, 'SubDirectory': ds_ib_directory_name}
+                {'ib_id': ds_ib_id}
             )
             if dataset.is_empty():
                 result = CResult.merge_result(

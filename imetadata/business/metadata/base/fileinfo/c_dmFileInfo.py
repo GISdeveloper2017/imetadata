@@ -56,12 +56,13 @@ class CDMFileInfo(CDMFilePathInfoEx):
                 CFactory().give_me_db(self.db_server_id).execute(
                     '''
                     update dm2_storage_file 
-                    set dsfScanStatus = 0, dsffilevalid = -1, dsf_ib_id = :ib_id
+                    set dsfScanStatus = 0, dsffilevalid = -1, dsf_ib_id = :ib_id, dsfscanmemo = :message
                     where dsfid = :dsfid 
                     ''',
                     {
                         'dsfid': self.my_id,
-                        'ib_id': ib_id
+                        'ib_id': ib_id,
+                        'message': '文件[{0}]的大小和最后修改时间, 和库中登记的没有变化, 文件将被设置为忽略刷新! '.format(self.file_name_with_full_path)
                     }
                 )
             else:
@@ -69,12 +70,13 @@ class CDMFileInfo(CDMFilePathInfoEx):
                 CFactory().give_me_db(self.db_server_id).execute(
                     '''
                     update dm2_storage_file 
-                    set dsfScanStatus = 1, dsffilevalid = -1, dsf_ib_id = :ib_id
+                    set dsfScanStatus = 1, dsffilevalid = -1, dsf_ib_id = :ib_id, dsfscanmemo = :message
                     where dsfid = :dsfid 
                     ''',
                     {
                         'dsfid': self.my_id,
-                        'ib_id': ib_id
+                        'ib_id': ib_id,
+                        'message': '文件[{0}]的大小和最后修改时间, 和库中登记的有变化, 文件将被设置为重新刷新! '.format(self.file_name_with_full_path)
                     }
                 )
         else:

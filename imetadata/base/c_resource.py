@@ -41,6 +41,7 @@ class CResource:
     Name_WKT = 'wkt'
     Name_Srid = 'srid'
     Name_Description = 'description'
+    Name_Period = 'period'
 
     Name_Text = 'text'
 
@@ -53,6 +54,13 @@ class CResource:
     OS_Windows = 'windows'
     OS_Linux = 'linux'
     OS_MacOS = 'Darwin'
+
+    Scan_Period_Minute = 'minute'
+    Scan_Period_Hour = 'hour'
+    Scan_Period_Day = 'day'
+    Scan_Period_Week = 'week'
+    Scan_Period_Month = 'month'
+    Scan_Period_Year = 'year'
 
     Application_Name = 'imetadata'
     Name_IMetaData = 'imetadata'
@@ -149,7 +157,6 @@ class CResource:
     Dir_Type_Root = 3
 
     FileName_MetaData_Rule = 'metadata.rule'
-    FileName_Ready_21AT = 'ready.21at'
     FileName_MetaData_Bus_21AT = 'metadata.21at'
     FileName_MetaData = 'metadata.json'
     FileName_MetaData_Bus = 'metadata_bus.xml'
@@ -230,6 +237,7 @@ class CResource:
     Name_Data_Sample = 'data_sample'
     Name_Separator = 'separator'
     Name_Enable = 'enable'
+    Name_Fuzzy_Matching = 'fuzzy_matching'
     Name_Field = 'field'
     Name_InBound = 'inbound'
     Name_OutBound = 'outbound'
@@ -283,9 +291,8 @@ class CResource:
     Name_Client = 'client'
     Name_Url = 'url'
     Name_Timeout = 'timeout'
-    Name_Time = 'time'
+    Name_Parser = 'parser'
 
-    Switch_Use_Ready_Flag_File_Name = 'use_ready_flag_file_name'
     Switch_Inbound_After_QI_Immediately = 'inbound_after_qi_immediately'
 
     Path_MD_Rule_Type = '/root/type'
@@ -335,13 +342,23 @@ class CResource:
     Path_Setting_MetaData_Tags_Rule = '{0}.{1}'.format(Path_Setting_MetaData_Tags, Name_Rule)
 
     Path_Setting_MetaData_InBound = '{0}.{1}'.format(Path_Setting_MetaData, Name_InBound)
+
     Path_Setting_MetaData_InBound_ignore = '{0}.ignore'.format(Path_Setting_MetaData_InBound)
     Path_Setting_MetaData_InBound_ignore_file = '{0}.file'.format(Path_Setting_MetaData_InBound_ignore)
     Path_Setting_MetaData_InBound_ignore_dir = '{0}.dir'.format(Path_Setting_MetaData_InBound_ignore)
+
     Path_Setting_MetaData_InBound_Schema = '{0}.schema'.format(Path_Setting_MetaData_InBound)
     Path_Setting_MetaData_InBound_Schema_Default = '{0}.default'.format(Path_Setting_MetaData_InBound_Schema)
     Path_Setting_MetaData_InBound_Schema_Special = '{0}.special'.format(Path_Setting_MetaData_InBound_Schema)
+
     Path_Setting_MetaData_InBound_Switch = '{0}.{1}'.format(Path_Setting_MetaData_InBound, Name_Switch)
+
+    Path_Setting_MetaData_InBound_Parser = '{0}.{1}'.format(Path_Setting_MetaData_InBound, Name_Parser)
+    Path_Setting_MetaData_InBound_Parser_MetaData = '{0}.{1}'.format(Path_Setting_MetaData_InBound_Parser,
+                                                                     Name_MetaData)
+    Name_Retry_Times = 'retry_times'
+    Path_Setting_MetaData_InBound_Parser_MetaData_Retry_Times = '{0}.{1}'.format(
+        Path_Setting_MetaData_InBound_Parser_MetaData, Name_Retry_Times)
 
     Name_QI = 'qi'
     Path_Setting_MetaData_QI = '{0}.{1}'.format(Path_Setting_MetaData, Name_QI)

@@ -340,9 +340,12 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 ### 数管存储设计
 #### 存储类型
 1. 在线存储: 是数据存储专用的存储, 用于存储所有归档的数据, 该存储由数管系统独占可写权限, 其他系统只能具有读权限
-1. 入库存储: 是数据入库专用的存储, 用于个人或其他子系统将待入库的数据临时存放在该区域, 数管系统将在合适的时机, 
-    将该区域的数据入库并迁移到核心存储中, 完成入库
+1. 入库存储: 是数据入库专用的存储, 用于个人或其他子系统将待入库的数据临时存放在该区域, 数管系统将在合适的时机, 将该区域的数据入库并迁移到核心存储中, 完成入库
+    * 入库存储, 实际也是系统实时监控的存储
+    * 入库存储, 是集中式存储中, 被监控的目录, 该目录下的数据, 允许定时扫描入库, 每一次定时扫描入库, 都是一个新的入库批次
 1. 混合存储: 兼顾入库和在线存储的功能
+    * 混合存储中的数据, 必须通过指定目录进行入库
+    * 入库后的目录, 原则上不允许再次入库
 
 #### 应用模式
 1. 离散入库模式
@@ -844,19 +847,64 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 ##### 根目录扫描调度-job_dm_root_parser
 1. 名称: job_dm_root_parser
 1. 类型: db_queue
+1. 应用场景:
+    1. 混合存储, 被设置为立即扫描(兼容旧版本)
 1. 算法:
-   1. 抢占dm2_storage表中dstScanStatus=1的记录, 状态更新为2
-   1. 检查dm2_storage_directory表中是否有对应的根目录, 加入到dm2_storage_directory表中, 注意设置如下状态:
+    1. 抢占dm2_storage表中类型为混合存储, dstScanStatus=1的记录, 状态更新为2
+    1. 检查dm2_storage_directory表中是否有对应的根目录, 加入到dm2_storage_directory表中, 注意设置如下状态:
         * dsd_directory_valid=1(待确认)
         * dsdScanFileStatus=1
         * scanStatus=1
-   1. 将处理成功的记录, dm2_storage表dstScanStatus设置为0
+    1. 将处理成功的记录, dm2_storage表dstScanStatus设置为0
+
+##### 集中式存储定时入库调度-job_dm_ib_storage_sch_scan_monitor
+
+1. 名称: job_dm_ib_storage_sch_scan_monitor
+1. 类型: interval
+1. 应用场景: 入库存储的定时入库
+1. 算法:
+    1. 扫描dm2_storage表中类型为入库, 允许自动扫描, 已经完成扫描的存储
+        * dstwatch = -1
+        * dsttype = inbound
+        * dstscanstatus = 0
+    1. 检查扫描的周期, 以及最后一次扫描的时间, 计算当前时间是否应该开始扫描
+        1. 如果应该扫描
+            1. 设置存储的状态为允许扫描: dstscanstatus=1
+            1. 设置存储扫描的最后修改时间为当前时间: dstscanlasttime=now()
+            1. 设置记录的最后修改时间为当前时间: dstlastmodifytime=now()
+            1. 设置扫描备注为: dstscanmemo=xxx时间, 启动扫描
+        1. 如果不应该扫描
+            1. 设置记录的最后修改时间为当前时间: dstlastmodifytime=now()
+            1. 设置扫描备注为: dstscanmemo=xxx时间, 检查扫描条件, 目前无须扫描
+
+##### 集中式存储立即入库调度-job_dm_ib_storage_scan_monitor
+
+1. 扫描dm2_storage表中类型为入库, 等待扫描的存储
+    * dstscanstatus = 1
+    * dsttype = inbound
+1. 判断当前是否有入库的批次
+    1. dm2_storage_inbound.dsistorageid = dm2_storage.dstid
+    1. dm2_storage_inbound.dsidirectory = /
+    1. dm2_storage_inbound.dsistatus <> 0
+    1. dm2_storage_inbound.dsi_na_status <> 0
+1. 如果有正在入库的批次
+    1. 忽略本次入库
+        1. 设置存储的状态为允许扫描: dstscanstatus=0
+        1. 设置记录的最后修改时间为当前时间: dstlastmodifytime=now()
+        1. 设置扫描备注为: dstscanmemo=xxx时间, 启动扫描, 发现正在入库, 本次定时扫描将被忽略
+    1. 启动本次入库
+        1. 在dm2_storage_inbound中增加一个入库批次记录
+        1. 设置记录的最后修改时间为当前时间: dstlastmodifytime=now()
+        1. 设置扫描备注为: dstscanmemo=xxx时间, 启动扫描, 创建入库批次, 并开始扫描
+        1. 设置存储的状态为允许扫描: dstscanstatus=0
+
 ##### 目录识别调度-job_dm_path2object
+
 1. 名称: job_dm_path2object
 1. 类型: db_queue
 1. 算法:
-   1. 抢占dm2_storage_directory表中dsdScanStatus=1的记录, 状态更新为2
-   1. 检查目录是否存在
+    1. 抢占dm2_storage_directory表中dsdScanStatus=1的记录, 状态更新为2
+    1. 检查目录是否存在
         1. 目录不存在:
             * 标记当前目录及以下的文件(递归)的dsfFileValid=0无效(为了高效处理)
                 * dsfScanStatus=0
@@ -1566,7 +1614,7 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
     1. 类型: varchar
     1. 意义: 私有路径
         * 如果数管系统部署在linux下, 则该值为\\xxx.xxx.xxx.xxx\ShareStorage映射到操作系统的路径
-        * 如果数管系统部署在windows下, 则该值与dstUniPath值相同
+        * 如果数管系统部署在windows下, 则该值与dstUniPath值相同, 或保持为null
 
 1. dstOtherOption
     1. 类型: JsonB
@@ -1592,7 +1640,11 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
     }
     ```
     1. 说明:
-
+        * inbound: 入库的配置选项
+            * 过滤规则:
+                * directory: 目录过滤规则, 分为白名单和黑名单
+                * file: 文件过滤规则, 分为白名单和黑名单
+        * mount: linux下路径mount的规则, 分为用户名和密码
 
 ## dp_v_qfg
 ### 简述

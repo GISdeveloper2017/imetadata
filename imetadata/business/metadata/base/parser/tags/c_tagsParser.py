@@ -40,7 +40,7 @@ class CTagsParser(CParser):
             data_sample = CUtils.any_2_str(CUtils.dict_value_by_name(tags_parser, self.Name_Data_Sample, ''))
             separator = CUtils.dict_value_by_name(tags_parser, self.Name_Separator, None)
             enable = CUtils.dict_value_by_name(tags_parser, self.Name_Enable, True)
-            tag_data_alias_name_sample_str = None
+            fuzzy_matching = CUtils.dict_value_by_name(tags_parser, self.Name_Fuzzy_Matching, False)
 
             if not enable:
                 continue
@@ -80,7 +80,7 @@ class CTagsParser(CParser):
 
             try:
                 tag_data_sample_list = CUtils.split(tag_data_sample_str, separator)
-                self.process_tag(catalog, tag_field_name, keyword_field_list, tag_data_sample_list)
+                self.process_tag(catalog, tag_field_name, keyword_field_list, tag_data_sample_list, fuzzy_matching)
             except Exception as error:
                 error_list.append(
                     '对象[{0}]在处理标签库[{1}]分类[{2}]有误, 详细错误信息为: {3}'.format(
@@ -104,9 +104,11 @@ class CTagsParser(CParser):
 
             return CResult.merge_result(self.Success, error_message)
 
-    def process_tag(self, sql_query_tag: str, tag_field_name: str, keyword_field_list: list, data_sample_list: list):
+    def process_tag(self, sql_query_tag: str, tag_field_name: str, keyword_field_list: list, data_sample_list: list,
+                    fuzzy_matching):
         """
         绑定标签tag, 注意sql查询的第一个字段为id
+        :param fuzzy_matching: 是否模糊匹配
         :param sql_query_tag: 标签库SQL查询语句
         :param keyword_field_list: 关键字字段名称
         :param tag_field_name: 标签标示字段名
@@ -129,7 +131,8 @@ class CTagsParser(CParser):
                 keyword_value = ds.value_by_name(row_index, keyword_field, '')
                 if CUtils.equal_ignore_case(tag_value, ''):
                     continue
-                if CUtils.list_count(data_sample_list, keyword_value) > 0:
+
+                if self.list_item_match(data_sample_list, keyword_value, fuzzy_matching):
                     tag_should_append = True
 
             if tag_should_append:
@@ -154,6 +157,26 @@ class CTagsParser(CParser):
             '''.format(in_db_tag_value),
             {'dsoid': object_id}
         )
+
+    def list_item_match(self, data_sample_list, keyword_value, fuzzy_matching):
+        """
+        根据给定列表和关键字和匹配选项, 对列表是否包含关键字进行完全匹配或模糊匹配
+        :param data_sample_list:
+        :param keyword_value:
+        :param fuzzy_matching:
+        :return:
+        """
+        keyword_text = CUtils.any_2_str(keyword_value).lower()
+        if fuzzy_matching:
+            for data_sample in data_sample_list:
+                data_sample_text = CUtils.any_2_str(data_sample).lower()
+                if data_sample_text.find(keyword_text) > -1:
+                    return True
+        else:
+            if CUtils.list_count(data_sample_list, keyword_value) > 0:
+                return True
+
+        return False
 
 
 if __name__ == '__main__':

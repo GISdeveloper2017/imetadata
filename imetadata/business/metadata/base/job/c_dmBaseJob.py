@@ -23,7 +23,7 @@ class CDMBaseJob(CDBQueueJob):
             metadata_item_value = CXml.get_element_text(metadata_item).lower().strip()
             params[metadata_item_name] = metadata_item_value
 
-    def clear_anything_in_directory(self, ds_ib_id, ds_storage_id, ds_ib_directory_name):
+    def clear_anything_in_directory(self, ds_ib_id):
         """
         在入库前, 清除已经入库的所有对象
         . 包括子对象

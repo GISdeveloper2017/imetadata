@@ -5,6 +5,7 @@
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_fileInfo import CFileInfo
+from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 
 
@@ -37,16 +38,20 @@ class CFileInfoEx(CFileInfo):
     def __init__(self, file_type, file_name_with_full_path, root_path, rule_content):
         super().__init__(file_type, file_name_with_full_path)
         self.__root_path = root_path
-
-        self.__file_main_name_with_rel_path = CFile.file_relation_path(
-            self.file_main_name_with_full_path,
-            self.__root_path
-        )
-        self.__file_name_with_rel_path = CFile.file_relation_path(
-            self.file_name_with_full_path,
-            self.__root_path
-        )
-        self.__file_path_with_rel_path = CFile.file_relation_path(self.file_path, self.__root_path)
+        if CUtils.equal_ignore_case(root_path, file_name_with_full_path):
+            self.__file_main_name_with_rel_path = ''
+            self.__file_name_with_rel_path = ''
+            self.__file_path_with_rel_path = ''
+        else:
+            self.__file_main_name_with_rel_path = CFile.file_relation_path(
+                self.file_main_name_with_full_path,
+                self.__root_path
+            )
+            self.__file_name_with_rel_path = CFile.file_relation_path(
+                self.file_name_with_full_path,
+                self.__root_path
+            )
+            self.__file_path_with_rel_path = CFile.file_relation_path(self.file_path, self.__root_path)
 
         self.__rule_content = rule_content
 

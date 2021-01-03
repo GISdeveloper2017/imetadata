@@ -23,8 +23,8 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                 , dsidirectoryid as query_ib_dir_id
                 , dsitargetstorageid as query_ib_target_storage_id
             from dm2_storage_inbound 
-            where dsi_na_status in ({0}, {1})
-            '''.format(self.ProcStatus_WaitConfirm, self.ProcStatus_Error)
+            where dsi_na_status = {0}
+            '''.format(self.ProcStatus_WaitConfirm)
         )
         if inbound_ib_n_list.is_empty():
             return CResult.merge_result(CResult.Success, '本次没有需要检查的通知任务！')
@@ -50,7 +50,7 @@ class job_dm_inbound_notify_monitor(CTimeJob):
             CLogger().debug('正在检查入库批次[ds_ib_id]的通知进度...'.format(ds_ib_id))
 
             try:
-                # 所有通知情况
+                # 所有通知对象的统计数
                 sql_record_total_count = CUtils.replace_placeholder(
                     '''
                     select count(*)
@@ -59,67 +59,7 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                           and  dson_object_id in (
                                 select dsoid
                                 from dm2_storage_object 
-                                where (
-                                    dsoid in (
-                                        select dsd_object_id
-                                        from dm2_storage_directory
-                                        where 
-                                        (   
-                                            dsdstorageid = :StorageID
-                                            and position(:SubDirectory in dsddirectory) = 1
-                                        ) or 
-                                        (
-                                            dsdid = :directory_id
-                                        )
-    
-                                        union all
-    
-                                        select dsf_object_id
-                                        from dm2_storage_file
-                                        where dsfdirectoryid in (
-                                            select dsdid
-                                            from dm2_storage_directory
-                                            where 
-                                            (   
-                                                dsdstorageid = :StorageID
-                                                and position(:SubDirectory in dsddirectory) = 1
-                                            ) or 
-                                            (
-                                                dsdid = :directory_id
-                                            )
-                                        )
-                                    )
-                                ) or (
-                                    dsoparentobjid in (
-                                        select dsd_object_id
-                                        from dm2_storage_directory
-                                        where 
-                                        (   
-                                            dsdstorageid = :StorageID
-                                            and position(:SubDirectory in dsddirectory) = 1
-                                        ) or 
-                                        (
-                                            dsdid = :directory_id
-                                        )
-    
-                                        union all
-    
-                                        select dsf_object_id
-                                        from dm2_storage_file
-                                        where dsfdirectoryid in (
-                                            select dsdid
-                                            from dm2_storage_directory
-                                            where 
-                                            (   
-                                                dsdstorageid = :StorageID
-                                                and position(:SubDirectory in dsddirectory) = 1
-                                            ) or 
-                                            (
-                                                dsdid = :directory_id
-                                            )
-                                        )
-                                    )
-                                )
+                                where dso_ib_id = :ib_id
                           )
                     ''',
                     {'module_name_list': CUtils.list_2_str(module_name_list, "'", ',', "'")}
@@ -128,179 +68,7 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                 record_total_count = CFactory().give_me_db(self.get_mission_db_id()).one_value(
                     sql_record_total_count,
                     {
-                        'directory_id': ds_ib_directory_id,
-                        'StorageID': ds_ib_target_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
-                    },
-                    0
-                )
-
-                sql_record_finished_count = CUtils.replace_placeholder(
-                    '''
-                    select count(*)
-                    from dm2_storage_obj_na
-                    where dson_notify_status = {0}
-                          and  dson_app_id in ($module_name_list)
-                          and  dson_object_id in (
-                                select dsoid
-                                from dm2_storage_object 
-                                where (
-                                    dsoid in (
-                                        select dsd_object_id
-                                        from dm2_storage_directory
-                                        where 
-                                        (   
-                                            dsdstorageid = :StorageID
-                                            and position(:SubDirectory in dsddirectory) = 1
-                                        ) or 
-                                        (
-                                            dsdid = :directory_id
-                                        )
-    
-                                        union all
-    
-                                        select dsf_object_id
-                                        from dm2_storage_file
-                                        where dsfdirectoryid in (
-                                            select dsdid
-                                            from dm2_storage_directory
-                                            where 
-                                            (   
-                                                dsdstorageid = :StorageID
-                                                and position(:SubDirectory in dsddirectory) = 1
-                                            ) or 
-                                            (
-                                                dsdid = :directory_id
-                                            )
-                                        )
-                                    )
-                                ) or (
-                                    dsoparentobjid in (
-                                        select dsd_object_id
-                                        from dm2_storage_directory
-                                        where 
-                                        (   
-                                            dsdstorageid = :StorageID
-                                            and position(:SubDirectory in dsddirectory) = 1
-                                        ) or 
-                                        (
-                                            dsdid = :directory_id
-                                        )
-    
-                                        union all
-    
-                                        select dsf_object_id
-                                        from dm2_storage_file
-                                        where dsfdirectoryid in (
-                                            select dsdid
-                                            from dm2_storage_directory
-                                            where 
-                                            (   
-                                                dsdstorageid = :StorageID
-                                                and position(:SubDirectory in dsddirectory) = 1
-                                            ) or 
-                                            (
-                                                dsdid = :directory_id
-                                            )
-                                        )
-                                    )
-                                )
-                          )
-                    '''.format(self.ProcStatus_Finished),
-                    {'module_name_list': CUtils.list_2_str(module_name_list, "'", ',', "'")}
-                )
-
-                record_finished_count = CFactory().give_me_db(self.get_mission_db_id()).one_value(
-                    sql_record_finished_count,
-                    {
-                        'directory_id': ds_ib_directory_id,
-                        'StorageID': ds_ib_target_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
-                    },
-                    0
-                )
-
-                sql_record_error_count = CUtils.replace_placeholder(
-                    '''
-                    select count(*)
-                    from dm2_storage_obj_na
-                    where dson_notify_status = {0}
-                          and  dson_app_id in ($module_name_list)
-                          and  dson_object_id in (
-                                select dsoid
-                                from dm2_storage_object 
-                                where (
-                                    dsoid in (
-                                        select dsd_object_id
-                                        from dm2_storage_directory
-                                        where 
-                                        (   
-                                            dsdstorageid = :StorageID
-                                            and position(:SubDirectory in dsddirectory) = 1
-                                        ) or 
-                                        (
-                                            dsdid = :directory_id
-                                        )
-
-                                        union all
-
-                                        select dsf_object_id
-                                        from dm2_storage_file
-                                        where dsfdirectoryid in (
-                                            select dsdid
-                                            from dm2_storage_directory
-                                            where 
-                                            (   
-                                                dsdstorageid = :StorageID
-                                                and position(:SubDirectory in dsddirectory) = 1
-                                            ) or 
-                                            (
-                                                dsdid = :directory_id
-                                            )
-                                        )
-                                    )
-                                ) or (
-                                    dsoparentobjid in (
-                                        select dsd_object_id
-                                        from dm2_storage_directory
-                                        where 
-                                        (   
-                                            dsdstorageid = :StorageID
-                                            and position(:SubDirectory in dsddirectory) = 1
-                                        ) or 
-                                        (
-                                            dsdid = :directory_id
-                                        )
-
-                                        union all
-
-                                        select dsf_object_id
-                                        from dm2_storage_file
-                                        where dsfdirectoryid in (
-                                            select dsdid
-                                            from dm2_storage_directory
-                                            where 
-                                            (   
-                                                dsdstorageid = :StorageID
-                                                and position(:SubDirectory in dsddirectory) = 1
-                                            ) or 
-                                            (
-                                                dsdid = :directory_id
-                                            )
-                                        )
-                                    )
-                                )
-                          )
-                    '''.format(self.ProcStatus_Error),
-                    {'module_name_list': CUtils.list_2_str(module_name_list, "'", ',', "'")}
-                )
-
-                record_error_count = CFactory().give_me_db(self.get_mission_db_id()).one_value(
-                    sql_record_error_count,
-                    {
-                        'directory_id': ds_ib_directory_id,
-                        'StorageID': ds_ib_target_storage_id,
-                        'SubDirectory': CFile.join_file(ds_ib_directory_name, '')
+                        'ib_id': ds_ib_id
                     },
                     0
                 )
@@ -315,33 +83,72 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                     )
                     continue
 
-                if record_error_count > 0:
-                    self.update_inbound_na_result(
-                        ds_ib_id,
-                        CResult.merge_result(
-                            self.Failure,
-                            '入库任务下的数据通知其他子系统过程中出现异常情况, 请检查! '.format(ds_ib_id)
-                        )
-                    )
-                    continue
+                # 已经完成的通知对象的统计数, 包括正常完成和错误的
+                sql_record_finished_count = CUtils.replace_placeholder(
+                    '''
+                    select count(*)
+                    from dm2_storage_obj_na
+                    where dson_notify_status in ({0}, {1})
+                          and  dson_app_id in ($module_name_list)
+                          and  dson_object_id in (
+                                select dsoid
+                                from dm2_storage_object 
+                                where dso_ib_id = :ib_id
+                          )
+                    '''.format(self.ProcStatus_Finished, self.ProcStatus_Error),
+                    {'module_name_list': CUtils.list_2_str(module_name_list, "'", ',', "'")}
+                )
+
+                record_finished_count = CFactory().give_me_db(self.get_mission_db_id()).one_value(
+                    sql_record_finished_count,
+                    {
+                        'ib_id': ds_ib_id
+                    },
+                    0
+                )
+
+                # 错误的记录数
+                sql_record_error_count = CUtils.replace_placeholder(
+                    '''
+                    select count(*)
+                    from dm2_storage_obj_na
+                    where dson_notify_status = {0}
+                          and  dson_app_id in ($module_name_list)
+                          and  dson_object_id in (
+                                select dsoid
+                                from dm2_storage_object 
+                                where dso_ib_id = :ib_id
+                          )
+                    '''.format(self.ProcStatus_Error),
+                    {'module_name_list': CUtils.list_2_str(module_name_list, "'", ',', "'")}
+                )
+
+                record_error_count = CFactory().give_me_db(self.get_mission_db_id()).one_value(
+                    sql_record_error_count,
+                    {
+                        'ib_id': ds_ib_id
+                    },
+                    0
+                )
 
                 if record_total_count != record_finished_count:
-                    message = '入库任务[{0}]下的数据正在通知其他子系统, 共有[{1}]个, 已成功完成[{2}]个, 请稍后...'.format(
+                    message = '入库任务[{0}]下的数据正在通知其他子系统, 共有[{1}]个, 已正确完成[{2}]个, 失败[{3}]个...'.format(
                         ds_ib_id,
                         record_total_count,
-                        record_finished_count
+                        record_finished_count,
+                        record_error_count
+                    )
+                    CLogger().debug(message)
+                    self.update_inbound_na_progress(ds_ib_id, message)
+                else:
+                    message = '入库任务[{0}]下的数据已经通知其他子系统, 共有[{1}]个, 已正确完成[{2}]个, 失败[{3}]个, 请检查修正! '.format(
+                        ds_ib_id,
+                        record_total_count,
+                        record_finished_count,
+                        record_error_count
                     )
                     CLogger().debug(message)
                     self.update_inbound_na_result(ds_ib_id, message)
-                    continue
-
-                self.update_inbound_na_result(
-                    ds_ib_id,
-                    CResult.merge_result(
-                        self.Success,
-                        '入库任务下的数据已经通知其他子系统! '.format(ds_ib_id)
-                    )
-                )
 
             except Exception as error:
                 self.update_inbound_na_result(
@@ -373,9 +180,9 @@ class job_dm_inbound_notify_monitor(CTimeJob):
             CFactory().give_me_db(self.get_mission_db_id()).execute(
                 '''
                 update dm2_storage_inbound 
-                set dsi_na_status = {0}, dsi_na_proc_memo = :notify_message, dsiproctime = now()
+                set dsi_na_proc_memo = :notify_message, dsiproctime = now()
                 where dsiid = :notify_id   
-                '''.format(self.ProcStatus_Error),
+                ''',
                 {'notify_id': notify_id, 'notify_message': CResult.result_message(result)}
             )
 

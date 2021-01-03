@@ -8,6 +8,7 @@ from __future__ import absolute_import
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
+from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmPathInfo import CDMPathInfo
 from imetadata.business.metadata.base.job.c_dmBaseJob import CDMBaseJob
 from imetadata.database.c_factory import CFactory
@@ -85,7 +86,7 @@ where dsdscanstatus = 2
             )
             ds_rule_content = rule_ds.value_by_name(0, 'dsdScanRule', '')
 
-            if ds_subpath == '':
+            if CUtils.equal_ignore_case(ds_subpath, ''):
                 ds_path_full_name = ds_root_path
             else:
                 ds_path_full_name = CFile.join_file(ds_root_path, ds_subpath)
@@ -95,8 +96,10 @@ where dsdscanstatus = 2
                                    self.get_mission_db_id(), ds_rule_content)
             if not path_obj.file_existed:
                 path_obj.db_update_status_on_path_invalid()
-                return CResult.merge_result(CResult.Success,
-                                            '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path_full_name))
+                return CResult.merge_result(
+                    CResult.Success,
+                    '目录[{0}]不存在, 在设定状态后, 顺利结束!'.format(ds_path_full_name)
+                )
             else:
                 path_obj.db_check_and_update_metadata_rule(
                     CFile.join_file(ds_path_full_name, self.FileName_MetaData_Rule)

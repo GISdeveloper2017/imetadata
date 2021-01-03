@@ -67,22 +67,34 @@ where dsiStatus = {1}
         # 按需要再开启
         # ds_ib_option = CUtils.any_2_str(dataset.value_by_name(0, 'query_ib_option', ''))
 
-        CLogger().debug(
-            '正在入库的是存储[{0}]下的目录[{1}]'.format(
-                ds_storage_title,
-                CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+        if not CUtils.equal_ignore_case(ds_ib_directory_name, ''):
+            CLogger().debug(
+                '正在入库的是存储[{0}]下的目录[{1}]'.format(
+                    ds_storage_title,
+                    CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+                )
             )
-        )
+        else:
+            CLogger().debug(
+                '正在入库的是存储[{0}]下的目录[{1}]'.format(
+                    ds_storage_title,
+                    ds_storage_root_dir
+                )
+            )
 
         try:
-            ds_ib_directory = CFile.unify(CFile.add_prefix(ds_ib_directory_name))
-            if not CUtils.equal_ignore_case(ds_ib_directory, ds_ib_directory_name):
-                self.correct_ib_directory(ds_ib_id, ds_ib_directory)
-                ds_ib_directory_name = ds_ib_directory
+            if not CUtils.equal_ignore_case(ds_ib_directory_name, ''):
+                ds_ib_directory = CFile.unify(CFile.add_prefix(ds_ib_directory_name))
+                if not CUtils.equal_ignore_case(ds_ib_directory, ds_ib_directory_name):
+                    self.correct_ib_directory(ds_ib_id, ds_ib_directory)
+                    ds_ib_directory_name = ds_ib_directory
 
-            ib_full_directory = CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+            if not CUtils.equal_ignore_case(ds_ib_directory_name, ''):
+                ib_full_directory = CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+            else:
+                ib_full_directory = ds_storage_root_dir
 
-            self.clear_anything_in_directory(ds_ib_id, ds_storage_id, ds_ib_directory_name)
+            self.clear_anything_in_directory(ds_ib_id)
             metadata_rule_file_name = CFile.join_file(ib_full_directory, self.FileName_MetaData_Rule)
             metadata_rule_content = ''
             if CFile.file_or_path_exist(metadata_rule_file_name):

@@ -1362,6 +1362,51 @@ create index idx_dm2_storage_object_dso_center_wgs84
 
 
 /*
+    2021-01-02
+    . 完善dm2_storage, 优化dstwatchperiod, 支持复杂的扫描
+*/
+drop view view_dm2_storage;
+
+alter table dm2_storage
+    drop column dstwatchperiod;
+alter table dm2_storage
+    add column dstwatchoption jsonb;
+comment on column dm2_storage.dstwatchoption is '存储-扫描配置';
+
+create view view_dm2_storage
+            (dstid, dsttitle, dstunipath, dstwatch, dstwatchperiod, dstscanlasttime, dstscanstatus, dstprocessid,
+             dstaddtime, dstlastmodifytime, dstmemo, dstwhitelist, dstblacklist, dstotheroption, dstfileext, isdel,
+             userid, status, mountserver, mounturl1, username, passwd)
+as
+SELECT dm2_storage.dstid,
+       dm2_storage.dsttitle,
+       dm2_storage.dstunipath,
+       dm2_storage.dstwatch,
+       dm2_storage.dstwatchoption,
+       dm2_storage.dstscanlasttime,
+       dm2_storage.dstscanstatus,
+       dm2_storage.dstprocessid,
+       dm2_storage.dstaddtime,
+       dm2_storage.dstlastmodifytime,
+       dm2_storage.dstmemo,
+       ''::text                         AS dstwhitelist,
+       ''::text                         AS dstblacklist,
+       dm2_storage.dstotheroption::text AS dstotheroption,
+       ''::text                         AS dstfileext,
+       0                                AS isdel,
+       dm2_storage.dstuserid            AS userid,
+       ''::text                         AS status,
+       ''::text                         AS mountserver,
+       dm2_storage.dstownerpath         AS mounturl1,
+       ''::text                         AS username,
+       ''::text                         AS passwd
+FROM dm2_storage;
+
+alter table view_dm2_storage
+    owner to postgres;
+
+
+/*
     思考服务发布的数据库设计-----------------------------注意: 暂不启用!!!!!!!
     . 从服务发布节点开始设计
 

@@ -57,15 +57,15 @@ class CDMPathInfo(CDMFilePathInfoEx):
             where dsfdirectoryid in (
                 select dsdid
                 from dm2_storage_directory
-                where dsdstorageid = :dsdStorageID and position(:dsdSubDirectory in dsddirectory) = 1
+                where dsdstorageid = :dsdStorageID and position(:dsdSubDirectory in dsddirectory || '{0}') = 1
             )
-            '''
+            '''.format(CFile.sep())
 
         sql_update_path_invalid = '''
             update dm2_storage_directory
             set dsd_directory_valid = 0, dsdscanstatus = 0, dsdscanfilestatus = 0, dsdscandirstatus = 0
-            where dsdstorageid = :dsdStorageID and position(:dsdSubDirectory in dsddirectory) = 1
-            '''
+            where dsdstorageid = :dsdStorageID and position(:dsdSubDirectory in dsddirectory || '{0}') = 1
+            '''.format(CFile.sep())
 
         engine = CFactory().give_me_db(self.db_server_id)
         session = engine.give_me_session()
@@ -277,12 +277,13 @@ class CDMPathInfo(CDMFilePathInfoEx):
                 CFactory().give_me_db(self.db_server_id).execute(
                     '''
                     update dm2_storage_directory 
-                    set dsdScanStatus = 0, dsdScanFileStatus = 0, dsd_directory_valid = -1, dsd_ib_id = :ib_id
+                    set dsdScanStatus = 0, dsdScanFileStatus = 0, dsd_directory_valid = -1, dsd_ib_id = :ib_id, dsdscanmemo = :message
                     where dsdid = :dsdid 
                     ''',
                     {
                         'dsdid': self.my_id,
-                        'ib_id': ib_id
+                        'ib_id': ib_id,
+                        'message': '目录[{0}]的最后修改时间, 和库中登记的没有变化, 子目录将被设置为忽略刷新! '.format(self.file_name_with_full_path)
                     }
                 )
             else:
@@ -290,12 +291,13 @@ class CDMPathInfo(CDMFilePathInfoEx):
                 CFactory().give_me_db(self.db_server_id).execute(
                     '''
                     update dm2_storage_directory 
-                    set dsdScanStatus = 1, dsdScanFileStatus = 1, dsd_directory_valid = -1, dsd_ib_id = :ib_id
+                    set dsdScanStatus = 1, dsdScanFileStatus = 1, dsd_directory_valid = -1, dsd_ib_id = :ib_id, dsdscanmemo = :message
                     where dsdid = :dsdid 
                     ''',
                     {
                         'dsdid': self.my_id,
-                        'ib_id': ib_id
+                        'ib_id': ib_id,
+                        'message': '目录[{0}]的最后修改时间, 和库中登记的有变化, 子目录将被设置为重新刷新! '.format(self.file_name_with_full_path)
                     }
                 )
         else:

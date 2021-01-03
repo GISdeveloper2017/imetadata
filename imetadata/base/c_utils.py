@@ -584,6 +584,9 @@ class CUtils(CResource):
         if split_sep_list is None:
             return [split_text]
 
+        if len(split_sep_list) == 0:
+            return [split_text]
+
         text_part_list = split_text.split(split_sep_list[0])
         for index in range(len(split_sep_list)):
             if index == 0:

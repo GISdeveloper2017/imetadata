@@ -22,11 +22,11 @@ set dstprocessid = '{0}', dstscanstatus = 2
 where dstid = (
   select dstid  
   from   dm2_storage 
-  where  dstscanstatus = 1 
+  where  dstscanstatus = 1 and dsttype = '{1}'
   limit 1
   for update skip locked
 )
-        '''.format(self.SYSTEM_NAME_MISSION_ID)
+        '''.format(self.SYSTEM_NAME_MISSION_ID, self.Storage_Type_Mix)
 
     def get_mission_info_sql(self):
         return '''

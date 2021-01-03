@@ -87,7 +87,9 @@ application = CSettings(
                         'tag': 'id',
                         'keyword': ['title', 'quickcode'],
                         'data_sample': 'relation_main_name',
-                        'separator': ['\\', '_', '/', '-', ' ', '+']
+                        'separator': ['\\', '_', '/', '-', ' ', '+'],
+                        'enable': False,
+                        'fuzzy_matching': False
                     },
                     {
                         'catalog': 'SELECT gdsid AS ID, gdstitle AS title, gdsquickcode AS quickcode FROM ro_global_dim_space',
@@ -95,21 +97,26 @@ application = CSettings(
                         'keyword': ['title', 'quickcode'],
                         'data_sample': 'relation_main_name',
                         'separator': ['\\', '_', '/', '-', ' ', '+'],
-                        'enable': False
+                        'enable': False,
+                        'fuzzy_matching': False
                     },
                     {
                         'catalog': 'SELECT gdcbid AS ID, gdcbtitle AS title, gdcbquickcode as quickcode FROM ro_global_dim_custom_bus',
                         'tag': 'id',
                         'keyword': ['title', 'quickcode'],
                         'data_sample': 'relation_main_name',
-                        'separator': ['\\', '_', '/', '-', ' ', '+']
+                        'separator': ['\\', '_', '/', '-', ' ', '+'],
+                        'enable': False,
+                        'fuzzy_matching': False
                     },
                     {
                         'catalog': 'SELECT gdcid AS ID, gdctitle AS title FROM ro_global_dim_custom',
                         'tag': 'id',
                         'keyword': ['title'],
                         'data_sample': 'relation_main_name',
-                        'separator': ['\\', '_', '/', '-', ' ', '+']
+                        'separator': ['\\', '_', '/', '-', ' ', '+'],
+                        'enable': False,
+                        'fuzzy_matching': False
                     }
                 ]
             },
@@ -206,6 +213,11 @@ application = CSettings(
                     'title': '开关配置',
                     'title_use_ready_flag_file_name': '开关-使用ready.21at标识文件判断一个目录是否可以入库',
                     'use_ready_flag_file_name': 'off'
+                },
+                'parser': {
+                    'metadata': {
+                        'retry_times': 3
+                    }
                 }
             },
             'outbound': {
