@@ -189,7 +189,6 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             },
             {
                 self.Name_ID: 'copyright',  # 发布来源 从info取
-                self.Name_XPath: None,
                 self.Name_Value: None
             },
             {
@@ -203,13 +202,22 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                 self.Name_Value: None
             },
             {
-                self.Name_ID: 'producttype',  # 产品类型
+                self.Name_ID: 'productname',  # 产品名称，有的能从卫星元数据里面取，没有就不取
+                self.Name_XPath: None
+            },
+            {
+                self.Name_ID: 'producttype',  # 产品类型 必填
                 self.Name_XPath: '/ProductMetaData/ProduceType',
                 self.Name_Value: None
             },
             {
-                self.Name_ID: 'productattribute',  # 产品属性
+                self.Name_ID: 'productattribute',  # 产品属性 必填
                 self.Name_XPath: '/ProductMetaData/ProductLevel',
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'productid',  # 产品id
+                self.Name_XPath: '/ProductMetaData/ProductID',
                 self.Name_Value: None
             }
         ]
