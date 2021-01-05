@@ -17,6 +17,7 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         information[self.Plugins_Info_Type_Title] = '高分一号WFV传感器'
         information[self.Plugins_Info_Group] = 'GF1'
         information[self.Plugins_Info_Group_Title] = '高分一号'
+        information[self.Plugins_Info_CopyRight] = '高分中心'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
@@ -33,15 +34,17 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         [1]: 特征串的类型
             TextMatchType_Common: 常规通配符, 如 *.txt
             TextMatchType_Regex: 正则表达式
+
+        样例：GF1_WFV1_E73.2_N39.7_20131008_L1A0000095560.tiff
         """
         # 支持的类型有：DIR和ZIP GF1_WFV1_E65.2_N26.6_20130927_L1A0000090284
         #                    GF1_WFV2_E65.2_N26.6_20130927_L1A0000090284
         #            File    GF1_WFV1_E65.2_N26.6_20130927_L1A0000090284-PAN1.tiff
         #                    GF1_WFV2_E65.2_N26.6_20130927_L1A0000090284-PAN2.tiff
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return 'gf1_wfv*_*_l1a*', self.TextMatchType_Common
+            return r'(?i)^GF1.*WFV.*[_].*$', self.TextMatchType_Regex
         else:
-            return 'gf1_wfv*_*_l1a*.tiff', self.TextMatchType_Common
+            return r'(?i)^GF1.*WFV.*[_].*[.]tiff$', self.TextMatchType_Regex
 
     def get_classified_object_name_of_sat(self, sat_file_status) -> str:
         """
@@ -94,13 +97,11 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         return [
             {
                 self.Name_ID: 'satelliteid',  # 卫星，必填，从元数据组织定义，必须是标准命名的卫星名称
-                self.Name_XPath: None,
-                self.Name_Value: 'gf1'
+                self.Name_XPath: '/ProductMetaData/SatelliteID'
             },
             {
                 self.Name_ID: 'sensorid',  # 传感器 必填,从元数据组织定义，必须是标准命名的传感器名称
-                self.Name_XPath: None,
-                self.Name_Value: 'wfv'
+                self.Name_XPath: '/ProductMetaData/SensorID'
             },
             {
                 self.Name_ID: 'centerlatitude',  # 中心维度
@@ -114,43 +115,35 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             },
             {
                 self.Name_ID: 'topleftlatitude',  # 左上角维度 必填
-                self.Name_XPath: '/ProductMetaData/TopLeftLatitude',
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/TopLeftLatitude'
             },
             {
                 self.Name_ID: 'topleftlongitude',  # 左上角经度 必填
-                self.Name_XPath: '/ProductMetaData/TopLeftLongitude',
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/TopLeftLongitude'
             },
             {
                 self.Name_ID: 'toprightlatitude',  # 右上角维度 必填
-                self.Name_XPath: '/ProductMetaData/TopRightLatitude',
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/TopRightLatitude'
             },
             {
                 self.Name_ID: 'toprightlongitude',  # 右上角经度 必填
-                self.Name_XPath: '/ProductMetaData/TopRightLongitude',
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/TopRightLongitude'
             },
             {
                 self.Name_ID: 'bottomrightlatitude',  # 右下角维度 必填
-                self.Name_XPath: '/ProductMetaData/BottomRightLatitude',
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/BottomRightLatitude'
             },
             {
                 self.Name_ID: 'bottomrightlongitude',  # 右下角经度 必填
-                self.Name_XPath: '/ProductMetaData/BottomRightLongitude',
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/BottomRightLongitude'
             },
             {
                 self.Name_ID: 'bottomleftlatitude',  # 左下角维度 必填
-                self.Name_XPath: '/ProductMetaData/BottomLeftLatitude',
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/BottomLeftLatitude'
             },
             {
                 self.Name_ID: 'bottomleftlongitude',  # 左下角经度 必填
-                self.Name_XPath: '/ProductMetaData/BottomLeftLongitude',
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/BottomLeftLongitude'
             },
             {
                 self.Name_ID: 'transformimg',  # 斜视图,可空,不用质检
@@ -159,37 +152,31 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             },
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
-                self.Name_XPath: '/ProductMetaData/CenterTime',
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/CenterTime'
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/ProductMetaData/ImageGSD',
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/ImageGSD'
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
-                self.Name_XPath: '/ProductMetaData/RollViewingAngle',
-                self.Name_Value: 0
+                self.Name_XPath: '/ProductMetaData/RollViewingAngle'
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量
-                self.Name_XPath: '/ProductMetaData/CloudPercent',
-                self.Name_Value: 0
+                self.Name_XPath: '/ProductMetaData/CloudPercent'
             },
             {
                 self.Name_ID: 'dataum',  # 坐标系 默认为null
-                self.Name_XPath: None,
-                self.Name_Value: None
+                self.Name_Value: 'WGS_1984'
             },
             {
                 self.Name_ID: 'acquisition_id',  # 轨道号
-                self.Name_XPath: '/ProductMetaData/OrbitID',
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/OrbitID'
             },
             {
                 self.Name_ID: 'copyright',  # 发布来源 从info取
-                self.Name_Value: None
+                self.Name_Value: CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_CopyRight, None)
             },
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
@@ -207,18 +194,15 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             },
             {
                 self.Name_ID: 'producttype',  # 产品类型 必填
-                self.Name_XPath: '/ProductMetaData/ProduceType',
-                self.Name_Value: None
+                self.Name_Value: CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_ProductType, None)
             },
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
-                self.Name_XPath: '/ProductMetaData/ProductLevel',
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/ProductLevel'
             },
             {
-                self.Name_ID: 'productid',  # 产品id
-                self.Name_XPath: '/ProductMetaData/ProductID',
-                self.Name_Value: None
+                self.Name_ID: 'productid',  # 产品id 默认取主文件全名
+                self.Name_XPath: '/ProductMetaData/ProductID'
             },
             {
                 self.Name_ID: 'otherxml',  # 预留字段，可空，放文件全路径即可

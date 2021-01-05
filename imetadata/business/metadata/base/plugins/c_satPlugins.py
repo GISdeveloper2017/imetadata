@@ -28,6 +28,11 @@ class CSatPlugins(CPlugins):
     Sat_Object_Status_File = 'file'
     Sat_Object_Status_Unknown = 'unknown'
 
+    # 卫星数据来源 卫星info中默认信息 -卫星内置
+    Plugins_Info_CopyRight = 'copyright'
+    # 卫星产品类型  -卫星内置
+    Plugins_Info_ProductType = 'producttype'
+
     def __init__(self, file_info: CDMFilePathInfoEx):
         super().__init__(file_info)
         self.__object_status__ = self.Sat_Object_Status_Unknown
@@ -51,6 +56,9 @@ class CSatPlugins(CPlugins):
         information[self.Plugins_Info_DetailEngine] = self.get_runtime_detail_engine()
 
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_satellite_all'
+
+        information[self.Plugins_Info_ProductType] = 'NDI'
+
         return information
 
     def create_file_content(self):
@@ -542,6 +550,11 @@ class CSatPlugins(CPlugins):
                 metadata_bus_dict[metadata_bus_id] = metadata_bus_value
             else:
                 metadata_bus_dict[metadata_bus_id] = None
+
+        # 对部分特殊数据进行处理
+        self.process_centerlonlat(metadata_bus_dict)
+        self.process_productattribute(metadata_bus_dict)
+
         return metadata_bus_dict
 
     def qa_sat_metadata_bus_list(self) -> list:
@@ -573,6 +586,7 @@ class CSatPlugins(CPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_NotNull: True,
                 self.Name_Range:
                     {
                         self.Name_Min: -90,
@@ -586,6 +600,7 @@ class CSatPlugins(CPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_NotNull: True,
                 self.Name_Range:
                     {
                         self.Name_Min: -180,
@@ -792,6 +807,49 @@ class CSatPlugins(CPlugins):
                 self.Name_Width: 2000
             }
         ]
+
+    def process_centerlonlat(self, metadata_bus_dict: dict):
+        centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
+        centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
+        if CUtils.equal_ignore_case(centerlatitude, '') or CUtils.equal_ignore_case(centerlongitude, ''):
+            topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
+            topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
+            bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
+            bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
+            metadata_bus_dict['centerlatitude'] = \
+                (CUtils.to_decimal(topleftlatitude) + CUtils.to_decimal(bottomrightlatitude)) / 2
+            metadata_bus_dict['centerlongitude'] = \
+                (CUtils.to_decimal(topleftlongitude) + CUtils.to_decimal(bottomrightlongitude)) / 2
+
+    def process_productattribute(self, metadata_bus_dict: dict):
+        productattribute = CUtils.dict_value_by_name(metadata_bus_dict, 'productattribute', None)
+        if CUtils.equal_ignore_case(productattribute, 'LEVEL1A') \
+                or CUtils.equal_ignore_case(productattribute, 'LEVEL1') \
+                or CUtils.equal_ignore_case(productattribute, 'Level1R') \
+                or CUtils.equal_ignore_case(productattribute, 'LEVEL1B') \
+                or CUtils.equal_ignore_case(productattribute, 'LEVEL1C') \
+                or CUtils.equal_ignore_case(productattribute, 'LV1A') \
+                or CUtils.equal_ignore_case(productattribute, 'L1B'):
+            metadata_bus_dict['productattribute'] = 'L1'
+        elif CUtils.equal_ignore_case(productattribute, 'LEVEL2A') \
+                or CUtils.equal_ignore_case(productattribute, 'Level2R') \
+                or CUtils.equal_ignore_case(productattribute, 'LEVEL2B') \
+                or CUtils.equal_ignore_case(productattribute, 'LEVEL2C') \
+                or CUtils.equal_ignore_case(productattribute, 'LV2A') \
+                or CUtils.equal_ignore_case(productattribute, 'L2B'):
+            metadata_bus_dict['productattribute'] = 'L2'
+        elif CUtils.equal_ignore_case(productattribute, 'LEVEL4A') \
+                or CUtils.equal_ignore_case(productattribute, 'Level4R') \
+                or CUtils.equal_ignore_case(productattribute, 'LEVEL4B') \
+                or CUtils.equal_ignore_case(productattribute, 'LEVEL4C') \
+                or CUtils.equal_ignore_case(productattribute, 'LV4A') \
+                or CUtils.equal_ignore_case(productattribute, 'L4B'):
+            metadata_bus_dict['productattribute'] = 'L4'
+        elif self.productattribute_flag():
+            metadata_bus_dict['productattribute'] = 'L1'
+
+    def productattribute_flag(self):
+        return False
 
     def qa_metadata_custom(self, parser: CMetaDataParser):
         """

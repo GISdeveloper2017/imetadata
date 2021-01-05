@@ -148,15 +148,8 @@ class distribution_satellite(distribution_base):
 
         centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
         centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
-        if CUtils.equal_ignore_case(centerlatitude, '') or CUtils.equal_ignore_case(centerlongitude, ''):
-            topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
-            topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
-            bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
-            bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
-            centerlatitude = (float(topleftlatitude) + float(bottomrightlatitude)) / 2
-            centerlongitude = (float(topleftlongitude) + float(bottomrightlongitude)) / 2
-        centerlatitude = 'POINT({0} {1})'.format(centerlatitude, centerlongitude)
-        main_table.column_list.column_by_name('centerlonlat').set_value(centerlatitude)
+        centerlonlat = '{0},{1}'.format(centerlongitude, centerlatitude)
+        main_table.column_list.column_by_name('centerlonlat').set_value(centerlonlat)
 
         main_table.column_list.column_by_name('geomwkt').set_sql(
             '''
@@ -204,9 +197,12 @@ class distribution_satellite(distribution_base):
             '''.format(object_table_id)
         )
 
+        # productid = CUtils.dict_value_by_name(metadata_bus_dict, 'productid', None)
+        # main_table.column_list.column_by_name('productid').set_value(productid)
         main_table.column_list.column_by_name('productid').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'productid', None)
         )
+
         main_table.column_list.column_by_name('remark').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'remark', None)
         )
@@ -279,29 +275,36 @@ class distribution_satellite(distribution_base):
         ndi_table.column_list.column_by_name('sensorid').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'sensorid', None)
         )
-        topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
-        ndi_table.column_list.column_by_name('topleftlatitude').set_value(topleftlatitude)
-        topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
-        ndi_table.column_list.column_by_name('topleftlongitude').set_value(topleftlongitude)
-        toprightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', None)
-        ndi_table.column_list.column_by_name('toprightlatitude').set_value(toprightlatitude)
-        toprightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlongitude', None)
-        ndi_table.column_list.column_by_name('toprightlongitude').set_value(toprightlongitude)
-        bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
-        ndi_table.column_list.column_by_name('bottomrightlatitude').set_value(bottomrightlatitude)
-        bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
-        ndi_table.column_list.column_by_name('bottomrightlongitude').set_value(bottomrightlongitude)
-        bottomleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlatitude', None)
-        ndi_table.column_list.column_by_name('bottomleftlatitude').set_value(bottomleftlatitude)
-        bottomleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', None)
-        ndi_table.column_list.column_by_name('bottomleftlongitude').set_value(bottomleftlongitude)
-        centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
-        centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
-        if CUtils.equal_ignore_case(centerlatitude, '') or CUtils.equal_ignore_case(centerlongitude, ''):
-            centerlatitude = (float(topleftlatitude) + float(bottomrightlatitude)) / 2
-            centerlongitude = (float(topleftlongitude) + float(bottomrightlongitude)) / 2
-        ndi_table.column_list.column_by_name('centerlatitude').set_value(centerlatitude)
-        ndi_table.column_list.column_by_name('centerlongitude').set_value(centerlongitude)
+        ndi_table.column_list.column_by_name('topleftlatitude').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
+        )
+        ndi_table.column_list.column_by_name('topleftlongitude').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
+        )
+        ndi_table.column_list.column_by_name('toprightlatitude').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', None)
+        )
+        ndi_table.column_list.column_by_name('toprightlongitude').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlongitude', None)
+        )
+        ndi_table.column_list.column_by_name('bottomrightlatitude').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
+        )
+        ndi_table.column_list.column_by_name('bottomrightlongitude').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
+        )
+        ndi_table.column_list.column_by_name('bottomleftlatitude').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlatitude', None)
+        )
+        ndi_table.column_list.column_by_name('bottomleftlongitude').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', None)
+        )
+        ndi_table.column_list.column_by_name('centerlatitude').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
+        )
+        ndi_table.column_list.column_by_name('centerlongitude').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
+        )
 
         ndi_table.column_list.column_by_name('transformimg').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'transformimg', None)
