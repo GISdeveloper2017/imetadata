@@ -521,6 +521,11 @@ class CSatPlugins(CPlugins):
                 self.Name_ID: 'productid',  # 产品id
                 self.Name_XPath: None,
                 self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'otherxml',  # 预留字段，可空，放文件全路径即可
+                self.Name_XPath: None,
+                self.Name_Value: None
             }
         ]
 

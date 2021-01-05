@@ -2,6 +2,7 @@
 # @Time : 2020/11/11 18:21
 # @Author : 赵宇飞
 # @File : distribution_guotu.py
+from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
@@ -86,6 +87,15 @@ class distribution_satellite(distribution_base):
             return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Forbid)
 
     def db_access_check(self, access_Wait_flag, access_Forbid_flag, message):
+        temporary_dict = dict()
+        temporary_dict['dso_time'] = self._dataset.value_by_name(0, 'dso_time', '')
+        temporary_dict['dso_browser'] = self._dataset.value_by_name(0, 'dso_browser', '')
+        temporary_dict['dso_thumb'] = self._dataset.value_by_name(0, 'dso_thumb', '')
+        temporary_dict['dso_geo_wgs84'] = self._dataset.value_by_name(0, 'dso_geo_wgs84', '')
+        for key, value in temporary_dict.items():
+            if CUtils.equal_ignore_case(value, ''):
+                message = message + '[数据{0}入库异常!请进行检查与修正！]'.format(key.replace('dso_', ''))
+                access_Forbid_flag = self.DB_True
         return access_Wait_flag, access_Forbid_flag, message
 
     def sync(self) -> str:
@@ -233,9 +243,12 @@ class distribution_satellite(distribution_base):
         metadata_table.column_list.column_by_name('fid').set_value(object_table_id)
         dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml_bus', None)
         metadata_table.column_list.column_by_name('metaxml').set_value(dsometadataxml)
-        metadata_table.column_list.column_by_name('otherxml').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'otherxml', None)
-        )
+
+        otherxmlsrc = CUtils.dict_value_by_name(metadata_bus_dict, 'otherxml', None)
+        if (not CUtils.equal_ignore_case(otherxmlsrc, '')) and CFile.file_or_path_exist(otherxmlsrc):
+            metadata_table.column_list.column_by_name('otherxml').set_value_from_file(otherxmlsrc, self.FileFormat_TXT)
+        else:
+            metadata_table.column_list.column_by_name('otherxml').set_null()
 
         if not metadata_table.if_exists():
             metadata_table.column_list.column_by_name('version').set_value('1.0')
