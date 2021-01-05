@@ -57,6 +57,7 @@ where dsistatus = {1}
     def process_mission(self, dataset, is_retry_mission: bool) -> str:
         """
         详细算法复杂, 参见readme.md中[### 数据入库调度]章节
+        :param is_retry_mission:
         :param dataset:
         :return:
         """
@@ -71,7 +72,9 @@ where dsistatus = {1}
         ds_ib_option = dataset.value_by_name(0, 'query_ib_option', '')
 
         src_need_storage_size = self.get_storage_size(ds_ib_id, ds_src_storage_id, ds_ib_directory_name, ds_ib_option)
-        src_path = CFile.join_file(ds_src_root_path, ds_ib_directory_name)
+        src_path = ds_src_root_path
+        if not CUtils.equal_ignore_case(ds_ib_directory_name, ''):
+            src_path = CFile.join_file(src_path, ds_ib_directory_name)
         src_dataset_metadata_filename = CFile.join_file(src_path, self.FileName_MetaData_Bus_21AT)
 
         CLogger().debug('入库的目录为: {0}.{1}'.format(ds_ib_id, ds_ib_directory_name))
@@ -136,18 +139,23 @@ where dsistatus = {1}
                     self.update_ib_result(ds_ib_id, result)
                     return result
 
-            proc_ib_src_path = CFile.join_file(ds_src_root_path, ds_ib_directory_name)
-            proc_ib_dest_path = CFile.join_file(
-                CFile.join_file(dest_ib_root_path, dest_ib_subpath),
-                ds_ib_directory_name
-            )
+            proc_ib_src_path = ds_src_root_path
+            proc_ib_dest_path = dest_ib_root_path
+            if not CUtils.equal_ignore_case(dest_ib_subpath, ''):
+                proc_ib_dest_path = CFile.join_file(dest_ib_root_path, dest_ib_subpath)
+
+            if not CUtils.equal_ignore_case(ds_ib_directory_name, ''):
+                proc_ib_src_path = CFile.join_file(proc_ib_src_path, ds_ib_directory_name)
+                proc_ib_dest_path = CFile.join_file(proc_ib_dest_path, ds_ib_directory_name)
 
             # --------------------------------------------------------------至此, 数据入库前的检查处理完毕
-            # 移动源目录至目标目录
-            result = self.ib_files_move(proc_ib_src_path, proc_ib_dest_path)
+            # 移动源目录至目标目录, 如果是根目录, 则仅仅移动文件
+            result = self.ib_files_move(proc_ib_src_path, proc_ib_dest_path,
+                                        CUtils.equal_ignore_case(ds_ib_directory_name, ''))
             if not CResult.result_success(result):
                 # 利用相同的方法, 把移动的数据, 重新移动回原目录, 这里理论上应该100%成功
-                sub_result = self.ib_files_move(proc_ib_dest_path, proc_ib_src_path)
+                sub_result = self.ib_files_move(proc_ib_dest_path, proc_ib_src_path,
+                                                CUtils.equal_ignore_case(ds_ib_directory_name, ''))
                 if not CResult.result_success(sub_result):
                     sub_result_message = CResult.result_message(sub_result)
                     result_message = CResult.result_message(result)
@@ -162,7 +170,8 @@ where dsistatus = {1}
                 dest_ib_subpath)
             if not CResult.result_success(result):
                 # 利用相同的方法, 把移动的数据, 重新移动回原目录, 这里理论上应该100%成功
-                sub_result = self.ib_files_move(proc_ib_dest_path, proc_ib_src_path)
+                sub_result = self.ib_files_move(proc_ib_dest_path, proc_ib_src_path,
+                                                CUtils.equal_ignore_case(ds_ib_directory_name, ''))
                 if not CResult.result_success(sub_result):
                     sub_result_message = CResult.result_message(sub_result)
                     result_message = CResult.result_message(result)
@@ -402,16 +411,20 @@ where dsistatus = {1}
 
         return max_locked_file_count == 0, message
 
-    def ib_files_move(self, src_dir, dest_dir):
+    def ib_files_move(self, src_dir, dest_dir, only_move_subpath_and_file: bool = False):
         """
         移动源文件到目标路径下
         . 注意: 在将源目录下的文件和子目录, 移动至目标目录下
         todo(优化) 如何得知两个目录在一个存储上, 而使用目录的移动替代. 只有不同的存储, 才使用本方法!!!
+        :param only_move_subpath_and_file: 是否仅仅移动目录下的文件和子目录
         :param dest_dir:
         :param src_dir:
         :return:
         """
-        result, failure_file_list = CFile.move_path_to(src_dir, dest_dir)
+        if only_move_subpath_and_file:
+            result, failure_file_list = CFile.move_subpath_and_file_of_path_to(src_dir, dest_dir)
+        else:
+            result, failure_file_list = CFile.move_path_to(src_dir, dest_dir)
         if result:
             return CResult.merge_result(self.Success, '源目录[{0}]已经成功的, 完整的移动至目录[{1}]下! '.format(src_dir, dest_dir))
         else:
@@ -459,7 +472,8 @@ where dsistatus = {1}
         where dsf_ib_id = :ib_id
         '''.format(dest_ib_subpath, self.IB_Bus_Status_Online)
         params_move_file = {
-            'ib_id': ib_id
+            'ib_id': ib_id,
+            'dest_storage_id': dest_ib_storage_id
         }
 
         # 将目录, 更新到目标存储和目录下
@@ -471,20 +485,37 @@ where dsistatus = {1}
         where dsd_ib_id = :ib_id
         '''.format(dest_ib_subpath, self.IB_Bus_Status_Online)
         params_move_directory_metadata = {
-            'ib_id': ib_id
+            'ib_id': ib_id,
+            'dest_storage_id': dest_ib_storage_id
         }
 
-        # 将目录, 更新到目标存储和目录下
-        sql_move_directory_metadata = '''
-        update dm2_storage_directory
-        set dsdstorageid = :dest_storage_id
-            , dsddirectory = '{0}'||dsddirectory
-            , dsd_bus_status = '{1}'
-        where dsd_ib_id = :ib_id
-        '''.format(dest_ib_subpath, self.IB_Bus_Status_Online)
-        params_move_directory_metadata = {
-            'ib_id': ib_id
-        }
+        # 如果源目录为空, 则表明为定时扫描的入库数据, 此时在设置dsdpath时, 应将数据忽略, 仅仅设置它下面的子目录!!!!!!!
+        if CUtils.equal_ignore_case(src_ib_directory_name, ''):
+            sql_move_directory_path_metadata = '''
+            update dm2_storage_directory
+            set dsdstorageid = :dest_storage_id
+                , dsdpath = '{0}'||dsdpath
+                , dsd_bus_status = '{1}'
+            where dsd_ib_id = :ib_id
+                and dsdid <> :dir_id
+            '''.format(dest_ib_subpath, self.IB_Bus_Status_Online)
+            params_move_directory_path_metadata = {
+                'ib_id': ib_id,
+                'dest_storage_id': dest_ib_storage_id,
+                'dir_id': src_dir_id
+            }
+        else:
+            sql_move_directory_path_metadata = '''
+            update dm2_storage_directory
+            set dsdstorageid = :dest_storage_id
+                , dsdpath = '{0}'||dsdpath
+                , dsd_bus_status = '{1}'
+            where dsd_ib_id = :ib_id
+            '''.format(dest_ib_subpath, self.IB_Bus_Status_Online)
+            params_move_directory_path_metadata = {
+                'ib_id': ib_id,
+                'dest_storage_id': dest_ib_storage_id
+            }
 
         # 将数据附属文件, 更新到目标目录下
         sql_move_obj_detail_metadata = '''
@@ -525,6 +556,7 @@ where dsistatus = {1}
         commands = [
             (sql_move_file, params_move_file),
             (sql_move_directory_metadata, params_move_directory_metadata),
+            (sql_move_directory_path_metadata, params_move_directory_path_metadata),
             (sql_move_obj_detail_metadata, params_move_obj_detail_metadata),
             (sql_move_obj_metadata, params_move_obj_metadata),
             (sql_update_ib_target_storage, params_update_ib_target_storage)

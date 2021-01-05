@@ -102,6 +102,7 @@ where dsfscanstatus = 2
 
             result = CResult.merge_result(CResult.Success, '文件[{0}]的识别过程顺利完成!'.format(ds_file_name_with_path))
             self.update_file_status(ds_file_id, result)
+            return result
         except Exception as error:
             result = CResult.merge_result(
                 CResult.Failure,

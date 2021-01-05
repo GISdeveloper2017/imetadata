@@ -30,10 +30,18 @@ class job_dm_ib_storage_scan_monitor(CTimeJob):
 
             try:
                 if self.inbound_mission_existed(storage_id):
-                    self.update_storage_status(storage_id, self.ProcStatus_Finished, '当前存储下发现正在进行中的入库任务, 本次定时扫描将被忽略! ')
+                    self.update_storage_status(
+                        storage_id,
+                        self.ProcStatus_Finished,
+                        '当前存储下发现正在进行中的入库任务, 本次定时扫描将被忽略! '
+                    )
                 else:
                     self.create_inbound_mission(storage_id)
-                    self.update_storage_status(storage_id, self.ProcStatus_Finished, '系统已创建入库批次, 启动扫描! ')
+                    self.update_storage_status(
+                        storage_id,
+                        self.ProcStatus_Finished,
+                        '系统已创建入库批次, 启动扫描! '
+                    )
             except Exception as error:
                 CFactory().give_me_db(self.get_mission_db_id()).execute(
                     '''
@@ -88,7 +96,6 @@ class job_dm_ib_storage_scan_monitor(CTimeJob):
                 and 
                 (
                     dsistatus <> {0}
-                    or dsi_na_status <> {0}
                 )
             '''.format(self.ProcStatus_Finished),
             {'storage_id': storage_id}

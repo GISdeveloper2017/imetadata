@@ -19,10 +19,12 @@ class job_dm_inbound_qi_monitor(CTimeJob):
                 dm2_storage_inbound.dsiid as query_ib_id
               , dm2_storage.dstid as query_storage_id
               , dm2_storage.dsttitle as query_storage_title
+              , dm2_storage.dsttype as query_storage_type
               , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as query_rootpath
               , dm2_storage_inbound.dsidirectory as query_ib_relation_dir
               , dm2_storage_inbound.dsidirectoryid as query_ib_relation_dir_id
               , dm2_storage_inbound.dsibatchno as query_ib_batchno
+              , dm2_storage.dstotheroption as query_storage_option
               , dm2_storage_inbound.dsiotheroption as query_ib_option
             from dm2_storage_inbound 
               left join dm2_storage on dm2_storage.dstid = dm2_storage_inbound.dsistorageid 
@@ -41,11 +43,13 @@ class job_dm_inbound_qi_monitor(CTimeJob):
             ds_ib_id = inbound_qi_list.value_by_name(data_index, 'query_ib_id', '')
             ds_storage_id = inbound_qi_list.value_by_name(data_index, 'query_storage_id', '')
             ds_storage_title = inbound_qi_list.value_by_name(data_index, 'query_storage_title', '')
+            ds_storage_type = inbound_qi_list.value_by_name(data_index, 'query_storage_type', self.Storage_Type_Mix)
             ds_storage_root_dir = inbound_qi_list.value_by_name(data_index, 'query_rootpath', '')
             ds_ib_directory_name = inbound_qi_list.value_by_name(data_index, 'query_ib_relation_dir', '')
             ds_ib_directory_id = inbound_qi_list.value_by_name(data_index, 'query_ib_relation_dir_id', '')
             # 需要时再开启
-            # ds_ib_option = CUtils.any_2_str(inbound_qi_list.value_by_name(data_index, 'query_ib_option', ''))
+            ds_storage_option = CUtils.any_2_str(inbound_qi_list.value_by_name(data_index, 'query_storage_option', ''))
+            ds_ib_option = CUtils.any_2_str(inbound_qi_list.value_by_name(data_index, 'query_ib_option', ''))
 
             CLogger().debug(
                 '正在检查存储[{0}]下的目录[{1}]质检进度...'.format(
@@ -201,7 +205,10 @@ class job_dm_inbound_qi_monitor(CTimeJob):
                             obj_record_correct_count,
                             obj_record_error_count
                         )
-                    )
+                    ),
+                    ds_storage_type,
+                    ds_storage_option,
+                    ds_ib_option
                 )
 
             except Exception as error:
@@ -220,19 +227,32 @@ class job_dm_inbound_qi_monitor(CTimeJob):
 
         return CResult.merge_result(self.Success, '本次入库质检任务成功结束！')
 
-    def update_inbound_qi_result(self, notify_id, result):
+    def update_inbound_qi_result(self, notify_id, result, storage_type='mix', storage_option=None, ib_option=None):
         CLogger().debug(CResult.result_message(result))
         if CResult.result_success(result):
-            switch_inbound_after_qi_immediately_status = CUtils.equal_ignore_case(
-                settings.application.xpath_one(
-                    self.path_switch(
-                        self.Path_Setting_MetaData_QI_Switch,
-                        self.Switch_Inbound_After_QI_Immediately
+            if CUtils.equal_ignore_case(storage_type, self.Storage_Type_InBound):
+                switch_inbound_after_qi_immediately_status = CUtils.equal_ignore_case(
+                    settings.application.xpath_one(
+                        self.path_switch(
+                            self.Path_Setting_MetaData_QI_Switch,
+                            self.Switch_Inbound_After_QI_Immediately_Of_IB_Storage
+                        ),
+                        self.Name_ON
                     ),
-                    self.Name_OFF
-                ),
-                self.Name_ON
-            )
+                    self.Name_ON
+                )
+            else:
+                switch_inbound_after_qi_immediately_status = CUtils.equal_ignore_case(
+                    settings.application.xpath_one(
+                        self.path_switch(
+                            self.Path_Setting_MetaData_QI_Switch,
+                            self.Switch_Inbound_After_QI_Immediately_Of_MIX_Storage
+                        ),
+                        self.Name_OFF
+                    ),
+                    self.Name_ON
+                )
+
             if switch_inbound_after_qi_immediately_status:
                 next_status = self.IB_Status_IB_InQueue
             else:

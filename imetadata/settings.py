@@ -190,8 +190,10 @@ application = CSettings(
                 'title': 'quality inspection 质量检验',
                 'switch': {
                     'title': '开关配置',
-                    'title_inbound_after_qi_immediately': '开关-提交质检后, 系统不论质检是否有无有问题的数据, 都自动入库',
-                    'inbound_after_qi_immediately': 'off'
+                    'title_inbound_after_qi_immediately_of_ib_storage': '开关-入库类型存储中, 提交质检后, 系统不论质检是否有无有问题的数据, 都自动入库',
+                    'inbound_after_qi_immediately_of_ib_storage': 'off',
+                    'title_inbound_after_qi_immediately_of_mix_storage': '开关-混合类型存储中, 提交质检后, 系统不论质检是否有无有问题的数据, 都自动入库',
+                    'inbound_after_qi_immediately_of_mix_storage': 'off'
                 }
             },
             'inbound': {
@@ -210,9 +212,7 @@ application = CSettings(
                     'dir': ['.git']
                 },
                 'switch': {
-                    'title': '开关配置',
-                    'title_use_ready_flag_file_name': '开关-使用ready.21at标识文件判断一个目录是否可以入库',
-                    'use_ready_flag_file_name': 'off'
+                    'title': '开关配置'
                 },
                 'parser': {
                     'metadata': {

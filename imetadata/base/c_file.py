@@ -428,6 +428,27 @@ class CFile:
         """
         移动源目录至目标目录
         注意: 是将源目录下的所有内容, 直接移动至目标目录下; 而不是将源目录作为子目录, 移动至目标目录下!!!
+        返回值:
+        1. 是否完全正常移动: True/False
+        2. 如果是错误, 则返回错误的文件列表, 是一个list
+        :param file_path:
+        :param target_path:
+        :return:
+        """
+        # 计算源目录的名称
+        file_path_name = cls.file_name(file_path)
+        target_path_full_name = cls.join_file(target_path, file_path_name)
+        result, failure_list = cls.move_subpath_and_file_of_path_to(file_path, target_path_full_name)
+
+        if len(failure_list) == 0:
+            shutil.rmtree(file_path)
+
+        return result, failure_list
+
+    @classmethod
+    def move_subpath_and_file_of_path_to(cls, file_path: str, target_path: str):
+        """
+        移动源目录下的子目录和文件, 至目标目录
         :param file_path:
         :param target_path:
         :return:
@@ -446,7 +467,11 @@ class CFile:
                     failure_list.append(cls.join_file(relation_path, sub_file))
 
         if len(failure_list) == 0:
-            shutil.rmtree(file_path)
+            sub_path_list = cls.file_or_subpath_of_path(file_path)
+            for sub_path in sub_path_list:
+                sub_path_full_name = cls.join_file(file_path, sub_path)
+                if cls.is_dir(sub_path_full_name):
+                    shutil.rmtree(sub_path_full_name)
 
         return len(failure_list) == 0, failure_list
 
@@ -476,19 +501,20 @@ class CFile:
                 if cls.file_locked(src_file):
                     locked_file_list.append(cls.join_file(relation_path, sub_file))
 
-        return len(locked_file_list) == 0, locked_file_list
+        return locked_file_list
 
 
 if __name__ == '__main__':
-    print(CFile.join_file('', 'aa/bb/', '中国'))
-    print(os.path.normpath('c:\\a/bb\\c/dd'))
+    # print(CFile.join_file('', 'aa/bb/', '中国'))
+    # print(os.path.normpath('c:\\a/bb\\c/dd'))
     # print(CFile.join_file('/aa/bb/', '/cc'))
     # print(CFile.join_file('/aa/bb', 'cc'))
     # print(CFile.join_file('/aa/bb/', ''))
     # print(CFile.join_file('/aa/bb/', '/'))
     # print(CFile.join_file('/aa/bb', ''))
 
-    # CFile.move_path_to('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios/aa/bb')
+    CFile.move_path_to('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios/aa/bb')
+    # CFile.move_subpath_and_file_of_path_to('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios/aa/bb')
     # shutil.move('/Users/wangxiya/Downloads/axios1', '/Users/wangxiya/Downloads/axios')
     # for file_or_path in CFile.file_or_subpath_of_path('/Users/wangxiya/Documents/交换'):
     #     print(file_or_path)

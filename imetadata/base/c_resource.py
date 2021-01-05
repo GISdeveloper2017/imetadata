@@ -293,7 +293,8 @@ class CResource:
     Name_Timeout = 'timeout'
     Name_Parser = 'parser'
 
-    Switch_Inbound_After_QI_Immediately = 'inbound_after_qi_immediately'
+    Switch_Inbound_After_QI_Immediately_Of_IB_Storage = 'inbound_after_qi_immediately_of_ib_storage'
+    Switch_Inbound_After_QI_Immediately_Of_MIX_Storage = 'inbound_after_qi_immediately_of_mix_storage'
 
     Path_MD_Rule_Type = '/root/type'
     Path_MD_Rule_Plugins_Dir = '/root/plugins/dir/plugin'
