@@ -51,18 +51,10 @@ class CColumn:
         :param value:
         :return:
         """
-        self._value = {CResource.Name_Text: value, CResource.Name_Type: CResource.DataValueType_Value}
-
-    def set_value_or_null(self, value):
-        """
-        对于传入的值，如果为None,则调用setnull，不为空则set_value
-        :param value:
-        :return:
-        """
-        if CUtils.equal_ignore_case(value, ''):
+        if value is None:
             self.set_null()
         else:
-            self.set_value(value)
+            self._value = {CResource.Name_Text: value, CResource.Name_Type: CResource.DataValueType_Value}
 
     def set_sql(self, sql):
         """

@@ -124,25 +124,25 @@ class distribution_satellite(distribution_base):
         main_table.load_info(self._db_id, main_table_name)
         main_table.column_list.column_by_name('id').set_value(object_table_id)
 
-        productname = CUtils.dict_value_by_name(metadata_bus_dict, 'productname', '')
+        productname = CUtils.dict_value_by_name(metadata_bus_dict, 'productname', None)
         if CUtils.equal_ignore_case(productname, ''):
-            productname = object_table_data.value_by_name(0, 'dsoobjectname', '')
+            productname = object_table_data.value_by_name(0, 'dsoobjectname', None)
         main_table.column_list.column_by_name('productname').set_value(productname)
         main_table.column_list.column_by_name('producttype').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'producttype', '')
+            CUtils.dict_value_by_name(metadata_bus_dict, 'producttype', None)
         )
         main_table.column_list.column_by_name('regioncode').set_null()
         main_table.column_list.column_by_name('productattribute').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'productattribute', '')
+            CUtils.dict_value_by_name(metadata_bus_dict, 'productattribute', None)
         )
 
-        centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', '')
-        centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', '')
+        centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
+        centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
         if CUtils.equal_ignore_case(centerlatitude, '') or CUtils.equal_ignore_case(centerlongitude, ''):
-            topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', '')
-            topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', '')
-            bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', '')
-            bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', '')
+            topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
+            topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
+            bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
+            bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
             centerlatitude = (float(topleftlatitude) + float(bottomrightlatitude)) / 2
             centerlongitude = (float(topleftlongitude) + float(bottomrightlongitude)) / 2
         centerlatitude = 'POINT({0} {1})'.format(centerlatitude, centerlongitude)
@@ -160,33 +160,33 @@ class distribution_satellite(distribution_base):
             (select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')
             '''.format(object_table_id)
         )
-        main_table.column_list.column_by_name('browserimg').set_value_or_null(
-            object_table_data.value_by_name(0, 'dso_browser', '')
+        main_table.column_list.column_by_name('browserimg').set_value(
+            object_table_data.value_by_name(0, 'dso_browser', None)
         )
-        main_table.column_list.column_by_name('thumbimg').set_value_or_null(
-            object_table_data.value_by_name(0, 'dso_thumb', '')
+        main_table.column_list.column_by_name('thumbimg').set_value(
+            object_table_data.value_by_name(0, 'dso_thumb', None)
         )
         main_table.column_list.column_by_name('publishdate').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'publishdate', '')
+            CUtils.dict_value_by_name(metadata_bus_dict, 'publishdate', None)
         )
         main_table.column_list.column_by_name('copyright').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'copyright', '')
+            CUtils.dict_value_by_name(metadata_bus_dict, 'copyright', None)
         )
 
-        dso_time = object_table_data.value_by_name(0, 'dso_time', '')
+        dso_time = object_table_data.value_by_name(0, 'dso_time', None)
         dso_time_json = CJson()
         dso_time_json.load_obj(dso_time)
         main_table.column_list.column_by_name('imgdate').set_value(
-            dso_time_json.xpath_one('time', '')
+            dso_time_json.xpath_one('time', None)
         )
         main_table.column_list.column_by_name('starttime').set_value(
-            dso_time_json.xpath_one('start_time', '')
+            dso_time_json.xpath_one('start_time', None)
         )
         main_table.column_list.column_by_name('endtime').set_value(
-            dso_time_json.xpath_one('end_time', '')
+            dso_time_json.xpath_one('end_time', None)
         )
         main_table.column_list.column_by_name('resolution').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', '')
+            CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
         )
         main_table.column_list.column_by_name('filesize').set_sql(
             '''
@@ -195,10 +195,10 @@ class distribution_satellite(distribution_base):
         )
 
         main_table.column_list.column_by_name('productid').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'productid', '')
+            CUtils.dict_value_by_name(metadata_bus_dict, 'productid', None)
         )
-        main_table.column_list.column_by_name('remark').set_value_or_null(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'remark', '')
+        main_table.column_list.column_by_name('remark').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'remark', None)
         )
         main_table.column_list.column_by_name('extent').set_sql(
             '''
@@ -222,6 +222,7 @@ class distribution_satellite(distribution_base):
     def process_metadata_table(self):
         object_table_id = self._obj_id  # 获取oid
         object_table_data = self._dataset
+        metadata_bus_dict = self.get_metadata_bus_dict()
         metadata_table_name = CUtils.dict_value_by_name(
             self.information(), 'metadata_table_name', 'ap_product_metadata'
         )
@@ -230,9 +231,11 @@ class distribution_satellite(distribution_base):
         metadata_table.load_info(self._db_id, metadata_table_name)
         metadata_table.column_list.column_by_name('id').set_value(object_table_id)
         metadata_table.column_list.column_by_name('fid').set_value(object_table_id)
-        dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml_bus', '')
+        dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml_bus', None)
         metadata_table.column_list.column_by_name('metaxml').set_value(dsometadataxml)
-        metadata_table.column_list.column_by_name('otherxml').set_null()
+        metadata_table.column_list.column_by_name('otherxml').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'otherxml', None)
+        )
 
         if not metadata_table.if_exists():
             metadata_table.column_list.column_by_name('version').set_value('1.0')
@@ -252,43 +255,43 @@ class distribution_satellite(distribution_base):
         ndi_table.load_info(self._db_id, ndi_table_name)
         ndi_table.column_list.column_by_name('id').set_value(object_table_id)
 
-        productname = CUtils.dict_value_by_name(metadata_bus_dict, 'productname', '')
+        productname = CUtils.dict_value_by_name(metadata_bus_dict, 'productname', None)
         if CUtils.equal_ignore_case(productname, ''):
-            productname = self._dataset.value_by_name(0, 'dsoobjectname', '')
+            productname = self._dataset.value_by_name(0, 'dsoobjectname', None)
         ndi_table.column_list.column_by_name('rid').set_value(productname)
         ndi_table.column_list.column_by_name('fid').set_value(object_table_id)
         ndi_table.column_list.column_by_name('satelliteid').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'satelliteid', '')
+            CUtils.dict_value_by_name(metadata_bus_dict, 'satelliteid', None)
         )
         ndi_table.column_list.column_by_name('sensorid').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'sensorid', '')
+            CUtils.dict_value_by_name(metadata_bus_dict, 'sensorid', None)
         )
-        topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', '')
+        topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
         ndi_table.column_list.column_by_name('topleftlatitude').set_value(topleftlatitude)
-        topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', '')
+        topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
         ndi_table.column_list.column_by_name('topleftlongitude').set_value(topleftlongitude)
-        toprightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', '')
+        toprightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', None)
         ndi_table.column_list.column_by_name('toprightlatitude').set_value(toprightlatitude)
-        toprightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlongitude', '')
+        toprightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlongitude', None)
         ndi_table.column_list.column_by_name('toprightlongitude').set_value(toprightlongitude)
-        bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', '')
+        bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
         ndi_table.column_list.column_by_name('bottomrightlatitude').set_value(bottomrightlatitude)
-        bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', '')
+        bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
         ndi_table.column_list.column_by_name('bottomrightlongitude').set_value(bottomrightlongitude)
-        bottomleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlatitude', '')
+        bottomleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlatitude', None)
         ndi_table.column_list.column_by_name('bottomleftlatitude').set_value(bottomleftlatitude)
-        bottomleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', '')
+        bottomleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', None)
         ndi_table.column_list.column_by_name('bottomleftlongitude').set_value(bottomleftlongitude)
-        centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', '')
-        centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', '')
+        centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
+        centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
         if CUtils.equal_ignore_case(centerlatitude, '') or CUtils.equal_ignore_case(centerlongitude, ''):
             centerlatitude = (float(topleftlatitude) + float(bottomrightlatitude)) / 2
             centerlongitude = (float(topleftlongitude) + float(bottomrightlongitude)) / 2
         ndi_table.column_list.column_by_name('centerlatitude').set_value(centerlatitude)
         ndi_table.column_list.column_by_name('centerlongitude').set_value(centerlongitude)
 
-        ndi_table.column_list.column_by_name('transformimg').set_value_or_null(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'transformimg', '')
+        ndi_table.column_list.column_by_name('transformimg').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'transformimg', None)
         )
         ndi_table.column_list.column_by_name('filesize').set_sql(
             '''
@@ -297,10 +300,10 @@ class distribution_satellite(distribution_base):
         )
         ndi_table.column_list.column_by_name('dataexist').set_value(0)
         ndi_table.column_list.column_by_name('centertime').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', '')
+            CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
         )
         ndi_table.column_list.column_by_name('resolution').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', '')
+            CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
         )
         ndi_table.column_list.column_by_name('rollangle').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'rollangle', 0)
@@ -308,11 +311,11 @@ class distribution_satellite(distribution_base):
         ndi_table.column_list.column_by_name('cloudpercent').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'cloudpercent', 0)
         )
-        ndi_table.column_list.column_by_name('dataum').set_value_or_null(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'dataum', '')
+        ndi_table.column_list.column_by_name('dataum').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'dataum', None)
         )
-        ndi_table.column_list.column_by_name('acquisition_id').set_value_or_null(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'acquisition_id', '')
+        ndi_table.column_list.column_by_name('acquisition_id').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'acquisition_id', None)
         )
 
         result = ndi_table.save_data()
