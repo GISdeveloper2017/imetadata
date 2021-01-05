@@ -53,6 +53,17 @@ class CColumn:
         """
         self._value = {CResource.Name_Text: value, CResource.Name_Type: CResource.DataValueType_Value}
 
+    def set_value_or_null(self, value):
+        """
+        对于传入的值，如果为None,则调用setnull，不为空则set_value
+        :param value:
+        :return:
+        """
+        if CUtils.equal_ignore_case(value, ''):
+            self.set_null()
+        else:
+            self.set_value(value)
+
     def set_sql(self, sql):
         """
         设置value为原生的sql

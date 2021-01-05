@@ -123,9 +123,11 @@ class distribution_satellite(distribution_base):
         main_table = CTable()
         main_table.load_info(self._db_id, main_table_name)
         main_table.column_list.column_by_name('id').set_value(object_table_id)
-        main_table.column_list.column_by_name('productname').set_value(
-            object_table_data.value_by_name(0, 'dsoobjectname', '')
-        )
+
+        productname = CUtils.dict_value_by_name(metadata_bus_dict, 'productname', '')
+        if CUtils.equal_ignore_case(productname, ''):
+            productname = object_table_data.value_by_name(0, 'dsoobjectname', '')
+        main_table.column_list.column_by_name('productname').set_value(productname)
         main_table.column_list.column_by_name('producttype').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'producttype', '')
         )
@@ -158,10 +160,10 @@ class distribution_satellite(distribution_base):
             (select dso_geo_wgs84 from dm2_storage_object where dsoid='{0}')
             '''.format(object_table_id)
         )
-        main_table.column_list.column_by_name('browserimg').set_value(
+        main_table.column_list.column_by_name('browserimg').set_value_or_null(
             object_table_data.value_by_name(0, 'dso_browser', '')
         )
-        main_table.column_list.column_by_name('thumbimg').set_value(
+        main_table.column_list.column_by_name('thumbimg').set_value_or_null(
             object_table_data.value_by_name(0, 'dso_thumb', '')
         )
         main_table.column_list.column_by_name('publishdate').set_value(
@@ -192,8 +194,10 @@ class distribution_satellite(distribution_base):
             '''.format(object_table_id)
         )
 
-        main_table.column_list.column_by_name('productid').set_value(object_table_id)
-        main_table.column_list.column_by_name('remark').set_value(
+        main_table.column_list.column_by_name('productid').set_value(
+            CUtils.dict_value_by_name(metadata_bus_dict, 'productid', '')
+        )
+        main_table.column_list.column_by_name('remark').set_value_or_null(
             CUtils.dict_value_by_name(metadata_bus_dict, 'remark', '')
         )
         main_table.column_list.column_by_name('extent').set_sql(
@@ -203,15 +207,14 @@ class distribution_satellite(distribution_base):
         )
         main_table.column_list.column_by_name('proj').set_null()  # 原始数据保持空
 
-        main_table.column_list.column_by_name('dataid').set_null()
+        main_table.column_list.column_by_name('dataid').set_null()  # ap_monitor_data表对应id(数据id)，目前不清楚怎么取
         main_table.column_list.column_by_name('shplog').set_null()
-        main_table.column_list.column_by_name('projectnames').set_null()
 
         if not main_table.if_exists():
             now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
             main_table.column_list.column_by_name('addtime').set_value(now_time)
             main_table.column_list.column_by_name('isdel').set_value(0)
-
+            main_table.column_list.column_by_name('projectnames').set_value('productname')
         result = main_table.save_data()
 
         return result
@@ -229,10 +232,10 @@ class distribution_satellite(distribution_base):
         metadata_table.column_list.column_by_name('fid').set_value(object_table_id)
         dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml_bus', '')
         metadata_table.column_list.column_by_name('metaxml').set_value(dsometadataxml)
-        metadata_table.column_list.column_by_name('version').set_null()
         metadata_table.column_list.column_by_name('otherxml').set_null()
 
         if not metadata_table.if_exists():
+            metadata_table.column_list.column_by_name('version').set_value('1.0')
             now_time = CUtils.any_2_str(datetime.datetime.now().strftime('%F %T'))
             metadata_table.column_list.column_by_name('addtime').set_value(now_time)
 
@@ -248,7 +251,12 @@ class distribution_satellite(distribution_base):
         ndi_table = CTable()
         ndi_table.load_info(self._db_id, ndi_table_name)
         ndi_table.column_list.column_by_name('id').set_value(object_table_id)
-        ndi_table.column_list.column_by_name('rid').set_value(object_table_id)
+
+        productname = CUtils.dict_value_by_name(metadata_bus_dict, 'productname', '')
+        if CUtils.equal_ignore_case(productname, ''):
+            productname = self._dataset.value_by_name(0, 'dsoobjectname', '')
+        ndi_table.column_list.column_by_name('rid').set_value(productname)
+        ndi_table.column_list.column_by_name('fid').set_value(object_table_id)
         ndi_table.column_list.column_by_name('satelliteid').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'satelliteid', '')
         )
@@ -279,7 +287,7 @@ class distribution_satellite(distribution_base):
         ndi_table.column_list.column_by_name('centerlatitude').set_value(centerlatitude)
         ndi_table.column_list.column_by_name('centerlongitude').set_value(centerlongitude)
 
-        ndi_table.column_list.column_by_name('transformimg').set_value(
+        ndi_table.column_list.column_by_name('transformimg').set_value_or_null(
             CUtils.dict_value_by_name(metadata_bus_dict, 'transformimg', '')
         )
         ndi_table.column_list.column_by_name('filesize').set_sql(
@@ -295,15 +303,15 @@ class distribution_satellite(distribution_base):
             CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', '')
         )
         ndi_table.column_list.column_by_name('rollangle').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'rollangle', '')
+            CUtils.dict_value_by_name(metadata_bus_dict, 'rollangle', 0)
         )
         ndi_table.column_list.column_by_name('cloudpercent').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'cloudpercent', '')
+            CUtils.dict_value_by_name(metadata_bus_dict, 'cloudpercent', 0)
         )
-        ndi_table.column_list.column_by_name('dataum').set_value(
+        ndi_table.column_list.column_by_name('dataum').set_value_or_null(
             CUtils.dict_value_by_name(metadata_bus_dict, 'dataum', '')
         )
-        ndi_table.column_list.column_by_name('acquisition_id').set_value(
+        ndi_table.column_list.column_by_name('acquisition_id').set_value_or_null(
             CUtils.dict_value_by_name(metadata_bus_dict, 'acquisition_id', '')
         )
 

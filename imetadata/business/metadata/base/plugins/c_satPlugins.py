@@ -491,7 +491,6 @@ class CSatPlugins(CPlugins):
             },
             {
                 self.Name_ID: 'copyright',  # 发布来源 从info取
-                self.Name_XPath: None,
                 self.Name_Value: None
             },
             {
@@ -505,12 +504,21 @@ class CSatPlugins(CPlugins):
                 self.Name_Value: None
             },
             {
-                self.Name_ID: 'producttype',  # 产品类型
+                self.Name_ID: 'productname',  # 产品名称，有的能从卫星元数据里面取，没有就不取
+                self.Name_XPath: None
+            },
+            {
+                self.Name_ID: 'producttype',  # 产品类型 必填
                 self.Name_XPath: None,
                 self.Name_Value: None
             },
             {
-                self.Name_ID: 'productattribute',  # 产品属性
+                self.Name_ID: 'productattribute',  # 产品属性 必填
+                self.Name_XPath: None,
+                self.Name_Value: None
+            },
+            {
+                self.Name_ID: 'productid',  # 产品id
                 self.Name_XPath: None,
                 self.Name_Value: None
             }
@@ -702,6 +710,14 @@ class CSatPlugins(CPlugins):
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'copyright',
+                self.Name_Title: '发布来源',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
                 self.Name_ID: 'rollangle',
                 self.Name_Title: '侧摆角',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -732,6 +748,43 @@ class CSatPlugins(CPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Warn,
                 self.Name_NotNull: True
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'productname',
+                self.Name_Title: '产品名称',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Width: 100
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'producttype',
+                self.Name_Title: '产品类型',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 10
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'productattribute',
+                self.Name_Title: '产品属性',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 50
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'productid',
+                self.Name_Title: '产品id',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_Width: 2000
             }
         ]
 
