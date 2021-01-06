@@ -197,11 +197,21 @@ class distribution_satellite(distribution_base):
             '''.format(object_table_id)
         )
 
-        # productid = CUtils.dict_value_by_name(metadata_bus_dict, 'productid', None)
-        # main_table.column_list.column_by_name('productid').set_value(productid)
-        main_table.column_list.column_by_name('productid').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'productid', None)
-        )
+        productid = CUtils.dict_value_by_name(metadata_bus_dict, 'productid', None)
+        if CUtils.equal_ignore_case(productid, ''):
+            object_type = object_table_data.value_by_name(0, 'dsodatatype', '')
+            if CUtils.equal_ignore_case(object_type, self.Name_Dir):
+                main_table.column_list.column_by_name('productid').set_value(
+                    object_table_data.value_by_name(0, 'dsoobjectname', None)
+                )
+            elif CUtils.equal_ignore_case(object_type, self.Name_File):
+                main_table.column_list.column_by_name('productid').set_sql(
+                    '''
+                    (SELECT dsffilename FROM dm2_storage_file WHERE dsf_object_id = '{0}')
+                    '''.format(object_table_id)
+                )
+            else:
+                main_table.column_list.column_by_name('productid').set_null()
 
         main_table.column_list.column_by_name('remark').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'remark', None)

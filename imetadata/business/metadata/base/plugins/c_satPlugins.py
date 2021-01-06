@@ -552,8 +552,7 @@ class CSatPlugins(CPlugins):
                 metadata_bus_dict[metadata_bus_id] = None
 
         # 对部分特殊数据进行处理
-        self.process_centerlonlat(metadata_bus_dict)
-        self.process_productattribute(metadata_bus_dict)
+        self.process_custom(metadata_bus_dict)
 
         return metadata_bus_dict
 
@@ -850,6 +849,13 @@ class CSatPlugins(CPlugins):
 
     def productattribute_flag(self):
         return False
+
+    def process_custom(self, metadata_bus_dict):
+        """
+        对部分需要进行运算的数据进行处理
+        """
+        self.process_centerlonlat(metadata_bus_dict)
+        self.process_productattribute(metadata_bus_dict)
 
     def qa_metadata_custom(self, parser: CMetaDataParser):
         """

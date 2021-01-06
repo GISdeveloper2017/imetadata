@@ -119,14 +119,16 @@ class module_distribution(CDAModule):
                     quality_info_xml,
                     dataset
                 )
+
                 try:  # 主要用于卫星插件的方法
-                    dsometadataxml = dataset.value_by_name(0, 'dsometadataxml_bus', '')
                     dsometadataxml_xml = CXml()
+                    dsometadataxml = dataset.value_by_name(0, 'dsometadataxml_bus', '')
                     dsometadataxml_xml.load_xml(dsometadataxml)
                     metadata_bus_dict = class_classified_obj.metadata_bus_xml_to_dict(dsometadataxml_xml)
                     distribution_obj.set_metadata_bus_dict(metadata_bus_dict)
                 except:
-                    pass
+                    if CUtils.equal_ignore_case(distribution_file_main_name, 'distribution_satellite_all'):
+                        raise
 
                 distribution_obj_real = distribution_obj
         if distribution_obj_real is None:
