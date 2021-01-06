@@ -16,6 +16,8 @@ from imetadata.business.metadata.base.parser.detail.c_detailParser_file_itself i
 from imetadata.business.metadata.base.parser.detail.c_detailParser_file_of_dir import CDetailParser_File_Of_Dir
 from imetadata.business.metadata.base.parser.detail.c_detailParser_file_of_same_dir import \
     CDetailParser_File_Of_Same_Dir
+from imetadata.business.metadata.base.parser.detail.c_detailParser_fuzzy_file_main_name import \
+    CDetailParser_Fuzzy_File_Main_Name
 from imetadata.business.metadata.base.parser.detail.c_detailParser_same_file_main_name import \
     CDetailParser_Same_File_Main_Name
 
@@ -40,6 +42,8 @@ class CDetailParserMng(CResource):
             return CDetailParser_File_Of_Dir(object_id, object_name, file_info, file_custom_list)
         elif CUtils.equal_ignore_case(input_parser_type, cls.DetailEngine_All_File_Of_Dir):
             return CDetailParser_All_File_Of_Dir(object_id, object_name, file_info, file_custom_list)
+        elif CUtils.equal_ignore_case(input_parser_type, cls.DetailEngine_Fuzzy_File_Main_Name):
+            return CDetailParser_Fuzzy_File_Main_Name(object_id, object_name, file_info, file_custom_list)
         elif CUtils.equal_ignore_case(input_parser_type, cls.DetailEngine_Busdataset):  # 用于入数据集的附属文件metadata.21at
             return CDetailParser_Busdataset(object_id, object_name, file_info, file_custom_list)
         else:

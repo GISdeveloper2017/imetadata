@@ -179,11 +179,11 @@ class CSatPlugins(CPlugins):
         :return:
         """
         if self.__object_status__ == self.Sat_Object_Status_Zip:
-            return None
+            return self.DetailEngine_File_Itself
         elif self.__object_status__ == self.Sat_Object_Status_Dir:
             return self.DetailEngine_All_File_Of_Dir
         elif self.__object_status__ == self.Sat_Object_Status_File:
-            return self.DetailEngine_Same_File_Main_Name
+            return self.DetailEngine_Fuzzy_File_Main_Name
         else:
             return None
 
