@@ -261,7 +261,7 @@ class job_dm_inbound_qi_monitor(CTimeJob):
             CFactory().give_me_db(self.get_mission_db_id()).execute(
                 '''
                 update dm2_storage_inbound 
-                set dsiStatus = {0}, dsiprocmemo = :notify_message
+                set dsiStatus = {0}, dsiprocmemo = :notify_message, dsiproctime = now()
                 where dsiid = :notify_id   
                 '''.format(next_status),
                 {'notify_id': notify_id, 'notify_message': CResult.result_message(result)}
@@ -270,7 +270,7 @@ class job_dm_inbound_qi_monitor(CTimeJob):
             CFactory().give_me_db(self.get_mission_db_id()).execute(
                 '''
                 update dm2_storage_inbound 
-                set dsiprocmemo = :notify_message
+                set dsiprocmemo = :notify_message, dsiproctime = now()
                 where dsiid = :notify_id   
                 ''',
                 {'notify_id': notify_id, 'notify_message': CResult.result_message(result)}

@@ -18,7 +18,7 @@ class job_dm_inbound_qi(CDMBaseJob):
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage_inbound 
-set dsiprocid = '{0}', dsiStatus = {1}
+set dsiprocid = '{0}', dsiStatus = {1}, dsiaddtime = now(), dsiproctime = now()
 where dsiid = (
   select dsiid  
   from   dm2_storage_inbound 
