@@ -6,18 +6,16 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
-from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
+from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf1_pms_and_wfv import \
+    CSatFilePlugins_gf1_pms_and_wfv
 
 
-class CSatFilePlugins_gf1_wfv(CSatPlugins):
+class CSatFilePlugins_gf1_wfv(CSatFilePlugins_gf1_pms_and_wfv):
 
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = 'GF1_WFV'
         information[self.Plugins_Info_Type_Title] = '高分一号WFV传感器'
-        information[self.Plugins_Info_Group] = 'GF1'
-        information[self.Plugins_Info_Group_Title] = '高分一号'
-        information[self.Plugins_Info_CopyRight] = '高分中心'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
@@ -42,9 +40,9 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         #            File    GF1_WFV1_E65.2_N26.6_20130927_L1A0000090284-PAN1.tiff
         #                    GF1_WFV2_E65.2_N26.6_20130927_L1A0000090284-PAN2.tiff
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)^GF1.*WFV.*[_].*$', self.TextMatchType_Regex
+            return r'(?i)^GF1_WFV.*[_].*', self.TextMatchType_Regex
         else:
-            return r'(?i)^GF1.*WFV.*[_].*[.]tiff$', self.TextMatchType_Regex
+            return r'(?i)^GF1_WFV.*[_].*[.]tiff$', self.TextMatchType_Regex
 
     def get_classified_object_name_of_sat(self, sat_file_status) -> str:
         """
@@ -87,6 +85,14 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
                 self.Name_Title: '影像文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_FileName: '{0}.xml'.format(self.classified_object_name()),
+                self.Name_ID: 'bus_xml',
+                self.Name_Title: '业务元数据',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.MetaDataFormat_XML
             }
         ]
 
@@ -105,12 +111,10 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             },
             {
                 self.Name_ID: 'centerlatitude',  # 中心维度
-                self.Name_XPath: None,
                 self.Name_Value: None
             },
             {
                 self.Name_ID: 'centerlongitude',  # 中心经度
-                self.Name_XPath: None,
                 self.Name_Value: None
             },
             {
@@ -147,7 +151,6 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             },
             {
                 self.Name_ID: 'transformimg',  # 斜视图,可空,不用质检
-                self.Name_XPath: None,
                 self.Name_Value: None
             },
             {
@@ -156,7 +159,8 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/ProductMetaData/ImageGSD'
+                self.Name_XPath: '/ProductMetaData/ImageGSD',
+                self.Name_Value: 2
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
@@ -181,11 +185,9 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
                 self.Name_XPath: '/ProductMetaData/ProduceTime',
-                self.Name_Value: None
             },
             {
                 self.Name_ID: 'remark',  # 备注 可空
-                self.Name_XPath: None,
                 self.Name_Value: None
             },
             {
@@ -217,22 +219,6 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             }
         ]
 
-    def process_custom(self, metadata_bus_id, metadata_bus_xpath_value):
-        """
-        metadata_bus_id：即Name_ID
-        metadata_bus_xpath_value：即取到的值
-        对部分需要进行运算的数据进行处理
-        """
-        #  一定要写这个，不然部分默认的处理会不生效
-        metadata_bus_xpath_value = super().process_custom(metadata_bus_id, metadata_bus_xpath_value)
-
-        if CUtils.equal_ignore_case(metadata_bus_id, 'resolution'):
-            resolution = CUtils.to_decimal(metadata_bus_xpath_value, 0)
-            if resolution > 0:
-                metadata_bus_xpath_value = 2 / resolution
-
-        return metadata_bus_xpath_value
-
     def get_metadata_bus_filename_by_file(self) -> str:
         """
         卫星数据解压后, 哪个文件是业务元数据?
@@ -241,87 +227,6 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         return CFile.join_file(
             self.file_content.content_root_dir,
             '{0}.xml'.format(self.classified_object_name())
-        )
-
-    def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
-        """
-        标准模式的提取时间信息的列表
-        :param parser:
-        :return:
-        """
-        return [
-            {
-                self.Name_ID: self.Name_Time,
-                self.Name_XPath: '/ProductMetaData/CenterTime',
-                self.Name_Format: self.MetaDataFormat_XML
-            },
-            {
-                self.Name_ID: self.Name_Start_Time,
-                self.Name_XPath: '/ProductMetaData/StartTime',
-                self.Name_Format: self.MetaDataFormat_XML
-            },
-            {
-                self.Name_ID: self.Name_End_Time,
-                self.Name_XPath: '/ProductMetaData/EndTime',
-                self.Name_Format: self.MetaDataFormat_XML
-            }
-        ]
-
-    def parser_metadata_spatial_after_qa(self, parser: CMetaDataParser):
-        """
-        继承本方法, 对详细的空间元数据信息进行处理
-        注意:
-            super().parser_metadata_spatial_after_qa(parser)
-            要写在自定义的空间信息提取之后!!!
-            完成 负责人 邢凯凯 继承本方法, 因为卫星数据的特殊性, 可以只取中心点和外包框
-
-        :param parser:
-        :return:
-        """
-        xml = parser.metadata.metadata_bus_xml()
-        TopLeftLatitude = xml.xpath_one('/ProductMetaData/TopLeftLatitude')
-        TopLeftLongitude = xml.xpath_one('/ProductMetaData/TopLeftLongitude')
-        BottomRightLatitude = xml.xpath_one('/ProductMetaData/TopLeftLatitude')
-        BottomRightLongitude = xml.xpath_one('/ProductMetaData/TopLeftLongitude')
-
-        center_latitude = (float(xml.get_element_text(TopLeftLatitude)) + float(
-            xml.get_element_text(BottomRightLatitude))) / 2
-        center_longitude = (float(xml.get_element_text(TopLeftLongitude)) + float(
-            xml.get_element_text(BottomRightLongitude))) / 2
-
-        TopLeftLatitude_text = xml.get_element_text(TopLeftLatitude)
-        TopLeftLongitude_text = xml.get_element_text(TopLeftLongitude)
-        BottomLeftLatitude_text = xml.get_element_text(xml.xpath_one('/ProductMetaData/BottomLeftLatitude'))
-        BottomLeftLongitude_text = xml.get_element_text(xml.xpath_one('/ProductMetaData/BottomLeftLongitude'))
-        TopRightLatitude_text = xml.get_element_text(xml.xpath_one('/ProductMetaData/TopRightLatitude'))
-        TopRightLongitude_text = xml.get_element_text(xml.xpath_one('/ProductMetaData/TopRightLongitude'))
-        BottomRightLatitude_text = xml.get_element_text(BottomRightLatitude)
-        BottomRightLongitude_text = xml.get_element_text(BottomRightLongitude)
-
-        native_center_filename_with_path = CFile.join_file(self.file_content.work_root_dir,
-                                                           '{0}_native_center.wkt'.format(CUtils.one_id()))
-        native_bbox_filename_with_path = CFile.join_file(self.file_content.work_root_dir,
-                                                         '{0}_native_bbox.wkt'.format(CUtils.one_id()))
-        CFile.str_2_file('point({0} {1})'.format(center_latitude, center_longitude), native_center_filename_with_path)
-        CFile.str_2_file(
-            'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
-                BottomLeftLatitude_text, BottomLeftLongitude_text,
-                TopLeftLatitude_text, TopLeftLongitude_text,
-                TopRightLatitude_text, TopRightLongitude_text,
-                BottomRightLatitude_text, BottomRightLongitude_text
-            ),
-            native_bbox_filename_with_path)
-
-        parser.metadata.set_metadata_spatial(self.Success, '', self.Spatial_MetaData_Type_Native_Center,
-                                             native_center_filename_with_path)
-        parser.metadata.set_metadata_spatial(self.Success, '', self.Spatial_MetaData_Type_Native_BBox,
-                                             native_bbox_filename_with_path)
-
-        super().parser_metadata_spatial_after_qa(parser)
-
-        return CResult.merge_result(
-            self.Success,
-            '数据文件[{0}]的空间信息解析成功! '.format(self.file_info.file_name_with_full_path)
         )
 
     def parser_metadata_view_list(self, parser: CMetaDataParser):

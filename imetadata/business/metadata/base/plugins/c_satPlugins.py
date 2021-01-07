@@ -246,6 +246,36 @@ class CSatPlugins(CPlugins):
         :param parser:
         :return:
         """
+        metadata_bus_xml = parser.metadata.metadata_bus_xml()
+        metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml)
+        topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
+        topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
+        toprightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', None)
+        toprightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlongitude', None)
+        bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
+        bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
+        bottomleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlatitude', None)
+        bottomleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', None)
+        centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
+        centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
+        native_center_filename_with_path = CFile.join_file(
+            self.file_content.work_root_dir, '{0}_native_center.wkt'.format(self.file_info.file_main_name))
+        native_bbox_filename_with_path = CFile.join_file(
+            self.file_content.work_root_dir, '{0}_native_bbox.wkt'.format(self.file_info.file_main_name))
+
+        CFile.str_2_file('point({0} {1})'.format(centerlatitude, centerlongitude), native_center_filename_with_path)
+        CFile.str_2_file(
+            'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
+                bottomleftlatitude, bottomleftlongitude, topleftlatitude, topleftlongitude,
+                toprightlatitude, toprightlongitude, bottomrightlatitude, bottomrightlongitude),
+            native_bbox_filename_with_path
+        )
+
+        parser.metadata.set_metadata_spatial(self.Success, '空间数据的中心点坐标提取完成',
+                                             self.Spatial_MetaData_Type_Native_Center, native_center_filename_with_path)
+        parser.metadata.set_metadata_spatial(self.Success, '空间数据的四至坐标提取完成',
+                                             self.Spatial_MetaData_Type_Native_BBox, native_bbox_filename_with_path)
+
         parser.metadata.metadata_spatial_obj().native_geom = parser.metadata.metadata_spatial_obj().native_box
         parser.metadata.metadata_spatial_obj().wgs84_bbox = parser.metadata.metadata_spatial_obj().native_box
         parser.metadata.metadata_spatial_obj().wgs84_geom = parser.metadata.metadata_spatial_obj().native_geom
@@ -268,7 +298,13 @@ class CSatPlugins(CPlugins):
         parser.metadata.metadata_spatial_obj().prj_zone = None
         parser.metadata.metadata_spatial_obj().prj_source = self.Prj_Source_BusMetaData
 
-        return super().parser_metadata_spatial_after_qa(parser)
+        super().parser_metadata_spatial_after_qa(parser)
+
+        parser.metadata.set_metadata_spatial(
+            self.DB_True,
+            '空间元数据提取完成! '
+        )
+        return CResult.merge_result(self.Success, '空间元数据提取完成! ')
 
     def parser_metadata_view_after_qa(self, parser: CMetaDataParser):
         """
@@ -546,26 +582,27 @@ class CSatPlugins(CPlugins):
             # 如果xpah配置就从业务元数据里取值，没配就用value的值
             if metadata_bus_xpath is not None:
                 metadata_bus_xpath_value = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_xpath)
-                # 进行映射处理
-                metadata_bus_map = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Map, None)
-                if metadata_bus_map is not None:
-                    default_value = CUtils.dict_value_by_name(metadata_bus_map, self.Name_Default, None)
-                    if default_value is not None:  # 设置不符合映射的默认值
-                        metadata_bus_xpath_value = default_value
-                        metadata_bus_map.pop(self.Name_Default)
-                    for map_key, map_value in metadata_bus_map.items():
-                        if CUtils.equal_ignore_case(map_key, metadata_bus_xpath_value):
-                            metadata_bus_xpath_value = map_value
-                            break
-                # 对部分特殊数据进行自定义处理
-                metadata_bus_dict[metadata_bus_id] = self.process_custom(metadata_bus_id, metadata_bus_xpath_value)
-            elif metadata_bus_value is not None:
-                metadata_bus_dict[metadata_bus_id] = metadata_bus_value
+                if not CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
+                    # 进行映射处理
+                    metadata_bus_map = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Map, None)
+                    if metadata_bus_map is not None:
+                        default_value = CUtils.dict_value_by_name(metadata_bus_map, self.Name_Default, None)
+                        if default_value is not None:  # 设置不符合映射的默认值
+                            metadata_bus_xpath_value = default_value
+                            metadata_bus_map.pop(self.Name_Default)
+                        for map_key, map_value in metadata_bus_map.items():
+                            if CUtils.equal_ignore_case(map_key, metadata_bus_xpath_value):
+                                metadata_bus_xpath_value = map_value
+                                break
+                    # 对部分特殊数据进行自定义处理
+                    metadata_bus_dict[metadata_bus_id] = metadata_bus_xpath_value
+                else:
+                    metadata_bus_dict[metadata_bus_id] = metadata_bus_value
             else:
-                metadata_bus_dict[metadata_bus_id] = None
+                metadata_bus_dict[metadata_bus_id] = metadata_bus_value
 
-        # 因为中心的坐标运算特殊，所以在这里进行
-        self.process_centerlonlat(metadata_bus_dict)
+        # 对于一些需要计算的数据进行运算
+        self.process_custom(metadata_bus_dict)
 
         return metadata_bus_dict
 
@@ -582,11 +619,11 @@ class CSatPlugins(CPlugins):
             metadata_bus_dict['centerlongitude'] = \
                 (CUtils.to_decimal(topleftlongitude) + CUtils.to_decimal(bottomrightlongitude)) / 2
 
-    def process_custom(self, metadata_bus_id, metadata_bus_xpath_value):
+    def process_custom(self, metadata_bus_dict):
         """
         对部分需要进行运算的数据进行处理
         """
-        return metadata_bus_xpath_value
+        self.process_centerlonlat(metadata_bus_dict)
 
     def qa_sat_metadata_bus_list(self) -> list:
         return [
