@@ -84,18 +84,25 @@ where dsiStatus = {1}
             )
 
         try:
+            ds_ib_information_updated = False
             # 检查目录名格式并自动修正
             if not CUtils.equal_ignore_case(ds_ib_directory_name, ''):
                 ds_ib_directory = CFile.unify(CFile.add_prefix(ds_ib_directory_name))
                 if not CUtils.equal_ignore_case(ds_ib_directory, ds_ib_directory_name):
-                    self.correct_ib_directory(ds_ib_id, ds_ib_directory)
                     ds_ib_directory_name = ds_ib_directory
+                    ds_ib_information_updated = True
 
-            if not CUtils.equal_ignore_case(ds_ib_batch_no, ''):
-                ds_ib_batch_no_new = CFactory().give_me_db(self.get_mission_db_id()).seq_next_value(
+            if CUtils.equal_ignore_case(ds_ib_batch_no, ''):
+                ds_ib_batch_no = CFactory().give_me_db(self.get_mission_db_id()).seq_next_value(
                     self.Seq_Type_Date_AutoInc)
-                self.correct_ib_batch_no(ds_ib_id, ds_ib_batch_no_new)
-                ds_ib_batch_no = ds_ib_batch_no_new
+                ds_ib_information_updated = True
+
+            if CUtils.equal_ignore_case(ds_ib_directory_id, ''):
+                ds_ib_directory_id = CUtils.one_id()
+                ds_ib_information_updated = True
+
+            if ds_ib_information_updated:
+                self.correct_ib_information(ds_ib_id, ds_ib_directory_name, ds_ib_batch_no, ds_ib_directory_id)
 
             if not CUtils.equal_ignore_case(ds_ib_directory_name, ''):
                 ib_full_directory = CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
@@ -180,25 +187,11 @@ where dsiStatus = {1}
                 {'notify_id': notify_id, 'notify_message': CResult.result_message(result)}
             )
 
-    def correct_ib_directory(self, ds_ib_id, ds_ib_directory):
+    def correct_ib_information(self, ds_ib_id, ds_ib_directory, ds_ib_batch_no, ds_ib_directory_id):
         """
-        修正入库目录的编写格式
-        :param ds_ib_id:
+        自动创建入库记录信息
         :param ds_ib_directory:
-        :return:
-        """
-        CFactory().give_me_db(self.get_mission_db_id()).execute(
-            '''
-            update dm2_storage_inbound 
-            set dsidirectory = :directory
-            where dsiid = :ib_id   
-            ''',
-            {'ib_id': ds_ib_id, 'directory': ds_ib_directory}
-        )
-
-    def correct_ib_batch_no(self, ds_ib_id, ds_ib_batch_no):
-        """
-        自动创建入库批次
+        :param ds_ib_directory_id:
         :param ds_ib_id:
         :param ds_ib_batch_no:
         :return:
@@ -206,10 +199,17 @@ where dsiStatus = {1}
         CFactory().give_me_db(self.get_mission_db_id()).execute(
             '''
             update dm2_storage_inbound 
-            set dsibatchno = :batch_no
+            set dsidirectory = :directory
+                , dsibatchno = :batch_no
+                , dsidirectoryid = :directory_id
             where dsiid = :ib_id   
             ''',
-            {'ib_id': ds_ib_id, 'batch_no': ds_ib_batch_no}
+            {
+                'ib_id': ds_ib_id,
+                'directory': ds_ib_directory,
+                'batch_no': ds_ib_batch_no,
+                'directory_id': ds_ib_directory_id
+            }
         )
 
 
