@@ -436,6 +436,18 @@ class CSatPlugins(CPlugins):
     def get_metadata_bus_configuration_list(self) -> list:
         """
         固定的列表，重写时不可缺项
+        可配置的项目：
+        self.Name_ID：字段的名称 例：self.Name_ID: 'satelliteid'
+        self.Name_XPath：需要从xml中取值时的xpath 例：self.Name_XPath: '/ProductMetaData/SatelliteID'
+        self.Name_Other_XPath：当有多个xpath时的配置 ,注意值为list
+        例：self.Name_Other_XPath: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD']
+        self.Name_Value：不在xml取得默认值与当XPath取不到值时取的值 例 self.Name_Value: 1
+        self.Name_Map：映射，当取到的值为key的值时将值转换为value
+        例 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
+                                    'LEVEL1A': 'L1',
+                                    'LEVEL2A': 'L2',
+                                    'LEVEL4A': 'L4'
+                                    # self.Name_Default: None # 没有对应的的映射使用的默认值}
         """
         return [
             {
@@ -582,6 +594,15 @@ class CSatPlugins(CPlugins):
             # 如果xpah配置就从业务元数据里取值，没配就用value的值
             if metadata_bus_xpath is not None:
                 metadata_bus_xpath_value = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_xpath)
+                # 对有多个xpath的情况进行处理
+                if CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
+                    metadata_bus_other_xpath_list = \
+                        CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Other_XPath, None)
+                    if metadata_bus_other_xpath_list is not None:
+                        for other_xpath in metadata_bus_other_xpath_list:
+                            metadata_bus_xpath_value = metadata_bus_xml.get_element_text_by_xpath_one(other_xpath)
+                            if not CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
+                                break
                 if not CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
                     # 进行映射处理
                     metadata_bus_map = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Map, None)
@@ -887,17 +908,23 @@ class CSatPlugins(CPlugins):
         parser.batch_qa_metadata_bus_dict(metadata_bus_dict, self.qa_sat_metadata_bus_list())
 
         # 把元数据copy到拇指图文件夹下
-        plugins_info = self.get_information()
-        info_type = CUtils.dict_value_by_name(plugins_info, self.Plugins_Info_Type, 'default')
-        group = CUtils.dict_value_by_name(plugins_info, self.Plugins_Info_Group, 'default')
-        catalog = CUtils.dict_value_by_name(plugins_info, self.Plugins_Info_Catalog, 'default')
+        data_date_time = parser.metadata.time_information.xpath_one(self.Name_Time, CTime.format_str(CTime.today()))
+        data_date = CTime.from_datetime_str(data_date_time, CTime.today())
+        data_year = CTime.format_str(data_date, '%Y')
+        data_month = CTime.format_str(data_date, '%m')
 
-        create_time = CTime.today()
-        year = CTime.format_str(create_time, '%Y')
-        month = CTime.format_str(create_time, '%m')
-        day = CTime.format_str(create_time, '%d')
-        sep = CFile.sep()  # 操作系统的不同处理分隔符不同
-        sep_list = [catalog, group, info_type, year, month, day]
-        relative_path_part = r'{1}{0}'.format(sep.join(sep_list), sep)  # 相对路径格式
-        metadata_bus_full_path = CFile.join_file(self.file_content.view_root_dir, relative_path_part)
-        CFile.copy_file_to(self.metadata_bus_src_filename_with_path, metadata_bus_full_path)
+        data_view_sub_path = CFile.join_file(
+            CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Catalog, ''),
+            CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Group, '')
+        )
+        data_view_sub_path = CFile.join_file(
+            data_view_sub_path,
+            CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Type, '')
+        )
+        data_view_sub_path = CFile.join_file(data_view_sub_path, data_year)
+        data_view_sub_path = CFile.join_file(data_view_sub_path, data_month)
+        data_view_sub_path = CFile.join_file(data_view_sub_path, self.classified_object_name())
+        data_view_sub_path = CFile.join_file(data_view_sub_path, self.file_info.my_id)
+
+        data_view_path = CFile.join_file(self.file_content.view_root_dir, data_view_sub_path)
+        CFile.copy_file_to(self.metadata_bus_src_filename_with_path, data_view_path)

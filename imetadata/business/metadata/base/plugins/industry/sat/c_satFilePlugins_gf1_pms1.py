@@ -115,6 +115,17 @@ class CSatFilePlugins_gf1_pms1(CSatFilePlugins_gf1_pms_and_wfv):
     def get_metadata_bus_configuration_list(self) -> list:
         """
         固定的列表，重写时不可缺项
+        self.Name_ID：字段的名称 例：self.Name_ID: 'satelliteid'
+        self.Name_XPath：需要从xml中取值时的xpath 例：self.Name_XPath: '/ProductMetaData/SatelliteID'
+        self.Name_Other_XPath：当有多个xpath时的配置 ,注意值为list
+        例：self.Name_Other_XPath: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD']
+        self.Name_Value：不在xml取得默认值与当XPath取不到值时取的值 例 self.Name_Value: 1
+        self.Name_Map：映射，当取到的值为key的值时将值转换为value
+        例 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
+                                    'LEVEL1A': 'L1',
+                                    'LEVEL2A': 'L2',
+                                    'LEVEL4A': 'L4'
+                                    # self.Name_Default: None # 没有对应的的映射使用的默认值}
         """
         return [
             {
@@ -175,7 +186,8 @@ class CSatFilePlugins_gf1_pms1(CSatFilePlugins_gf1_pms_and_wfv):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/ProductMetaData/ImageGSD'
+                self.Name_XPath: '/ProductMetaData/ImageGSD',
+                self.Name_Other_XPath: ['/ProductMetaData/ImageGSDLine']
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
