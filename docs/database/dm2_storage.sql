@@ -1407,6 +1407,17 @@ alter table view_dm2_storage
 
 
 /*
+    2021-01-07
+    . 对dm2_storage_inbound的dsibatchno进行扩展
+*/
+alter table dm2_storage_inbound
+    drop column if exists dsibatchno;
+alter table dm2_storage_inbound
+    add column if not exists dsibatchno varchar(100);
+comment on column dm2_storage_inbound.dsibatchno is '批次编号';
+
+
+/*
     思考服务发布的数据库设计-----------------------------注意: 暂不启用!!!!!!!
     . 从服务发布节点开始设计
 

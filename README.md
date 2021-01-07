@@ -1558,6 +1558,80 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
 ## dm2_storage_inbound
 
 ### 字段
+1. dsiid
+    * 类型: 字符串
+    * 意义: 标识
+1. dsistorageid
+    * 类型: 字符串
+    * 意义: 待入库数据的存储标识
+1. dsidirectory
+    * 类型: 字符串
+    * 意义: 待入库数据的目录
+    * 注意:
+        * 直接对存储目录进行定期扫描时, 该值为空(非null!!!)
+        * 对存储下特定目录进行扫描时, 该值为/开头的一个子目录, 如忘记该/, 系统会自动补齐该/
+1. dsibatchno
+    * 类型: 字符串
+    * 意义: 待入库数据的批次编号
+    * 注意:
+        * 可视化界面无需维护该值, 保持为null即可, 系统会自动创建该批次信息
+        * 如交互界面对该值进行特殊处理, 则系统会使用该值作为批次编号
+1. dsiaddtime
+    * 类型: 日期时间
+    * 意义: 记录创建的日期时间
+1. dsistatus
+    * 类型: 整数
+    * 意义: 质检入库的状态
+    * 内容:
+        * 0=入库完毕
+        * 1=等待质检
+        * 2=质检任务已启动
+        * 21=质检任务处理过程出现异常
+        * 3=质检数据入库中
+        * 4=质检完毕
+        * 5=等待入库
+        * 6=入库中
+        * 61=入库过程中出现异常
+        * 8=等待审批
+1. dsiproctime
+    * 类型: 日期时间
+    * 意义: 入库最后结束时间
+1. dsiprocid
+    * 类型: 字符串
+    * 意义: 并行处理专用字段, 无需维护
+1. dsiprocmemo
+    * 类型: 大文本
+    * 意义: 处理结果详情
+1. dsimemo
+    * 类型: 大文本
+    * 意义: 入库记录备注
+1. dsi_na_status
+    * 类型: 整数
+    * 意义: 质检入库的状态
+    * 内容:
+        * 0=子系统通知完毕
+        * 1=等待通知子系统
+        * 2=正在通知子系统
+        * 3=通知过程出现错误或异常
+        * 9=等待确认
+1. dsi_na_proc_id
+    * 类型: 字符串
+    * 意义: 并行处理专用字段, 无需维护
+1. dsi_na_proc_memo
+    * 类型: 大文本
+    * 意义: 子系统通知结果详情
+1. dsidirectoryid
+    * 类型: 字符串
+    * 意义: 目录的标识, 为全局唯一ID
+1. dsiuserid
+    * 类型: 字符串
+    * 意义: 用户标识, 由业务系统自行掌握
+1. dsitargetstorageid
+    * 类型: 字符串
+    * 意义: 入库后的数据, 所属的存储标识
+    * 注意:
+        * 离散式存储管理模式下, 该值与待入库存储dsistorageid相同
+        * 集中式存储管理模式下, 该值由系统自行决定, 保持为null即可
 1. dsiOtherOption
     * 类型: jsonb
     * 意义: 入库的特殊处理
@@ -1599,23 +1673,21 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
             * 部分项目将在入库时, 为该批次数据, 指定特定的属性, 如所属项目等
             * 可以将项目中的该类特殊属性存储在这里, 并在同步算法中, 通过入库标识, 将directory\file\object信息和property关联在一起
 
+***
 ## dm2_storage
 ### 简述
 存储
-
 ### 字段
 1. dstUniPath
     1. 类型: varchar
     1. 意义: 全局路径
         * 一般使用NAS等外置存储时, 该值为\\xxx.xxx.xxx.xxx\ShareStorage
         * 第三方应用, 使用该路径, 结合对象的存储目录, 计算出实体数据存储的目录
-
 1. dstOwnerPath
     1. 类型: varchar
     1. 意义: 私有路径
         * 如果数管系统部署在linux下, 则该值为\\xxx.xxx.xxx.xxx\ShareStorage映射到操作系统的路径
         * 如果数管系统部署在windows下, 则该值与dstUniPath值相同, 或保持为null
-
 1. dstOtherOption
     1. 类型: JsonB
     1. 示例:
@@ -1645,6 +1717,67 @@ scmTrigger的描述, 字段scmAlgorithm就负责记录具体类型子目录下�
                 * directory: 目录过滤规则, 分为白名单和黑名单
                 * file: 文件过滤规则, 分为白名单和黑名单
         * mount: linux下路径mount的规则, 分为用户名和密码
+1. dsttype
+    1. 类型: 字符型
+    1. 说明:
+        * core: 核心存储, 仅仅存储数据
+        * mix: 混合存储, 入库和存储的混合类型
+        * inbound: 仅仅用于临时入库的存储, 可以支持立即扫描和定时扫描
+1. dstwatch
+    1. 类型: int
+    1. 示例: -1=True;0=False
+1. dstWatchOption
+    1. 类型: jsonb
+    1. 示例:
+    ```json
+    {
+        "period": "minute/hour/day/month/year",
+        "minute": 5,
+        "hour": 5,
+        "day": 5,
+        "month": 5,
+        "year": 5
+    }
+    ```
+   说明:
+    * period: 时间间隔
+    * minute/hour/day/month/year: 每隔n分钟/小时/天/月/年
+1. dstscanstatus
+    1. 类型: int
+    1. 说明:
+        * 0=扫描完毕
+        * 1=等待扫描
+        * 2=正在扫描
+        * 3=扫描过程出现错误
+    1. 注意: 当dsttype=core, 上述值无效!!!
+1. dstscanmemo
+    1. 类型: 文本
+    1. 说明: 最后一次扫描的结果日志
+1. dstscanlasttime
+    1. 类型: 日期时间
+    1. 最后一次扫描时间, 由系统控制, 个人无需维护, 设置为null即可
+1. dstprocessid
+    1. 类型: 字符型
+    1. 说明: 系统并行处理使用的字段, 个人无需维护.
+1. dstaddtime
+    1. 类型: 日期时间
+    1. 说明: 记录添加的时间
+1. dstlastmodifytime
+    1. 类型: 日期时间
+    1. 说明: 记录最后一次修改的时间
+1. dst_volumn_max
+    1. 类型: 大整数
+    1. 说明: 当前存储可入库数据的最大容量, 单位:bit
+1. dst_volumn_warn
+    1. 类型: 大整数
+    1. 说明: 当前存储可入库数据的警告容量, 单位:bit
+1. dst_volumn_now
+    1. 类型: 大整数
+    1. 说明: 当前存储已入库数据的容量, 单位:bit
+    1. 暂未启用
+1. dstuserid
+    1. 类型: 字符型
+    1. 说明: 存储维护的人员, 用于业务管理
 
 ## dp_v_qfg
 ### 简述

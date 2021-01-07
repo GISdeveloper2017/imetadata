@@ -64,6 +64,7 @@ where dsiStatus = {1}
         ds_storage_root_dir = dataset.value_by_name(0, 'query_rootpath', '')
         ds_ib_directory_name = dataset.value_by_name(0, 'query_ib_relation_dir', '')
         ds_ib_directory_id = dataset.value_by_name(0, 'query_ib_relation_dir_id', '')
+        ds_ib_batch_no = dataset.value_by_name(0, 'query_ib_batchno', '')
         # 按需要再开启
         # ds_ib_option = CUtils.any_2_str(dataset.value_by_name(0, 'query_ib_option', ''))
 
@@ -83,11 +84,18 @@ where dsiStatus = {1}
             )
 
         try:
+            # 检查目录名格式并自动修正
             if not CUtils.equal_ignore_case(ds_ib_directory_name, ''):
                 ds_ib_directory = CFile.unify(CFile.add_prefix(ds_ib_directory_name))
                 if not CUtils.equal_ignore_case(ds_ib_directory, ds_ib_directory_name):
                     self.correct_ib_directory(ds_ib_id, ds_ib_directory)
                     ds_ib_directory_name = ds_ib_directory
+
+            if not CUtils.equal_ignore_case(ds_ib_batch_no, ''):
+                ds_ib_batch_no_new = CFactory().give_me_db(self.get_mission_db_id()).seq_next_value(
+                    self.Seq_Type_Date_AutoInc)
+                self.correct_ib_batch_no(ds_ib_id, ds_ib_batch_no_new)
+                ds_ib_batch_no = ds_ib_batch_no_new
 
             if not CUtils.equal_ignore_case(ds_ib_directory_name, ''):
                 ib_full_directory = CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
@@ -186,6 +194,22 @@ where dsiStatus = {1}
             where dsiid = :ib_id   
             ''',
             {'ib_id': ds_ib_id, 'directory': ds_ib_directory}
+        )
+
+    def correct_ib_batch_no(self, ds_ib_id, ds_ib_batch_no):
+        """
+        自动创建入库批次
+        :param ds_ib_id:
+        :param ds_ib_batch_no:
+        :return:
+        """
+        CFactory().give_me_db(self.get_mission_db_id()).execute(
+            '''
+            update dm2_storage_inbound 
+            set dsibatchno = :batch_no
+            where dsiid = :ib_id   
+            ''',
+            {'ib_id': ds_ib_id, 'batch_no': ds_ib_batch_no}
         )
 
 
