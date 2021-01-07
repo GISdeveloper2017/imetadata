@@ -543,18 +543,50 @@ class CSatPlugins(CPlugins):
             metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, 'None')
             metadata_bus_xpath = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_XPath, None)
             metadata_bus_value = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Value, None)
+            # 如果xpah配置就从业务元数据里取值，没配就用value的值
             if metadata_bus_xpath is not None:
-                metadata_bus_dict[metadata_bus_id] = \
-                    metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_xpath)
+                metadata_bus_xpath_value = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_xpath)
+                # 进行映射处理
+                metadata_bus_map = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Map, None)
+                if metadata_bus_map is not None:
+                    default_value = CUtils.dict_value_by_name(metadata_bus_map, self.Name_Default, None)
+                    if default_value is not None:  # 设置不符合映射的默认值
+                        metadata_bus_xpath_value = default_value
+                        metadata_bus_map.pop(self.Name_Default)
+                    for map_key, map_value in metadata_bus_map.items():
+                        if CUtils.equal_ignore_case(map_key, metadata_bus_xpath_value):
+                            metadata_bus_xpath_value = map_value
+                            break
+                # 对部分特殊数据进行自定义处理
+                metadata_bus_dict[metadata_bus_id] = self.process_custom(metadata_bus_id, metadata_bus_xpath_value)
             elif metadata_bus_value is not None:
                 metadata_bus_dict[metadata_bus_id] = metadata_bus_value
             else:
                 metadata_bus_dict[metadata_bus_id] = None
 
-        # 对部分特殊数据进行处理
-        self.process_custom(metadata_bus_dict)
+        # 因为中心的坐标运算特殊，所以在这里进行
+        self.process_centerlonlat(metadata_bus_dict)
 
         return metadata_bus_dict
+
+    def process_centerlonlat(self, metadata_bus_dict: dict):
+        centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
+        centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
+        if CUtils.equal_ignore_case(centerlatitude, '') or CUtils.equal_ignore_case(centerlongitude, ''):
+            topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
+            topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
+            bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
+            bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
+            metadata_bus_dict['centerlatitude'] = \
+                (CUtils.to_decimal(topleftlatitude) + CUtils.to_decimal(bottomrightlatitude)) / 2
+            metadata_bus_dict['centerlongitude'] = \
+                (CUtils.to_decimal(topleftlongitude) + CUtils.to_decimal(bottomrightlongitude)) / 2
+
+    def process_custom(self, metadata_bus_id, metadata_bus_xpath_value):
+        """
+        对部分需要进行运算的数据进行处理
+        """
+        return metadata_bus_xpath_value
 
     def qa_sat_metadata_bus_list(self) -> list:
         return [
@@ -806,56 +838,6 @@ class CSatPlugins(CPlugins):
                 self.Name_Width: 2000
             }
         ]
-
-    def process_centerlonlat(self, metadata_bus_dict: dict):
-        centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
-        centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
-        if CUtils.equal_ignore_case(centerlatitude, '') or CUtils.equal_ignore_case(centerlongitude, ''):
-            topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
-            topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
-            bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
-            bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
-            metadata_bus_dict['centerlatitude'] = \
-                (CUtils.to_decimal(topleftlatitude) + CUtils.to_decimal(bottomrightlatitude)) / 2
-            metadata_bus_dict['centerlongitude'] = \
-                (CUtils.to_decimal(topleftlongitude) + CUtils.to_decimal(bottomrightlongitude)) / 2
-
-    def process_productattribute(self, metadata_bus_dict: dict):
-        productattribute = CUtils.dict_value_by_name(metadata_bus_dict, 'productattribute', None)
-        if CUtils.equal_ignore_case(productattribute, 'LEVEL1A') \
-                or CUtils.equal_ignore_case(productattribute, 'LEVEL1') \
-                or CUtils.equal_ignore_case(productattribute, 'Level1R') \
-                or CUtils.equal_ignore_case(productattribute, 'LEVEL1B') \
-                or CUtils.equal_ignore_case(productattribute, 'LEVEL1C') \
-                or CUtils.equal_ignore_case(productattribute, 'LV1A') \
-                or CUtils.equal_ignore_case(productattribute, 'L1B'):
-            metadata_bus_dict['productattribute'] = 'L1'
-        elif CUtils.equal_ignore_case(productattribute, 'LEVEL2A') \
-                or CUtils.equal_ignore_case(productattribute, 'Level2R') \
-                or CUtils.equal_ignore_case(productattribute, 'LEVEL2B') \
-                or CUtils.equal_ignore_case(productattribute, 'LEVEL2C') \
-                or CUtils.equal_ignore_case(productattribute, 'LV2A') \
-                or CUtils.equal_ignore_case(productattribute, 'L2B'):
-            metadata_bus_dict['productattribute'] = 'L2'
-        elif CUtils.equal_ignore_case(productattribute, 'LEVEL4A') \
-                or CUtils.equal_ignore_case(productattribute, 'Level4R') \
-                or CUtils.equal_ignore_case(productattribute, 'LEVEL4B') \
-                or CUtils.equal_ignore_case(productattribute, 'LEVEL4C') \
-                or CUtils.equal_ignore_case(productattribute, 'LV4A') \
-                or CUtils.equal_ignore_case(productattribute, 'L4B'):
-            metadata_bus_dict['productattribute'] = 'L4'
-        elif self.productattribute_flag():
-            metadata_bus_dict['productattribute'] = 'L1'
-
-    def productattribute_flag(self):
-        return False
-
-    def process_custom(self, metadata_bus_dict):
-        """
-        对部分需要进行运算的数据进行处理
-        """
-        self.process_centerlonlat(metadata_bus_dict)
-        self.process_productattribute(metadata_bus_dict)
 
     def qa_metadata_custom(self, parser: CMetaDataParser):
         """

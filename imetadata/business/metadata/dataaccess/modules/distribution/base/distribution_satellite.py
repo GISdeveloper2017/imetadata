@@ -212,6 +212,8 @@ class distribution_satellite(distribution_base):
                 )
             else:
                 main_table.column_list.column_by_name('productid').set_null()
+        else:
+            main_table.column_list.column_by_name('productid').set_value(productid)
 
         main_table.column_list.column_by_name('remark').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'remark', None)

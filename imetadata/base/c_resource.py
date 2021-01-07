@@ -241,6 +241,7 @@ class CResource:
     Name_Field = 'field'
     Name_InBound = 'inbound'
     Name_OutBound = 'outbound'
+    Name_Map = 'map'
 
     Name_Columns = 'columns'
     Name_PrimaryKey = 'primarykey'

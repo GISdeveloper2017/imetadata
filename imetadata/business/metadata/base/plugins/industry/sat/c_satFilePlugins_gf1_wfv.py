@@ -198,7 +198,13 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             },
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
-                self.Name_XPath: '/ProductMetaData/ProductLevel'
+                self.Name_XPath: '/ProductMetaData/ProductLevel',
+                self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
+                    'LEVEL1A': 'L1',
+                    'LEVEL2A': 'L2',
+                    'LEVEL4A': 'L4'
+                    # self.Name_Default: None # 没有对应的的映射使用默认值
+                }
             },
             {
                 self.Name_ID: 'productid',  # 产品id 默认取主文件全名
@@ -211,16 +217,21 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
             }
         ]
 
-    def process_custom(self, metadata_bus_dict):
+    def process_custom(self, metadata_bus_id, metadata_bus_xpath_value):
         """
+        metadata_bus_id：即Name_ID
+        metadata_bus_xpath_value：即取到的值
         对部分需要进行运算的数据进行处理
         """
         #  一定要写这个，不然部分默认的处理会不生效
-        super().process_custom(metadata_bus_dict)
+        metadata_bus_xpath_value = super().process_custom(metadata_bus_id, metadata_bus_xpath_value)
 
-        resolution = CUtils.to_decimal(CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None), 0)
-        if resolution > 0:
-            metadata_bus_dict['resolution'] = 2 / resolution
+        if CUtils.equal_ignore_case(metadata_bus_id, 'resolution'):
+            resolution = CUtils.to_decimal(metadata_bus_xpath_value, 0)
+            if resolution > 0:
+                metadata_bus_xpath_value = 2 / resolution
+
+        return metadata_bus_xpath_value
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """
