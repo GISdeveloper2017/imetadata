@@ -218,8 +218,9 @@ class CSatFilePlugins_gf1_wfv(CSatPlugins):
         #  一定要写这个，不然部分默认的处理会不生效
         super().process_custom(metadata_bus_dict)
 
-        resolution = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
-        metadata_bus_dict['resolution'] = 2 / CUtils.to_decimal(resolution)
+        resolution = CUtils.to_decimal(CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None), 0)
+        if resolution > 0:
+            metadata_bus_dict['resolution'] = 2 / resolution
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """
