@@ -439,8 +439,8 @@ class CSatPlugins(CPlugins):
         可配置的项目：
         self.Name_ID：字段的名称 例：self.Name_ID: 'satelliteid'
         self.Name_XPath：需要从xml中取值时的xpath 例：self.Name_XPath: '/ProductMetaData/SatelliteID'
-        self.Name_Other_XPath：当有多个xpath时的配置 ,注意值为list
-        例：self.Name_Other_XPath: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD']
+        self.Name_Special_Configuration：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
+        例：self.Name_Special_Configuration: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
         self.Name_Value：不在xml取得默认值与当XPath取不到值时取的值 例 self.Name_Value: 1
         self.Name_Map：映射，当取到的值为key的值时将值转换为value
         例 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
@@ -591,41 +591,62 @@ class CSatPlugins(CPlugins):
             metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, 'None')
             metadata_bus_xpath = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_XPath, None)
             metadata_bus_value = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Value, None)
-            # 如果xpah配置就从业务元数据里取值，没配就用value的值
+            # 取值
             if metadata_bus_xpath is not None:
                 metadata_bus_xpath_value = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_xpath)
-                # 对有多个xpath的情况进行处理
-                if CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
-                    metadata_bus_other_xpath_list = \
-                        CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Other_XPath, None)
-                    if metadata_bus_other_xpath_list is not None:
-                        for other_xpath in metadata_bus_other_xpath_list:
-                            metadata_bus_xpath_value = metadata_bus_xml.get_element_text_by_xpath_one(other_xpath)
-                            if not CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
-                                break
-                if not CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
-                    # 进行映射处理
-                    metadata_bus_map = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Map, None)
-                    if metadata_bus_map is not None:
-                        default_value = CUtils.dict_value_by_name(metadata_bus_map, self.Name_Default, None)
-                        if default_value is not None:  # 设置不符合映射的默认值
-                            metadata_bus_xpath_value = default_value
-                            metadata_bus_map.pop(self.Name_Default)
-                        for map_key, map_value in metadata_bus_map.items():
-                            if CUtils.equal_ignore_case(map_key, metadata_bus_xpath_value):
-                                metadata_bus_xpath_value = map_value
-                                break
-                    # 对部分特殊数据进行自定义处理
-                    metadata_bus_dict[metadata_bus_id] = metadata_bus_xpath_value
-                else:
-                    metadata_bus_dict[metadata_bus_id] = metadata_bus_value
+            else:
+                metadata_bus_xpath_value = \
+                    self.transform_dict_item_special_configuration(metadata_bus_configuration, metadata_bus_xml)
+            # 取值后的处理
+            if not CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
+                # 进行映射处理
+                metadata_bus_map = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Map, None)
+                if metadata_bus_map is not None:
+                    default_value = CUtils.dict_value_by_name(metadata_bus_map, self.Name_Default, None)
+                    if default_value is not None:  # 设置不符合映射的默认值
+                        metadata_bus_xpath_value = default_value
+                        metadata_bus_map.pop(self.Name_Default)
+                    for map_key, map_value in metadata_bus_map.items():
+                        if CUtils.equal_ignore_case(map_key, metadata_bus_xpath_value):
+                            metadata_bus_xpath_value = map_value
+                            break
+                # 对部分特殊数据进行自定义处理
+                metadata_bus_dict[metadata_bus_id] = metadata_bus_xpath_value
             else:
                 metadata_bus_dict[metadata_bus_id] = metadata_bus_value
-
         # 对于一些需要计算的数据进行运算
         self.process_custom(metadata_bus_dict)
 
         return metadata_bus_dict
+
+    def transform_dict_item_special_configuration(self, metadata_bus_configuration, metadata_bus_xml):
+        metadata_bus_xpath_value = None
+        metadata_bus_special_configuration = \
+            CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Special_Configuration, None)
+        if metadata_bus_special_configuration is not None:
+            metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, None)
+            try:
+                # resolution的特殊配置
+                if CUtils.equal_ignore_case(metadata_bus_id, 'resolution'):
+                    resolution_value_list = list()
+                    # 取配置里的值
+                    for resolution_configuration in metadata_bus_special_configuration:
+                        if CUtils.text_is_string(resolution_configuration):
+                            resolution_value = metadata_bus_xml.get_element_text_by_xpath_one(resolution_configuration)
+                            resolution_value_num = CUtils.to_decimal(resolution_value, None)
+                            if (not CUtils.equal_ignore_case(resolution_value, '')) \
+                                    and (resolution_value_num is not None):
+                                resolution_value_list.append(resolution_value_num)
+                        else:
+                            resolution_value_num = CUtils.to_decimal(resolution_configuration, None)
+                            if resolution_value_num is not None:
+                                resolution_value_list.append(resolution_value_num)
+                    if len(resolution_value_list) > 0:
+                        metadata_bus_xpath_value = min(resolution_value_list)
+            except Exception:
+                pass
+
+        return metadata_bus_xpath_value
 
     def process_centerlonlat(self, metadata_bus_dict: dict):
         centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
@@ -907,24 +928,27 @@ class CSatPlugins(CPlugins):
         metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml)
         parser.batch_qa_metadata_bus_dict(metadata_bus_dict, self.qa_sat_metadata_bus_list())
 
-        # 把元数据copy到拇指图文件夹下
-        data_date_time = parser.metadata.time_information.xpath_one(self.Name_Time, CTime.format_str(CTime.today()))
-        data_date = CTime.from_datetime_str(data_date_time, CTime.today())
-        data_year = CTime.format_str(data_date, '%Y')
-        data_month = CTime.format_str(data_date, '%m')
+        try:
+            # 把元数据copy到拇指图文件夹下
+            data_date_time = parser.metadata.time_information.xpath_one(self.Name_Time, CTime.format_str(CTime.today()))
+            data_date = CTime.from_datetime_str(data_date_time, CTime.today())
+            data_year = CTime.format_str(data_date, '%Y')
+            data_month = CTime.format_str(data_date, '%m')
 
-        data_view_sub_path = CFile.join_file(
-            CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Catalog, ''),
-            CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Group, '')
-        )
-        data_view_sub_path = CFile.join_file(
-            data_view_sub_path,
-            CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Type, '')
-        )
-        data_view_sub_path = CFile.join_file(data_view_sub_path, data_year)
-        data_view_sub_path = CFile.join_file(data_view_sub_path, data_month)
-        data_view_sub_path = CFile.join_file(data_view_sub_path, self.classified_object_name())
-        data_view_sub_path = CFile.join_file(data_view_sub_path, self.file_info.my_id)
+            data_view_sub_path = CFile.join_file(
+                CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Catalog, ''),
+                CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Group, '')
+            )
+            data_view_sub_path = CFile.join_file(
+                data_view_sub_path,
+                CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Type, '')
+            )
+            data_view_sub_path = CFile.join_file(data_view_sub_path, data_year)
+            data_view_sub_path = CFile.join_file(data_view_sub_path, data_month)
+            data_view_sub_path = CFile.join_file(data_view_sub_path, self.classified_object_name())
+            data_view_sub_path = CFile.join_file(data_view_sub_path, self.file_info.my_id)
 
-        data_view_path = CFile.join_file(self.file_content.view_root_dir, data_view_sub_path)
-        CFile.copy_file_to(self.metadata_bus_src_filename_with_path, data_view_path)
+            data_view_path = CFile.join_file(self.file_content.view_root_dir, data_view_sub_path)
+            CFile.copy_file_to(self.metadata_bus_src_filename_with_path, data_view_path)
+        except Exception:
+            pass

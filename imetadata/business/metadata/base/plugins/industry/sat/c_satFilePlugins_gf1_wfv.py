@@ -3,7 +3,6 @@
 # @Author : 王西亚 
 # @File : c_satFilePlugins_gf1_wfv.py
 from imetadata.base.c_file import CFile
-from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf1_pms_and_wfv import \
@@ -159,8 +158,7 @@ class CSatFilePlugins_gf1_wfv(CSatFilePlugins_gf1_pms_and_wfv):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/ProductMetaData/ImageGSD',
-                self.Name_Value: 2
+                self.Name_Special_Configuration: ['/ProductMetaData/ImageGSD', 2]
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角

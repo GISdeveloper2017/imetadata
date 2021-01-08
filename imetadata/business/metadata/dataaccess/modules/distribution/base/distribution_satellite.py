@@ -193,7 +193,7 @@ class distribution_satellite(distribution_base):
         )
         main_table.column_list.column_by_name('filesize').set_sql(
             '''
-            (select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail where dodobjectid='{0}')
+            (select sum(dodfilesize) from dm2_storage_obj_detail where dodobjectid='{0}')
             '''.format(object_table_id)
         )
 
@@ -323,7 +323,7 @@ class distribution_satellite(distribution_base):
         )
         ndi_table.column_list.column_by_name('filesize').set_sql(
             '''
-            (select round((sum(dodfilesize)/1048576),2) from dm2_storage_obj_detail where dodobjectid='{0}')
+            (select sum(dodfilesize) from dm2_storage_obj_detail where dodobjectid='{0}')
             '''.format(object_table_id)
         )
         ndi_table.column_list.column_by_name('dataexist').set_value(0)
