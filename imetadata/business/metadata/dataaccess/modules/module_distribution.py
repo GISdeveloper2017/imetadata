@@ -126,7 +126,7 @@ class module_distribution(CDAModule):
                     dsometadataxml_xml.load_xml(dsometadataxml)
                     metadata_bus_dict = class_classified_obj.metadata_bus_xml_to_dict(dsometadataxml_xml)
                     distribution_obj.set_metadata_bus_dict(metadata_bus_dict)
-                except:
+                except Exception:
                     if CUtils.equal_ignore_case(distribution_file_main_name, 'distribution_satellite_all'):
                         raise
 

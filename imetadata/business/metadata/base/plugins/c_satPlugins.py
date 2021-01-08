@@ -246,6 +246,36 @@ class CSatPlugins(CPlugins):
         :param parser:
         :return:
         """
+        metadata_bus_xml = parser.metadata.metadata_bus_xml()
+        metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml)
+        topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
+        topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
+        toprightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', None)
+        toprightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlongitude', None)
+        bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
+        bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
+        bottomleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlatitude', None)
+        bottomleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', None)
+        centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
+        centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
+        native_center_filename_with_path = CFile.join_file(
+            self.file_content.work_root_dir, '{0}_native_center.wkt'.format(self.file_info.file_main_name))
+        native_bbox_filename_with_path = CFile.join_file(
+            self.file_content.work_root_dir, '{0}_native_bbox.wkt'.format(self.file_info.file_main_name))
+
+        CFile.str_2_file('point({0} {1})'.format(centerlatitude, centerlongitude), native_center_filename_with_path)
+        CFile.str_2_file(
+            'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
+                bottomleftlatitude, bottomleftlongitude, topleftlatitude, topleftlongitude,
+                toprightlatitude, toprightlongitude, bottomrightlatitude, bottomrightlongitude),
+            native_bbox_filename_with_path
+        )
+
+        parser.metadata.set_metadata_spatial(self.Success, '空间数据的中心点坐标提取完成',
+                                             self.Spatial_MetaData_Type_Native_Center, native_center_filename_with_path)
+        parser.metadata.set_metadata_spatial(self.Success, '空间数据的四至坐标提取完成',
+                                             self.Spatial_MetaData_Type_Native_BBox, native_bbox_filename_with_path)
+
         parser.metadata.metadata_spatial_obj().native_geom = parser.metadata.metadata_spatial_obj().native_box
         parser.metadata.metadata_spatial_obj().wgs84_bbox = parser.metadata.metadata_spatial_obj().native_box
         parser.metadata.metadata_spatial_obj().wgs84_geom = parser.metadata.metadata_spatial_obj().native_geom
@@ -268,7 +298,13 @@ class CSatPlugins(CPlugins):
         parser.metadata.metadata_spatial_obj().prj_zone = None
         parser.metadata.metadata_spatial_obj().prj_source = self.Prj_Source_BusMetaData
 
-        return super().parser_metadata_spatial_after_qa(parser)
+        super().parser_metadata_spatial_after_qa(parser)
+
+        parser.metadata.set_metadata_spatial(
+            self.DB_True,
+            '空间元数据提取完成! '
+        )
+        return CResult.merge_result(self.Success, '空间元数据提取完成! ')
 
     def parser_metadata_view_after_qa(self, parser: CMetaDataParser):
         """
@@ -400,6 +436,18 @@ class CSatPlugins(CPlugins):
     def get_metadata_bus_configuration_list(self) -> list:
         """
         固定的列表，重写时不可缺项
+        可配置的项目：
+        self.Name_ID：字段的名称 例：self.Name_ID: 'satelliteid'
+        self.Name_XPath：需要从xml中取值时的xpath 例：self.Name_XPath: '/ProductMetaData/SatelliteID'
+        self.Name_Special_Configuration：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
+        例：self.Name_Special_Configuration: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
+        self.Name_Value：不在xml取得默认值与当XPath取不到值时取的值 例 self.Name_Value: 1
+        self.Name_Map：映射，当取到的值为key的值时将值转换为value
+        例 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
+                                    'LEVEL1A': 'L1',
+                                    'LEVEL2A': 'L2',
+                                    'LEVEL4A': 'L4'
+                                    # self.Name_Default: None # 没有对应的的映射使用的默认值}
         """
         return [
             {
@@ -543,9 +591,14 @@ class CSatPlugins(CPlugins):
             metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, 'None')
             metadata_bus_xpath = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_XPath, None)
             metadata_bus_value = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Value, None)
-            # 如果xpah配置就从业务元数据里取值，没配就用value的值
+            # 取值
             if metadata_bus_xpath is not None:
                 metadata_bus_xpath_value = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_xpath)
+            else:
+                metadata_bus_xpath_value = \
+                    self.transform_dict_item_special_configuration(metadata_bus_configuration, metadata_bus_xml)
+            # 取值后的处理
+            if not CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
                 # 进行映射处理
                 metadata_bus_map = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Map, None)
                 if metadata_bus_map is not None:
@@ -558,16 +611,42 @@ class CSatPlugins(CPlugins):
                             metadata_bus_xpath_value = map_value
                             break
                 # 对部分特殊数据进行自定义处理
-                metadata_bus_dict[metadata_bus_id] = self.process_custom(metadata_bus_id, metadata_bus_xpath_value)
-            elif metadata_bus_value is not None:
-                metadata_bus_dict[metadata_bus_id] = metadata_bus_value
+                metadata_bus_dict[metadata_bus_id] = metadata_bus_xpath_value
             else:
-                metadata_bus_dict[metadata_bus_id] = None
-
-        # 因为中心的坐标运算特殊，所以在这里进行
-        self.process_centerlonlat(metadata_bus_dict)
+                metadata_bus_dict[metadata_bus_id] = metadata_bus_value
+        # 对于一些需要计算的数据进行运算
+        self.process_custom(metadata_bus_dict)
 
         return metadata_bus_dict
+
+    def transform_dict_item_special_configuration(self, metadata_bus_configuration, metadata_bus_xml):
+        metadata_bus_xpath_value = None
+        metadata_bus_special_configuration = \
+            CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Special_Configuration, None)
+        if metadata_bus_special_configuration is not None:
+            metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, None)
+            try:
+                # resolution的特殊配置
+                if CUtils.equal_ignore_case(metadata_bus_id, 'resolution'):
+                    resolution_value_list = list()
+                    # 取配置里的值
+                    for resolution_configuration in metadata_bus_special_configuration:
+                        if CUtils.text_is_string(resolution_configuration):
+                            resolution_value = metadata_bus_xml.get_element_text_by_xpath_one(resolution_configuration)
+                            resolution_value_num = CUtils.to_decimal(resolution_value, None)
+                            if (not CUtils.equal_ignore_case(resolution_value, '')) \
+                                    and (resolution_value_num is not None):
+                                resolution_value_list.append(resolution_value_num)
+                        else:
+                            resolution_value_num = CUtils.to_decimal(resolution_configuration, None)
+                            if resolution_value_num is not None:
+                                resolution_value_list.append(resolution_value_num)
+                    if len(resolution_value_list) > 0:
+                        metadata_bus_xpath_value = min(resolution_value_list)
+            except Exception:
+                pass
+
+        return metadata_bus_xpath_value
 
     def process_centerlonlat(self, metadata_bus_dict: dict):
         centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
@@ -582,11 +661,11 @@ class CSatPlugins(CPlugins):
             metadata_bus_dict['centerlongitude'] = \
                 (CUtils.to_decimal(topleftlongitude) + CUtils.to_decimal(bottomrightlongitude)) / 2
 
-    def process_custom(self, metadata_bus_id, metadata_bus_xpath_value):
+    def process_custom(self, metadata_bus_dict):
         """
         对部分需要进行运算的数据进行处理
         """
-        return metadata_bus_xpath_value
+        self.process_centerlonlat(metadata_bus_dict)
 
     def qa_sat_metadata_bus_list(self) -> list:
         return [
@@ -849,18 +928,27 @@ class CSatPlugins(CPlugins):
         metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml)
         parser.batch_qa_metadata_bus_dict(metadata_bus_dict, self.qa_sat_metadata_bus_list())
 
-        # 把元数据copy到拇指图文件夹下
-        plugins_info = self.get_information()
-        info_type = CUtils.dict_value_by_name(plugins_info, self.Plugins_Info_Type, 'default')
-        group = CUtils.dict_value_by_name(plugins_info, self.Plugins_Info_Group, 'default')
-        catalog = CUtils.dict_value_by_name(plugins_info, self.Plugins_Info_Catalog, 'default')
+        try:
+            # 把元数据copy到拇指图文件夹下
+            data_date_time = parser.metadata.time_information.xpath_one(self.Name_Time, CTime.format_str(CTime.today()))
+            data_date = CTime.from_datetime_str(data_date_time, CTime.today())
+            data_year = CTime.format_str(data_date, '%Y')
+            data_month = CTime.format_str(data_date, '%m')
 
-        create_time = CTime.today()
-        year = CTime.format_str(create_time, '%Y')
-        month = CTime.format_str(create_time, '%m')
-        day = CTime.format_str(create_time, '%d')
-        sep = CFile.sep()  # 操作系统的不同处理分隔符不同
-        sep_list = [catalog, group, info_type, year, month, day]
-        relative_path_part = r'{1}{0}'.format(sep.join(sep_list), sep)  # 相对路径格式
-        metadata_bus_full_path = CFile.join_file(self.file_content.view_root_dir, relative_path_part)
-        CFile.copy_file_to(self.metadata_bus_src_filename_with_path, metadata_bus_full_path)
+            data_view_sub_path = CFile.join_file(
+                CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Catalog, ''),
+                CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Group, '')
+            )
+            data_view_sub_path = CFile.join_file(
+                data_view_sub_path,
+                CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Type, '')
+            )
+            data_view_sub_path = CFile.join_file(data_view_sub_path, data_year)
+            data_view_sub_path = CFile.join_file(data_view_sub_path, data_month)
+            data_view_sub_path = CFile.join_file(data_view_sub_path, self.classified_object_name())
+            data_view_sub_path = CFile.join_file(data_view_sub_path, self.file_info.my_id)
+
+            data_view_path = CFile.join_file(self.file_content.view_root_dir, data_view_sub_path)
+            CFile.copy_file_to(self.metadata_bus_src_filename_with_path, data_view_path)
+        except Exception:
+            pass

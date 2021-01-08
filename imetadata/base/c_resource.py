@@ -264,6 +264,7 @@ class CResource:
     DB_Column_Set_Method_Exchange = 'exchange'
 
     Name_XPath = 'xpath'
+    Name_Special_Configuration = 'special_configuration'
     Name_Attr_Name = 'attr_name'
     Name_List = 'list'
     Name_Not_List = 'not_list'
