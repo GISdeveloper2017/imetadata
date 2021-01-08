@@ -24,7 +24,7 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
-from imetadata.base.exceptions import *
+from imetadata.base.c_exceptions import *
 from imetadata.database.base.c_dataset import CDataSet
 from imetadata.database.base.dml.c_dbColumnType import CDBColumnType
 from imetadata.database.base.dml.c_dbColumnTypes import CDBColumnTypes

@@ -25,7 +25,7 @@ from lxml import etree
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
-from imetadata.base.exceptions import PathNotCreateException
+from imetadata.base.c_exceptions import PathNotCreateException
 
 
 class CXml:

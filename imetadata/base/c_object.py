@@ -10,7 +10,7 @@ import os
 from imetadata.base.c_file import CFile
 from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CUtils
-from imetadata.base.exceptions import BusinessNotExistException
+from imetadata.base.c_exceptions import BusinessNotExistException
 # from imetadata.business.metadata.base.plugins.c_plugins import CPlugins   # 在其他模块容易引起（most likely due to a circular import）
 from imetadata.database.c_factory import CFactory
 

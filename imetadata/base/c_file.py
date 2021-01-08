@@ -13,7 +13,7 @@ import chardet
 from sortedcontainers import SortedList
 
 from imetadata.base.c_utils import CUtils
-from imetadata.base.exceptions import PathNotCreateException
+from imetadata.base.c_exceptions import PathNotCreateException
 
 
 class CFile:
@@ -69,7 +69,12 @@ class CFile:
         :param file_ext:
         :return:
         """
-        return '{0}.{1}'.format(cls.file_main_name(file_name_with_path), file_ext)
+        file_path = cls.file_path(file_name_with_path)
+        file_main_name = '{0}.{1}'.format(cls.file_main_name(file_name_with_path), file_ext)
+        if CUtils.equal_ignore_case(file_path, ''):
+            return file_main_name
+        else:
+            return cls.join_file(file_path, file_main_name)
 
     @classmethod
     def check_and_create_directory(cls, file_name_with_path: str) -> bool:
@@ -197,6 +202,14 @@ class CFile:
     @classmethod
     def file_match(cls, file_name_with_path: str, pattern: str):
         return fnmatch(file_name_with_path, pattern)
+
+    @classmethod
+    def file_match_list(cls, file_name_with_path: str, pattern_list):
+        for pattern in pattern_list:
+            if fnmatch(file_name_with_path, pattern):
+                return True
+
+        return False
 
     @classmethod
     def subpath_in_path(cls, sub_path: str, filepath: str):

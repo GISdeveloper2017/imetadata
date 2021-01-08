@@ -5,7 +5,7 @@
 
 from sqlalchemy import text
 import pytest
-from imetadata.base.exceptions import DBException
+from imetadata.base.c_exceptions import DBException
 from imetadata.database.base.c_dataset import CDataSet
 from imetadata.database.c_factory import CFactory
 

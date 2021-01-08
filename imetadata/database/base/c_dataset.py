@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 from imetadata.base.c_dataSetBase import CDataSetBase
 from imetadata.base.c_file import CFile
-from imetadata.base.exceptions import PathNotCreateException
+from imetadata.base.c_exceptions import PathNotCreateException
 
 
 class CDataSet(CDataSetBase):

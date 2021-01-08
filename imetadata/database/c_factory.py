@@ -6,8 +6,8 @@ from __future__ import absolute_import
 from imetadata import settings
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
-from imetadata.base.exceptions import *
-from imetadata.base.singleton import singleton
+from imetadata.base.c_exceptions import *
+from imetadata.base.c_singleton import singleton
 from imetadata.database.base.c_database import CDataBase
 from imetadata.database.types.c_postgresql import CPostgreSQL
 
