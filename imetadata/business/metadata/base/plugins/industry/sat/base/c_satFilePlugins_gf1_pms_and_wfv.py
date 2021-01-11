@@ -2,11 +2,7 @@
 # @Time : 2020/9/21 17:35 
 # @Author : 王西亚 
 # @File : c_satFilePlugins_gf1_pms_and_wfv.py
-import re
 
-from imetadata.base.c_file import CFile
-from imetadata.base.c_result import CResult
-from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
 
@@ -19,7 +15,6 @@ class CSatFilePlugins_gf1_pms_and_wfv(CSatPlugins):
         information[self.Plugins_Info_Type_Title] = '高分一号'
         information[self.Plugins_Info_Group] = 'GF1'
         information[self.Plugins_Info_Group_Title] = '高分一号'
-        information[self.Plugins_Info_ProductType] = 'NDI'
         information[self.Plugins_Info_CopyRight] = '高分中心'
         return information
 
@@ -38,7 +33,7 @@ class CSatFilePlugins_gf1_pms_and_wfv(CSatPlugins):
             TextMatchType_Common: 常规通配符, 如 *.txt
             TextMatchType_Regex: 正则表达式
         """
-        return '', self.TextMatchType_Regex
+        return super().get_classified_character_of_sat(sat_file_status)
 
     def get_classified_object_name_of_sat(self, sat_file_status) -> str:
         """
@@ -52,7 +47,14 @@ class CSatFilePlugins_gf1_pms_and_wfv(CSatPlugins):
             . Sat_Object_Status_File = 'file'
         :return:
         """
-        return self.file_info.file_main_name
+        return super().get_classified_object_name_of_sat(sat_file_status)
+
+    def get_metadata_bus_filename_by_file(self) -> str:
+        """
+        卫星数据解压后, 哪个文件是业务元数据?
+        :return:
+        """
+        return super().get_metadata_bus_filename_by_file()
 
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
         """
@@ -78,6 +80,3 @@ class CSatFilePlugins_gf1_pms_and_wfv(CSatPlugins):
                 self.Name_Format: self.MetaDataFormat_XML
             }
         ]
-
-    def get_metadata_bus_filename_by_file(self) -> str:
-        return super().get_metadata_bus_filename_by_file()
