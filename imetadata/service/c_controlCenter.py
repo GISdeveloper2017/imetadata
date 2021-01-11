@@ -9,7 +9,7 @@ import signal as base_signal
 import time
 from multiprocessing import Process, Queue, Lock, Event, Manager
 
-from imetadata import settings
+import settings
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_processUtils import CProcessUtils
 from imetadata.base.c_sys import CSys

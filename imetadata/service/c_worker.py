@@ -5,7 +5,7 @@
 
 from multiprocessing import Event
 
-from imetadata import settings
+import settings
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_utils import CUtils
 from imetadata.schedule.c_cronWorkerExecute import CCronWorkerExecute

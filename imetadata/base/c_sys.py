@@ -5,7 +5,7 @@ import os
 import platform
 import sys
 
-from imetadata import settings
+import settings
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 

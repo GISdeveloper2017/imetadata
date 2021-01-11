@@ -7,7 +7,7 @@ from abc import abstractmethod
 
 import allure
 
-from imetadata import settings
+import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils

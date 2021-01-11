@@ -13,7 +13,7 @@ from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
 from imetadata.business.data2service.service import c_geo_util as geoUtils
 from imetadata.business.data2service.service import c_mapfileHelper as mapfileHelper
-from imetadata.settings import application
+from settings import application
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 

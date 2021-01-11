@@ -3,11 +3,10 @@
 # @Author : 王西亚 
 # @File : init.py.py
 
-import os
 import argparse
 import logging
 
-from imetadata import settings
+import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_object import CObject

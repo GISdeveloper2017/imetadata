@@ -2,7 +2,7 @@
 # @Time : 2020/11/19 17:11 
 # @Author : 王西亚 
 # @File : job_dm_inbound_qi_monitor.py
-from imetadata import settings
+import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult

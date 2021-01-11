@@ -4,7 +4,7 @@
 # @File : c_audit.py
 import copy
 
-from imetadata import settings
+import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_gdalUtils import CGdalUtils
 from imetadata.base.c_json import CJson

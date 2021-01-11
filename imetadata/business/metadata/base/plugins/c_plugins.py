@@ -5,7 +5,7 @@
 
 from abc import abstractmethod
 
-from imetadata import settings
+import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult

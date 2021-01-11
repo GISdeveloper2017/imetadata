@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import time
 from multiprocessing import Queue, Lock, Manager
 
-from imetadata import settings
+import settings
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils

@@ -6,7 +6,7 @@
 import time
 from multiprocessing import Queue, Lock, Event
 
-from imetadata import settings
+import settings
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_processUtils import CProcessUtils
 from imetadata.base.c_utils import CUtils

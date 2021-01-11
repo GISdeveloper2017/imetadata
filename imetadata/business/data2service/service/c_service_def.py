@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
-from imetadata import settings
+import settings
 
 
 class LayerDef(object):

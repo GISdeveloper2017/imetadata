@@ -5,7 +5,7 @@
 import allure
 import pytest
 
-from imetadata import settings
+import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx

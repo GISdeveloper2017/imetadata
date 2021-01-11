@@ -2,7 +2,7 @@
 # @Time : 2020/9/23 20:56 
 # @Author : 王西亚 
 # @File : c_pluginsMng.py
-from imetadata import settings
+import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_object import CObject

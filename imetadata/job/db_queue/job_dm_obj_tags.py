@@ -5,7 +5,7 @@
 
 from __future__ import absolute_import
 
-from imetadata import settings
+import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger

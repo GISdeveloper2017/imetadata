@@ -4,7 +4,7 @@
 # @File : c_mdExtractorVector.py
 from tikapp import TikaApp as TikaApplication
 from tika import parser as TikaServer
-from imetadata import settings
+import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_result import CResult

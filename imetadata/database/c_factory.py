@@ -3,7 +3,7 @@
 
 from __future__ import absolute_import
 
-from imetadata import settings
+import settings
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_exceptions import *

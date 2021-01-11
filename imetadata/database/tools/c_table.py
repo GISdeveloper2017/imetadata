@@ -6,7 +6,7 @@ from abc import abstractmethod
 
 from sqlalchemy.orm.session import Session
 
-from imetadata import settings
+import settings
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils

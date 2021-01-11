@@ -2,7 +2,7 @@
 # @Time : 2020/10/24 12:53 
 # @Author : 王西亚 
 # @File : job_dm_inbound.py
-from imetadata import settings
+import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger

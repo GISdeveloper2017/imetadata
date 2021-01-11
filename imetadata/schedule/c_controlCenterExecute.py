@@ -3,7 +3,7 @@
 # @Time : 2020/8/18 13:52
 # @Author : 王西亚
 # @File : controlCenterExecute.py
-from imetadata import settings
+import settings
 from imetadata.base.c_utils import CUtils
 from imetadata.database.c_factory import CFactory
 from imetadata.schedule.execute.c_dbQueueScheduleExecute import CDBQueueScheduleExecute
