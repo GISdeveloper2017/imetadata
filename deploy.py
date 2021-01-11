@@ -62,11 +62,7 @@ def package(output_relation_dir):
     output_relation_dir = CFile.unify(CUtils.any_2_str(output_relation_dir))
 
     application_dir = CFile.file_path(CFile.file_abs_path(__file__))
-    application_name = CFile.file_main_name(application_dir)
-    output_dir = CFile.file_abs_path(CFile.join_file(application_dir, output_relation_dir, application_name))
-    print(application_dir)
-    print(application_name)
-    print(output_dir)
+    output_dir = CFile.file_abs_path(CFile.join_file(application_dir, output_relation_dir))
 
     for each_directory, dir_name_list, file_name_without_path_list in os.walk(application_dir):
         directory_source = each_directory
