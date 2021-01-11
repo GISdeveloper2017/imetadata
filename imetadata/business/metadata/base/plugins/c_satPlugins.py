@@ -394,7 +394,8 @@ class CSatPlugins(CPlugins):
         :param parser:
         :return:
         """
-        pass
+        if not CUtils.equal_ignore_case(self.metadata_bus_src_filename_with_path,''):
+            CFile.copy_file_to(self.metadata_bus_src_filename_with_path, target_path)
 
     def parser_metadata_view_list(self, parser: CMetaDataParser):
         """
@@ -927,28 +928,3 @@ class CSatPlugins(CPlugins):
         metadata_bus_xml = parser.metadata.metadata_bus_xml()
         metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml)
         parser.batch_qa_metadata_bus_dict(metadata_bus_dict, self.qa_sat_metadata_bus_list())
-
-        try:
-            # 把元数据copy到拇指图文件夹下
-            data_date_time = parser.metadata.time_information.xpath_one(self.Name_Time, CTime.format_str(CTime.today()))
-            data_date = CTime.from_datetime_str(data_date_time, CTime.today())
-            data_year = CTime.format_str(data_date, '%Y')
-            data_month = CTime.format_str(data_date, '%m')
-
-            data_view_sub_path = CFile.join_file(
-                CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Catalog, ''),
-                CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Group, '')
-            )
-            data_view_sub_path = CFile.join_file(
-                data_view_sub_path,
-                CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Type, '')
-            )
-            data_view_sub_path = CFile.join_file(data_view_sub_path, data_year)
-            data_view_sub_path = CFile.join_file(data_view_sub_path, data_month)
-            data_view_sub_path = CFile.join_file(data_view_sub_path, self.classified_object_name())
-            data_view_sub_path = CFile.join_file(data_view_sub_path, self.file_info.my_id)
-
-            data_view_path = CFile.join_file(self.file_content.view_root_dir, data_view_sub_path)
-            CFile.copy_file_to(self.metadata_bus_src_filename_with_path, data_view_path)
-        except Exception:
-            pass

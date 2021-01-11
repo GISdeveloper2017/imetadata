@@ -256,68 +256,6 @@ class CSatFilePlugins_gf1_pmsA(CSatPlugins):
             }
         ]
 
-    def parser_metadata_spatial_after_qa(self, parser: CMetaDataParser):
-        """
-        继承本方法, 对详细的空间元数据信息进行处理
-        注意:
-            super().parser_metadata_spatial_after_qa(parser)
-            要写在自定义的空间信息提取之后!!!
-            完成 负责人 邢凯凯 继承本方法, 因为卫星数据的特殊性, 可以只取中心点和外包框
-
-        :param parser:
-        :return:
-        """
-        xml = parser.metadata.metadata_bus_xml()
-        TopLeftLatitude = xml.xpath_one('/ProductMetaData/TopLeftLatitude')
-        TopLeftLongitude = xml.xpath_one('/ProductMetaData/TopLeftLongitude')
-        BottomLeftLatitude = xml.xpath_one('/ProductMetaData/BottomLeftLatitude')
-        BottomLeftLongitude = xml.xpath_one('/ProductMetaData/BottomLeftLongitude')
-        TopRightLatitude = xml.xpath_one('/ProductMetaData/TopRightLatitude')
-        TopRightLongitude = xml.xpath_one('/ProductMetaData/TopRightLongitude')
-        BottomRightLatitude = xml.xpath_one('/ProductMetaData/TopLeftLatitude')
-        BottomRightLongitude = xml.xpath_one('/ProductMetaData/TopLeftLongitude')
-
-        center_latitude = (float(xml.get_element_text(TopLeftLatitude)) + float(
-            xml.get_element_text(BottomRightLatitude))) / 2
-        center_longitude = (float(xml.get_element_text(TopLeftLongitude)) + float(
-            xml.get_element_text(BottomRightLongitude))) / 2
-
-        TopLeftLatitude_text = xml.get_element_text(TopLeftLatitude)
-        TopLeftLongitude_text = xml.get_element_text(TopLeftLongitude)
-        BottomLeftLatitude_text = xml.get_element_text(BottomLeftLatitude)
-        BottomLeftLongitude_text = xml.get_element_text(BottomLeftLongitude)
-        TopRightLatitude_text = xml.get_element_text(TopRightLatitude)
-        TopRightLongitude_text = xml.get_element_text(TopRightLongitude)
-        BottomRightLatitude_text = xml.get_element_text(BottomRightLatitude)
-        BottomRightLongitude_text = xml.get_element_text(BottomRightLongitude)
-
-        native_center_filename_with_path = CFile.join_file(self.file_content.work_root_dir,
-                                                           '{0}_native_center.wkt'.format(CUtils.one_id()))
-        native_bbox_filename_with_path = CFile.join_file(self.file_content.work_root_dir,
-                                                         '{0}_native_bbox.wkt'.format(CUtils.one_id()))
-        CFile.str_2_file('point({0} {1})'.format(center_latitude, center_longitude), native_center_filename_with_path)
-        CFile.str_2_file(
-            'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
-                BottomLeftLatitude_text, BottomLeftLongitude_text,
-                TopLeftLatitude_text, TopLeftLongitude_text,
-                TopRightLatitude_text, TopRightLongitude_text,
-                BottomRightLatitude_text, BottomRightLongitude_text
-            )
-            ,
-            native_bbox_filename_with_path)
-
-        parser.metadata.set_metadata_spatial(self.Success, '', self.Spatial_MetaData_Type_Native_Center,
-                                             native_center_filename_with_path)
-        parser.metadata.set_metadata_spatial(self.Success, '', self.Spatial_MetaData_Type_Native_BBox,
-                                             native_bbox_filename_with_path)
-
-        super().parser_metadata_spatial_after_qa(parser)
-
-        return CResult.merge_result(
-            self.Success,
-            '数据文件[{0}]的空间信息解析成功! '.format(self.file_info.file_name_with_full_path)
-        )
-
     def parser_metadata_view_list(self, parser: CMetaDataParser):
         """
         标准模式的反馈预览图和拇指图的名称

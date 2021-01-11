@@ -318,9 +318,13 @@ class distribution_satellite(distribution_base):
             CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
         )
 
-        ndi_table.column_list.column_by_name('transformimg').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'transformimg', None)
-        )
+        transformimg = CUtils.dict_value_by_name(metadata_bus_dict, 'transformimg', None)
+        if CUtils.equal_ignore_case(transformimg, 'BJ2'):
+            browser = self._dataset.value_by_name(0, 'dso_browser', None)
+            transformimg = browser.replace('.jpg', '.png')
+        else:
+            pass
+        ndi_table.column_list.column_by_name('transformimg').set_value(transformimg)
         ndi_table.column_list.column_by_name('filesize').set_sql(
             '''
             (select sum(dodfilesize) from dm2_storage_obj_detail where dodobjectid='{0}')
