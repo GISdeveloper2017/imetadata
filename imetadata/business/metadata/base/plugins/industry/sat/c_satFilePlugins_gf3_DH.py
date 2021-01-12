@@ -9,12 +9,12 @@ from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CM
 from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf3 import CSatFilePlugins_gf3
 
 
-class CSatFilePlugins_gf3_VHVV(CSatFilePlugins_gf3):
+class CSatFilePlugins_gf3_DH(CSatFilePlugins_gf3):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'GF3_WSC'
-        information[self.Plugins_Info_Type_Title] = '高分三号WSC传感器'
+        information[self.Plugins_Info_Type] = 'GF3_EXT'
+        information[self.Plugins_Info_Type_Title] = '高分三号EXT传感器'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
@@ -33,7 +33,7 @@ class CSatFilePlugins_gf3_VHVV(CSatFilePlugins_gf3):
             TextMatchType_Regex: 正则表达式
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)GF3.*_VHVV_.*', self.TextMatchType_Regex
+            return r'(?i)GF3.*_DH_.*', self.TextMatchType_Regex
         else:
             # GF3_KAS_WSC_000823_E122.8_N39.8_20161005_L1A_VV_L10002039504_Strip_0.tiff
             # 暂定 gf3_mdj_wsc_*_l1a_vv_l1*_strip_0.tiff为主对象文件
@@ -61,25 +61,9 @@ class CSatFilePlugins_gf3_VHVV(CSatFilePlugins_gf3):
             return self.file_info.file_main_name.replace('VV', 'VHVV').replace('_Strip_0', '')
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
-        """
-        初始化默认的, 文件的质检列表
-        质检项目应包括并不限于如下内容:
-        1. 实体数据的附属文件是否完整, 实体数据是否可以正常打开和读取
-        1. 元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
-        1. 业务元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
-        示例:
-        return [
-            {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
-             self.Name_Title: '全色文件', self.Name_Type: self.QualityAudit_Type_Error}
-            , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()), self.Name_ID: 'mss_tif',
-               self.Name_Title: '多光谱文件', self.Name_Type: self.QualityAudit_Type_Error}
-        ]
-        :param parser:
-        :return:
-        """
         return [
             {
-                # 补个属性，再调整
+                # 没有测试数据，后续调整
                 self.Name_FileName: '{0}.tiff'.format(self.classified_object_name()),
                 self.Name_ID: '影像tiff',
                 self.Name_Title: '影像文件',
@@ -97,12 +81,9 @@ class CSatFilePlugins_gf3_VHVV(CSatFilePlugins_gf3):
         """
         if self.__object_status__ == self.Sat_Object_Status_Dir:
             thumb_match_list = CFile.file_or_dir_fullname_of_path(self.file_info.file_name_with_full_path, False,
-                                                                  r'(?i)GF3.*VH.*(thumb|thumnail).jpg',
-                                                                  CFile.MatchType_Regex)
-            # 据transform_gf3.xsl记录快视图的正则表达式规则为 ：'.*VH(?!.*(thumb|thumnail)).*.jpg'
-            # 目前提供的测试数据中的快视图为 '.*VV(?!.*(thumb|thumnail)).*.jpg',修改为VH即可成功获取到快视图和拇指图
+                                                                  r'(?i)GF3.*DH.*thumb.jpg', CFile.MatchType_Regex)
             browser_match_list = CFile.file_or_dir_fullname_of_path(self.file_info.file_name_with_full_path, False,
-                                                                    r'(?i)GF3.*VH(?!.*(thumb | thumnail)).*.jpg',
+                                                                    r'(?i)GF3.*DH(?!.*thumb).*.jpg',
                                                                     CFile.MatchType_Regex)
             if len(thumb_match_list) > 0 and len(browser_match_list) > 0:
                 thumb_file_name = CFile.file_name(thumb_match_list[0])
@@ -120,10 +101,10 @@ class CSatFilePlugins_gf3_VHVV(CSatFilePlugins_gf3):
                 ]
         elif self.__object_status__ == self.Sat_Object_Status_Zip:
             thumb_match_list = CFile.file_or_dir_fullname_of_path(self.file_content.content_root_dir, False,
-                                                                  r'(?i)GF3.*VH.*(thumb|thumnail).jpg',
+                                                                  r'(?i)GF3.*DH.*thumb.jpg',
                                                                   CFile.MatchType_Regex)
             browser_match_list = CFile.file_or_dir_fullname_of_path(self.file_content.content_root_dir, False,
-                                                                    r'(?i)GF3.*VH(?!.*(thumb | thumnail)).*.jpg',
+                                                                    r'(?i)GF3.*DH(?!.*thumb).*.jpg',
                                                                     CFile.MatchType_Regex)
             if len(thumb_match_list) > 0 and len(browser_match_list) > 0:
                 thumb_file_name = CFile.file_name(thumb_match_list[0])

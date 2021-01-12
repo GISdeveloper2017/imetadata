@@ -12,7 +12,10 @@ from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins
 class CSatFilePlugins_gf3_HH(CSatFilePlugins_gf3):
 
     def get_information(self) -> dict:
-        return super().get_information()
+        information = super().get_information()
+        information[self.Plugins_Info_Type] = 'GF3_WSC'
+        information[self.Plugins_Info_Type_Title] = '高分三号WSC传感器'
+        return information
 
     def get_classified_character_of_sat(self, sat_file_status):
         """
@@ -34,7 +37,7 @@ class CSatFilePlugins_gf3_HH(CSatFilePlugins_gf3):
         else:
             # GF3_KAS_WSC_000823_E122.8_N39.8_20161005_L1A_VV_L10002039504_Strip_0.tiff
             # 暂定 gf3_mdj_wsc_*_l1a_vv_l1*_strip_0.tiff为主对象文件
-            #散列文件的识别方式后续有待开发，目前暂不测试
+            # 散列文件的识别方式后续有待开发，目前暂不测试
             return r'(?i)GF3.*(_AHV_|_HH_|_HHHV_).*_strip_0.tiff', self.TextMatchType_Regex
 
     def get_classified_object_name_of_sat(self, sat_file_status) -> str:
@@ -57,41 +60,16 @@ class CSatFilePlugins_gf3_HH(CSatFilePlugins_gf3):
             # 散列文件的识别方式有待调整
             return self.file_info.file_main_name.replace('VV', 'VHVV').replace('_Strip_0', '')
 
-    def get_metadata_bus_filename_by_file(self) -> str:
-        """
-        卫星数据解压后, 哪个文件是业务元数据?
-        :return:
-        """
-        return CFile.join_file(
-            self.file_content.content_root_dir,
-            '{0}.meta.xml'.format(self.classified_object_name())
-        )
-
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
-        """
-        初始化默认的, 文件的质检列表
-        质检项目应包括并不限于如下内容:
-        1. 实体数据的附属文件是否完整, 实体数据是否可以正常打开和读取
-        1. 元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
-        1. 业务元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
-        示例:
-        return [
-            {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
-             self.Name_Title: '全色文件', self.Name_Type: self.QualityAudit_Type_Error}
-            , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()), self.Name_ID: 'mss_tif',
-               self.Name_Title: '多光谱文件', self.Name_Type: self.QualityAudit_Type_Error}
-        ]
-        :param parser:
-        :return:
-        """
         return [
             {
-                self.Name_FileName: '{0}.meta.xml'.format(self.classified_object_name()),
-                self.Name_ID: 'bus_xml',
-                self.Name_Title: '业务元数据',
+                # 补个属性，再调整
+                self.Name_FileName: '{0}.tiff'.format(self.classified_object_name()),
+                self.Name_ID: '影像tiff',
+                self.Name_Title: '影像文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_Format: self.MetaDataFormat_XML
+                self.Name_Format: self.DataFormat_Raster_File
             }
         ]
 
@@ -103,11 +81,12 @@ class CSatFilePlugins_gf3_HH(CSatFilePlugins_gf3):
         """
         if self.__object_status__ == self.Sat_Object_Status_Dir:
             thumb_match_list = CFile.file_or_dir_fullname_of_path(self.file_info.file_name_with_full_path, False,
-                                                            r'(?i)GF3.*HH.*(thumb|thumnail).jpg', CFile.MatchType_Regex)
-            #.*HH(?!.*(thumb | thumnail)).*.jpg
-            browser_match_list = CFile.file_or_dir_fullname_of_path(self.file_info.file_name_with_full_path, False,
-                                                                  r'(?i)GF3.*HH(?!.*(thumb | thumnail)).*.jpg',
+                                                                  r'(?i)GF3.*HH.*(thumb|thumnail).jpg',
                                                                   CFile.MatchType_Regex)
+            # .*HH(?!.*(thumb | thumnail)).*.jpg
+            browser_match_list = CFile.file_or_dir_fullname_of_path(self.file_info.file_name_with_full_path, False,
+                                                                    r'(?i)GF3.*HH(?!.*(thumb | thumnail)).*.jpg',
+                                                                    CFile.MatchType_Regex)
             if len(thumb_match_list) > 0 and len(browser_match_list) > 0:
                 thumb_file_name = CFile.file_name(thumb_match_list[0])
                 browser_file_name = CFile.file_name(browser_match_list[0])
