@@ -8,8 +8,8 @@ class CSatFilePlugins_bj2(CSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'BJ2'
-        information[self.Plugins_Info_Type_Title] = '北京二号'
+        information[self.Plugins_Info_Type] = 'BJ2_PMS'
+        information[self.Plugins_Info_Type_Title] = '北京二号PMS传感器'
         information[self.Plugins_Info_Group] = 'BJ2'
         information[self.Plugins_Info_Group_Title] = '北京二号'
         information[self.Plugins_Info_CopyRight] = '二十一世纪空间技术应用股份有限公司'

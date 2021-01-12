@@ -150,9 +150,7 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/ProductMetaData/ImageGSD',
-                #样例XML节点的值为空，非空字段，暂时设置为0.8
-                self.Name_Value: 0.8
+                self.Name_XPath: '/ProductMetaData/ImageGSD'
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
