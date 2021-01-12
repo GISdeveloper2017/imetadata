@@ -73,14 +73,6 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
                 self.Name_Title: '全色文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error
-            },
-            {
-                self.Name_Type: self.QA_Type_FileExist,
-                self.Name_FileName: '{0}-PAN.xml'.format(self.classified_object_name()),
-                self.Name_ID: 'bus_xml',
-                self.Name_Title: '业务元数据',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
             }
         ]
 
