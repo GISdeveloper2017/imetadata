@@ -35,8 +35,8 @@ class CSatFilePlugins_gf3_HH(CSatFilePlugins_gf3):
             # GF3_KAS_WSC_000823_E122.8_N39.8_20161005_L1A_VV_L10002039504_Strip_0.tiff
             # 暂定 gf3_mdj_wsc_*_l1a_vv_l1*_strip_0.tiff为主对象文件
             #散列文件的识别方式后续有待开发，目前暂不测试
-            #return r'(?i)GF3.*(_AHV_|_HH_|_HHHV_).*_strip_0.tiff', self.TextMatchType_Regex
-            pass
+            return r'(?i)GF3.*(_AHV_|_HH_|_HHHV_).*_strip_0.tiff', self.TextMatchType_Regex
+
     def get_classified_object_name_of_sat(self, sat_file_status) -> str:
         """
         当卫星数据是解压后的散落文件时, 如何从解压后的文件名中, 解析出卫星数据的原名
@@ -55,8 +55,7 @@ class CSatFilePlugins_gf3_HH(CSatFilePlugins_gf3):
             return self.file_info.file_name_without_path
         else:
             # 散列文件的识别方式有待调整
-            # return self.file_info.file_main_name.replace('VV', 'VHVV').replace('_Strip_0', '')
-            pass
+            return self.file_info.file_main_name.replace('VV', 'VHVV').replace('_Strip_0', '')
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """

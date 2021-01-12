@@ -188,9 +188,12 @@ class distribution_satellite(distribution_base):
         main_table.column_list.column_by_name('endtime').set_value(
             dso_time_json.xpath_one('end_time', None)
         )
-        main_table.column_list.column_by_name('resolution').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
-        )
+        resolution = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
+        if not CUtils.equal_ignore_case(resolution, ''):
+            main_table.column_list.column_by_name('resolution').set_value(resolution)
+        else:
+            main_table.column_list.column_by_name('resolution').set_value(0)
+
         main_table.column_list.column_by_name('filesize').set_sql(
             '''
             (select sum(dodfilesize) from dm2_storage_obj_detail where dodobjectid='{0}')

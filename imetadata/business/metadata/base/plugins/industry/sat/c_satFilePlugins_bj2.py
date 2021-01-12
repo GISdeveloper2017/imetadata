@@ -4,7 +4,7 @@ from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
 from imetadata.base.c_utils import CUtils
 
 
-class CSatFilePlugins_gf1_B(CSatPlugins):
+class CSatFilePlugins_bj2(CSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
@@ -40,13 +40,14 @@ class CSatFilePlugins_gf1_B(CSatPlugins):
                                                    sat_classified_character_type)):
                     self.__object_status__ = self.Sat_Object_Status_File
                     self._object_confirm = self.Object_Confirm_IKnown
-                    self._object_name = self.get_classified_object_name_of_sat(self.Sat_Object_Status_File)
+                    object_name = self.get_classified_object_name_of_sat(self.Sat_Object_Status_File)
+                    self._object_name = object_name
                     # 附属文件设置
                     file_path = self.file_info.file_path
                     # 正则匹配附属文件
                     if not CUtils.equal_ignore_case(file_path, ''):
-                        match_name_1 = self.file_info.file_main_name[:-8]
-                        match_name_2 = match_name_1.replace('(?i)_PAN', '_MS', 1)
+                        match_name_1 = object_name[:].replace('_PMS', '_MS', 1)
+                        match_name_2 = object_name[:].replace('_PMS', '_PAN', 1)
                         match_str_1 = '(?i){0}.*[.].*'.format(match_name_1)
                         match_str_2 = '(?i){0}.*[.].*'.format(match_name_2)
                         for file_with_path in CFile.file_or_dir_fullname_of_path(
@@ -82,27 +83,61 @@ class CSatFilePlugins_gf1_B(CSatPlugins):
         elif sat_file_status == self.Sat_Object_Status_Dir:
             return self.file_info.file_name_without_path
         elif sat_file_status == self.Sat_Object_Status_File:
-            if '_PAN' in self.file_info.file_main_name:
-                object_name = self.file_info.file_main_name.replace('_PAN', '_PMS', 1)
-            elif '_pan' in self.file_info.file_main_name:
-                object_name = self.file_info.file_main_name.replace('_pan', '_pms', 1)
-            else:
-                object_name = self.file_info.file_main_name.replace('(?i)_PAN', '_PMS', 1)
-            object_name = object_name[:-8]
+            object_name = self.file_info.file_main_name
+            object_name = object_name[:-8].replace('_PAN', '_PMS', 1)
             return object_name
 
     def get_metadata_bus_filename_by_file(self) -> str:
-        return CFile.join_file(
-            self.file_content.content_root_dir,
-            self.file_info.file_main_name.replace('(?i)_browser$', '_meta.xml')
+        return '{0}_meta.xml'.format(
+            CFile.join_file(
+                self.file_content.content_root_dir,
+                self.classified_object_name().replace('_PMS', '_PAN', 1)
+            )
         )
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
-                self.Name_FileName: '{0}.tif'.format(self.file_info.file_main_name),
+                self.Name_FileName: '{0}_browser.tif'.format(self.classified_object_name().replace('_PMS', '_PAN', 1)),
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '影像文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.DataFormat_Raster_File
+            },
+            {
+                self.Name_FileName: '{0}.dbf'.format(self.classified_object_name()),
+                self.Name_ID: 'shp_dbf',
+                self.Name_Title: '矢量文件dbf',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.DataFormat_Vector_File
+            },
+            {
+                self.Name_FileName: '{0}.shp'.format(self.classified_object_name()),
+                self.Name_ID: 'shp_shp',
+                self.Name_Title: '矢量文件shp',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_FileName: '{0}.prj'.format(self.classified_object_name()),
+                self.Name_ID: 'shp_prj',
+                self.Name_Title: '矢量文件prj',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_FileName: '{0}.shx'.format(self.classified_object_name()),
+                self.Name_ID: 'shp_shx',
+                self.Name_Title: '矢量文件shx',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_FileName: '{0}.xml'.format(self.classified_object_name()),
+                self.Name_ID: 'shp_xml',
+                self.Name_Title: '矢量文件xml',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error
             }
@@ -132,11 +167,11 @@ class CSatFilePlugins_gf1_B(CSatPlugins):
         return [
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: '{0}.jpg'.format(self.file_info.file_main_name)
+                self.Name_FileName: '{0}_browser.jpg'.format(self.classified_object_name().replace('_PMS', '_PAN', 1))
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
-                self.Name_FileName: '{0}_thumb.jpg'.format(self.file_info.file_main_name[:-8])
+                self.Name_FileName: '{0}_thumb.jpg'.format(self.classified_object_name().replace('_PMS', '_PAN', 1))
             }
         ]
 
@@ -261,12 +296,18 @@ class CSatFilePlugins_gf1_B(CSatPlugins):
         对部分需要进行运算的数据进行处理
         """
         super().process_custom(metadata_bus_dict)
-        productattribute = CUtils.dict_value_by_name(metadata_bus_dict, 'metadata_bus_dict', None)
-        metadata_bus_dict['productattribute'] = productattribute[16:18]
+        productattribute = CUtils.dict_value_by_name(metadata_bus_dict, 'productattribute', None)
+        if len(productattribute) >= 18:
+            metadata_bus_dict['productattribute'] = productattribute[16:18]
+        else:
+            metadata_bus_dict['productattribute'] = None
 
     def parser_metadata_file_copy_custom(self, parser: CMetaDataParser, target_path: str):
         super().parser_metadata_file_copy_custom(parser, target_path)
         CFile.copy_file_to(
-            CFile.join_file(self.file_content.content_root_dir, '{0}.png'.format(self.file_info.file_main_name)),
+            CFile.join_file(
+                self.file_content.content_root_dir,
+                '{0}_browser.png'.format(self.classified_object_name().replace('_PMS', '_PAN', 1))
+            ),
             target_path
         )

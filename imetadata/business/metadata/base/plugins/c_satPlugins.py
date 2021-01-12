@@ -914,7 +914,6 @@ class CSatPlugins(CPlugins):
                 self.Name_Title: '产品id',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_NotNull: True,
                 self.Name_Width: 2000
             }
         ]

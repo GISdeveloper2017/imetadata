@@ -17,4 +17,4 @@ class CDetailParser_Fuzzy_File_Main_Name(CDetailParser):
         self.__detail_file_path__ = self.file_info.file_path
         self.__detail_file_recurse__ = False
         self.__detail_file_match_type__ = CFile.MatchType_Common
-        self.__detail_file_match_text__ = '{0}*.*'.format(self.file_info.file_main_name)
+        self.__detail_file_match_text__ = '{0}*.*'.format(self.object_name)
