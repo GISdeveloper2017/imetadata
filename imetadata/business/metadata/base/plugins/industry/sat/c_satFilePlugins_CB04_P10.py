@@ -7,8 +7,8 @@ class CSatFilePlugins_CB04_P10(COpticalSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'CB04'
-        information[self.Plugins_Info_Type_Title] = '中巴地球资源卫星04星'
+        information[self.Plugins_Info_Type] = 'CB04_P10'
+        information[self.Plugins_Info_Type_Title] = '中巴地球资源卫星04星P10传感器'
         information[self.Plugins_Info_Group] = 'CB04'
         information[self.Plugins_Info_Group_Title] = '中巴地球资源卫星04星'
         information[self.Plugins_Info_CopyRight] = '中国资源卫星应用中心'

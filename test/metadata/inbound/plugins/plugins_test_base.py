@@ -188,6 +188,7 @@ class Plugins_Test_Base(CResource):
                 # 获取插件对象
                 file_info, plugins_obj, metadata_parser = self.get_test_obj(file_type, test_file_with_full_path)
                 # 执行测试
+                plugins_obj.parser_metadata_with_qa(metadata_parser)
                 plugins_obj.parser_metadata_spatial_after_qa(metadata_parser)
                 # 获取结果
                 result_with_spatial, message_with_spatial, metadata_spatial \
@@ -213,6 +214,7 @@ class Plugins_Test_Base(CResource):
                 # 获取插件对象
                 file_info, plugins_obj, metadata_parser = self.get_test_obj(file_type, test_file_with_full_path)
                 # 执行测试
+                plugins_obj.parser_metadata_with_qa(metadata_parser)
                 plugins_obj.parser_metadata_view_after_qa(metadata_parser)
                 # 获取结果
                 result_with_view, message_with_view, thumb_img_file_name, browse_img_file_name \
