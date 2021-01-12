@@ -1,14 +1,11 @@
-from imetadata.base.c_file import CFile
-from imetadata.base.c_result import CResult
-from imetadata.base.c_utils import CUtils
-from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
-from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf1_pmsA import CSatFilePlugins_gf1_pmsA
+from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf1 import CSatFilePlugins_gf1
 
 
-class CSatFilePlugins_gf1_D(CSatFilePlugins_gf1_pmsA):
+class CSatFilePlugins_gf1_D(CSatFilePlugins_gf1):
 
     def get_information(self) -> dict:
         information = super().get_information()
+        information[self.Plugins_Info_Type] = 'GF1_PMS'
         information[self.Plugins_Info_Type_Title] = '高分一号D星PMS传感器'
         return information
 
@@ -31,25 +28,3 @@ class CSatFilePlugins_gf1_D(CSatFilePlugins_gf1_pmsA):
             return r'(?i)gf1d_pms.*[_].*', self.TextMatchType_Regex
         else:
             return r'(?i)gf1d_pms.*[_].*-pan.tiff', self.TextMatchType_Regex
-
-    def get_classified_object_name_of_sat(self, sat_file_status) -> str:
-        return super().get_classified_object_name_of_sat(sat_file_status)
-
-    def get_metadata_bus_filename_by_file(self) -> str:
-        return super().get_metadata_bus_filename_by_file()
-
-    def init_qa_file_list(self, parser: CMetaDataParser) -> list:
-
-        return super().init_qa_file_list(parser)
-
-    def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
-
-        return super().parser_metadata_time_list(parser)
-
-    def parser_metadata_spatial_after_qa(self, parser: CMetaDataParser):
-
-        return super().parser_metadata_spatial_after_qa(parser)
-
-    def parser_metadata_view_list(self, parser: CMetaDataParser):
-
-        return super().parser_metadata_view_list(parser)

@@ -73,7 +73,7 @@ class CSatFilePlugins_bj2(CSatPlugins):
         北京二号卫星识别
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)^TRIPLESAT_*', self.TextMatchType_Regex
+            return r'(?i)^TRIPLESAT_.*', self.TextMatchType_Regex
         else:
             return r'(?i)^TRIPLESAT.*[_]PAN.*[_]browser[.]tif$', self.TextMatchType_Regex
 
@@ -86,6 +86,8 @@ class CSatFilePlugins_bj2(CSatPlugins):
             object_name = self.file_info.file_main_name
             object_name = object_name[:-8].replace('_PAN', '_PMS', 1)
             return object_name
+        else:
+            return self.file_info.file_main_name
 
     def get_metadata_bus_filename_by_file(self) -> str:
         return '{0}_meta.xml'.format(
