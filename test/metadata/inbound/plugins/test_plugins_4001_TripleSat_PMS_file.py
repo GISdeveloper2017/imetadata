@@ -10,7 +10,7 @@ from imetadata.business.metadata.inbound.plugins.file.plugins_4001_TripleSat_PMS
 from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
-@allure.feature("北京二号PMS传感器")  # 模块标题
+@allure.feature("北京二号PMS传感器压缩包文件")  # 模块标题
 class Test_plugins_4001_TripleSat_PMS_file(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
         return plugins_4001_TripleSat_PMS(file_info)

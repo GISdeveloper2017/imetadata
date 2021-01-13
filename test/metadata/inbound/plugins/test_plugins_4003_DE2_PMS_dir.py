@@ -6,28 +6,28 @@ import allure
 import pytest
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
-from imetadata.business.metadata.inbound.plugins.dir.plugins_4002_CB04_P10 import plugins_4002_CB04_P10
+from imetadata.business.metadata.inbound.plugins.dir.plugins_4003_DE2_PMS import plugins_4003_DE2_PMS
 from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
-@allure.feature("中巴地球资源卫星04星目录文件")  # 模块标题
-class Test_plugins_4002_CB04_P10_dir(Plugins_Test_Base):
+@allure.feature("DEIMOS-2_PMS目录文件")  # 模块标题
+class Test_plugins_4003_DE2_PMS_dir(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
-        return plugins_4002_CB04_P10(file_info)
+        return plugins_4003_DE2_PMS(file_info)
 
     def test_file_info_list(self):
         return [
             {
                 self.Name_Test_File_Type: self.FileType_Dir,
-                self.Name_Test_file_path: 'CB04-P10-365-64-B2-20170819-L20003200907',
+                self.Name_Test_file_path: 'DE2_PM4_L1B_000000_20161121T033746_20161121T033749_DE2_13136_D2F2',
                 self.Name_Test_object_confirm: self.Object_Confirm_IKnown,
-                self.Name_Test_object_name: 'CB04-P10-365-64-B2-20170819-L20003200907'
+                self.Name_Test_object_name: 'DE2_PM4_L1B_000000_20161121T033746_20161121T033749_DE2_13136_D2F2'
             },
             {
                 self.Name_Test_File_Type: self.FileType_Dir,
-                self.Name_Test_file_path: 'TRIPLESAT_4_PMS_20191111021739_0007C9VI_032',
+                self.Name_Test_file_path: 'CB04-P10-365-64-B2-20170819-L20003200907',
                 self.Name_Test_object_confirm: self.Object_Confirm_IUnKnown,
-                self.Name_Test_object_name: 'TRIPLESAT_4_PMS_20191111021739_0007C9VI_032'
+                self.Name_Test_object_name: 'CB04-P10-365-64-B2-20170819-L20003200907'
             }
         ]
 

@@ -240,6 +240,60 @@ class CSatPlugins(CPlugins):
                 }
             )
 
+        metadata_view_list = self.parser_metadata_view_list(parser)
+        for metadata_view in metadata_view_list:
+            view_id = CUtils.dict_value_by_name(metadata_view, self.Name_ID, None)
+            view_filename = CFile.join_file(
+                self.file_content.content_root_dir,
+                CUtils.dict_value_by_name(metadata_view, self.Name_FileName, None)
+            )
+            if CUtils.equal_ignore_case(view_id, self.View_MetaData_Type_Browse):
+                if not CFile.file_or_path_exist(view_filename):
+                    parser.metadata.quality.append_total_quality(
+                        {
+                            self.Name_FileName: '',
+                            self.Name_ID: 'browserimg',
+                            self.Name_Title: '快视图',
+                            self.Name_Result: self.QA_Result_Error,
+                            self.Name_Group: self.QA_Group_Data_Integrity,
+                            self.Name_Message: '本文件缺少快视图'
+                        }
+                    )
+                else:
+                    parser.metadata.quality.append_total_quality(
+                        {
+                            self.Name_FileName: view_filename,
+                            self.Name_ID: 'browserimg',
+                            self.Name_Title: '快视图',
+                            self.Name_Result: self.QA_Result_Pass,
+                            self.Name_Group: self.QA_Group_Data_Integrity,
+                            self.Name_Message: '快视图[{0}]存在'.format(view_filename)
+                        }
+                    )
+            elif CUtils.equal_ignore_case(view_id, self.View_MetaData_Type_Thumb):
+                if not CFile.file_or_path_exist(view_filename):
+                    parser.metadata.quality.append_total_quality(
+                        {
+                            self.Name_FileName: '',
+                            self.Name_ID: 'thumbimg',
+                            self.Name_Title: '拇指图',
+                            self.Name_Result: self.QA_Result_Error,
+                            self.Name_Group: self.QA_Group_Data_Integrity,
+                            self.Name_Message: '本文件缺少拇指图'
+                        }
+                    )
+                else:
+                    parser.metadata.quality.append_total_quality(
+                        {
+                            self.Name_FileName: view_filename,
+                            self.Name_ID: 'thumbimg',
+                            self.Name_Title: '拇指图',
+                            self.Name_Result: self.QA_Result_Pass,
+                            self.Name_Group: self.QA_Group_Data_Integrity,
+                            self.Name_Message: '拇指图[{0}]存在'.format(view_filename)
+                        }
+                    )
+
     def parser_metadata_spatial_after_qa(self, parser: CMetaDataParser):
         """
         继承本方法, 对详细的空间元数据信息进行处理
@@ -394,7 +448,7 @@ class CSatPlugins(CPlugins):
         :param parser:
         :return:
         """
-        if not CUtils.equal_ignore_case(self.metadata_bus_src_filename_with_path,''):
+        if not CUtils.equal_ignore_case(self.metadata_bus_src_filename_with_path, ''):
             CFile.copy_file_to(self.metadata_bus_src_filename_with_path, target_path)
 
     def parser_metadata_view_list(self, parser: CMetaDataParser):

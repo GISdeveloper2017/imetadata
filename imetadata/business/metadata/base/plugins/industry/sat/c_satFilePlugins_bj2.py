@@ -169,11 +169,11 @@ class CSatFilePlugins_bj2(CSatPlugins):
         return [
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: '{0}_browser.jpg'.format(self.classified_object_name().replace('_PMS', '_PAN', 1))
+                self.Name_FileName: '{0}_browser.jpg'.format(self.classified_object_name().replace('_PMS', '_MS', 1))
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
-                self.Name_FileName: '{0}_thumb.jpg'.format(self.classified_object_name().replace('_PMS', '_PAN', 1))
+                self.Name_FileName: '{0}_thumb.jpg'.format(self.classified_object_name().replace('_PMS', '_MS', 1))
             }
         ]
 
@@ -264,7 +264,7 @@ class CSatFilePlugins_bj2(CSatPlugins):
             },
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
-                self.Name_XPath: '/SceneMetaData/MetaData/End_Time',
+                self.Name_XPath: '/SceneMetaData/MetaData/End_Time'
             },
             {
                 self.Name_ID: 'remark',  # 备注 可空
@@ -309,7 +309,7 @@ class CSatFilePlugins_bj2(CSatPlugins):
         CFile.copy_file_to(
             CFile.join_file(
                 self.file_content.content_root_dir,
-                '{0}_browser.png'.format(self.classified_object_name().replace('_PMS', '_PAN', 1))
+                '{0}_browser.png'.format(self.classified_object_name().replace('_PMS', '_MS', 1))
             ),
             target_path
         )
