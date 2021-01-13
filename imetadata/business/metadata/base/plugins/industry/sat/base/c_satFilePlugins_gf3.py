@@ -212,5 +212,37 @@ class CSatFilePlugins_gf3(CSatPlugins):
             }
         ]
 
+    def parser_metadata_with_qa(self, parser: CMetaDataParser):
+        """
+        进行质量检验, 保证数据实体的可读性, 并处理好元数据和业务元数据, 保证后续的其他元数据解析的通畅和无误!!!
+        :param parser:
+        :return:
+        """
+        parser.batch_qa_file_list(self.init_qa_file_list(parser))
+        # 自定义的文件完整性质检
+        self.qa_file_custom(parser)
 
+        # 这里将结果信息丢弃不用, 因为在提取元数据的方法中, 已经将异常信息记录到质检数据中
+        result = self.init_metadata(parser)
+        if CResult.result_success(result):
+            if parser.metadata.metadata_type == self.MetaDataFormat_XML:
+                parser.batch_qa_metadata_xml(self.init_qa_metadata_xml_list(parser))
+            elif parser.metadata.metadata_type == self.MetaDataFormat_Json:
+                parser.batch_qa_metadata_json_item(self.init_qa_metadata_json_list(parser))
+        else:
+            parser.metadata.set_metadata(
+                self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text, '')
+
+        # 这里将结果信息丢弃不用, 因为在提取业务元数据的方法中, 已经将异常信息记录到质检数据中
+        result = self.init_metadata_bus(parser)
+        if CResult.result_success(result):
+            if parser.metadata.metadata_bus_type == self.MetaDataFormat_XML:
+                parser.batch_qa_metadata_bus_xml_item(self.init_qa_metadata_bus_xml_list(parser))
+            elif parser.metadata.metadata_bus_type == self.MetaDataFormat_Json:
+                parser.batch_qa_metadata_bus_json_item(self.init_qa_metadata_bus_json_list(parser))
+        else:
+            parser.metadata.set_metadata_bus(
+                self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text, '')
+        # 自定义的元数据质检
+        self.qa_metadata_custom(parser)
 

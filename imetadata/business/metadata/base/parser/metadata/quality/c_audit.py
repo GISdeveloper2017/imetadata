@@ -114,6 +114,10 @@ class CAudit(CResource):
         return result_dict
 
     @classmethod
+    def init_audit_dict(cls, audit_id, audit_title, audit_group, audit_result) -> dict:
+        return cls.__init_audit_dict__(audit_id, audit_title, audit_group, audit_result)
+
+    @classmethod
     def a_file(cls, audit_id, audit_title, audit_group, audit_result, file_name_with_path,
                qa_items: dict) -> list:
         result_dict = cls.__init_audit_dict__(audit_id, audit_title, audit_group, audit_result)
@@ -609,7 +613,7 @@ class CAudit(CResource):
 
     @classmethod
     def __a_check_file_size__(cls, result_template: dict, file_name_with_path: str, size_min: int,
-                              size_max: int) -> list:
+                              size_max: int):
         """
         根据规则, 验证文件大小的合法性
         :param result_template 检查结果的模板

@@ -64,7 +64,8 @@ class CSatFilePlugins_gf3_DH(CSatFilePlugins_gf3):
         return [
             {
                 # 没有测试数据，后续调整
-                self.Name_FileName: '{0}.tiff'.format(self.classified_object_name()),
+                self.Name_FileName_List: ['{0}.tiff'.format(self.classified_object_name()),
+                                          '{0}-0.tiff'.format(self.classified_object_name())],
                 self.Name_ID: '影像tiff',
                 self.Name_Title: '影像文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,

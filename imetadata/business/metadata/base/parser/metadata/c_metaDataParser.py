@@ -84,6 +84,42 @@ class CMetaDataParser(CParser):
             for item_result in list_result:
                 self.metadata.quality.append_total_quality(item_result)
 
+    def batch_qa_file_list(self, list_qa: list):
+        """
+        批量处理数据完整性方面的质检项目
+        :param list_qa:
+        :return:
+        """
+        if len(list_qa) == 0:
+            return
+
+        for qa_item in list_qa:
+            for filename in CUtils.dict_value_by_name(qa_item, self.Name_FileName_List, []):
+                filename_with_path = CFile.join_file(self.file_content.content_root_dir, filename)
+                if CFile.file_or_path_exist(filename_with_path):
+                    list_result = CAudit.a_file(
+                        CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                        CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                        CUtils.dict_value_by_name(qa_item, self.Name_Group, self.QA_Group_Data_Integrity),
+                        CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
+                        filename_with_path,
+                        qa_item
+                    )
+                    break
+            else:
+                list_result = CAudit.init_audit_dict(
+                    CUtils.dict_value_by_name(qa_item, self.Name_ID, ''),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Group, self.QA_Group_Data_Integrity),
+                    CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass)
+                )
+                list_result[self.Name_Message] = '文件[{0}]不存在, 请检查'.format(
+                    CUtils.dict_value_by_name(qa_item, self.Name_FileName_List, [])
+                )
+
+            for item_result in list_result:
+                self.metadata.quality.append_total_quality(item_result)
+
     def batch_qa_metadata_xml(self, list_qa: list):
         """
         批量处理xml格式的元数据中的质检项目
