@@ -603,14 +603,14 @@ class CSatPlugins(CPlugins):
                 # 进行映射处理
                 metadata_bus_map = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Map, None)
                 if metadata_bus_map is not None:
-                    default_value = CUtils.dict_value_by_name(metadata_bus_map, self.Name_Default, None)
-                    if default_value is not None:  # 设置不符合映射的默认值
-                        metadata_bus_xpath_value = default_value
-                        metadata_bus_map.pop(self.Name_Default)
                     for map_key, map_value in metadata_bus_map.items():
                         if CUtils.equal_ignore_case(map_key, metadata_bus_xpath_value):
                             metadata_bus_xpath_value = map_value
                             break
+                    else:
+                        default_value = CUtils.dict_value_by_name(metadata_bus_map, self.Name_Default, None)
+                        if default_value is not None:  # 设置不符合映射的默认值
+                            metadata_bus_xpath_value = default_value
                 # 对部分特殊数据进行自定义处理
                 metadata_bus_dict[metadata_bus_id] = metadata_bus_xpath_value
             else:

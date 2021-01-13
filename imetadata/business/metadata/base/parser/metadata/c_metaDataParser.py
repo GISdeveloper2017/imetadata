@@ -114,7 +114,7 @@ class CMetaDataParser(CParser):
                     CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass)
                 )
                 list_result[self.Name_Message] = '文件[{0}]不存在, 请检查'.format(
-                    CUtils.dict_value_by_name(qa_item, self.Name_FileName_List, [])
+                    CUtils.any_2_str(CUtils.dict_value_by_name(qa_item, self.Name_FileName_List, []))
                 )
 
             for item_result in list_result:

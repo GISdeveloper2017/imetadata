@@ -3,6 +3,7 @@
 # @Author : 王西亚 
 # @File : c_satFilePlugins_gf1_pms_and_wfv.py
 from imetadata.base.c_file import CFile
+from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
@@ -196,17 +197,17 @@ class CSatFilePlugins_gf3(CSatPlugins):
         """
         return [
             {
-                self.Name_ID: self.Name_Time,   #获取时间
+                self.Name_ID: self.Name_Time,  # 获取时间
                 self.Name_XPath: '/product/platform/CenterTime',
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
-                self.Name_ID: self.Name_Start_Time, #开始时间
+                self.Name_ID: self.Name_Start_Time,  # 开始时间
                 self.Name_XPath: '/product/sensor/satelliteTime/start',
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
-                self.Name_ID: self.Name_End_Time,   #结束时间
+                self.Name_ID: self.Name_End_Time,  # 结束时间
                 self.Name_XPath: '/product/sensor/satelliteTime/end',
                 self.Name_Format: self.MetaDataFormat_XML
             }
@@ -245,4 +246,3 @@ class CSatFilePlugins_gf3(CSatPlugins):
                 self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text, '')
         # 自定义的元数据质检
         self.qa_metadata_custom(parser)
-
