@@ -1,10 +1,10 @@
 from imetadata.base.c_file import CFile
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
-from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.base.plugins.industry.sat.base.base.c_opticalSatPlugins import COpticalSatPlugins
 
 
-class CSatFilePlugins_bj2(CSatPlugins):
+class CSatFilePlugins_bj2(COpticalSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
@@ -77,30 +77,22 @@ class CSatFilePlugins_bj2(CSatPlugins):
         else:
             return r'(?i)^TRIPLESAT.*[_]PAN.*[_]browser[.]tif$', self.TextMatchType_Regex
 
-    def get_classified_object_name_of_sat(self, sat_file_status) -> str:
-        if sat_file_status == self.Sat_Object_Status_Zip:
-            return self.file_info.file_main_name
-        elif sat_file_status == self.Sat_Object_Status_Dir:
-            return self.file_info.file_name_without_path
-        elif sat_file_status == self.Sat_Object_Status_File:
-            object_name = self.file_info.file_main_name
-            object_name = object_name[:-8].replace('_PAN', '_PMS', 1)
-            return object_name
-        else:
-            return self.file_info.file_main_name
-
     def get_metadata_bus_filename_by_file(self) -> str:
-        return '{0}_meta.xml'.format(
-            CFile.join_file(
-                self.file_content.content_root_dir,
-                self.classified_object_name().replace('_PMS', '_PAN', 1)
+        return CFile.join_file(
+            self.file_content.content_root_dir,
+            self.get_fuzzy_metadata_file(
+                '(?i).*PAN.*[_]meta[.]xml',
+                '{0}_meta.xml'.format(self.classified_object_name().replace('_PMS', '_PAN', 1))
             )
         )
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
-                self.Name_FileName: '{0}_browser.tif'.format(self.classified_object_name().replace('_PMS', '_PAN', 1)),
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i)^TRIPLESAT.*[_]PAN.*[_]browser[.]tif$',
+                    '{0}_browser.tif'.format(self.classified_object_name().replace('_PMS', '_PAN', 1))
+                ),
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '影像文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -169,11 +161,17 @@ class CSatFilePlugins_bj2(CSatPlugins):
         return [
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: '{0}_browser.jpg'.format(self.classified_object_name().replace('_PMS', '_MS', 1))
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i).*MS.*[_]browser[.]jpg',
+                    '{0}_browser.jpg'.format(self.classified_object_name().replace('_PMS', '_MS', 1))
+                ),
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
-                self.Name_FileName: '{0}_thumb.jpg'.format(self.classified_object_name().replace('_PMS', '_MS', 1))
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i).*MS.*[_]thumb[.]jpg',
+                    '{0}_thumb.jpg'.format(self.classified_object_name().replace('_PMS', '_MS', 1))
+                )
             }
         ]
 
@@ -309,7 +307,10 @@ class CSatFilePlugins_bj2(CSatPlugins):
         CFile.copy_file_to(
             CFile.join_file(
                 self.file_content.content_root_dir,
-                '{0}_browser.png'.format(self.classified_object_name().replace('_PMS', '_MS', 1))
+                self.get_fuzzy_metadata_file(
+                    '.*MS.*[_]browser[.]png',
+                    '{0}_browser.png'.format(self.classified_object_name().replace('_PMS', '_MS', 1))
+                )
             ),
             target_path
         )

@@ -40,6 +40,6 @@ class COpticalSatPlugins(CSatPlugins):
         return CFile.join_file(
             self.file_content.content_root_dir,
             self.get_fuzzy_metadata_file(
-                '{0}.xml'.format(self.classified_object_name()), '{0}.xml'.format(self.classified_object_name())
+                '(?i){0}.xml'.format(self.classified_object_name()), '{0}.xml'.format(self.classified_object_name())
             )
         )

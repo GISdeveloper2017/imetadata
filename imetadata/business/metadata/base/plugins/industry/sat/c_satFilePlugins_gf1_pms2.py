@@ -36,7 +36,6 @@ class CSatFilePlugins_gf1_pms2(CSatFilePlugins_gf1):
         else:
             return r'(?i)^gf1_pms2.*[_].*-pan2[.]tiff$', self.TextMatchType_Regex
 
-
     def get_metadata_bus_filename_by_file(self) -> str:
         """
         卫星数据解压后, 哪个文件是业务元数据?
@@ -44,7 +43,7 @@ class CSatFilePlugins_gf1_pms2(CSatFilePlugins_gf1):
         """
         return CFile.join_file(
             self.file_content.content_root_dir,
-            '{0}-PAN2.xml'.format(self.classified_object_name())
+            self.get_fuzzy_metadata_file('.*PAN2.xml', '{0}-PAN2.xml'.format(self.classified_object_name()))
         )
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
@@ -66,17 +65,10 @@ class CSatFilePlugins_gf1_pms2(CSatFilePlugins_gf1):
         """
         return [
             {
-                self.Name_FileName: '{0}-PAN2.tiff'.format(self.classified_object_name()),
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^gf1_pms2.*[_].*-pan2[.]tiff$',
+                                                                 '{0}-PAN2.tiff'.format(self.classified_object_name())),
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '全色文件',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_Format: self.DataFormat_Raster_File
-            },
-            {
-                self.Name_FileName: '{0}-MSS2.tiff'.format(self.classified_object_name()),
-                self.Name_ID: 'mss_tif',
-                self.Name_Title: '多光谱文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_Format: self.DataFormat_Raster_File
@@ -92,11 +84,15 @@ class CSatFilePlugins_gf1_pms2(CSatFilePlugins_gf1):
         return [
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: '{0}-MSS2.jpg'.format(self.classified_object_name())
+                self.Name_FileName: self.get_fuzzy_metadata_file('.*(MUX|MSS).jpg',
+                                                                 '{0}-MSS2.jpg'.format(self.file_info.file_main_name))
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
-                self.Name_FileName: '{0}-MSS2_thumb.jpg'.format(self.classified_object_name())
+                self.Name_FileName: self.get_fuzzy_metadata_file('.*(MSS|MUX).*_thumb.jpg',
+                                                                 '{0}-MSS2_thumb.jpg'.format(
+                                                                     self.file_info.file_main_name)
+                                                                 )
             }
         ]
 

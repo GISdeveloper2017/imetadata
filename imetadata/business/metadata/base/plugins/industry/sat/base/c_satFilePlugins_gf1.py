@@ -19,44 +19,6 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
         information[self.Plugins_Info_CopyRight] = '高分中心'
         return information
 
-    def get_metadata_bus_filename_by_file(self) -> str:
-        """
-        卫星数据解压后, 哪个文件是业务元数据?
-        :return:
-        """
-        return CFile.join_file(
-            self.file_content.content_root_dir,
-            '{0}-PAN.xml'.format(self.classified_object_name())
-        )
-
-    def init_qa_file_list(self, parser: CMetaDataParser) -> list:
-        """
-        初始化默认的, 文件的质检列表
-        质检项目应包括并不限于如下内容:
-        1. 实体数据的附属文件是否完整, 实体数据是否可以正常打开和读取
-        1. 元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
-        1. 业务元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
-        示例:
-        return [
-            {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
-             self.Name_Title: '全色文件', self.Name_Type: self.QualityAudit_Type_Error}
-            , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()), self.Name_ID: 'mss_tif',
-               self.Name_Title: '多光谱文件', self.Name_Type: self.QualityAudit_Type_Error}
-        ]
-        :param parser:
-        :return:
-        """
-        return [
-            {
-                self.Name_Type: self.QA_Type_FileExist,
-                self.Name_FileName: '{0}-PAN.tiff'.format(self.classified_object_name()),
-                self.Name_ID: 'pan_tif',
-                self.Name_Title: '全色文件',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            }
-        ]
-
     def get_metadata_bus_configuration_list(self) -> list:
         """
         固定的列表，重写时不可缺项

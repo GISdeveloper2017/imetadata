@@ -11,7 +11,7 @@ from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
 @allure.feature("GF1_C压缩包类型成果影像")  # 模块标题
-class Test_Dir_plugins_4004_gf1_C(Plugins_Test_Base):
+class Test_File_plugins_4004_gf1_C(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
         return plugins_4004_gf1_C(file_info)
 

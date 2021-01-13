@@ -19,30 +19,6 @@ class CSatFilePlugins_gf3(CSatPlugins):
         information[self.Plugins_Info_CopyRight] = '高分中心'
         return information
 
-    def get_classified_object_name_of_sat(self, sat_file_status) -> str:
-        """
-        当卫星数据是解压后的散落文件时, 如何从解压后的文件名中, 解析出卫星数据的原名
-        . 如果是压缩包, 则是针对压缩包的文件主名
-        . 如果是子目录, 则是针对目录的名称
-        . 如果是散落文件, 则是针对文件的全名
-        :param sat_file_status 卫星数据类型
-            . Sat_Object_Status_Zip = 'zip'
-            . Sat_Object_Status_Dir = 'dir'
-            . Sat_Object_Status_File = 'file'
-        :return:
-        """
-        return super().get_classified_object_name_of_sat(sat_file_status)
-
-    def get_metadata_bus_filename_by_file(self) -> str:
-        """
-        卫星数据解压后, 哪个文件是业务元数据?
-        :return:
-        """
-        return CFile.join_file(
-            self.file_content.content_root_dir,
-            '{0}.meta.xml'.format(self.classified_object_name())
-        )
-
     def get_metadata_bus_configuration_list(self) -> list:
         """
         固定的列表，重写时不可缺项

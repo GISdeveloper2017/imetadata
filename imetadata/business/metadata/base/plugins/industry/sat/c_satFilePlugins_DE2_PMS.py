@@ -27,7 +27,7 @@ class CSatFilePlugins_DE2_PMS(COpticalSatPlugins):
         return CFile.join_file(
             self.file_content.content_root_dir,
             self.get_fuzzy_metadata_file(
-                '.*DE2_PAN.*.dim',
+                '(?i).*DE2_PAN.*[.]dim',
                 '{0}.dim'.format(self.classified_object_name().replace('DE2_PM4', 'DE2_PAN', 1))
             )
         )
@@ -35,7 +35,10 @@ class CSatFilePlugins_DE2_PMS(COpticalSatPlugins):
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
-                self.Name_FileName: '{0}.tiff'.format(self.classified_object_name().replace('DE2_PM4', 'DE2_PAN', 1)),
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i)^DE2_PAN_.*[.]tiff$',
+                    '{0}.tiff'.format(self.classified_object_name().replace('DE2_PM4', 'DE2_PAN', 1))
+                ),
                 self.Name_ID: 'pan_tiff',
                 self.Name_Title: '影像文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -68,11 +71,17 @@ class CSatFilePlugins_DE2_PMS(COpticalSatPlugins):
         return [
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: '{0}.png'.format(self.classified_object_name().replace('DE2_PM4', 'DE2_MS4', 1))
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i).*DE2_MS4.*[.]png',
+                    '{0}.png'.format(self.classified_object_name().replace('DE2_PM4', 'DE2_MS4', 1))
+                ),
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
-                self.Name_FileName: '{0}.png'.format(self.classified_object_name().replace('DE2_PM4', 'DE2_MS4', 1))
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i).*DE2_MS4.*[.]png',
+                    '{0}.png'.format(self.classified_object_name().replace('DE2_PM4', 'DE2_MS4', 1))
+                )
             }
         ]
 

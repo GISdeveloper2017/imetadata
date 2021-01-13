@@ -61,7 +61,9 @@ class CSatFilePlugins_gf1_wfv(CSatFilePlugins_gf1):
         """
         return [
             {
-                self.Name_FileName: '{0}.tiff'.format(self.classified_object_name()),
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^GF1_WFV.*[_].*[.]tiff$',
+                                                                 '{0}.tiff'.format(self.classified_object_name())),
+
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '影像文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,

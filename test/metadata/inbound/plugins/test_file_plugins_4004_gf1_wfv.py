@@ -11,7 +11,7 @@ from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
 @allure.feature("GF1_wfv文件夹类型成果影像")  # 模块标题
-class Test_Dir_plugins_4004_gf1_wfv(Plugins_Test_Base):
+class Test_File_plugins_4004_gf1_wfv(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
         return plugins_4004_gf1_wfv(file_info)
 

@@ -1,3 +1,4 @@
+from imetadata.base.c_file import CFile
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.plugins.industry.sat.base.base.c_opticalSatPlugins import COpticalSatPlugins
@@ -23,10 +24,22 @@ class CSatFilePlugins_CB04_P10(COpticalSatPlugins):
         else:
             return r'(?i)^CB04-P.*[.]tiff$', self.TextMatchType_Regex
 
+    def get_metadata_bus_filename_by_file(self) -> str:
+        return CFile.join_file(
+            self.file_content.content_root_dir,
+            self.get_fuzzy_metadata_file(
+                '(?i).*CB04-P.*[.]XML',
+                '{0}.xml'.format(self.classified_object_name())
+            )
+        )
+
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
-                self.Name_FileName: '{0}.tiff'.format(self.classified_object_name()),
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i)^CB04-P.*[.]tiff$',
+                    '{0}.tiff'.format(self.classified_object_name())
+                ),
                 self.Name_ID: 'tiff',
                 self.Name_Title: '影像文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -59,11 +72,17 @@ class CSatFilePlugins_CB04_P10(COpticalSatPlugins):
         return [
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: '{0}.jpg'.format(self.classified_object_name())
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i).*CB04-P.*[.]JPG',
+                    '{0}.jpg'.format(self.classified_object_name())
+                ),
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
-                self.Name_FileName: '{0}-THUMB.jpg'.format(self.classified_object_name())
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i).*CB04-P.*[-]THUMB[.]JPG',
+                    '{0}-THUMB.jpg'.format(self.classified_object_name())
+                )
             }
         ]
 
