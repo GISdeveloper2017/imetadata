@@ -77,44 +77,17 @@ class CSatFilePlugins_gf3_DH(CSatFilePlugins_gf3):
         :param parser:
         :return:
         """
-        if self.__object_status__ == self.Sat_Object_Status_Dir:
-            thumb_match_list = CFile.file_or_dir_fullname_of_path(self.file_info.file_name_with_full_path, False,
-                                                                  r'(?i)GF3.*DH.*thumb.jpg', CFile.MatchType_Regex)
-            browser_match_list = CFile.file_or_dir_fullname_of_path(self.file_info.file_name_with_full_path, False,
-                                                                    r'(?i)GF3.*DH(?!.*thumb).*.jpg',
-                                                                    CFile.MatchType_Regex)
-            if len(thumb_match_list) > 0 and len(browser_match_list) > 0:
-                thumb_file_name = CFile.file_name(thumb_match_list[0])
-                browser_file_name = CFile.file_name(browser_match_list[0])
-                return [
-                    {
-                        self.Name_ID: self.View_MetaData_Type_Browse,
-                        self.Name_FileName: '{0}'.format(browser_file_name)
-
-                    },
-                    {
-                        self.Name_ID: self.View_MetaData_Type_Thumb,
-                        self.Name_FileName: '{0}'.format(thumb_file_name)
-                    }
-                ]
-        elif self.__object_status__ == self.Sat_Object_Status_Zip:
-            thumb_match_list = CFile.file_or_dir_fullname_of_path(self.file_content.content_root_dir, False,
-                                                                  r'(?i)GF3.*DH.*thumb.jpg',
-                                                                  CFile.MatchType_Regex)
-            browser_match_list = CFile.file_or_dir_fullname_of_path(self.file_content.content_root_dir, False,
-                                                                    r'(?i)GF3.*DH(?!.*thumb).*.jpg',
-                                                                    CFile.MatchType_Regex)
-            if len(thumb_match_list) > 0 and len(browser_match_list) > 0:
-                thumb_file_name = CFile.file_name(thumb_match_list[0])
-                browser_file_name = CFile.file_name(browser_match_list[0])
-                return [
-                    {
-                        self.Name_ID: self.View_MetaData_Type_Browse,
-                        self.Name_FileName: '{0}'.format(browser_file_name)
-
-                    },
-                    {
-                        self.Name_ID: self.View_MetaData_Type_Thumb,
-                        self.Name_FileName: '{0}'.format(thumb_file_name)
-                    }
-                ]
+        return [
+            {
+                self.Name_ID: self.View_MetaData_Type_Browse,
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i)GF3.*DH(?!.*thumb).*.jpg', '{0}_thumb.jpg'.format(self.classified_object_name())
+                )
+            },
+            {
+                self.Name_ID: self.View_MetaData_Type_Thumb,
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i)GF3.*DH.*thumb.jpg', '{0}_thumb.jpg'.format(self.classified_object_name())
+                )
+            }
+        ]

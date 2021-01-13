@@ -422,6 +422,27 @@ class CSatPlugins(CPlugins):
             '数据文件[{0}]的可视化信息解析成功! '.format(self.file_info.file_name_with_full_path)
         )
 
+    def get_fuzzy_metadata_file(self, match_str, default_file_name):
+        """
+        正则获取文件夹下对应的快视拇指
+        """
+        if self.__object_status__ == self.Sat_Object_Status_Dir:
+            file_path = self.file_info.file_name_with_full_path
+        elif self.__object_status__ == self.Sat_Object_Status_Zip:
+            file_path = self.file_content.content_root_dir
+        elif self.__object_status__ == self.Sat_Object_Status_File:
+            file_path = self.file_info.file_path
+        else:
+            file_path = self.file_content.content_root_dir
+        file_list = CFile.file_or_dir_fullname_of_path(
+            file_path, False, match_str, CFile.MatchType_Regex
+        )
+        if len(file_list) > 0:
+            file_name = CFile.file_name(file_list[0])
+        else:
+            file_name = default_file_name
+        return file_name
+
     def parser_metadata_file_copy_list(self, parser: CMetaDataParser) -> list:
         """
         标准的文件拷贝列表
