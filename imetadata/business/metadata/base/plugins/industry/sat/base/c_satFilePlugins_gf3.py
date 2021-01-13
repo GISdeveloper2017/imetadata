@@ -19,24 +19,6 @@ class CSatFilePlugins_gf3(CSatPlugins):
         information[self.Plugins_Info_CopyRight] = '高分中心'
         return information
 
-    def get_classified_character_of_sat(self, sat_file_status):
-        """
-        设置识别的特征
-        . 如果是压缩包, 则是针对压缩包的文件主名
-        . 如果是子目录, 则是针对目录的名称
-        :param sat_file_status 卫星数据类型
-            . Sat_Object_Status_Zip = 'zip'
-            . Sat_Object_Status_Dir = 'dir'
-            . Sat_Object_Status_File = 'file'
-        :return:
-        [0]: 特征串
-        [1]: 特征串的类型
-            TextMatchType_Common: 常规通配符, 如 *.txt
-            TextMatchType_Regex: 正则表达式
-        """
-
-        return super().get_classified_character_of_sat(sat_file_status)
-
     def get_classified_object_name_of_sat(self, sat_file_status) -> str:
         """
         当卫星数据是解压后的散落文件时, 如何从解压后的文件名中, 解析出卫星数据的原名

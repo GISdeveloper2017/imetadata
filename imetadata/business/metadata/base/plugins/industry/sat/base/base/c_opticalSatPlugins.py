@@ -23,10 +23,14 @@ class COpticalSatPlugins(CSatPlugins):
         return super().get_classified_character_of_sat(sat_file_status)
 
     def get_classified_object_name_of_sat(self, sat_file_status) -> str:
-        if sat_file_status == self.Sat_Object_Status_Zip or sat_file_status == self.Sat_Object_Status_File:
+        if sat_file_status == self.Sat_Object_Status_Zip:
             return self.file_info.file_main_name
         elif sat_file_status == self.Sat_Object_Status_Dir:
             return self.file_info.file_name_without_path
+        elif sat_file_status == self.Sat_Object_Status_File:
+            return CFile.file_name(self.file_info.file_path)
+        else:
+            return self.file_info.file_main_name
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """
@@ -35,5 +39,7 @@ class COpticalSatPlugins(CSatPlugins):
         """
         return CFile.join_file(
             self.file_content.content_root_dir,
-            '{0}.xml'.format(self.classified_object_name())
+            self.get_fuzzy_metadata_file(
+                '{0}.xml'.format(self.classified_object_name()), '{0}.xml'.format(self.classified_object_name())
+            )
         )

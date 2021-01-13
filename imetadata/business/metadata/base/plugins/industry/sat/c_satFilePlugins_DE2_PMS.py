@@ -23,23 +23,12 @@ class CSatFilePlugins_DE2_PMS(COpticalSatPlugins):
         else:
             return r'(?i)^DE2_PAN_.*[.]tiff$', self.TextMatchType_Regex
 
-    def get_classified_object_name_of_sat(self, sat_file_status) -> str:
-        if sat_file_status == self.Sat_Object_Status_Zip:
-            return self.file_info.file_main_name
-        elif sat_file_status == self.Sat_Object_Status_Dir:
-            return self.file_info.file_name_without_path
-        elif sat_file_status == self.Sat_Object_Status_File:
-            object_name = self.file_info.file_main_name
-            object_name = object_name[:].replace('DE2_PAN', 'DE2_PM4', 1)
-            return object_name
-        else:
-            return self.file_info.file_main_name
-
     def get_metadata_bus_filename_by_file(self) -> str:
-        return '{0}.dim'.format(
-            CFile.join_file(
-                self.file_content.content_root_dir,
-                self.classified_object_name().replace('DE2_PM4', 'DE2_PAN', 1)
+        return CFile.join_file(
+            self.file_content.content_root_dir,
+            self.get_fuzzy_metadata_file(
+                '.*DE2_PAN.*.dim',
+                '{0}.dim'.format(self.classified_object_name().replace('DE2_PM4', 'DE2_PAN', 1))
             )
         )
 

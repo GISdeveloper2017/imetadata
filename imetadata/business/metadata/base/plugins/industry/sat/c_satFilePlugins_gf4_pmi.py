@@ -19,15 +19,6 @@ class CSatFilePlugins_gf4_pmi(CSatFilePlugins_gf4):
             # 散列文件的识别方式后续有待开发，目前暂不测试
             return 'gf4_pms_*_l1a*.tiff', self.TextMatchType_Regex
 
-    def get_classified_object_name_of_sat(self, sat_file_status) -> str:
-        if sat_file_status == self.Sat_Object_Status_Zip:
-            return self.file_info.file_main_name
-        elif sat_file_status == self.Sat_Object_Status_Dir:
-            return self.file_info.file_name_without_path
-        else:
-            # 散列文件的识别方式有待调整
-            return self.file_info.file_main_name.replace('PMS', 'PMI')
-
     def get_metadata_bus_filename_by_file(self) -> str:
         return CFile.join_file(
             self.file_content.content_root_dir,
