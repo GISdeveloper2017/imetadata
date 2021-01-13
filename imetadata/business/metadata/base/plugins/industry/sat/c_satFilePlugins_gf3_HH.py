@@ -2,8 +2,6 @@
 # @Time : 2020/11/2 09:50
 # @Author : 邢凯凯
 # @File : c_satFilePlugins_gf3_HH.py
-import re
-
 from imetadata.base.c_file import CFile
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf3 import CSatFilePlugins_gf3
@@ -61,17 +59,65 @@ class CSatFilePlugins_gf3_HH(CSatFilePlugins_gf3):
             return self.file_info.file_main_name.replace('VV', 'VHVV').replace('_Strip_0', '')
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
-        return [
-            {
-                # 补个属性，再调整
-                self.Name_FileName: '{0}.tiff'.format(self.classified_object_name()),
-                self.Name_ID: '影像tiff',
-                self.Name_Title: '影像文件',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_Format: self.DataFormat_Raster_File
-            }
-        ]
+        if self.__object_status__ == self.Sat_Object_Status_Dir:
+            match_list = CFile.file_or_dir_fullname_of_path(self.file_info.file_name_with_full_path, False,
+                                                            'GF3_.*_HH_.*.tiff', CFile.MatchType_Regex)
+            if len(match_list) > 1:
+                for match_file_name in match_list:
+                    if '_Strip_0' in match_file_name:
+                        return [
+                            {
+                                self.Name_FileName: CFile.file_name(match_file_name),
+                                self.Name_ID: '影像tiff',
+                                self.Name_Title: '影像文件',
+                                self.Name_Group: self.QA_Group_Data_Integrity,
+                                self.Name_Result: self.QA_Result_Error,
+                                self.Name_Format: self.DataFormat_Raster_File
+                            }
+                        ]
+                    break
+            elif len(match_list) == 1:
+                return [
+                    {
+                        self.Name_FileName: CFile.file_name(match_list[0]),
+                        self.Name_ID: '影像tiff',
+                        self.Name_Title: '影像文件',
+                        self.Name_Group: self.QA_Group_Data_Integrity,
+                        self.Name_Result: self.QA_Result_Error,
+                        self.Name_Format: self.DataFormat_Raster_File
+                    }
+                ]
+
+        if self.__object_status__ == self.Sat_Object_Status_Zip:
+            match_list = CFile.file_or_dir_fullname_of_path(self.file_content.content_root_dir, False,
+                                                            'GF3_.*_HH_.*.tiff', CFile.MatchType_Regex)
+            if len(match_list) > 1:
+                for match_file_name in match_list:
+                    if '_Strip_0' in match_file_name:
+                        return [
+                            {
+                                self.Name_FileName: CFile.file_name(match_file_name),
+                                self.Name_ID: '影像tiff',
+                                self.Name_Title: '影像文件',
+                                self.Name_Group: self.QA_Group_Data_Integrity,
+                                self.Name_Result: self.QA_Result_Error,
+                                self.Name_Format: self.DataFormat_Raster_File
+                            }
+                        ]
+                    break
+            elif len(match_list) == 1:
+                return [
+                    {
+                        self.Name_FileName: CFile.file_name(match_list[0]),
+                        self.Name_ID: '影像tiff',
+                        self.Name_Title: '影像文件',
+                        self.Name_Group: self.QA_Group_Data_Integrity,
+                        self.Name_Result: self.QA_Result_Error,
+                        self.Name_Format: self.DataFormat_Raster_File
+                    }
+                ]
+        else:
+            return super().init_qa_file_list(parser)
 
     def parser_metadata_view_list(self, parser: CMetaDataParser):
         """

@@ -2,8 +2,6 @@
 # @Time : 2020/11/2 09:50
 # @Author : 邢凯凯
 # @File : c_satFilePlugins_gf3_HH.py
-import re
-
 from imetadata.base.c_file import CFile
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf3 import CSatFilePlugins_gf3
@@ -64,8 +62,7 @@ class CSatFilePlugins_gf3_DH(CSatFilePlugins_gf3):
         return [
             {
                 # 没有测试数据，后续调整
-                self.Name_FileName_List: ['{0}.tiff'.format(self.classified_object_name()),
-                                          '{0}-0.tiff'.format(self.classified_object_name())],
+                self.Name_FileName: '{0}.tiff'.format(self.classified_object_name()),
                 self.Name_ID: '影像tiff',
                 self.Name_Title: '影像文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,

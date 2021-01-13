@@ -125,7 +125,6 @@ class CResource:
     Name_Directory = 'directory'
     Name_File = 'file'
     Name_FileName = 'filename'
-    Name_FileName_List = 'filename_list'
 
     Name_Total = 'total'
     Name_Data = 'data'

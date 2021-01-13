@@ -114,10 +114,6 @@ class CAudit(CResource):
         return result_dict
 
     @classmethod
-    def init_audit_dict(cls, audit_id, audit_title, audit_group, audit_result) -> dict:
-        return cls.__init_audit_dict__(audit_id, audit_title, audit_group, audit_result)
-
-    @classmethod
     def a_file(cls, audit_id, audit_title, audit_group, audit_result, file_name_with_path,
                qa_items: dict) -> list:
         result_dict = cls.__init_audit_dict__(audit_id, audit_title, audit_group, audit_result)
