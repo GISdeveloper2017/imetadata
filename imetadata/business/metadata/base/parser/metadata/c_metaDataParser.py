@@ -198,7 +198,7 @@ class CMetaDataParser(CParser):
                 CUtils.dict_value_by_name(qa_item, self.Name_Title, ''),
                 CUtils.dict_value_by_name(qa_item, self.Name_Group, self.QA_Group_Data_Integrity),
                 CUtils.dict_value_by_name(qa_item, self.Name_Result, self.QA_Result_Pass),
-                metadata_bus_dict[CUtils.dict_value_by_name(qa_item, self.Name_ID, '')],
+                CUtils.dict_value_by_name(metadata_bus_dict, CUtils.dict_value_by_name(qa_item, self.Name_ID, ''), ''),
                 qa_item
             )
             for item_result in list_result:

@@ -340,12 +340,14 @@ class distribution_satellite(distribution_base):
         ndi_table.column_list.column_by_name('resolution').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
         )
-        ndi_table.column_list.column_by_name('rollangle').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'rollangle', 0)
-        )
-        ndi_table.column_list.column_by_name('cloudpercent').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'cloudpercent', 0)
-        )
+        rollangle = CUtils.dict_value_by_name(metadata_bus_dict, 'rollangle', 0)
+        if CUtils.equal_ignore_case(rollangle, ''):
+            rollangle = 0
+        ndi_table.column_list.column_by_name('rollangle').set_value(rollangle)
+        cloudpercent = CUtils.dict_value_by_name(metadata_bus_dict, 'cloudpercent', 0)
+        if CUtils.equal_ignore_case(cloudpercent, ''):
+            cloudpercent = 0
+        ndi_table.column_list.column_by_name('cloudpercent').set_value(cloudpercent)
         ndi_table.column_list.column_by_name('dataum').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'dataum', None)
         )

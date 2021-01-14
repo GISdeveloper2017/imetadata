@@ -83,6 +83,7 @@ class Plugins_Test_Base(CResource):
             file_info, plugins_obj, metadata_parser = self.get_test_obj(file_type, test_file_with_full_path)
             # 执行测试
             object_confirm, object_name = plugins_obj.classified()
+            plugins_obj.destroy_virtual_content()
             # 检查结果
             if object_confirm == self.Object_Confirm_IKnown:
                 flag = (object_confirm == correct_object_confirm) and (object_name == correct_object_name)
@@ -117,6 +118,7 @@ class Plugins_Test_Base(CResource):
                 # 获取结果
                 result_with_qa, message_with_qa, metadata_type, metadata \
                     = metadata_parser.metadata.metadata()
+                plugins_obj.destroy_virtual_content()
                 # 录入测试信息
                 allure.attach('元数据处理信息为{0},元数据类型为{1},元数据内容为{2},'
                               .format(message_with_qa, metadata_type, metadata),
@@ -142,6 +144,7 @@ class Plugins_Test_Base(CResource):
                 # 获取结果
                 result_with_bus_qa, message_with_bus_qa, metadata_bus_type, metadata_bus \
                     = metadata_parser.metadata.metadata_bus()
+                plugins_obj.destroy_virtual_content()
                 # 录入测试信息
                 allure.attach('业务元数据处理信息为{0},业务元数据类型为{1},业务元数据内容为{2}'
                               .format(message_with_bus_qa, metadata_bus_type, metadata_bus),
@@ -167,6 +170,7 @@ class Plugins_Test_Base(CResource):
                 plugins_obj.parser_metadata_time_after_qa(metadata_parser)
                 # 获取结果
                 result_with_time, message_with_time, time_information = metadata_parser.metadata.metadata_time()
+                plugins_obj.destroy_virtual_content()
                 # 录入测试信息
                 allure.attach('处理信息为{0},时间元数据内容为{1}'
                               .format(message_with_time, time_information),
@@ -193,6 +197,7 @@ class Plugins_Test_Base(CResource):
                 # 获取结果
                 result_with_spatial, message_with_spatial, metadata_spatial \
                     = metadata_parser.metadata.metadata_spatial()
+                plugins_obj.destroy_virtual_content()
                 # 录入测试信息
                 allure.attach('处理信息为{0},空间元数据内容为{1}'
                               .format(message_with_spatial, metadata_spatial),
@@ -219,6 +224,7 @@ class Plugins_Test_Base(CResource):
                 # 获取结果
                 result_with_view, message_with_view, thumb_img_file_name, browse_img_file_name \
                     = metadata_parser.metadata.metadata_view()
+                plugins_obj.destroy_virtual_content()
                 # 录入测试信息
                 allure.attach('处理信息为{0}'.format(message_with_view),
                               '{0}'.format(test_file_with_rel_path),
