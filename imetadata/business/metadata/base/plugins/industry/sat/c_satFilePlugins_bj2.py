@@ -20,7 +20,7 @@ class CSatFilePlugins_bj2(COpticalSatPlugins):
         北京二号卫星识别
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)^TRIPLESAT_.*', self.TextMatchType_Regex
+            return r'(?i)^TRIPLESAT.*_.*_.*', self.TextMatchType_Regex
         else:
             return r'(?i)^TRIPLESAT.*[_]PAN.*[_]browser[.]tif$', self.TextMatchType_Regex
 
@@ -231,7 +231,7 @@ class CSatFilePlugins_bj2(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
-                self.Name_XPath: '/SceneMetaData/MetaData/Scene_ID',
+                self.Name_XPath: '/SceneMetaData/MetaData/Scene_ID'
             },
             {
                 self.Name_ID: 'productid',  # 产品id 默认取主文件全名

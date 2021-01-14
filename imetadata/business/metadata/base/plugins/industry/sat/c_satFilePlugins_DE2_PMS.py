@@ -19,7 +19,7 @@ class CSatFilePlugins_DE2_PMS(COpticalSatPlugins):
         北京二号卫星识别
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)^DE2.*_.*', self.TextMatchType_Regex
+            return r'(?i)^DE2.*_.*_.*', self.TextMatchType_Regex
         else:
             return r'(?i)^DE2_PAN_.*[.]tiff$', self.TextMatchType_Regex
 

@@ -1,46 +1,36 @@
-from imetadata.base.c_file import CFile
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.plugins.industry.sat.base.base.c_opticalSatPlugins import COpticalSatPlugins
 
 
-class CSatFilePlugins_CB04_P10(COpticalSatPlugins):
+class CSatFilePlugins_HJ(COpticalSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'CB04_P10'
-        information[self.Plugins_Info_Type_Title] = '中巴地球资源卫星04星P10传感器'
-        information[self.Plugins_Info_Group] = 'CB04'
-        information[self.Plugins_Info_Group_Title] = '中巴地球资源卫星04星'
-        information[self.Plugins_Info_CopyRight] = '中国资源卫星应用中心'
+        information[self.Plugins_Info_Type] = 'HJ-1A/B/C_CCD1/CCD2'
+        information[self.Plugins_Info_Type_Title] = '环境一号A/B/C星CCD1/CCD2传感器'
+        information[self.Plugins_Info_Group] = 'HJ-1'
+        information[self.Plugins_Info_Group_Title] = '环境一号'
+        information[self.Plugins_Info_CopyRight] = 'HJ'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
         """
-        北京二号卫星识别
+        环境一号卫星识别
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)^CB04-P.*-.*-.*', self.TextMatchType_Regex
+            return r'(?i)^HJ.*-.*', self.TextMatchType_Regex
         else:
-            return r'(?i)^CB04-P.*[.]tiff$', self.TextMatchType_Regex
-
-    def get_metadata_bus_filename_by_file(self) -> str:
-        return CFile.join_file(
-            self.file_content.content_root_dir,
-            self.get_fuzzy_metadata_file(
-                '(?i).*CB04-P.*[.]XML',
-                '{0}.xml'.format(self.classified_object_name())
-            )
-        )
+            return r'(?i)^HJ.*-.*[-]1[.]tif$', self.TextMatchType_Regex
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i)^CB04-P.*[.]tiff$',
-                    '{0}.tiff'.format(self.classified_object_name())
+                    r'(?i)^HJ.*-.*[-]1[.]tif$',
+                    '{0}-1.tif'.format(self.classified_object_name())
                 ),
-                self.Name_ID: 'tiff',
+                self.Name_ID: 'pan_tif',
                 self.Name_Title: '影像文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
@@ -73,15 +63,15 @@ class CSatFilePlugins_CB04_P10(COpticalSatPlugins):
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i).*CB04-P.*[.]JPG',
-                    '{0}.jpg'.format(self.classified_object_name())
+                    r'(?i)(?!.*THUMB).*[.]JPG',
+                    '{0}-THUMB.JPG'.format(self.classified_object_name())
                 ),
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i).*CB04-P.*[-]THUMB[.]JPG',
-                    '{0}-THUMB.jpg'.format(self.classified_object_name())
+                    r'(?i).*HJ.*-THUMB[.]JPG',
+                    '{0}-THUMB.JPG'.format(self.classified_object_name())
                 )
             }
         ]
@@ -101,11 +91,11 @@ class CSatFilePlugins_CB04_P10(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'centerlatitude',  # 中心维度
-                self.Name_Value: None
+                self.Name_XPath: '/root/data/sceneCenterLat'
             },
             {
                 self.Name_ID: 'centerlongitude',  # 中心经度
-                self.Name_Value: None
+                self.Name_XPath: '/root/data/sceneCenterLong'
             },
             {
                 self.Name_ID: 'topleftlatitude',  # 左上角维度 必填
@@ -153,11 +143,11 @@ class CSatFilePlugins_CB04_P10(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
-                self.Name_XPath: '/root/data/satOffNadir'
+                self.Name_Value: 0
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量
-                self.Name_XPath: '/root/data/overallQuality'
+                self.Name_Value: 0
             },
             {
                 self.Name_ID: 'dataum',  # 坐标系 默认为null
@@ -165,7 +155,7 @@ class CSatFilePlugins_CB04_P10(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'acquisition_id',  # 轨道号
-                self.Name_Value: None
+                self.Name_XPath: None
             },
             {
                 self.Name_ID: 'copyright',  # 发布来源 从info取
@@ -173,7 +163,7 @@ class CSatFilePlugins_CB04_P10(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
-                self.Name_XPath: '/root/data/productDate'
+                self.Name_XPath: '/root/data/sceneDate'
             },
             {
                 self.Name_ID: 'remark',  # 备注 可空
@@ -181,7 +171,7 @@ class CSatFilePlugins_CB04_P10(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productname',  # 产品名称，有的能从卫星元数据里面取，没有就不取
-                self.Name_Value: None
+                self.Name_XPath: None
             },
             {
                 self.Name_ID: 'producttype',  # 产品类型 必填
@@ -191,10 +181,9 @@ class CSatFilePlugins_CB04_P10(COpticalSatPlugins):
                 self.Name_ID: 'productattribute',  # 产品属性 必填
                 self.Name_XPath: '/root/data/productLevel',
                 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
-                    'LEVEL1A': 'L1',
-                    'LEVEL2A': 'L2',
-                    'LEVEL4A': 'L4',
-                    self.Name_Default: 'L1'  # 没有对应的的映射使用默认值
+                    'LEVEL1': 'L1',
+                    'LEVEL2': 'L2',
+                    'LEVEL4': 'L4'
                 }
             },
             {
