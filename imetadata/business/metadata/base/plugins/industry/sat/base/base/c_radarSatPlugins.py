@@ -6,7 +6,7 @@ from imetadata.base.c_file import CFile
 from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
 
 
-class COpticalSatPlugins(CSatPlugins):
+class CRadarSatPlugins(CSatPlugins):
     """
     光学卫星数据插件
     . 如果卫星数据是文件, 则先检查文件名是否在指定的列表中, 之后再检查文件主名是否匹配指定特征串

@@ -5,10 +5,10 @@
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
-from imetadata.business.metadata.base.plugins.c_satPlugins import CSatPlugins
+from imetadata.business.metadata.base.plugins.industry.sat.base.base.c_radarSatPlugins import CRadarSatPlugins
 
 
-class CSatFilePlugins_gf3(CSatPlugins):
+class CSatFilePlugins_gf3(CRadarSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
@@ -18,6 +18,18 @@ class CSatFilePlugins_gf3(CSatPlugins):
         information[self.Plugins_Info_Group_Title] = '高分三号'
         information[self.Plugins_Info_CopyRight] = '高分中心'
         return information
+
+    def get_metadata_bus_filename_by_file(self) -> str:
+        """
+        卫星数据解压后, 哪个文件是业务元数据?
+        :return:
+        """
+        return CFile.join_file(
+            self.file_content.content_root_dir,
+            self.get_fuzzy_metadata_file(
+                '(?i).*Meta.xml', '{0}.meta.xml'.format(self.classified_object_name())
+            )
+        )
 
     def get_metadata_bus_configuration_list(self) -> list:
         """
