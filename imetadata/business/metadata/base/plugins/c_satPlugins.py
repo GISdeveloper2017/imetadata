@@ -105,6 +105,7 @@ class CSatPlugins(CPlugins):
                     self.__object_status__ = self.Sat_Object_Status_File
                     self._object_confirm = self.Object_Confirm_IKnown
                     self._object_name = self.get_classified_object_name_of_sat(self.Sat_Object_Status_File)
+                    self.parser_detail_custom(self._object_name)
         elif self.file_info.file_type == self.FileType_Dir:
             sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
                 self.Sat_Object_Status_Dir)
@@ -186,6 +187,23 @@ class CSatPlugins(CPlugins):
             return self.DetailEngine_Fuzzy_File_Main_Name
         else:
             return None
+
+    def parser_detail_custom(self, object_name):
+        """
+        自定义的附属文件入库
+        """
+        pass
+
+    def add_different_name_detail_by_match(self, match_str, match_type=CFile.MatchType_Regex):
+        """
+        默认的影像文件为主数据时通用附属文件入库工具方法
+        """
+        file_path = self.file_info.file_path
+        # 正则匹配附属文件
+        if not CUtils.equal_ignore_case(file_path, ''):
+            for file_with_path in CFile.file_or_dir_fullname_of_path(
+                    file_path, False, match_str, match_type):
+                self._object_detail_file_full_name_list.append(file_with_path)
 
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """

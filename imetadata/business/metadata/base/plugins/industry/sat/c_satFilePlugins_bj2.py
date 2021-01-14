@@ -15,59 +15,6 @@ class CSatFilePlugins_bj2(COpticalSatPlugins):
         information[self.Plugins_Info_CopyRight] = '二十一世纪空间技术应用股份有限公司'
         return information
 
-    def classified(self):
-        """
-        因附属文件较为特殊，在此进行自定义附属文件
-        """
-
-        self.__object_status__ = self.Sat_Object_Status_Unknown
-        self._object_name = None
-        self._object_confirm = self.Object_Confirm_IUnKnown
-
-        if self.file_info.file_type == self.FileType_File:
-            if self.special_zip_file_ext_list().count(self.file_info.file_ext.lower()) > 0:
-                sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
-                    self.Sat_Object_Status_Zip)
-                if (self.classified_with_character(self.file_info.file_main_name, sat_classified_character,
-                                                   sat_classified_character_type)):
-                    self.__object_status__ = self.Sat_Object_Status_Zip
-                    self._object_confirm = self.Object_Confirm_IKnown
-                    self._object_name = self.file_info.file_main_name
-            else:
-                sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
-                    self.Sat_Object_Status_File)
-                if (self.classified_with_character(self.file_info.file_name_without_path, sat_classified_character,
-                                                   sat_classified_character_type)):
-                    self.__object_status__ = self.Sat_Object_Status_File
-                    self._object_confirm = self.Object_Confirm_IKnown
-                    object_name = self.get_classified_object_name_of_sat(self.Sat_Object_Status_File)
-                    self._object_name = object_name
-                    # 附属文件设置
-                    file_path = self.file_info.file_path
-                    # 正则匹配附属文件
-                    if not CUtils.equal_ignore_case(file_path, ''):
-                        match_name_1 = object_name[:].replace('_PMS', '_MS', 1)
-                        match_name_2 = object_name[:].replace('_PMS', '_PAN', 1)
-                        match_str_1 = '(?i){0}.*[.].*'.format(match_name_1)
-                        match_str_2 = '(?i){0}.*[.].*'.format(match_name_2)
-                        for file_with_path in CFile.file_or_dir_fullname_of_path(
-                                file_path, False, match_str_1, CFile.MatchType_Regex):
-                            self._object_detail_file_full_name_list.append(file_with_path)
-                        for file_with_path in CFile.file_or_dir_fullname_of_path(
-                                file_path, False, match_str_2, CFile.MatchType_Regex):
-                            self._object_detail_file_full_name_list.append(file_with_path)
-
-        elif self.file_info.file_type == self.FileType_Dir:
-            sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
-                self.Sat_Object_Status_Dir)
-            if (self.classified_with_character(self.file_info.file_name_without_path, sat_classified_character,
-                                               sat_classified_character_type)):
-                self.__object_status__ = self.Sat_Object_Status_Dir
-                self._object_confirm = self.Object_Confirm_IKnown
-                self._object_name = self.file_info.file_name_without_path
-
-        return self._object_confirm, self._object_name
-
     def get_classified_character_of_sat(self, sat_file_status):
         """
         北京二号卫星识别
@@ -85,6 +32,12 @@ class CSatFilePlugins_bj2(COpticalSatPlugins):
                 '{0}_meta.xml'.format(self.classified_object_name().replace('_PMS', '_PAN', 1))
             )
         )
+
+    def parser_detail_custom(self, object_name):
+        match_str_1 = '(?i){0}.*[.].*'.format(object_name[:].replace('_PMS', '_MS', 1))
+        self.add_different_name_detail_by_match(match_str_1)
+        match_str_2 = '(?i){0}.*[.].*'.format(object_name[:].replace('_PMS', '_PAN', 1))
+        self.add_different_name_detail_by_match(match_str_2)
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [

@@ -32,6 +32,12 @@ class CSatFilePlugins_DE2_PMS(COpticalSatPlugins):
             )
         )
 
+    def parser_detail_custom(self, object_name):
+        match_str_1 = '(?i){0}.*[.].*'.format(object_name[:].replace('_PM4', '_MS4', 1))
+        self.add_different_name_detail_by_match(match_str_1)
+        match_str_2 = '(?i){0}.*[.].*'.format(object_name[:].replace('_PM4', '_PAN', 1))
+        self.add_different_name_detail_by_match(match_str_2)
+
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
