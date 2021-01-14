@@ -1,84 +1,15 @@
-# -*- coding: utf-8 -*- 
-# @Time : 2020/9/21 17:35 
-# @Author : 王西亚 
-# @File : c_satFilePlugins_gf1_pms_and_wfv.py
-from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.sat.base.base.c_opticalSatPlugins import COpticalSatPlugins
 
 
-class CSatFilePlugins_gf1(COpticalSatPlugins):
-
+class CSatFilePlugins_gf5(COpticalSatPlugins):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'GF1'
-        information[self.Plugins_Info_Type_Title] = '高分一号'
-        information[self.Plugins_Info_Group] = 'GF1'
-        information[self.Plugins_Info_Group_Title] = '高分一号'
+        information[self.Plugins_Info_Group] = 'GF5'
+        information[self.Plugins_Info_Group_Title] = '高分五号'
         information[self.Plugins_Info_CopyRight] = '高分中心'
         return information
-
-    def init_qa_file_list(self, parser: CMetaDataParser) -> list:
-        return [
-            {
-                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^gf1[A-Z]_pms.*[_].*-pan[.]tiff$',
-                                                                 '{0}-PAN.tiff'.format(self.classified_object_name())),
-                self.Name_ID: 'pan_tif',
-                self.Name_Title: '全色文件',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_Format: self.DataFormat_Raster_File
-            },
-            {
-                self.Name_FileName: '{0}.dbf'.format(self.classified_object_name()),
-                self.Name_ID: 'shp_dbf',
-                self.Name_Title: '矢量文件dbf',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_FileName: '{0}.shp'.format(self.classified_object_name()),
-                self.Name_ID: 'shp_shp',
-                self.Name_Title: '矢量文件shp',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn,
-                self.Name_Format: self.DataFormat_Vector_File
-            },
-            {
-                self.Name_FileName: '{0}.shx'.format(self.classified_object_name()),
-                self.Name_ID: 'shp_shx',
-                self.Name_Title: '矢量文件shx',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_FileName: '{0}.prj'.format(self.classified_object_name()),
-                self.Name_ID: 'shp_prj',
-                self.Name_Title: '矢量文件prj',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_FileName: '{0}.xml'.format(self.classified_object_name()),
-                self.Name_ID: 'shp_xml',
-                self.Name_Title: '矢量文件xml',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            }
-        ]
-
-    def get_metadata_bus_filename_by_file(self) -> str:
-        """
-        卫星数据解压后, 哪个文件是业务元数据?
-        :return:
-        """
-        return CFile.join_file(
-            self.file_content.content_root_dir,
-            self.get_fuzzy_metadata_file(
-                '(?i).*-PAN[.]xml', '{0}-PAN.xml'.format(self.classified_object_name())
-            )
-        )
 
     def get_metadata_bus_configuration_list(self) -> list:
         """
@@ -106,11 +37,11 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'centerlatitude',  # 中心维度
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/CenterLatitude'
             },
             {
                 self.Name_ID: 'centerlongitude',  # 中心经度
-                self.Name_Value: None
+                self.Name_XPath: '/ProductMetaData/CenterLongitude'
             },
             {
                 self.Name_ID: 'topleftlatitude',  # 左上角维度 必填
@@ -150,7 +81,7 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
-                self.Name_XPath: '/ProductMetaData/CenterTime'
+                self.Name_XPath: '/ProductMetaData/EndTime'
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
@@ -158,7 +89,7 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
-                self.Name_XPath: '/ProductMetaData/RollViewingAngle'
+                self.Name_XPath: '/ProductMetaData/RollSatelliteAngle'
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量
@@ -194,7 +125,14 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
-                self.Name_Value: 'L1'
+                self.Name_XPath: '/ProductMetaData/ProductLevel',
+                self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
+                    'LEVEL1A': 'L1',
+                    'LEVEL2A': 'L2',
+                    'LEVEL4A': 'L4',
+                    'LEVEL1': 'L1'
+                    # self.Name_Default: None # 没有对应的的映射使用默认值
+                }
             },
             {
                 self.Name_ID: 'productid',  # 产品id 默认取主文件全名
@@ -215,40 +153,18 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
         """
         return [
             {
-                self.Name_ID: self.Name_Time,
-                self.Name_XPath: '/ProductMetaData/CenterTime',
+                self.Name_ID: self.Name_Time,  # 获取时间
+                self.Name_XPath: '/ProductMetaData/EndTime',
                 self.Name_Format: self.MetaDataFormat_XML
-
             },
             {
-                self.Name_ID: self.Name_Start_Time,
+                self.Name_ID: self.Name_Start_Time,  # 开始时间
                 self.Name_XPath: '/ProductMetaData/StartTime',
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
-                self.Name_ID: self.Name_End_Time,
+                self.Name_ID: self.Name_End_Time,  # 结束时间
                 self.Name_XPath: '/ProductMetaData/EndTime',
                 self.Name_Format: self.MetaDataFormat_XML
             }
         ]
-
-    def parser_metadata_view_list(self, parser: CMetaDataParser):
-        """
-        标准模式的反馈预览图和拇指图的名称
-        :param parser:
-        :return:
-        """
-        return [
-            {
-                self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: '{0}-PAN.jpg'.format(self.classified_object_name())
-            },
-            {
-                self.Name_ID: self.View_MetaData_Type_Thumb,
-                self.Name_FileName: '{0}-PAN_thumb.jpg'.format(self.classified_object_name())
-            }
-        ]
-
-    def parser_detail_custom(self, object_name):
-        match_str = '(?i){0}.*[.].*'.format(object_name[:])
-        self.add_different_name_detail_by_match(match_str)

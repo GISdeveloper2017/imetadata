@@ -17,18 +17,21 @@ class CSatFilePlugins_gf4_pmi(CSatFilePlugins_gf4):
             # GF4_PMS_E115.0_N36.6_20160803_L1A0000125813.tiff
             # 暂定 gf4_pms_*_l1a*.tiff为主对象文件
             # 散列文件的识别方式后续有待开发，目前暂不测试
-            return 'gf4_pms_*_l1a*.tiff', self.TextMatchType_Regex
+            return r'(?i)^gf4_pms.*[.]tiff$', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
         return CFile.join_file(
             self.file_content.content_root_dir,
-            '{0}.xml'.format(self.classified_object_name().replace('PMI', 'PMS'))
+            self.get_fuzzy_metadata_file('.*PMS.*.xml',
+                                         '{0}.xml'.format(self.classified_object_name().replace('PMI', 'PMS')))
+
         )
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
-                self.Name_FileName: '{0}.tiff'.format(self.classified_object_name().replace('PMI', 'PMS')),
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^gf4_pms.*[.]tiff$', '{0}.tiff'.format(
+                    self.classified_object_name().replace('PMI', 'PMS'))),
                 self.Name_ID: 'pms_tif',
                 self.Name_Title: '影像文件pms',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -41,11 +44,13 @@ class CSatFilePlugins_gf4_pmi(CSatFilePlugins_gf4):
         return [
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: '{0}.jpg'.format(self.classified_object_name().replace('PMI', 'PMS'))
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i).*PMS(?!.*thumb).*.jpg', '{0}.jpg'.format(
+                    self.classified_object_name().replace('PMI', 'PMS')))
 
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
-                self.Name_FileName: '{0}_thumb.jpg'.format(self.classified_object_name().replace('PMI', 'PMS'))
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i).*PMS.*_thumb.jpg', '{0}.jpg'.format(
+                    self.classified_object_name().replace('PMI', 'PMS')))
             }
         ]

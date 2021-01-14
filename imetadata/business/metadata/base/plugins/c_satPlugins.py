@@ -750,10 +750,13 @@ class CSatPlugins(CPlugins):
             topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
             bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
             bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
-            metadata_bus_dict['centerlatitude'] = \
-                (CUtils.to_decimal(topleftlatitude) + CUtils.to_decimal(bottomrightlatitude)) / 2
-            metadata_bus_dict['centerlongitude'] = \
-                (CUtils.to_decimal(topleftlongitude) + CUtils.to_decimal(bottomrightlongitude)) / 2
+            try:
+                metadata_bus_dict['centerlatitude'] = \
+                    (CUtils.to_decimal(topleftlatitude, None) + CUtils.to_decimal(bottomrightlatitude, None)) / 2
+                metadata_bus_dict['centerlongitude'] = \
+                    (CUtils.to_decimal(topleftlongitude, None) + CUtils.to_decimal(bottomrightlongitude, None)) / 2
+            except Exception:
+                pass
 
     def process_custom(self, metadata_bus_dict):
         """

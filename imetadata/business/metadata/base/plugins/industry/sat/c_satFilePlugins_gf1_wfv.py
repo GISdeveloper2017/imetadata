@@ -200,7 +200,8 @@ class CSatFilePlugins_gf1_wfv(CSatFilePlugins_gf1):
         """
         return CFile.join_file(
             self.file_content.content_root_dir,
-            '{0}.xml'.format(self.classified_object_name())
+            self.get_fuzzy_metadata_file(r'(?i)GF1_WFV.*.xml',
+                                         '{0}.xml'.format(self.classified_object_name()))
         )
 
     def parser_metadata_view_list(self, parser: CMetaDataParser):
@@ -212,10 +213,14 @@ class CSatFilePlugins_gf1_wfv(CSatFilePlugins_gf1):
         return [
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: '{0}.jpg'.format(self.classified_object_name())
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)GF1_WFV.*(?!.*thumb).*.jpg',
+                                                                 '{0}.jpg'.format(self.classified_object_name()))
+
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
-                self.Name_FileName: '{0}_thumb.jpg'.format(self.classified_object_name())
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)GF1_WFV.*_thumb.jpg',
+                                                                 '{0}_thumb.jpg'.format(
+                                                                     self.classified_object_name()))
             }
         ]

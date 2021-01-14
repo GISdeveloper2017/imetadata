@@ -93,7 +93,7 @@ class CSatFilePlugins_gf4(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量
-                self.Name_Value: '/ProductMetaData/CloudPercent'
+                self.Name_XPath: '/ProductMetaData/CloudPercent'
             },
             {
                 self.Name_ID: 'dataum',  # 坐标系 默认为null
@@ -152,18 +152,22 @@ class CSatFilePlugins_gf4(COpticalSatPlugins):
         """
         return [
             {
-                self.Name_ID: self.Name_Time,   #获取时间
+                self.Name_ID: self.Name_Time,  # 获取时间
                 self.Name_XPath: '/ProductMetaData/CenterTime',
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
-                self.Name_ID: self.Name_Start_Time, #开始时间
+                self.Name_ID: self.Name_Start_Time,  # 开始时间
                 self.Name_XPath: '/ProductMetaData/StartTime',
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
-                self.Name_ID: self.Name_End_Time,   #结束时间
+                self.Name_ID: self.Name_End_Time,  # 结束时间
                 self.Name_XPath: '/ProductMetaData/EndTime',
                 self.Name_Format: self.MetaDataFormat_XML
             }
         ]
+
+    def parser_detail_custom(self, object_name):
+        match_str = '(?i){0}.*[.].*'.format(object_name[:])
+        self.add_different_name_detail_by_match(match_str)
