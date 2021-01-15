@@ -68,27 +68,6 @@ class CQuality(CResource):
         CXml.set_attr(temp_node, self.Name_Title, quality_title)
         CXml.set_attr(temp_node, self.Name_Result, quality_result)
         CXml.set_element_text(temp_node, quality_memo)
-        # 暂时不知道是否会有影响 by 王学谦
-        # if temp_node is not None:
-        #     old_quality_result = CXml.get_attr(temp_node, self.Name_Result, self.QA_Result_Pass, False)
-        #     if CUtils.equal_ignore_case(old_quality_result, self.QA_Result_Pass) or \
-        #             (CUtils.equal_ignore_case(old_quality_result, self.QA_Result_Warn) and
-        #              CUtils.equal_ignore_case(quality_result, self.QA_Result_Error)):
-        #         CXml.remove(temp_node)
-        #         temp_node = CXml.create_element(xml_node, self.Name_Item)
-        #         CXml.set_attr(temp_node, self.Name_ID, quality_id)
-        #         CXml.set_attr(temp_node, self.Name_Group, quality_group)
-        #         CXml.set_attr(temp_node, self.Name_Title, quality_title)
-        #         CXml.set_attr(temp_node, self.Name_Result, quality_result)
-        #         CXml.set_element_text(temp_node, quality_memo)
-        #     # 原本错误等级更高的情况则不置换节点
-        # else:
-        #     temp_node = CXml.create_element(xml_node, self.Name_Item)
-        #     CXml.set_attr(temp_node, self.Name_ID, quality_id)
-        #     CXml.set_attr(temp_node, self.Name_Group, quality_group)
-        #     CXml.set_attr(temp_node, self.Name_Title, quality_title)
-        #     CXml.set_attr(temp_node, self.Name_Result, quality_result)
-        #     CXml.set_element_text(temp_node, quality_memo)
 
     def append_total_quality(self, audit_result: dict):
         """

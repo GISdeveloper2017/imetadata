@@ -81,8 +81,8 @@ class CMetaDataParser(CParser):
                 ),
                 qa_item
             )
-            for item_result in list_result:
-                self.metadata.quality.append_total_quality(item_result)
+            item_result = self.get_qa_result_from_list(list_result)
+            self.metadata.quality.append_total_quality(item_result)
 
     def batch_qa_metadata_xml(self, list_qa: list):
         """
@@ -115,8 +115,8 @@ class CMetaDataParser(CParser):
                     CUtils.dict_value_by_name(qa_item, self.Name_Attr_Name, ''),
                     qa_item
                 )
-            for item_result in list_result:
-                self.metadata.quality.append_metadata_data_quality(item_result)
+            item_result = self.get_qa_result_from_list(list_result)
+            self.metadata.quality.append_metadata_data_quality(item_result)
 
     def batch_qa_metadata_bus_xml_item(self, list_qa: list):
         """
@@ -137,8 +137,8 @@ class CMetaDataParser(CParser):
                 CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
                 qa_item
             )
-            for item_result in list_result:
-                self.metadata.quality.append_metadata_bus_quality(item_result)
+            item_result = self.get_qa_result_from_list(list_result)
+            self.metadata.quality.append_metadata_bus_quality(item_result)
 
     def batch_qa_metadata_json_item(self, list_qa: list):
         """
@@ -159,8 +159,8 @@ class CMetaDataParser(CParser):
                 CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
                 qa_item
             )
-            for item_result in list_result:
-                self.metadata.quality.append_metadata_data_quality(item_result)
+            item_result = self.get_qa_result_from_list(list_result)
+            self.metadata.quality.append_metadata_data_quality(item_result)
 
     def batch_qa_metadata_bus_json_item(self, list_qa: list):
         """
@@ -181,8 +181,8 @@ class CMetaDataParser(CParser):
                 CUtils.dict_value_by_name(qa_item, self.Name_XPath, ''),
                 qa_item
             )
-            for item_result in list_result:
-                self.metadata.quality.append_metadata_bus_quality(item_result)
+            item_result = self.get_qa_result_from_list(list_result)
+            self.metadata.quality.append_metadata_bus_quality(item_result)
 
     def batch_qa_metadata_bus_dict(self, metadata_bus_dict: dict, qa_sat_metadata_bus_list):
         """
@@ -201,8 +201,26 @@ class CMetaDataParser(CParser):
                 CUtils.dict_value_by_name(metadata_bus_dict, CUtils.dict_value_by_name(qa_item, self.Name_ID, ''), ''),
                 qa_item
             )
-            for item_result in list_result:
-                self.metadata.quality.append_metadata_bus_quality(item_result)
+            item_result = self.get_qa_result_from_list(list_result)
+            self.metadata.quality.append_metadata_bus_quality(item_result)
+
+    def get_qa_result_from_list(self, list_result):
+        real_item_result = dict()
+        for item_result in list_result:
+            old_quality_result = CUtils.dict_value_by_name(real_item_result, self.Name_Result, self.QA_Result_Pass)
+            new_quality_result = CUtils.dict_value_by_name(item_result, self.Name_Result, self.QA_Result_Pass)
+            # 如果结果为pass则用最新的结果
+            if CUtils.equal_ignore_case(old_quality_result, self.QA_Result_Pass):
+                real_item_result = item_result
+            # 如果存在Warn结果，则只有存在Error结果时更新
+            elif CUtils.equal_ignore_case(old_quality_result, self.QA_Result_Warn) and \
+                    CUtils.equal_ignore_case(new_quality_result, self.QA_Result_Error):
+                real_item_result = item_result
+                break  # 更新为error时直接break
+            elif CUtils.equal_ignore_case(old_quality_result, self.QA_Result_Error):
+                break
+
+        return real_item_result
 
     def process_default_metadata(self, metadata_engine_type):
         """
