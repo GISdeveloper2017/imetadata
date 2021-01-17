@@ -68,7 +68,7 @@ class CApplicationInit(CResource):
         CFactory().give_me_db().execute(sql_register_dm_metadata_modules_clear)
 
         modules_root_dir = CSys.get_metadata_data_access_modules_root_dir()
-        module_file_name_list = CFile.file_or_subpath_of_path(modules_root_dir)
+        module_file_name_list = CFile.file_or_subpath_of_path(modules_root_dir, '*.{0}'.format(self.FileExt_Py))
         for module_file_name in module_file_name_list:
             if CFile.is_file(CFile.join_file(modules_root_dir, module_file_name)) and (
                     not (str(module_file_name)).startswith('_')):
