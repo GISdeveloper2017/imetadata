@@ -4,13 +4,13 @@ from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.plugins.industry.sat.base.base.c_opticalSatPlugins import COpticalSatPlugins
 
 
-class CSatFilePlugins_jl1_pms(COpticalSatPlugins):
+class CSatFilePlugins_jinlin1_pms(COpticalSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'JL1_PMS'
+        information[self.Plugins_Info_Type] = 'Jinlin1_PMS'
         information[self.Plugins_Info_Type_Title] = '吉林一号PMS传感器'
-        information[self.Plugins_Info_Group] = 'JL1'
+        information[self.Plugins_Info_Group] = 'Jinlin1'
         information[self.Plugins_Info_Group_Title] = '吉林一号'
         information[self.Plugins_Info_CopyRight] = '长光卫星技术有限公司'
         return information
@@ -38,7 +38,7 @@ class CSatFilePlugins_jl1_pms(COpticalSatPlugins):
         return [
             {
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    '(?i)'+self.classified_object_name()+'.*PAN[.]tif[f]?',
+                    '(?i)' + self.classified_object_name() + '.*PAN[.]tif[f]?',
                     '{0}_L1_PAN.tif'.format(self.classified_object_name())
                 ),
                 self.Name_ID: 'pan_tif',
@@ -115,14 +115,14 @@ class CSatFilePlugins_jl1_pms(COpticalSatPlugins):
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i)'+self.classified_object_name()+'.*MSS.jpg',
+                    r'(?i)' + self.classified_object_name() + '.*MSS.jpg',
                     '{0}_L1_MSS.jpg'.format(self.classified_object_name())
                 ),
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i)'+self.classified_object_name()+'.*MSS_thumb.jpg',
+                    r'(?i)' + self.classified_object_name() + '.*MSS_thumb.jpg',
                     '{0}_L1_thumb.jpg'.format(self.classified_object_name())
                 )
             }
