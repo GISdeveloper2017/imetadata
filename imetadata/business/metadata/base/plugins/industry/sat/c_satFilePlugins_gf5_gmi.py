@@ -178,7 +178,7 @@ class CSatFilePlugins_gf5_gmi(CSatFilePlugins_gf5):
         return [
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
-                #按照xsl文件配置，测试数据中没有.jpg
+                # 按照xsl文件配置，测试数据中没有.jpg
                 self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)GF5.GMI.*.jpg',
                                                                  '{0}.jpg'.format(
                                                                      self.classified_object_name()))
@@ -194,11 +194,11 @@ class CSatFilePlugins_gf5_gmi(CSatFilePlugins_gf5):
         match_str = '(?i){0}.*[.].*'.format(self.classified_object_name())
         self.add_different_name_detail_by_match(match_str)
 
-    def process_custom(self, metadata_bus_dict):
+    def process_custom(self, metadata_bus_dict, metadata_bus_xml):
         """
         对部分需要进行运算的数据进行处理
         """
-        super().process_custom(metadata_bus_dict)
+        super().process_custom(metadata_bus_dict, metadata_bus_xml)
         centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
         centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
         if (not CUtils.equal_ignore_case(centerlatitude, '')) and (not CUtils.equal_ignore_case(centerlongitude, '')):

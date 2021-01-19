@@ -450,7 +450,7 @@ class CSatPlugins(CPlugins):
             '数据文件[{0}]的可视化信息解析成功! '.format(self.file_info.file_name_with_full_path)
         )
 
-    def get_fuzzy_metadata_file(self, match_str, default_file_name):
+    def get_fuzzy_metadata_file(self, match_str, default_file_name, is_recurse_subpath=False):
         """
         正则获取文件夹下对应的快视拇指
         """
@@ -463,7 +463,7 @@ class CSatPlugins(CPlugins):
         else:
             file_path = self.file_content.content_root_dir
         file_list = CFile.file_or_dir_fullname_of_path(
-            file_path, False, match_str, CFile.MatchType_Regex
+            file_path, is_recurse_subpath, match_str, CFile.MatchType_Regex
         )
         if len(file_list) > 0:
             file_name = CFile.file_name(file_list[0])
@@ -732,8 +732,7 @@ class CSatPlugins(CPlugins):
             if metadata_bus_xpath is not None:
                 metadata_bus_xpath_value = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_xpath)
             else:
-                metadata_bus_xpath_value = \
-                    self.transform_dict_item_special_configuration(metadata_bus_configuration, metadata_bus_xml)
+                metadata_bus_xpath_value = None
             # 取值后的处理
             if not CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
                 # 进行映射处理
@@ -752,38 +751,39 @@ class CSatPlugins(CPlugins):
             else:
                 metadata_bus_dict[metadata_bus_id] = metadata_bus_value
         # 对于一些需要计算的数据进行运算
-        self.process_custom(metadata_bus_dict)
+        self.process_custom(metadata_bus_dict, metadata_bus_xml)
 
         return metadata_bus_dict
 
-    def transform_dict_item_special_configuration(self, metadata_bus_configuration, metadata_bus_xml):
-        metadata_bus_xpath_value = None
-        metadata_bus_special_configuration = \
-            CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Special_Configuration, None)
-        if metadata_bus_special_configuration is not None:
-            metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, None)
-            try:
-                # resolution的特殊配置
-                if CUtils.equal_ignore_case(metadata_bus_id, 'resolution'):
-                    resolution_value_list = list()
-                    # 取配置里的值
-                    for resolution_configuration in metadata_bus_special_configuration:
-                        if CUtils.text_is_string(resolution_configuration):
-                            resolution_value = metadata_bus_xml.get_element_text_by_xpath_one(resolution_configuration)
-                            resolution_value_num = CUtils.to_decimal(resolution_value, None)
-                            if (not CUtils.equal_ignore_case(resolution_value, '')) \
-                                    and (resolution_value_num is not None):
-                                resolution_value_list.append(resolution_value_num)
-                        else:
-                            resolution_value_num = CUtils.to_decimal(resolution_configuration, None)
-                            if resolution_value_num is not None:
-                                resolution_value_list.append(resolution_value_num)
-                    if len(resolution_value_list) > 0:
-                        metadata_bus_xpath_value = min(resolution_value_list)
-            except Exception:
-                pass
-
-        return metadata_bus_xpath_value
+    def process_resolution(self, metadata_bus_dict: dict, metadata_bus_xml):
+        resolution = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
+        if CUtils.equal_ignore_case(resolution, ''):
+            for metadata_bus_configuration in self.get_metadata_bus_configuration_list():
+                metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, None)
+                metadata_bus_special_configuration = \
+                    CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Special_Configuration, None)
+                try:
+                    # resolution的特殊配置
+                    if CUtils.equal_ignore_case(metadata_bus_id, 'resolution') \
+                            and (metadata_bus_special_configuration is not None):
+                        resolution_value_list = list()
+                        # 取配置里的值
+                        for resolution_configuration in metadata_bus_special_configuration:
+                            if CUtils.text_is_string(resolution_configuration):
+                                resolution_value = metadata_bus_xml.get_element_text_by_xpath_one(
+                                    resolution_configuration)
+                                resolution_value_num = CUtils.to_decimal(resolution_value, None)
+                                if (not CUtils.equal_ignore_case(resolution_value, '')) \
+                                        and (resolution_value_num is not None):
+                                    resolution_value_list.append(resolution_value_num)
+                            else:
+                                resolution_value_num = CUtils.to_decimal(resolution_configuration, None)
+                                if resolution_value_num is not None:
+                                    resolution_value_list.append(resolution_value_num)
+                        if len(resolution_value_list) > 0:
+                            metadata_bus_dict['resolution'] = min(resolution_value_list)
+                except Exception:
+                    pass
 
     def process_centerlonlat(self, metadata_bus_dict: dict):
         centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
@@ -801,11 +801,12 @@ class CSatPlugins(CPlugins):
             except Exception:
                 pass
 
-    def process_custom(self, metadata_bus_dict):
+    def process_custom(self, metadata_bus_dict, metadata_bus_xml):
         """
         对部分需要进行运算的数据进行处理
         """
         self.process_centerlonlat(metadata_bus_dict)
+        self.process_resolution(metadata_bus_dict, metadata_bus_xml)
 
     def qa_sat_metadata_bus_list(self) -> list:
         return [
