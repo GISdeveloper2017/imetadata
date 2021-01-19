@@ -202,8 +202,7 @@ class CSatFilePlugins_cb04_p10(COpticalSatPlugins):
                 self.Name_XPath: '/root/data/productId'
             },
             {
-                self.Name_ID: 'otherxml',  # 预留字段，可空，放文件全路径即可
-                self.Name_XPath: None,
+                self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
                 self.Name_Value: None
             }
         ]

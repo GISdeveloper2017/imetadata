@@ -183,7 +183,7 @@ class CSatFilePlugins_triplesat_pms(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'transformimg',  # 斜视图,可空,不用质检
-                self.Name_Value: 'BJ2'
+                self.Name_Value: '(?i).*MS.*[_]browser[.]png'
             },
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
@@ -238,9 +238,8 @@ class CSatFilePlugins_triplesat_pms(COpticalSatPlugins):
                 self.Name_XPath: None
             },
             {
-                self.Name_ID: 'otherxml',  # 预留字段，可空，放文件全路径即可
-                self.Name_XPath: None,
-                self.Name_Value: None
+                self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
+                self.Name_Value: '(?i).*MS.*_meta.xml'
             }
         ]
 
@@ -254,16 +253,3 @@ class CSatFilePlugins_triplesat_pms(COpticalSatPlugins):
             metadata_bus_dict['productattribute'] = productattribute[16:18]
         else:
             metadata_bus_dict['productattribute'] = None
-
-    def parser_metadata_file_copy_custom(self, parser: CMetaDataParser, target_path: str):
-        super().parser_metadata_file_copy_custom(parser, target_path)
-        CFile.copy_file_to(
-            CFile.join_file(
-                self.file_content.content_root_dir,
-                self.get_fuzzy_metadata_file(
-                    '.*MS.*[_]browser[.]png',
-                    '{0}_browser.png'.format(self.classified_object_name().replace('_PMS', '_MS', 1))
-                )
-            ),
-            target_path
-        )

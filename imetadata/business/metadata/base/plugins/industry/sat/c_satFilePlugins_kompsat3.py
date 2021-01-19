@@ -28,7 +28,7 @@ class CSatFilePlugins_kompsat3(COpticalSatPlugins):
         return CFile.join_file(
             self.file_content.content_root_dir,
             self.get_fuzzy_metadata_file(
-                '(?i)' + self.classified_object_name().replace('_Bundle', '', 1) + '.*_Aux[.]xml',
+                '(?i)^K3.*_Aux[.]xml',
                 '{0}_Aux.xml'.format(self.classified_object_name().replace('_Bundle', '', 1))
             )
         )
@@ -41,7 +41,7 @@ class CSatFilePlugins_kompsat3(COpticalSatPlugins):
         return [
             {
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i)^K3' + self.classified_object_name().replace('_Bundle', '', 1) + '.*[.]tif$',
+                    r'(?i)^K3.*_.*_.*[.]tif$',
                     '{0}_B.tif'.format(self.classified_object_name().replace('_Bundle', '', 1))
                 ),
                 self.Name_ID: 'pan_tif',
@@ -77,15 +77,15 @@ class CSatFilePlugins_kompsat3(COpticalSatPlugins):
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i).*MS.*[_]browser[.]jpg',
-                    '{0}_browser.jpg'.format(self.classified_object_name().replace('_PMS', '_MS', 1))
+                    r'(?i)K3.*_br[.]jpg',
+                    '{0}_br.jpg'.format(self.classified_object_name().replace('_Bundle', '', 1))
                 ),
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i).*MS.*[_]thumb[.]jpg',
-                    '{0}_thumb.jpg'.format(self.classified_object_name().replace('_PMS', '_MS', 1))
+                    r'(?i)K3.*_th[.]jpg',
+                    '{0}_th.jpg'.format(self.classified_object_name().replace('_Bundle', '', 1))
                 )
             }
         ]
@@ -205,8 +205,7 @@ class CSatFilePlugins_kompsat3(COpticalSatPlugins):
                 self.Name_XPath: None
             },
             {
-                self.Name_ID: 'otherxml',  # 预留字段，可空，放文件全路径即可
-                self.Name_XPath: None,
+                self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
                 self.Name_Value: None
             }
         ]

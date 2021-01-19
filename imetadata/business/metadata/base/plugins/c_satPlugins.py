@@ -409,12 +409,22 @@ class CSatPlugins(CPlugins):
 
         data_view_path = CFile.join_file(self.file_content.view_root_dir, data_view_sub_path)
 
+        # 计算原本的文件path
+        if self.__object_status__ == self.Sat_Object_Status_Dir:
+            originally_file_path = self.file_info.file_name_with_full_path
+        elif self.__object_status__ == self.Sat_Object_Status_Zip:
+            originally_file_path = self.file_content.content_root_dir
+        elif self.__object_status__ == self.Sat_Object_Status_File:
+            originally_file_path = self.file_info.file_path
+        else:
+            originally_file_path = self.file_content.content_root_dir
+
         metadata_file_copy_list = self.parser_metadata_file_copy_list(parser)
         if len(metadata_file_copy_list) > 0:
             for metadata_file_copy_item in metadata_file_copy_list:
                 CFile.copy_file_to(
                     CFile.join_file(
-                        self.file_content.content_root_dir,
+                        originally_file_path,
                         metadata_file_copy_item
                     ), data_view_path)
 
@@ -475,7 +485,41 @@ class CSatPlugins(CPlugins):
         :param parser:
         :return:
         """
-        return []
+        metadata_file_copy_list = list()
+        if not CUtils.equal_ignore_case(self.metadata_bus_src_filename_with_path, ''):
+            metadata_file_copy_list.append(CFile.file_name(self.metadata_bus_src_filename_with_path))
+
+        metadata_view_list = self.parser_metadata_view_list(parser)
+        if len(metadata_view_list) > 0:
+            for metadata_view_item in metadata_view_list:
+                metadata_file_copy_list.append(CUtils.dict_value_by_name(metadata_view_item, self.Name_FileName, ''))
+
+        metadata_custom_list = self.get_metadata_bus_configuration_list()
+        if len(metadata_custom_list) > 0:
+            for metadata_custom_item in metadata_custom_list:
+                if CUtils.equal_ignore_case(
+                        CUtils.dict_value_by_name(metadata_custom_item, self.Name_ID, ''), 'transformimg'
+                ) and (not CUtils.equal_ignore_case(
+                    CUtils.dict_value_by_name(metadata_custom_item, self.Name_Value, ''), ''
+                )):
+                    transformimg = self.get_fuzzy_metadata_file(
+                        CUtils.dict_value_by_name(metadata_custom_item, self.Name_Value, ''), None
+                    )
+                    if transformimg is not None:
+                        metadata_file_copy_list.append(transformimg)
+
+                if CUtils.equal_ignore_case(
+                        CUtils.dict_value_by_name(metadata_custom_item, self.Name_ID, ''), 'otherxml'
+                ) and (not CUtils.equal_ignore_case(
+                    CUtils.dict_value_by_name(metadata_custom_item, self.Name_Value, ''), ''
+                )):
+                    otherxml = self.get_fuzzy_metadata_file(
+                        CUtils.dict_value_by_name(metadata_custom_item, self.Name_Value, ''), None
+                    )
+                    if otherxml is not None:
+                        metadata_file_copy_list.append(otherxml)
+
+        return metadata_file_copy_list
 
     def parser_metadata_file_copy_custom(self, parser: CMetaDataParser, target_path: str):
         """
@@ -487,8 +531,7 @@ class CSatPlugins(CPlugins):
         :param parser:
         :return:
         """
-        if not CUtils.equal_ignore_case(self.metadata_bus_src_filename_with_path, ''):
-            CFile.copy_file_to(self.metadata_bus_src_filename_with_path, target_path)
+        pass
 
     def parser_metadata_view_list(self, parser: CMetaDataParser):
         """

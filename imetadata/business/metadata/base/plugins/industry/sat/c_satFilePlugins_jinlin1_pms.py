@@ -20,16 +20,20 @@ class CSatFilePlugins_jinlin1_pms(COpticalSatPlugins):
         北京二号卫星识别
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)^JL\d{2,4}(A|B)_[A-Z]{3}_\d{13,15}_\d{8,10}_\d{2,4}_\d{3,5}_\d{2,4}', self.TextMatchType_Regex
+            return r'(?i)^JL\d{2,4}(A|B)_[A-Z]{3}_\d{13,15}_\d{8,10}_\d{2,4}_\d{3,5}_\d{2,4}|' \
+                   r'(?i)^JL1(GF|KF)\d{1,3}(A|B)_[A-Z]{3}\d{0,2}_\d{13,15}_\d{8,10}_\d{2,4}_\d{3,5}_\d{2,4}' \
+                   r'_[A-Z]{1}\d{0,2}', self.TextMatchType_Regex
         else:
             return r'(?i)^JL\d{2,4}(A|B)_[A-Z]{3}_\d{13,15}_\d{8,10}_\d{2,4}_\d{3,5}_\d{2,4}' \
-                   r'.*_PAN[.]tif[f]?', self.TextMatchType_Regex
+                   r'.*_PAN[.]tif[f]?|' \
+                   r'(?i)^JL1(GF|KF)\d{1,3}(A|B)_[A-Z]{3}\d{0,2}_\d{13,15}_\d{8,10}_\d{2,4}_' \
+                   r'\d{3,5}_\d{2,4}_[A-Z]{1}\d{0,2}.*_PAN[.]tif[f]?', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
         return CFile.join_file(
             self.file_content.content_root_dir,
             self.get_fuzzy_metadata_file(
-                '(?i)' + self.classified_object_name() + '.*PAN.*[_]meta[.]xml',
+                '(?i).*PAN.*[_]meta[.]xml$',
                 '{0}_L1_PAN_meta.xml'.format(self.classified_object_name())
             )
         )
@@ -38,7 +42,7 @@ class CSatFilePlugins_jinlin1_pms(COpticalSatPlugins):
         return [
             {
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    '(?i)' + self.classified_object_name() + '.*PAN[.]tif[f]?',
+                    '(?i).*PAN[.]tif[f]?',
                     '{0}_L1_PAN.tif'.format(self.classified_object_name())
                 ),
                 self.Name_ID: 'pan_tif',
@@ -49,7 +53,7 @@ class CSatFilePlugins_jinlin1_pms(COpticalSatPlugins):
             },
             {
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    '(?i)' + self.classified_object_name() + '.*PAN[.]dbf',
+                    '(?i).*PAN[.]dbf$',
                     '{0}_L1_PAN.dbf'.format(self.classified_object_name())
                 ),
                 self.Name_ID: 'shp_dbf',
@@ -59,7 +63,7 @@ class CSatFilePlugins_jinlin1_pms(COpticalSatPlugins):
             },
             {
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    '(?i)' + self.classified_object_name() + '.*PAN[.]shp',
+                    '(?i).*PAN[.]shp$',
                     '{0}_L1_PAN.shp'.format(self.classified_object_name())
                 ),
                 self.Name_ID: 'shp_shp',
@@ -70,7 +74,7 @@ class CSatFilePlugins_jinlin1_pms(COpticalSatPlugins):
             },
             {
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    '(?i)' + self.classified_object_name() + '.*PAN[.]prj',
+                    '(?i).*PAN[.]prj$',
                     '{0}_L1_PAN.prj'.format(self.classified_object_name())
                 ),
                 self.Name_ID: 'shp_prj',
@@ -80,7 +84,7 @@ class CSatFilePlugins_jinlin1_pms(COpticalSatPlugins):
             },
             {
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    '(?i)' + self.classified_object_name() + '.*PAN[.]shx',
+                    '(?i).*PAN[.]shx$',
                     '{0}_L1_PAN.shx'.format(self.classified_object_name())
                 ),
                 self.Name_ID: 'shp_shx',
@@ -115,14 +119,14 @@ class CSatFilePlugins_jinlin1_pms(COpticalSatPlugins):
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i)' + self.classified_object_name() + '.*MSS.jpg',
+                    r'(?i).*MSS.jpg$',
                     '{0}_L1_MSS.jpg'.format(self.classified_object_name())
                 ),
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i)' + self.classified_object_name() + '.*MSS_thumb.jpg',
+                    r'(?i).*MSS_thumb.jpg$',
                     '{0}_L1_thumb.jpg'.format(self.classified_object_name())
                 )
             }
@@ -238,8 +242,7 @@ class CSatFilePlugins_jinlin1_pms(COpticalSatPlugins):
                 self.Name_XPath: '/MetaData/ProductInfo/ProductID'
             },
             {
-                self.Name_ID: 'otherxml',  # 预留字段，可空，放文件全路径即可
-                self.Name_XPath: None,
-                self.Name_Value: None
+                self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
+                self.Name_Value: '(?i).*MSS.*_meta.xml'
             }
         ]
