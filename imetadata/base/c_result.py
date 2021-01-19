@@ -34,3 +34,7 @@ class CResult(CResource):
     @classmethod
     def result_message(cls, result_text) -> str:
         return CJson.json_attr_value(result_text, cls.Name_Message, '')
+
+    @classmethod
+    def to_file(cls, result_text, file_name):
+        return CJson.str_2_file(result_text, file_name)

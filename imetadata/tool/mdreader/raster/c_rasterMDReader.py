@@ -131,15 +131,21 @@ class CRasterMDReader(CMDReader):
             if geo_transform is not None:
                 # 定义origin、pixelsize、boundingbox子节点
                 if geo_transform[2] == 0 and geo_transform[4] == 0:
-                    (json_origin, json_pixel, json_bounding) = self.get_geotramsform_by_raster(geo_transform, image_size_x,
+                    (json_origin, json_pixel, json_bounding) = self.get_geotramsform_by_raster(geo_transform,
+                                                                                               image_size_x,
                                                                                                image_size_y)
                     json_raster.set_value_of_name('origin', json_origin.json_obj)
                     json_raster.set_value_of_name('pixelsize', json_pixel.json_obj)
                     json_raster.set_value_of_name('boundingbox', json_bounding.json_obj)
                 else:
-                    (json_geo, json_bounding) = self.get_geotramsform_by_raster(geo_transform, image_size_x, image_size_y)
+                    (json_geo, json_bounding) = self.get_geotramsform_by_raster(geo_transform, image_size_x,
+                                                                                image_size_y)
                     json_raster.set_value_of_name('geotransform', json_geo.json_obj)
                     json_raster.set_value_of_name('boundingbox', json_bounding.json_obj)
+            else:
+                json_bounding = CJson()
+                json_bounding.set_value_of_name('result', 0)
+                json_raster.set_value_of_name('boundingbox', json_bounding.json_obj)
 
             # wgs84坐标系转换
             json_wgs84 = self.transform_to_WGS84(geo_transform, image_size_x, image_size_y, projection)
@@ -421,6 +427,7 @@ class CRasterMDReader(CMDReader):
             point_right_bottom_x = geo_transform[0] + image_size_x * geo_transform[1] + image_size_y * geo_transform[2]
             point_right_bottom_y = geo_transform[3] + image_size_x * geo_transform[4] + image_size_y * geo_transform[5]
             json_bounding = CJson()
+            json_bounding.set_value_of_name('result', -1)
             json_bounding.set_value_of_name('left', point_left_top_x)
             json_bounding.set_value_of_name('top', point_left_top_y)
             json_bounding.set_value_of_name('right', point_right_bottom_x)
@@ -440,6 +447,7 @@ class CRasterMDReader(CMDReader):
             point_right_bottom_x = geo_transform[0] + image_size_x * geo_transform[1] + image_size_y * geo_transform[2]
             point_right_bottom_y = geo_transform[3] + image_size_x * geo_transform[4] + image_size_y * geo_transform[5]
             json_bounding = CJson()
+            json_bounding.set_value_of_name('result', -1)
             json_bounding.set_value_of_name('left', point_left_top_x)
             json_bounding.set_value_of_name('top', point_left_top_y)
             json_bounding.set_value_of_name('right', point_right_bottom_x)
