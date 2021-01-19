@@ -152,8 +152,7 @@ class CSatFilePlugins_gf3(CRadarSatPlugins):
                 self.Name_XPath: '/product/productID'
             },
             {
-                self.Name_ID: 'otherxml',  # 预留字段，可空，放文件全路径即可
-                self.Name_XPath: None,
+                self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
                 self.Name_Value: None
             }
         ]
