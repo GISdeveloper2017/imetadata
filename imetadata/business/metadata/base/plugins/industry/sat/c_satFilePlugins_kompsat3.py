@@ -210,12 +210,3 @@ class CSatFilePlugins_kompsat3(COpticalSatPlugins):
                 self.Name_Value: None
             }
         ]
-
-    def process_custom(self, metadata_bus_dict):
-        """
-        对部分需要进行运算的数据进行处理
-        """
-        super().process_custom(metadata_bus_dict)
-        publishdate = CUtils.dict_value_by_name(metadata_bus_dict, 'publishdate', None)
-        centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'publishdate', None)
-        # 考虑是否进行时间格式转换

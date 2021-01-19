@@ -6,7 +6,7 @@ import allure
 import pytest
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
-from imetadata.business.metadata.inbound.plugins.dir.plugins_4012_jjinlin1_pms import plugins_4012_jinlin1_pms
+from imetadata.business.metadata.inbound.plugins.dir.plugins_4012_jinlin1_pms import plugins_4012_jinlin1_pms
 from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
