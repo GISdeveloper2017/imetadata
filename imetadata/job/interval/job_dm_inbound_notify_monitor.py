@@ -56,6 +56,7 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                     select count(*)
                     from dm2_storage_obj_na
                     where dson_app_id in ($module_name_list)
+                          and  dson_object_access = 'pass'
                           and  dson_object_id in (
                                 select dsoid
                                 from dm2_storage_object 
@@ -89,6 +90,7 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                     select count(*)
                     from dm2_storage_obj_na
                     where dson_notify_status in ({0}, {1})
+                          and  dson_object_access = 'pass'
                           and  dson_app_id in ($module_name_list)
                           and  dson_object_id in (
                                 select dsoid
@@ -113,6 +115,7 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                     select count(*)
                     from dm2_storage_obj_na
                     where dson_notify_status = {0}
+                          and  dson_object_access = 'pass'
                           and  dson_app_id in ($module_name_list)
                           and  dson_object_id in (
                                 select dsoid
