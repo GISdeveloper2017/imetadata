@@ -193,11 +193,11 @@ class CSatFilePlugins_gf5_gmi(CSatFilePlugins_gf5):
         match_str = '(?i){0}.*[.].*'.format(self.classified_object_name())
         self.add_different_name_detail_by_match(match_str)
 
-    def process_custom(self, metadata_bus_dict, metadata_bus_xml):
+    def process_custom(self, metadata_bus_dict):
         """
         对部分需要进行运算的数据进行处理
         """
-        super().process_custom(metadata_bus_dict, metadata_bus_xml)
+        super().process_custom(metadata_bus_dict)
         centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
         centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
         if (not CUtils.equal_ignore_case(centerlatitude, '')) and (not CUtils.equal_ignore_case(centerlongitude, '')):
@@ -221,5 +221,5 @@ class CSatFilePlugins_gf5_gmi(CSatFilePlugins_gf5):
                 metadata_bus_dict['toprightlongitude'] = coordinates_list[5]
                 metadata_bus_dict['bottomrightlatitude'] = coordinates_list[6]
                 metadata_bus_dict['bottomrightlongitude'] = coordinates_list[7]
-            except:
+            except Exception:
                 pass
