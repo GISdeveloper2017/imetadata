@@ -607,7 +607,7 @@ class CPlugins(CResource):
                 # time_text_temp = time_text.replace('-', '').replace('/', '').replace('\\', '').replace('.', '').replace('年', '').replace('月', '')
                 time_text_standard = CUtils.standard_datetime_format(time_text, time_text)
                 if not CUtils.equal_ignore_case(time_text_standard, ''):
-                    time_text_temp = time_text_standard.replace('-', '')
+                    time_text_temp = CUtils.any_2_str(time_text_standard).replace('-', '')
                     # 从配置中读取时间信息查询的SQL语句, 获取对应的开始时间、结束时间
                     sql = settings.application.xpath_one(self.Path_Setting_MetaData_Time_Query, None)
                     db_server_id = settings.application.xpath_one(self.Path_Setting_MetaData_Time_Server,
@@ -749,7 +749,7 @@ class CPlugins(CResource):
                     return CResult.merge_result(self.Success,
                                                 '元数据文件[{0}]成功加载! '.format(self.file_info.file_name_with_full_path))
                 except Exception as error:
-                    parser.metadata.set_metadata(
+                    parser.metadata.set_metadata_spatial(
                         self.DB_False,
                         '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(self.file_info.file_name_with_full_path,
                                                                    error.__str__()),

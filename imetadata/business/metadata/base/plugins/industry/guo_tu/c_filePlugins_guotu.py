@@ -46,7 +46,7 @@ class CFilePlugins_GUOTU(CFilePlugins):
         .[0]: 概率, 0-不知道;1-可能是;-1确认是
         .[1]: 识别的对象的名称, 如GF1-xxxxxx-000-000
         """
-        self._object_name = None
+        self._object_name = ''
         self._object_confirm = self.Object_Confirm_IUnKnown
         return self._object_confirm, self._object_name
 
@@ -79,7 +79,7 @@ class CFilePlugins_GUOTU(CFilePlugins):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_string,
                 self.Name_Width: 1000,
-                self.Name_XPath: 'coordinate',
+                self.Name_XPath: 'coordinate.proj4',
                 self.Name_ID: 'coordinate',
                 self.Name_Title: '坐标参考系',
                 self.Name_Group: self.QA_Group_Data_Integrity,
