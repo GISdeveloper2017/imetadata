@@ -20,7 +20,7 @@ class distribution_guotu_object(distribution_guotu):
         info = super().information()
         return info
 
-    def db_access_check(self, access_Wait_flag, access_Forbid_flag, message):
+    def db_access_check(self, access_wait_flag, access_forbid_flag, message):
         temporary_dict = dict()
         temporary_dict['dso_time'] = self._dataset.value_by_name(0, 'dso_time', '')
         temporary_dict['dso_browser'] = self._dataset.value_by_name(0, 'dso_browser', '')
@@ -30,8 +30,8 @@ class distribution_guotu_object(distribution_guotu):
         for key, value in temporary_dict.items():
             if CUtils.equal_ignore_case(value, ''):
                 message = message + '[数据{0}入库异常!请进行检查与修正！]'.format(key.replace('dso_', ''))
-                access_Forbid_flag = self.DB_True
-        return access_Wait_flag, access_Forbid_flag, message
+                access_forbid_flag = self.DB_True
+        return access_wait_flag, access_forbid_flag, message
 
     def access_check_dict(self) -> dict:  # 预留的方法，sync写完后再调
         check_dict = dict()  # 如果有其他需要，则可以升级为json

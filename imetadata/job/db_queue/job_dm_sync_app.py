@@ -22,11 +22,13 @@ where dsonid = (
   select dsonid  
   from   dm2_storage_obj_na 
   where  dson_notify_status = {2}
+    and dson_object_access = '{3}'
   order by dson_addtime
   limit 1
   for update skip locked
 )
-        '''.format(self.SYSTEM_NAME_MISSION_ID, self.ProcStatus_Processing, self.ProcStatus_InQueue)
+        '''.format(self.SYSTEM_NAME_MISSION_ID, self.ProcStatus_Processing, self.ProcStatus_InQueue,
+                   self.DataAccess_Pass)
 
     def get_mission_info_sql(self) -> str:
         return '''

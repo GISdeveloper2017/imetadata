@@ -41,8 +41,8 @@ class distribution_guotu(distribution_base):
             quality_summary = self._dataset.value_by_name(0, 'dso_quality_summary', '')
             quality_summary_json = CJson()
             quality_summary_json.load_obj(quality_summary)
-            access_Wait_flag = self.DB_False  # 定义等待标志，为True则存在检查项目为等待
-            access_Forbid_flag = self.DB_False  # 定义禁止标志，为True则存在检查项目为禁止
+            access_wait_flag = self.DB_False  # 定义等待标志，为True则存在检查项目为等待
+            access_forbid_flag = self.DB_False  # 定义禁止标志，为True则存在检查项目为禁止
             message = ''
 
             # 文件与影像质检部分
@@ -51,11 +51,11 @@ class distribution_guotu(distribution_base):
             if CUtils.equal_ignore_case(file_qa, self.QA_Result_Error) \
                     or CUtils.equal_ignore_case(image_qa, self.QA_Result_Error):
                 message = message + '[数据与其相关文件的质检存在error!请进行修正！]'
-                access_Forbid_flag = self.DB_True
+                access_forbid_flag = self.DB_True
             elif CUtils.equal_ignore_case(file_qa, self.QA_Result_Warn) \
                     or CUtils.equal_ignore_case(image_qa, self.QA_Result_Warn):
                 message = message + '[数据与其相关文件的质检存在warn!请进行检查！]'
-                access_Wait_flag = self.DB_True
+                access_wait_flag = self.DB_True
             else:
                 pass
 
@@ -67,24 +67,24 @@ class distribution_guotu(distribution_base):
                     if CUtils.equal_ignore_case(node_result, self.QA_Result_Pass):
                         pass
                     elif CUtils.equal_ignore_case(node_result, self.QA_Result_Warn):  # 警告则等待
-                        message = message + '[业务元数据的质检中，项目{0}为warn!请进行检查！]'.format(qa_name)
-                        access_Wait_flag = self.DB_True
+                        message = message + '[业务元数据的质检中，项目{0}不符合要求，建议修正！]'.format(qa_name)
+                        access_wait_flag = self.DB_True
                     else:  # 错误以及其他情况，比如''，或者为其他字段
-                        message = message + '[业务元数据的质检中，项目{0}为error!请进行修正！]'.format(qa_name)
-                        access_Forbid_flag = self.DB_True
+                        message = message + '[业务元数据的质检中，项目{0}不符合要求，必须修改后方可入库！]'.format(qa_name)
+                        access_forbid_flag = self.DB_True
                 else:
-                    message = message + '[业务元数据的质检中，没有项目{0}!请进行修正！]'.format(qa_name)
-                    access_Forbid_flag = self.DB_True
+                    message = message + '[业务元数据的质检中，没有项目{0}，请进行修正！]'.format(qa_name)
+                    access_forbid_flag = self.DB_True
 
             # 数据库部分
-            access_Wait_flag, access_Forbid_flag, message = \
-                self.db_access_check(access_Wait_flag, access_Forbid_flag, message)
+            access_wait_flag, access_forbid_flag, message = \
+                self.db_access_check(access_wait_flag, access_forbid_flag, message)
 
             # 开始进行检查的结果判断
             access_flag = self.DataAccess_Pass
-            if access_Forbid_flag:
+            if access_forbid_flag:
                 access_flag = self.DataAccess_Forbid
-            elif access_Wait_flag:
+            elif access_wait_flag:
                 access_flag = self.DataAccess_Wait
             if CUtils.equal_ignore_case(message, ''):
                 message = '模块可以进行访问!'
