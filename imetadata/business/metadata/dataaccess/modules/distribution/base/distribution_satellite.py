@@ -349,9 +349,13 @@ class distribution_satellite(distribution_base):
         ndi_table.column_list.column_by_name('centertime').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
         )
-        ndi_table.column_list.column_by_name('resolution').set_value(
-            CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
-        )
+
+        resolution = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
+        if not CUtils.equal_ignore_case(resolution, ''):
+            ndi_table.column_list.column_by_name('resolution').set_value(resolution)
+        else:
+            ndi_table.column_list.column_by_name('resolution').set_value(0)
+
         rollangle = CUtils.dict_value_by_name(metadata_bus_dict, 'rollangle', 0)
         if CUtils.equal_ignore_case(rollangle, ''):
             rollangle = 0
