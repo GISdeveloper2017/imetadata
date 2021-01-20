@@ -4,14 +4,14 @@ from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.plugins.industry.sat.base.base.c_opticalSatPlugins import COpticalSatPlugins
 
 
-class CSatFilePlugins_pleiades(COpticalSatPlugins):
+class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Type] = 'Pleiades_PMS'
-        information[self.Plugins_Info_Type_Title] = 'Pleiades1A/1B星PMS传感器'
+        information[self.Plugins_Info_Type_Title] = 'Pleiades星PMS传感器'
         information[self.Plugins_Info_Group] = 'Pleiades'
-        information[self.Plugins_Info_Group_Title] = 'Pleiades1A/1B'
+        information[self.Plugins_Info_Group_Title] = 'Pleiades'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
@@ -149,7 +149,10 @@ class CSatFilePlugins_pleiades(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
-                self.Name_XPath: '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source/IMAGING_DATE'
+                self.Name_Special_Configuration: [
+                    '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source/IMAGING_DATE',
+                    '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source/IMAGING_TIME',
+                ]
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
@@ -207,14 +210,12 @@ class CSatFilePlugins_pleiades(COpticalSatPlugins):
             }
         ]
 
-    def process_custom(self, metadata_bus_dict, metadata_bus_xml):
-        """
-        对部分需要进行运算的数据进行处理
-        """
-        super().process_custom(metadata_bus_dict, metadata_bus_xml)
-        centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
-        rollangle = CUtils.dict_value_by_name(metadata_bus_dict, 'rollangle', None)
+    def process_special_configuration_custom(
+            self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml):
+        if CUtils.equal_ignore_case(metadata_bus_id, 'centertime'):
+            centertime_value1 = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_special_configuration[0])
+            centertime_value2 = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_special_configuration[1])
+            metadata_bus_xpath_value = '{0} {1}'.format(centertime_value1, centertime_value2[:8])
 
-        metadata_bus_dict['centertime'] = centertime
-        metadata_bus_dict['rollangle'] = rollangle
+        return metadata_bus_xpath_value
 
