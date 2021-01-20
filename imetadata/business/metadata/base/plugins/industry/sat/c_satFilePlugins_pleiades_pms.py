@@ -27,7 +27,7 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
         return CFile.join_file(
             self.file_content.content_root_dir,
             self.get_fuzzy_metadata_file(
-                '(?i).*DIM.*_(P|MS)_.*[.]XML',
+                '(?i).*DIM.*_P_.*[.]XML',
                 'default.xml',
                 True
             )
@@ -41,7 +41,7 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
         return [
             {
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i).*_(P|MS).*[.]tif$',
+                    r'(?i).*_P.*[.]tif$',
                     'default.tif', True
                 ),
                 self.Name_ID: 'pan_tif',
@@ -206,7 +206,7 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
-                self.Name_Value: None
+                self.Name_Value: '(?i).*DIM.*_MS_.*[.]XML'
             }
         ]
 
@@ -215,7 +215,6 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
         if CUtils.equal_ignore_case(metadata_bus_id, 'centertime'):
             centertime_value1 = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_special_configuration[0])
             centertime_value2 = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_special_configuration[1])
-            metadata_bus_xpath_value = '{0} {1}'.format(centertime_value1, centertime_value2[:8])
+            metadata_bus_xpath_value = '{0} {1}'.format(centertime_value1, centertime_value2)
 
         return metadata_bus_xpath_value
-

@@ -439,7 +439,7 @@ class CSatPlugins(CPlugins):
                     CUtils.dict_value_by_name(metadata_view_item, self.Name_ID, self.View_MetaData_Type_Browse),
                     CFile.join_file(
                         data_view_sub_path,
-                        CUtils.dict_value_by_name(metadata_view_item, self.Name_FileName, '')
+                        CFile.file_name(CUtils.dict_value_by_name(metadata_view_item, self.Name_FileName, ''))
                     )
                 )
 
@@ -462,8 +462,9 @@ class CSatPlugins(CPlugins):
             file_path = self.file_info.file_path
         else:
             file_path = self.file_content.content_root_dir
+
         file_list = CFile.file_or_dir_fullname_of_path(
-            file_path, is_recurse_subpath, match_str, CFile.MatchType_Regex
+            file_path, False, match_str, CFile.MatchType_Regex, is_recurse_subpath
         )
         if len(file_list) > 0:
             if is_recurse_subpath:
@@ -490,7 +491,15 @@ class CSatPlugins(CPlugins):
         """
         metadata_file_copy_list = list()
         if not CUtils.equal_ignore_case(self.metadata_bus_src_filename_with_path, ''):
-            metadata_file_copy_list.append(CFile.file_name(self.metadata_bus_src_filename_with_path))
+            if self.__object_status__ == self.Sat_Object_Status_Dir:
+                originally_file_path = self.file_info.file_name_with_full_path
+            elif self.__object_status__ == self.Sat_Object_Status_Zip:
+                originally_file_path = self.file_content.content_root_dir
+            elif self.__object_status__ == self.Sat_Object_Status_File:
+                originally_file_path = self.file_info.file_path
+            else:
+                originally_file_path = self.file_content.content_root_dir
+            metadata_file_copy_list.append(self.metadata_bus_src_filename_with_path.replace(originally_file_path, ''))
 
         metadata_view_list = self.parser_metadata_view_list(parser)
         if len(metadata_view_list) > 0:
@@ -506,7 +515,7 @@ class CSatPlugins(CPlugins):
                     CUtils.dict_value_by_name(metadata_custom_item, self.Name_Value, ''), ''
                 )):
                     transformimg = self.get_fuzzy_metadata_file(
-                        CUtils.dict_value_by_name(metadata_custom_item, self.Name_Value, ''), None
+                        CUtils.dict_value_by_name(metadata_custom_item, self.Name_Value, ''), None, True
                     )
                     if transformimg is not None:
                         metadata_file_copy_list.append(transformimg)
@@ -517,7 +526,7 @@ class CSatPlugins(CPlugins):
                     CUtils.dict_value_by_name(metadata_custom_item, self.Name_Value, ''), ''
                 )):
                     otherxml = self.get_fuzzy_metadata_file(
-                        CUtils.dict_value_by_name(metadata_custom_item, self.Name_Value, ''), None
+                        CUtils.dict_value_by_name(metadata_custom_item, self.Name_Value, ''), None, True
                     )
                     if otherxml is not None:
                         metadata_file_copy_list.append(otherxml)
