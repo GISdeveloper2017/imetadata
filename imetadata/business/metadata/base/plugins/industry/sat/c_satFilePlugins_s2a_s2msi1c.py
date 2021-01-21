@@ -29,8 +29,8 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
         return CFile.join_file(
             self.file_content.content_root_dir,
             self.get_fuzzy_metadata_file(
-                '(?i).*INSPIRE.xml',
-                'INSPIRE.xml'
+                '(?i).*INSPIRE[.]xml',
+                'INSPIRE.xml', True
             )
         )
 

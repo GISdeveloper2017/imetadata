@@ -31,8 +31,8 @@ class distribution_satellite(distribution_base):
             quality_summary = self._dataset.value_by_name(0, 'dso_quality_summary', '')
             quality_summary_json = CJson()
             quality_summary_json.load_obj(quality_summary)
-            access_Wait_flag = self.DB_False  # 定义等待标志，为True则存在检查项目为等待
-            access_Forbid_flag = self.DB_False  # 定义禁止标志，为True则存在检查项目为禁止
+            access_wait_flag = self.DB_False  # 定义等待标志，为True则存在检查项目为等待
+            access_forbid_flag = self.DB_False  # 定义禁止标志，为True则存在检查项目为禁止
             message = ''
 
             # 文件与影像质检部分
@@ -43,24 +43,24 @@ class distribution_satellite(distribution_base):
                     or CUtils.equal_ignore_case(image_qa, self.QA_Result_Error) \
                     or CUtils.equal_ignore_case(business_qa, self.QA_Result_Error):
                 message = message + '[数据与其相关文件的质检存在error!请进行修正！]'
-                access_Forbid_flag = self.DB_True
+                access_forbid_flag = self.DB_True
             elif CUtils.equal_ignore_case(file_qa, self.QA_Result_Warn) \
                     or CUtils.equal_ignore_case(image_qa, self.QA_Result_Warn) \
                     or CUtils.equal_ignore_case(business_qa, self.QA_Result_Warn):
                 message = message + '[数据与其相关文件的质检存在warn!请进行检查！]'
-                access_Wait_flag = self.DB_True
+                access_wait_flag = self.DB_True
             else:
                 pass
 
             # 数据库部分
-            access_Wait_flag, access_Forbid_flag, message = \
-                self.db_access_check(access_Wait_flag, access_Forbid_flag, message)
+            access_wait_flag, access_forbid_flag, message = \
+                self.db_access_check(access_wait_flag, access_forbid_flag, message)
 
             # 开始进行检查的结果判断
             access_flag = self.DataAccess_Pass
-            if access_Forbid_flag:
+            if access_forbid_flag:
                 access_flag = self.DataAccess_Forbid
-            elif access_Wait_flag:
+            elif access_wait_flag:
                 access_flag = self.DataAccess_Wait
             if CUtils.equal_ignore_case(message, ''):
                 message = '模块可以进行访问!'
@@ -87,7 +87,7 @@ class distribution_satellite(distribution_base):
             )
             return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Forbid)
 
-    def db_access_check(self, access_Wait_flag, access_Forbid_flag, message):
+    def db_access_check(self, access_wait_flag, access_forbid_flag, message):
         temporary_dict = dict()
         temporary_dict['dso_time'] = self._dataset.value_by_name(0, 'dso_time', '')
         temporary_dict['dso_browser'] = self._dataset.value_by_name(0, 'dso_browser', '')
@@ -96,8 +96,8 @@ class distribution_satellite(distribution_base):
         for key, value in temporary_dict.items():
             if CUtils.equal_ignore_case(value, ''):
                 message = message + '[数据{0}入库异常!请进行检查与修正！]'.format(key.replace('dso_', ''))
-                access_Forbid_flag = self.DB_True
-        return access_Wait_flag, access_Forbid_flag, message
+                access_forbid_flag = self.DB_True
+        return access_wait_flag, access_forbid_flag, message
 
     def sync(self) -> str:
         try:
