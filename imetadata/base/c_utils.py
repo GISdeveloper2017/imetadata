@@ -252,7 +252,7 @@ class CUtils(CResource):
         @param check_text:
         @return:
         """
-        time_format = "%Y{0}%m{0}%d{1}%H:%M:%S{2}"
+        time_format = "%Y{0}%m{0}%d{1}%H:%M:%S{2}{3}"
         sep_real = ""
         sep_list = ['-', '/']
         for sep in sep_list:
@@ -269,7 +269,11 @@ class CUtils(CResource):
         second_real = ""
         if "." in check_text:
             second_real = ".%f"
-        time_format_real = time_format.format(sep_real, sign_real, second_real)
+        third_real = ""
+        if "Z" in check_text:
+            third_real = "Z"
+
+        time_format_real = time_format.format(sep_real, sign_real, second_real, third_real)
         default_date = CTime.now()
         date_value = CTime.from_datetime_str(check_text, default_date, time_format_real)
         if CUtils.equal_ignore_case(date_value, default_date):

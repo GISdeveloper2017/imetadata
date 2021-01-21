@@ -4,15 +4,15 @@ from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.plugins.industry.sat.base.base.c_opticalSatPlugins import COpticalSatPlugins
 
 
-class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
+class CSatFilePlugins_th01(COpticalSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'S2A'
-        information[self.Plugins_Info_Type_Title] = '哨兵二号'
-        information[self.Plugins_Info_Group] = 'S2A'
-        information[self.Plugins_Info_Group_Title] = '哨兵二号'
-        information[self.Plugins_Info_CopyRight] = 'PDGS'
+        information[self.Plugins_Info_Type] = 'TH01'
+        information[self.Plugins_Info_Type_Title] = '天绘一号'
+        information[self.Plugins_Info_Group] = 'TH01'
+        information[self.Plugins_Info_Group_Title] = '天绘一号'
+        information[self.Plugins_Info_CopyRight] = '天绘'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
@@ -20,37 +20,48 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
         北京二号卫星识别
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)^S2A_MSIL1C.*', self.TextMatchType_Regex
+            return r'(?i).*_1B(.zip|$)|(?i)TH.*(GFB|DGP).*', self.TextMatchType_Regex
         else:
-            # 主文件为数据的方式存疑
-            return r'(?i)^S2A_MSIL1C.*', self.TextMatchType_Regex
+            return r'(?i).*_1B(.zip|$)[.]tif[f]?$|(?i)TH.*(GFB|DGP).*[.]tif[f]?$', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
         return CFile.join_file(
             self.file_content.content_root_dir,
             self.get_fuzzy_metadata_file(
-                '(?i).*INSPIRE[.]xml',
-                'INSPIRE.xml', True
+                '(?i).*(GFB|DGP).*[.]XML',
+                '{0}.xml'.format(self.classified_object_name())
             )
         )
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
-        return []
+        return [
+            {
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i).*_1B(.zip|$)[.]tif[f]?$|(?i)TH.*(GFB|DGP).*[.]tif[f]?$',
+                    '{0}.tif'.format(self.classified_object_name())
+                ),
+                self.Name_ID: 'pan_tif',
+                self.Name_Title: '影像文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.DataFormat_Raster_File
+            }
+        ]
 
     def parser_metadata_view_list(self, parser: CMetaDataParser):
         return [
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i).*PVI[.]jp2',
-                    'PVI.jp2', True
+                    r'(?i).*(GFB|DGP).*Bro.jpg',
+                    '{0}_Bro.jpg'.format(self.classified_object_name())
                 ),
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i).*PVI[.]jp2',
-                    'PVI.jp2', True
+                    r'(?i).*(GFB|DGP).*Thu[.]jpg',
+                    '{0}_Thu.jpg'.format(self.classified_object_name())
                 )
             }
         ]
@@ -59,18 +70,18 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
         return [
             {
                 self.Name_ID: self.Name_Time,
-                self.Name_XPath: '/n1:Level-1C_Tile_ID/n1:General_Info/SENSING_TIME',
+                self.Name_XPath: '/SceneMetaData/SceneStartTime',
                 self.Name_Format: self.MetaDataFormat_XML
 
             },
             {
                 self.Name_ID: self.Name_Start_Time,
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/PRODUCT_START_TIME',
+                self.Name_XPath: '/SceneMetaData/SceneStartTime',
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
                 self.Name_ID: self.Name_End_Time,
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/PRODUCT_STOP_TIME',
+                self.Name_XPath: '/SceneMetaData/SceneEndTime',
                 self.Name_Format: self.MetaDataFormat_XML
             }
         ]
@@ -82,67 +93,51 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
         return [
             {
                 self.Name_ID: 'satelliteid',  # 卫星，必填，从元数据组织定义，必须是标准命名的卫星名称
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/SPACECRAFT_NAME'
+                self.Name_XPath: '/SceneMetaData/SatelliteID'
             },
             {
                 self.Name_ID: 'sensorid',  # 传感器 必填,从元数据组织定义，必须是标准命名的传感器名称
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/PRODUCT_TYPE'
+                self.Name_XPath: '/SceneMetaData/SensorID'
             },
             {
                 self.Name_ID: 'centerlatitude',  # 中心维度
-                self.Name_Value: None
+                self.Name_XPath: '/SceneMetaData/Image/Geodetic/SceneCenterLat'
             },
             {
                 self.Name_ID: 'centerlongitude',  # 中心经度
-                self.Name_Value: None
+                self.Name_XPath: '/SceneMetaData/Image/Geodetic/SceneCenterLong'
             },
             {
                 self.Name_ID: 'topleftlatitude',  # 左上角维度 必填
-                self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd'
-                                 ':EX_Extent>/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd'
-                                 ':northBoundLatitude/gco:Decimal '
+                self.Name_XPath: '/SceneMetaData/Image/Geodetic/UpperLeftLat'
             },
             {
                 self.Name_ID: 'topleftlongitude',  # 左上角经度 必填
-                self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd'
-                                 ':EX_Extent>/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd'
-                                 ':westBoundLongitude/gco:Decimal '
+                self.Name_XPath: '/SceneMetaData/Image/Geodetic/UpperLeftLong'
             },
             {
                 self.Name_ID: 'toprightlatitude',  # 右上角维度 必填
-                self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd'
-                                 ':EX_Extent>/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd'
-                                 ':northBoundLatitude/gco:Decimal '
+                self.Name_XPath: '/SceneMetaData/Image/Geodetic/UpperRightLat'
             },
             {
                 self.Name_ID: 'toprightlongitude',  # 右上角经度 必填
-                self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd'
-                                 ':EX_Extent>/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd'
-                                 ':eastBoundLongitude/gco:Decimal '
+                self.Name_XPath: '/SceneMetaData/Image/Geodetic/UpperRightLong'
             },
             {
                 self.Name_ID: 'bottomrightlatitude',  # 右下角维度 必填
-                self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd'
-                                 ':EX_Extent>/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd'
-                                 ':southBoundLatitude/gco:Decimal '
+                self.Name_XPath: '/SceneMetaData/Image/Geodetic/LowerRightLat'
             },
             {
                 self.Name_ID: 'bottomrightlongitude',  # 右下角经度 必填
-                self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd'
-                                 ':EX_Extent>/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd'
-                                 ':eastBoundLongitude/gco:Decimal '
+                self.Name_XPath: '/SceneMetaData/Image/Geodetic/LowerRightLong'
             },
             {
                 self.Name_ID: 'bottomleftlatitude',  # 左下角维度 必填
-                self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd'
-                                 ':EX_Extent>/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd'
-                                 ':southBoundLatitude/gco:Decimal '
+                self.Name_XPath: '/SceneMetaData/Image/Geodetic/LowerLeftLat'
             },
             {
                 self.Name_ID: 'bottomleftlongitude',  # 左下角经度 必填
-                self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd'
-                                 ':EX_Extent>/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd'
-                                 ':westBoundLongitude/gco:Decimal '
+                self.Name_XPath: '/SceneMetaData/Image/Geodetic/LowerLeftLong'
             },
             {
                 self.Name_ID: 'transformimg',  # 斜视图,可空,不用质检
@@ -150,23 +145,23 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
-                self.Name_XPath: '/n1:Level-1C_Tile_ID/n1:General_Info/Archiving_Info/ARCHIVING_TIME'
+                self.Name_XPath: '/SceneMetaData/SceneStartTime'
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/RESOLUTION'
+                self.Name_Value: 2
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
-                self.Name_XPath: '/n1:Level-1C_Tile_ID/n1:Geometric_Info/Tile_Angles/Mean_Sun_Angle/ZENITH_ANGLE'
+                self.Name_XPath: '/SceneMetaData/ViewingAngle'
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:Quality_Indicators_Info/Cloud_Coverage_Assessment'
+                self.Name_XPath: '/SceneMetaData/CloudJudge/CloudCoverQuote'
             },
             {
                 self.Name_ID: 'dataum',  # 坐标系 默认为null
-                self.Name_XPath: '/n1:Level-1C_Tile_ID/n1:Geometric_Info/HORIZONTAL_CS_NAME'
+                self.Name_Value: 'WGS_1984'
             },
             {
                 self.Name_ID: 'acquisition_id',  # 轨道号
@@ -178,7 +173,7 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/GENERATION_TIME'
+                self.Name_XPath: '/SceneMetaData/ProductDate'
             },
             {
                 self.Name_ID: 'remark',  # 备注 可空
@@ -186,8 +181,7 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productname',  # 产品名称，有的能从卫星元数据里面取，没有就不取
-                self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd'
-                                 ':CI_Citation/gmd:title/gco:CharacterString '
+                self.Name_XPath: None
             },
             {
                 self.Name_ID: 'producttype',  # 产品类型 必填
@@ -195,10 +189,7 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/PROCESSING_LEVEL',
-                self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
-                    'Level-1C': 'L1'
-                }
+                self.Name_Value: 'L1'
             },
             {
                 self.Name_ID: 'productid',  # 产品id 默认取主文件全名

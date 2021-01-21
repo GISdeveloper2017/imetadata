@@ -758,6 +758,7 @@ class CSatPlugins(CPlugins):
         # 对于一些需要计算的数据进行运算
         try:
             self.process_centerlonlat(metadata_bus_dict)
+            self.process_scientific_enumeration(metadata_bus_dict)
             self.process_custom(metadata_bus_dict)
         except Exception:
             pass
@@ -834,6 +835,24 @@ class CSatPlugins(CPlugins):
                 (CUtils.to_decimal(topleftlatitude, None) + CUtils.to_decimal(bottomrightlatitude, None)) / 2
             metadata_bus_dict['centerlongitude'] = \
                 (CUtils.to_decimal(topleftlongitude, None) + CUtils.to_decimal(bottomrightlongitude, None)) / 2
+
+    def process_scientific_enumeration(self, metadata_bus_dict: dict):
+        temp_dict = dict()
+        temp_dict['topleftlatitude'] = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
+        temp_dict['topleftlongitude'] = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
+        temp_dict['toprightlatitude'] = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', None)
+        temp_dict['toprightlongitude'] = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlongitude', None)
+        temp_dict['bottomrightlatitude'] = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
+        temp_dict['bottomrightlongitude'] = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
+        temp_dict['bottomleftlatitude'] = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlatitude', None)
+        temp_dict['bottomleftlongitude'] = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', None)
+        temp_dict['rollangle'] = CUtils.dict_value_by_name(metadata_bus_dict, 'rollangle', None)
+        temp_dict['cloudpercent'] = CUtils.dict_value_by_name(metadata_bus_dict, 'cloudpercent', None)
+        temp_dict['resolution'] = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
+
+        for name, value in temp_dict.items():
+            if ('e' in value) or ('E' in value):
+                metadata_bus_dict[name] = CUtils.to_decimal(value, value)
 
     def process_custom(self, metadata_bus_dict):
         """
@@ -1011,6 +1030,15 @@ class CSatPlugins(CPlugins):
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_date_or_datetime
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_ID: 'resolution',
+                self.Name_Title: '分辨率',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,

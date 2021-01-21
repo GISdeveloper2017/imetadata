@@ -28,7 +28,7 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
             self.file_content.content_root_dir,
             self.get_fuzzy_metadata_file(
                 '(?i).*DIM.*_P_.*[.]XML',
-                'default.xml',
+                'DIM_P.xml',
                 True
             )
         )
@@ -42,7 +42,7 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
             {
                 self.Name_FileName: self.get_fuzzy_metadata_file(
                     r'(?i).*_P.*[.]tif$',
-                    'default.tif', True
+                    '{0}_P.tif'.format(self.classified_object_name()), True
                 ),
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '影像文件',
@@ -58,14 +58,14 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
                 self.Name_ID: self.View_MetaData_Type_Browse,
                 self.Name_FileName: self.get_fuzzy_metadata_file(
                     r'(?i).*PREVIEW.*_MS_.*.JPG',
-                    'default.JPG', True
+                    'PREVIEW_MS.JPG', True
                 ),
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
                 self.Name_FileName: self.get_fuzzy_metadata_file(
                     r'(?i).*ICON.*_MS_.*.JPG',
-                    'default.JPG', True
+                    'ICON_MS.JPG', True
                 )
             }
         ]
