@@ -99,6 +99,9 @@ class CSatFilePlugins_gf5_vims(CSatFilePlugins_gf5):
             resolution = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
             resolution_list = re.split(r'[,]|\s+', resolution.strip())
             if len(resolution_list) > 0:
-                metadata_bus_dict['resolution'] = min(resolution_list)
+                temp_resolution_list = []
+                for temp_resolution in resolution_list:
+                    temp_resolution_list.append(CUtils.to_decimal(temp_resolution))
+                metadata_bus_dict['resolution'] = min(temp_resolution_list)
         except Exception:
             pass

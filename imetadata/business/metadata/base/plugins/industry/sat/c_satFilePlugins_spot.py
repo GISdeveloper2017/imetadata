@@ -1,76 +1,90 @@
 from imetadata.base.c_file import CFile
-from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.sat.base.base.c_opticalSatPlugins import COpticalSatPlugins
 
 
-class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
+class CSatFilePlugins_spot(COpticalSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'Pleiades_PMS'
-        information[self.Plugins_Info_Type_Title] = 'Pleiades星PMS传感器'
-        information[self.Plugins_Info_Group] = 'Pleiades'
-        information[self.Plugins_Info_Group_Title] = 'Pleiades'
+        information[self.Plugins_Info_Type] = 'SPOT_PMS'
+        information[self.Plugins_Info_Type_Title] = 'SPOT卫星PMS传感器'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
         """
-        北京二号卫星识别
+        设置识别的特征
+        . 如果是压缩包, 则是针对压缩包的文件主名
+        . 如果是子目录, 则是针对目录的名称
+        :param sat_file_status 卫星数据类型
+            . Sat_Object_Status_Zip = 'zip'
+            . Sat_Object_Status_Dir = 'dir'
+            . Sat_Object_Status_File = 'file'
+        :return:
+        [0]: 特征串
+        [1]: 特征串的类型
+            TextMatchType_Common: 常规通配符, 如 *.txt
+            TextMatchType_Regex: 正则表达式
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i).*(PHR|PD|pd\d{10}).*', self.TextMatchType_Regex
+            return r'(?i).*(sd\d{10}|SD\d{10}|DS_SPOT\d_\d{15}.*)', self.TextMatchType_Regex
         else:
-            return r'(?i).*(PHR|PD|pd\d{10}).*[.]tif$', self.TextMatchType_Regex
+            return r'(?i).*(sd\d{10}|SD\d{10}|DS_SPOT\d_\d{15}.*)[.]tiff$', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
+        """
+        卫星数据解压后, 哪个文件是业务元数据?
+        :return:
+        """
         return CFile.join_file(
             self.file_content.content_root_dir,
-            self.get_fuzzy_metadata_file(
-                '(?i).*DIM.*_P_.*[.]XML',
-                'DIM_P.xml',
-                True
-            )
+            self.get_fuzzy_metadata_file('.*DIM.*_P_.*.XML', '{0}.xml'.format(self.classified_object_name()), True
+                                         )
         )
-
-    def parser_detail_custom(self, object_name):
-        match_str_1 = r'(?i).*(PHR|PD|pd\d{10}).*'
-        self.add_different_name_detail_by_match(match_str_1)
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
-            {
-                self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i).*_P.*[.]tif$',
-                    '{0}_P.tif'.format(self.classified_object_name()), True
-                ),
-                self.Name_ID: 'pan_tif',
-                self.Name_Title: '影像文件',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_Format: self.DataFormat_Raster_File
-            }
+            # {
+            #     self.Name_FileName: self.get_fuzzy_metadata_file(
+            #         r'(?i).*(sd\d{10}|SD\d{10}|DS_SPOT\d_\d{15}.*)[.]tiff$',
+            #         '{0}.tiff'.format(self.classified_object_name())),
+            #     self.Name_ID: 'pan_tif',
+            #     self.Name_Title: '全色文件',
+            #     self.Name_Group: self.QA_Group_Data_Integrity,
+            #     self.Name_Result: self.QA_Result_Error,
+            #     self.Name_Format: self.DataFormat_Raster_File
+            # }
         ]
 
     def parser_metadata_view_list(self, parser: CMetaDataParser):
+        """
+        标准模式的反馈预览图和拇指图的名称
+        :param parser:
+        :return:
+        """
         return [
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i).*PREVIEW.*_MS_.*.JPG',
-                    'PREVIEW_MS.JPG', True
-                ),
+                self.Name_FileName: self.get_fuzzy_metadata_file('.*PREVIEW.*_MS_.*.JPG',
+                                                                 '{0}_browser.jpg'.format(
+                                                                     self.file_info.file_main_name), True
+                                                                 )
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i).*ICON.*_MS_.*.JPG',
-                    'ICON_MS.JPG', True
+                    '.*ICON.*_MS_.*.JPG', '{0}.jpg'.format(self.file_info.file_main_name), True
                 )
             }
         ]
 
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
+        """
+        标准模式的提取时间信息的列表
+        :param parser:
+        :return:
+        """
         return [
             {
                 self.Name_ID: self.Name_Time,
@@ -93,11 +107,27 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
     def get_metadata_bus_configuration_list(self) -> list:
         """
         固定的列表，重写时不可缺项
+        self.Name_ID：字段的名称 例：self.Name_ID: 'satelliteid'
+        self.Name_XPath：需要从xml中取值时的xpath 例：self.Name_XPath: '/ProductMetaData/SatelliteID'
+        self.Name_Special_Configuration：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
+        例：self.Name_Special_Configuration: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
+        self.Name_Value：不在xml取得默认值与当XPath取不到值时取的值 例 self.Name_Value: 1
+        self.Name_Map：映射，当取到的值为key的值时将值转换为value
+        例 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
+                                    'LEVEL1A': 'L1',
+                                    'LEVEL2A': 'L2',
+                                    'LEVEL4A': 'L4'
+                                    # self.Name_Default: None # 没有对应的的映射使用的默认值}
         """
         return [
             {
                 self.Name_ID: 'satelliteid',  # 卫星，必填，从元数据组织定义，必须是标准命名的卫星名称
-                self.Name_Value: 'Pleiades'
+                self.Name_XPath: '/Dimap_Document/Metadata_Identification/METADATA_PROFILE',
+                self.Name_Map: {
+                    'S6_SENSOR': 'SPOT6',
+                    'S7_SENSOR': 'SPOT7',
+                    self.Name_Default: 'SPOT'
+                }
             },
             {
                 self.Name_ID: 'sensorid',  # 传感器 必填,从元数据组织定义，必须是标准命名的传感器名称
@@ -151,18 +181,15 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
                 self.Name_Special_Configuration: [
                     '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source/IMAGING_DATE',
-                    '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source/IMAGING_TIME',
-                ]
+                    '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source/IMAGING_TIME']
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/Dimap_Document/Processing_Information/Product_Settings/Sampling_Settings'
-                                 '/RESAMPLING_SPACING '
+                self.Name_XPath: '/Dimap_Document/Processing_Information/Product_Settings/Sampling_Settings/RESAMPLING_SPACING'
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
-                self.Name_XPath: "/Dimap_Document/Geometric_Data/Use_Area/"
-                                 "Located_Geometric_Values[LOCATION_TYPE='Center']/Acquisition_Angles/VIEWING_ANGLE"
+                self.Name_XPath: "/Dimap_Document/Geometric_Data/Use_Area/Located_Geometric_Values[LOCATION_TYPE='Center']/Acquisition_Angles/VIEWING_ANGLE"
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量
@@ -174,7 +201,7 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'acquisition_id',  # 轨道号
-                self.Name_XPath: '/SceneMetaData/MetaData/Acquisition_ID'
+                self.Name_XPath: None
             },
             {
                 self.Name_ID: 'copyright',  # 发布来源 从info取
@@ -182,7 +209,7 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
-                self.Name_XPath: '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source/IMAGING_DATE'
+                self.Name_XPath: '/Dimap_Document/Product_Information/Delivery_Identification/PRODUCTION_DATE'
             },
             {
                 self.Name_ID: 'remark',  # 备注 可空
@@ -202,19 +229,21 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productid',  # 产品id 默认取主文件全名
-                self.Name_XPath: '/Dimap_Document/Product_Information/Delivery_Identification/JOB_ID'
+                self.Name_XPath: None
             },
             {
                 self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
-                self.Name_Value: '(?i).*DIM.*_MS_.*[.]XML'
+                self.Name_Value: None
             }
         ]
 
-    def process_special_configuration_custom(
-            self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml):
-        if CUtils.equal_ignore_case(metadata_bus_id, 'centertime'):
-            centertime_value1 = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_special_configuration[0])
-            centertime_value2 = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_special_configuration[1])
-            metadata_bus_xpath_value = '{0}T{1}'.format(centertime_value1, centertime_value2)
-
-        return metadata_bus_xpath_value
+    def process_custom(self, metadata_bus_dict):
+        """
+        对部分需要进行运算的数据进行处理
+        """
+        super().process_custom(metadata_bus_dict)
+        try:
+            centertime_list = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
+            metadata_bus_dict['centertime'] = centertime_list[0] + 'T' + centertime_list[1]
+        except Exception:
+            pass
