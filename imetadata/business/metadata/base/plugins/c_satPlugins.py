@@ -450,7 +450,7 @@ class CSatPlugins(CPlugins):
             '数据文件[{0}]的可视化信息解析成功! '.format(self.file_info.file_name_with_full_path)
         )
 
-    def get_fuzzy_metadata_file(self, match_str, default_file_name, is_recurse_subpath=False):
+    def get_fuzzy_metadata_file(self, match_str, default_file_name, is_recurse_subpath=True):
         """
         正则获取文件夹下对应的快视拇指
         """
@@ -740,20 +740,28 @@ class CSatPlugins(CPlugins):
             metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, 'None')
             metadata_bus_xpath = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_XPath, None)
             metadata_bus_value = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Value, None)
+            metadata_bus_xpath_namespace = \
+                CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_NameSpaceMap, None)
             # 取值
-            if metadata_bus_xpath is not None:
-                metadata_bus_xpath_value = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_xpath)
-            else:
-                metadata_bus_xpath_value = \
-                    self.process_special_configuration(metadata_bus_configuration, metadata_bus_xml)
-            # 取值后的处理
-            if not CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
-                # 对部分特殊数据进行自定义处理
-                metadata_bus_xpath_value = self.process_item_map(metadata_bus_configuration, metadata_bus_xpath_value)
+            try:
+                if metadata_bus_xpath is not None:
+                    metadata_bus_xpath_value = \
+                        metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_xpath, metadata_bus_xpath_namespace)
+                else:
+                    metadata_bus_xpath_value = \
+                        self.process_special_configuration(metadata_bus_configuration, metadata_bus_xml)
+                # 取值后的处理
+                if not CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
+                    # 对部分特殊数据进行自定义处理
+                    metadata_bus_xpath_value = self.process_item_map(
+                        metadata_bus_configuration, metadata_bus_xpath_value
+                    )
 
-                metadata_bus_dict[metadata_bus_id] = metadata_bus_xpath_value
-            else:
-                metadata_bus_dict[metadata_bus_id] = metadata_bus_value
+                    metadata_bus_dict[metadata_bus_id] = metadata_bus_xpath_value
+                else:
+                    metadata_bus_dict[metadata_bus_id] = metadata_bus_value
+            except Exception:
+                pass
 
         # 对于一些需要计算的数据进行运算
         try:
@@ -790,12 +798,16 @@ class CSatPlugins(CPlugins):
                 metadata_bus_xpath_value = self.process_special_configuration_resolution(
                     metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml
                 )
+
+                metadata_bus_xpath_value = self.process_special_configuration_centertime(
+                    metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml
+                )
+
                 metadata_bus_xpath_value = self.process_special_configuration_custom(
                     metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml
                 )
             except Exception:
                 pass
-
         return metadata_bus_xpath_value
 
     def process_special_configuration_resolution(
@@ -816,6 +828,17 @@ class CSatPlugins(CPlugins):
                         resolution_value_list.append(resolution_value_num)
             if len(resolution_value_list) > 0:
                 metadata_bus_xpath_value = min(resolution_value_list)
+        return metadata_bus_xpath_value
+
+    def process_special_configuration_centertime(
+            self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml):
+        if CUtils.equal_ignore_case(metadata_bus_id, 'centertime'):
+            # 取配置里的值
+            time_date_xpath = CUtils.dict_value_by_name(metadata_bus_special_configuration, self.Name_Time_Date, None)
+            time_time_xpath = CUtils.dict_value_by_name(metadata_bus_special_configuration, self.Name_Time_Time, None)
+            time_date = metadata_bus_xml.get_element_text_by_xpath_one(time_date_xpath)
+            time_time = metadata_bus_xml.get_element_text_by_xpath_one(time_time_xpath)
+            metadata_bus_xpath_value = '{0}T{1}'.format(time_date, time_time)
         return metadata_bus_xpath_value
 
     def process_special_configuration_custom(

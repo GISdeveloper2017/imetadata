@@ -53,14 +53,18 @@ class CSatFilePlugins_triplesat_pms(COpticalSatPlugins):
                 self.Name_Format: self.DataFormat_Raster_File
             },
             {
-                self.Name_FileName: '{0}.dbf'.format(self.classified_object_name()),
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    '{0}.dbf'.format(self.classified_object_name()), '{0}.dbf'.format(self.classified_object_name())
+                ),
                 self.Name_ID: 'shp_dbf',
                 self.Name_Title: '矢量文件dbf',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Warn
             },
             {
-                self.Name_FileName: '{0}.shp'.format(self.classified_object_name()),
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    '{0}.shp'.format(self.classified_object_name()), '{0}.shp'.format(self.classified_object_name())
+                ),
                 self.Name_ID: 'shp_shp',
                 self.Name_Title: '矢量文件shp',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -68,23 +72,20 @@ class CSatFilePlugins_triplesat_pms(COpticalSatPlugins):
                 self.Name_Format: self.DataFormat_Vector_File
             },
             {
-                self.Name_FileName: '{0}.prj'.format(self.classified_object_name()),
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    '{0}.prj'.format(self.classified_object_name()), '{0}.prj'.format(self.classified_object_name())
+                ),
                 self.Name_ID: 'shp_prj',
                 self.Name_Title: '矢量文件prj',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Warn
             },
             {
-                self.Name_FileName: '{0}.shx'.format(self.classified_object_name()),
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    '{0}.shx'.format(self.classified_object_name()), '{0}.shx'.format(self.classified_object_name())
+                ),
                 self.Name_ID: 'shp_shx',
                 self.Name_Title: '矢量文件shx',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_FileName: '{0}.xml'.format(self.classified_object_name()),
-                self.Name_ID: 'shp_xml',
-                self.Name_Title: '矢量文件xml',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Warn
             }

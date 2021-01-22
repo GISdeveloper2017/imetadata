@@ -150,6 +150,9 @@ class CResource:
     Name_Start_Time_Native = 'start_time_native'
     Name_End_Time_Native = 'end_time_native'
 
+    Name_Time_Date = 'time_date'  # 时间日期部分
+    Name_Time_Time = 'time_time'  # 时间时间部分
+
     Name_Default = 'default'
 
     Dir_Type_Directory = 1
@@ -264,6 +267,7 @@ class CResource:
     DB_Column_Set_Method_Exchange = 'exchange'
 
     Name_XPath = 'xpath'
+    Name_NameSpaceMap = 'namespacemap'
     Name_Special_Configuration = 'special_configuration'
     Name_Attr_Name = 'attr_name'
     Name_List = 'list'

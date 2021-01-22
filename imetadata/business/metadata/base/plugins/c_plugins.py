@@ -533,7 +533,8 @@ class CPlugins(CResource):
                             CUtils.dict_value_by_name(metadata_time_item, self.Name_ID, self.Name_Time),
                             CXml.get_element_text(
                                 parser.metadata.metadata_xml().xpath_one(
-                                    CUtils.dict_value_by_name(metadata_time_item, self.Name_XPath, '')
+                                    CUtils.dict_value_by_name(metadata_time_item, self.Name_XPath, ''),
+                                    CUtils.dict_value_by_name(metadata_time_item, self.Name_NameSpaceMap, None)
                                 )
                             )
                         )
@@ -555,7 +556,8 @@ class CPlugins(CResource):
                             CUtils.dict_value_by_name(metadata_time_item, self.Name_ID, self.Name_Time),
                             CXml.get_element_text(
                                 parser.metadata.metadata_bus_xml().xpath_one(
-                                    CUtils.dict_value_by_name(metadata_time_item, self.Name_XPath, '')
+                                    CUtils.dict_value_by_name(metadata_time_item, self.Name_XPath, ''),
+                                    CUtils.dict_value_by_name(metadata_time_item, self.Name_NameSpaceMap, None)
                                 )
                             )
                         )

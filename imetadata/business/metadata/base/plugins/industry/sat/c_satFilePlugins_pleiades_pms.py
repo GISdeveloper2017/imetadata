@@ -149,10 +149,12 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
-                self.Name_Special_Configuration: [
-                    '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source/IMAGING_DATE',
-                    '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source/IMAGING_TIME',
-                ]
+                self.Name_Special_Configuration: {
+                    self.Name_Time_Date: '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source'
+                                         '/IMAGING_DATE',
+                    self.Name_Time_Time: '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source'
+                                         '/IMAGING_TIME '
+                }
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
@@ -209,12 +211,3 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
                 self.Name_Value: '(?i).*DIM.*_MS_.*[.]XML'
             }
         ]
-
-    def process_special_configuration_custom(
-            self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml):
-        if CUtils.equal_ignore_case(metadata_bus_id, 'centertime'):
-            centertime_value1 = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_special_configuration[0])
-            centertime_value2 = metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_special_configuration[1])
-            metadata_bus_xpath_value = '{0}T{1}'.format(centertime_value1, centertime_value2)
-
-        return metadata_bus_xpath_value
