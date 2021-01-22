@@ -4,15 +4,15 @@ from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CM
 from imetadata.business.metadata.base.plugins.industry.sat.base.base.c_opticalSatPlugins import COpticalSatPlugins
 
 
-class CSatFilePlugins_sv1(COpticalSatPlugins):
+class CSatFilePlugins_rapideye(COpticalSatPlugins):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'SV1_PMS'
-        information[self.Plugins_Info_Type_Title] = '高景一号PMS传感器'
-        information[self.Plugins_Info_Group] = 'SV1'
-        information[self.Plugins_Info_Group_Title] = '高景一号'
-        information[self.Plugins_Info_CopyRight] = '中国四维测绘技术有限公司'
+        information[self.Plugins_Info_Type] = 'RAPIDEYE_OPTICAL'
+        information[self.Plugins_Info_Type_Title] = 'RAPIDEYE卫星OPTICAL传感器'
+        information[self.Plugins_Info_Group] = 'RAPIDEYE'
+        information[self.Plugins_Info_Group_Title] = 'RAPIDEYE'
+        information[self.Plugins_Info_CopyRight] = '德国'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
@@ -31,9 +31,9 @@ class CSatFilePlugins_sv1(COpticalSatPlugins):
             TextMatchType_Regex: 正则表达式
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)^SV(1|02).*_.*_.*', self.TextMatchType_Regex
+            return r'(?i).*RE\d_\d(A|B).*', self.TextMatchType_Regex
         else:
-            return r'(?i)^SV(1|02).*-PAN[.]tiff$', self.TextMatchType_Regex
+            return r'(?i).*_browse[.]tif$', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """
@@ -42,7 +42,8 @@ class CSatFilePlugins_sv1(COpticalSatPlugins):
         """
         return CFile.join_file(
             self.file_content.content_root_dir,
-            self.get_fuzzy_metadata_file('SV(1|02).*-PAN.xml', '{0}-PAN.xml'.format(self.classified_object_name()), True
+            self.get_fuzzy_metadata_file('.*_metadata.xml',
+                                         '{0}_metadata.xml'.format(self.classified_object_name()), True
                                          )
         )
 
@@ -50,35 +51,13 @@ class CSatFilePlugins_sv1(COpticalSatPlugins):
         return [
             {
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i)^SV(1|02).*[.]tiff$',
-                    '{0}.tiff'.format(self.classified_object_name())),
+                    r'(?i).*_browse[.]tif$',
+                    '{0}_browse.tif'.format(self.classified_object_name())),
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '全色文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_Format: self.DataFormat_Raster_File
-            },
-            {
-                self.Name_FileName: '{0}.dbf'.format(self.classified_object_name()),
-                self.Name_ID: 'shp_dbf',
-                self.Name_Title: '矢量文件dbf',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
-            },
-            {
-                self.Name_FileName: '{0}.shp'.format(self.classified_object_name()),
-                self.Name_ID: 'shp_shp',
-                self.Name_Title: '矢量文件shp',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn,
-                self.Name_Format: self.DataFormat_Vector_File
-            },
-            {
-                self.Name_FileName: '{0}.shx'.format(self.classified_object_name()),
-                self.Name_ID: 'shp_shx',
-                self.Name_Title: '矢量文件shx',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Warn
             }
         ]
 
@@ -89,19 +68,20 @@ class CSatFilePlugins_sv1(COpticalSatPlugins):
         :return:
         """
         return [
-            {
-                self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: self.get_fuzzy_metadata_file('SV(1|02).*-(MUX_thumb|MUX).jpg',
-                                                                 '{0}-MUX.jpg'.format(
-                                                                     self.file_info.file_main_name), True
-                                                                 )
-            },
-            {
-                self.Name_ID: self.View_MetaData_Type_Thumb,
-                self.Name_FileName: self.get_fuzzy_metadata_file(
-                    'SV(1|02).*-MUX.jpg', '{0}-MUX.jpg'.format(self.file_info.file_main_name), True
-                )
-            }
+            # transform_rapideye.xsl中没有快视拇指信息
+            # {
+            #     self.Name_ID: self.View_MetaData_Type_Browse,
+            #     self.Name_FileName: self.get_fuzzy_metadata_file('.*MS.*_browser.jpg',
+            #                                                      '{0}_browser.jpg'.format(
+            #                                                          self.file_info.file_main_name), True
+            #                                                      )
+            # },
+            # {
+            #     self.Name_ID: self.View_MetaData_Type_Thumb,
+            #     self.Name_FileName: self.get_fuzzy_metadata_file(
+            #         '.*MS.*_thumb.jpg', '{0}_thumb.jpg'.format(self.file_info.file_main_name), True
+            #     )
+            # }
         ]
 
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
@@ -113,18 +93,31 @@ class CSatFilePlugins_sv1(COpticalSatPlugins):
         return [
             {
                 self.Name_ID: self.Name_Time,
-                self.Name_XPath: '/ProductMetaData/CenterTime',
+                self.Name_XPath: '/re:EarthObservation/gml:metaDataProperty/re:EarthObservationMetaData/eop:downlinkedTo/eop:DownlinkInformation/eop:acquisitionDate',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': '',
+                    'eop': ''
+                },
                 self.Name_Format: self.MetaDataFormat_XML
 
             },
             {
                 self.Name_ID: self.Name_Start_Time,
-                self.Name_XPath: '/ProductMetaData/StartTime',
+                self.Name_XPath: '/re:EarthObservation/gml:validTime/gml:TimePeriod/gml:beginPosition',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': ''
+                },
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
                 self.Name_ID: self.Name_End_Time,
-                self.Name_XPath: '/ProductMetaData/EndTime',
+                self.Name_XPath: '/re:EarthObservation/gml:validTime/gml:TimePeriod/gml:endPosition',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': ''
+                },
                 self.Name_Format: self.MetaDataFormat_XML
             }
         ]
@@ -134,8 +127,8 @@ class CSatFilePlugins_sv1(COpticalSatPlugins):
         固定的列表，重写时不可缺项
         self.Name_ID：字段的名称 例：self.Name_ID: 'satelliteid'
         self.Name_XPath：需要从xml中取值时的xpath 例：self.Name_XPath: '/ProductMetaData/SatelliteID'
-        self.Name_Custom_Item：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
-        例：self.Name_Custom_Item: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
+        self.Name_Special_Configuration：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
+        例：self.Name_Special_Configuration: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
         self.Name_Value：不在xml取得默认值与当XPath取不到值时取的值 例 self.Name_Value: 1
         self.Name_Map：映射，当取到的值为key的值时将值转换为value
         例 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
@@ -147,11 +140,16 @@ class CSatFilePlugins_sv1(COpticalSatPlugins):
         return [
             {
                 self.Name_ID: 'satelliteid',  # 卫星，必填，从元数据组织定义，必须是标准命名的卫星名称
-                self.Name_XPath: '/ProductMetaData/SatelliteID'
+                self.Name_Value: 'rapideye'
             },
             {
                 self.Name_ID: 'sensorid',  # 传感器 必填,从元数据组织定义，必须是标准命名的传感器名称
-                self.Name_Value: 'PMS'
+                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:sensor/re:Sensor/eop:sensorType',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': '',
+                    'eop': ''
+                },
             },
             {
                 self.Name_ID: 'centerlatitude',  # 中心维度
@@ -163,35 +161,67 @@ class CSatFilePlugins_sv1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'topleftlatitude',  # 左上角维度 必填
-                self.Name_XPath: '/ProductMetaData/TopLeftLatitude'
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:topLeft/re:latitude',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': ''
+                },
             },
             {
                 self.Name_ID: 'topleftlongitude',  # 左上角经度 必填
-                self.Name_XPath: '/ProductMetaData/TopLeftLongitude'
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:topLeft/re:longitude',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': ''
+                },
             },
             {
                 self.Name_ID: 'toprightlatitude',  # 右上角维度 必填
-                self.Name_XPath: '/ProductMetaData/TopRightLatitude'
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:topRight/re:latitude',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': ''
+                },
             },
             {
                 self.Name_ID: 'toprightlongitude',  # 右上角经度 必填
-                self.Name_XPath: '/ProductMetaData/TopRightLongitude'
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:topRight/re:longitude',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': ''
+                },
             },
             {
                 self.Name_ID: 'bottomrightlatitude',  # 右下角维度 必填
-                self.Name_XPath: '/ProductMetaData/BottomRightLatitude'
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:bottomRight/re:latitude',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': ''
+                },
             },
             {
                 self.Name_ID: 'bottomrightlongitude',  # 右下角经度 必填
-                self.Name_XPath: '/ProductMetaData/BottomRightLongitude'
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:bottomRight/re:longitude',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': ''
+                },
             },
             {
                 self.Name_ID: 'bottomleftlatitude',  # 左下角维度 必填
-                self.Name_XPath: '/ProductMetaData/BottomLeftLatitude'
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:bottomLeft/re:latitude',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': ''
+                },
             },
             {
                 self.Name_ID: 'bottomleftlongitude',  # 左下角经度 必填
-                self.Name_XPath: '/ProductMetaData/BottomLeftLongitude'
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:bottomLeft/re:longitude',
+                self.Name_NameSpaceMap: {
+                    'ps': '',
+                    'gml': ''
+                },
             },
             {
                 self.Name_ID: 'transformimg',  # 斜视图,可空,不用质检
@@ -199,20 +229,39 @@ class CSatFilePlugins_sv1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
-                self.Name_XPath: '/ProductMetaData/CenterTime'
+                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:acquisitionParameters/re:Acquisition/re:acquisitionDateTime',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': '',
+                    'eop': ''
+                },
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/ProductMetaData/ImageGSD',
-                self.Name_Value: 0.5
+                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:sensor/re:Sensor/eop:resolution',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': '',
+                    'eop': ''
+                },
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
-                self.Name_XPath: '/ProductMetaData/RollViewingAngle'
+                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:acquisitionParameters/re:Acquisition/re:spaceCraftViewAngle',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': '',
+                    'eop': ''
+                },
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量 /ProductMetaData/CloudPercent
-                self.Name_XPath: '/ProductMetaData/CloudPercent'
+                self.Name_XPath: '/re:EarthObservation/gml:resultOf/re:EarthObservationResult/opt:cloudCoverPercentage',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': '',
+                    'opt': ''
+                },
             },
             {
                 self.Name_ID: 'dataum',  # 坐标系 默认为null
@@ -228,7 +277,11 @@ class CSatFilePlugins_sv1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
-                self.Name_XPath: '/ProductMetaData/ProduceTime'
+                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:acquisitionParameters/re:Acquisition/re:acquisitionDateTime',
+                self.Name_NameSpaceMap: {
+                    're': '',
+                    'gml': ''
+                },
             },
             {
                 self.Name_ID: 'remark',  # 备注 可空
@@ -244,13 +297,19 @@ class CSatFilePlugins_sv1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
-                self.Name_XPath: '/ProductMetaData/ProductLevel',
-                self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
-                    'LEVEL1A': 'L1',
-                    'LEVEL2A': 'L2',
-                    'LEVEL4A': 'L4',
-                    self.Name_Default: 'L1'  # 没有对应的的映射使用默认值
-                }
+                self.Name_XPath: '/re:EarthObservation/gml:metaDataProperty/re:EarthObservationMetaData/eop:productType',
+                self.Name_Map: {
+                    'L1B': 'L1',
+                    'L2B': 'L2',
+                    'L4B': 'L4',
+                    self.Name_Default: 'L1'
+                },
+                self.Name_NameSpaceMap: {
+                    'ps': '',
+                    'gml': '',
+                    'eop': ''
+                },
+
             },
             {
                 self.Name_ID: 'productid',  # 产品id 默认取主文件全名

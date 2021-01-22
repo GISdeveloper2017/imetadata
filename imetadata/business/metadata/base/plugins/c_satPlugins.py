@@ -782,33 +782,33 @@ class CSatPlugins(CPlugins):
 
     def metadata_bus_to_dict_custom_transition(self, metadata_bus_configuration, metadata_bus_xml):
         metadata_bus_xpath_value = None
-        metadata_bus_special_configuration = \
+        metadata_bus_custom_item = \
             CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Custom_Item, None)
-        if metadata_bus_special_configuration is not None:
+        if metadata_bus_custom_item is not None:
             metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, None)
             try:
                 # resolution的特殊配置
                 metadata_bus_xpath_value = self.metadata_bus_to_dict_custom_transition_resolution(
-                    metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml
+                    metadata_bus_xpath_value, metadata_bus_id, metadata_bus_custom_item, metadata_bus_xml
                 )
 
                 metadata_bus_xpath_value = self.metadata_bus_to_dict_custom_transition_centertime(
-                    metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml
+                    metadata_bus_xpath_value, metadata_bus_id, metadata_bus_custom_item, metadata_bus_xml
                 )
 
                 metadata_bus_xpath_value = self.metadata_bus_to_dict_custom_transition_custom(
-                    metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml
+                    metadata_bus_xpath_value, metadata_bus_id, metadata_bus_custom_item, metadata_bus_xml
                 )
             except Exception:
                 pass
         return metadata_bus_xpath_value
 
     def metadata_bus_to_dict_custom_transition_resolution(
-            self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml):
+            self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_custom_item, metadata_bus_xml):
         if CUtils.equal_ignore_case(metadata_bus_id, 'resolution'):
             resolution_value_list = list()
             # 取配置里的值
-            for resolution_configuration in metadata_bus_special_configuration:
+            for resolution_configuration in metadata_bus_custom_item:
                 if CUtils.text_is_string(resolution_configuration):
                     resolution_value = metadata_bus_xml.get_element_text_by_xpath_one(resolution_configuration)
                     resolution_value_num = CUtils.to_decimal(resolution_value, None)
@@ -824,18 +824,18 @@ class CSatPlugins(CPlugins):
         return metadata_bus_xpath_value
 
     def metadata_bus_to_dict_custom_transition_centertime(
-            self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml):
+            self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_custom_item, metadata_bus_xml):
         if CUtils.equal_ignore_case(metadata_bus_id, 'centertime'):
             # 取配置里的值
-            time_date_xpath = CUtils.dict_value_by_name(metadata_bus_special_configuration, self.Name_Time_Date, None)
-            time_time_xpath = CUtils.dict_value_by_name(metadata_bus_special_configuration, self.Name_Time_Time, None)
+            time_date_xpath = CUtils.dict_value_by_name(metadata_bus_custom_item, self.Name_Time_Date, None)
+            time_time_xpath = CUtils.dict_value_by_name(metadata_bus_custom_item, self.Name_Time_Time, None)
             time_date = metadata_bus_xml.get_element_text_by_xpath_one(time_date_xpath)
             time_time = metadata_bus_xml.get_element_text_by_xpath_one(time_time_xpath)
             metadata_bus_xpath_value = '{0}T{1}'.format(time_date, time_time)
         return metadata_bus_xpath_value
 
     def metadata_bus_to_dict_custom_transition_custom(
-            self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml):
+            self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_custom_item, metadata_bus_xml):
         return metadata_bus_xpath_value
 
     def metadata_bus_dict_process_centerlonlat(self, metadata_bus_dict: dict):

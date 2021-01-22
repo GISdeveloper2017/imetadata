@@ -240,3 +240,7 @@ class CSatFilePlugins_spot(COpticalSatPlugins):
                 self.Name_Value: None
             }
         ]
+
+    def parser_detail_custom(self, object_name):
+        match_str = '(?i){0}.*[.].*'.format(object_name[:])
+        self.add_different_name_detail_by_match(match_str)
