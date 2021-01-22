@@ -268,7 +268,7 @@ class CResource:
 
     Name_XPath = 'xpath'
     Name_NameSpaceMap = 'namespacemap'
-    Name_Special_Configuration = 'special_configuration'
+    Name_Custom_Item = 'special_configuration'
     Name_Attr_Name = 'attr_name'
     Name_List = 'list'
     Name_Not_List = 'not_list'

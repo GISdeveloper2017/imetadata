@@ -159,7 +159,7 @@ class CSatFilePlugins_gf1_pms2(CSatFilePlugins_gf1):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_Special_Configuration: ['/ProductMetaData/ImageGSDLine', '/ProductMetaData/ImageGSD']
+                self.Name_Custom_Item: ['/ProductMetaData/ImageGSDLine', '/ProductMetaData/ImageGSD']
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角

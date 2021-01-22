@@ -90,11 +90,11 @@ class CSatFilePlugins_gf5_vims(CSatFilePlugins_gf5):
         match_str = '(?i)GF5.*VIMS.*[.].*'
         self.add_different_name_detail_by_match(match_str)
 
-    def process_custom(self, metadata_bus_dict):
+    def metadata_bus_dict_process_custom(self, metadata_bus_dict):
         """
         对部分需要进行运算的数据进行处理
         """
-        super().process_custom(metadata_bus_dict)
+        super().metadata_bus_dict_process_custom(metadata_bus_dict)
         try:
             resolution = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
             resolution_list = re.split(r'[,]|\s+', resolution.strip())

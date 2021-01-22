@@ -62,51 +62,87 @@ class CSatFilePlugins_hy1_scal2oct(CSatFilePlugins_hy1):
         return [
             {
                 self.Name_ID: 'satelliteid',  # 卫星，必填，从元数据组织定义，必须是标准命名的卫星名称
-                self.Name_XPath: '/mds:ProductMeta/mds:SatelliteID'
+                self.Name_XPath: '/mds:ProductMeta/mds:SatelliteID',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'sensorid',  # 传感器 必填,从元数据组织定义，必须是标准命名的传感器名称
-                self.Name_XPath: '/mds:ProductMeta/mds:SensorID'
+                self.Name_XPath: '/mds:ProductMeta/mds:SensorID',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'centerlatitude',  # 中心维度
-                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:CentreLocation/mds:CenterLatitude'
+                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:CentreLocation/mds:CenterLatitude',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'centerlongitude',  # 中心经度
-                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:CentreLocation/mds:CenterLongitude'
+                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:CentreLocation/mds:CenterLongitude',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'topleftlatitude',  # 左上角维度 必填
-                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:TopLeft/mds:TopLeftLatitude'
+                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:TopLeft/mds:TopLeftLatitude',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'topleftlongitude',  # 左上角经度 必填
-                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:TopLeft/mds:TopLeftLongitude'
+                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:TopLeft/mds:TopLeftLongitude',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'toprightlatitude',  # 右上角维度 必填
-                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:TopRight/mds:TopRightLatitude'
+                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:TopRight/mds:TopRightLatitude',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'toprightlongitude',  # 右上角经度 必填
-                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:TopRight/mds:TopRightLongitude'
+                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:TopRight/mds:TopRightLongitude',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'bottomrightlatitude',  # 右下角维度 必填
-                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:BottomRight/mds:BottomRightLatitude'
+                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:BottomRight/mds:BottomRightLatitude',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'bottomrightlongitude',  # 右下角经度 必填
-                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:BottomRight/mds:BottomRightLongitude'
+                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:BottomRight/mds:BottomRightLongitude',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'bottomleftlatitude',  # 左下角维度 必填
-                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:BottomLeft/mds:BottomLeftLatitude'
+                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:BottomLeft/mds:BottomLeftLatitude',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'bottomleftlongitude',  # 左下角经度 必填
-                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:BottomLeft/mds:BottomLeftLongitude'
+                self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:Corners/mds:BottomLeft/mds:BottomLeftLongitude',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'transformimg',  # 斜视图,可空,不用质检
@@ -114,27 +150,45 @@ class CSatFilePlugins_hy1_scal2oct(CSatFilePlugins_hy1):
             },
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
-                self.Name_XPath: '/mds:ProductMeta/mds:ProductInfo/mds:ProduceTime'
+                self.Name_XPath: '/mds:ProductMeta/mds:ProductInfo/mds:ProduceTime',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/mds:ProductMeta/mds:ProductInfo/mds:SpatialResolution'
+                self.Name_XPath: '/mds:ProductMeta/mds:ProductInfo/mds:SpatialResolution',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
-                self.Name_XPath: '/mds:ProductMeta/mds:SatelliteInfo/mds:SatOffNadir'
+                self.Name_XPath: '/mds:ProductMeta/mds:SatelliteInfo/mds:SatOffNadir',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量
-                self.Name_XPath: '/mds:ProductMeta/mds:QualityInfo/mds:CloudPercent'
+                self.Name_XPath: '/mds:ProductMeta/mds:QualityInfo/mds:CloudPercent',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'dataum',  # 坐标系 默认为null
-                self.Name_XPath: '/mds:ProductMeta/mds:CorrectionParams/mds:ProjectType'
+                self.Name_XPath: '/mds:ProductMeta/mds:CorrectionParams/mds:ProjectType',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'acquisition_id',  # 轨道号
-                self.Name_XPath: '/mds:ProductMeta/mds:OrbitID'
+                self.Name_XPath: '/mds:ProductMeta/mds:OrbitID',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'copyright',  # 发布来源 从info取
@@ -143,6 +197,9 @@ class CSatFilePlugins_hy1_scal2oct(CSatFilePlugins_hy1):
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
                 self.Name_XPath: '/mds:ProductMeta/mds:ProductInfo/mds:ProduceTime',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'remark',  # 备注 可空
@@ -158,7 +215,10 @@ class CSatFilePlugins_hy1_scal2oct(CSatFilePlugins_hy1):
             },
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
-                self.Name_XPath: '/mds:ProductMeta/mds:ProductInfo/mds:ProductLevel'
+                self.Name_XPath: '/mds:ProductMeta/mds:ProductInfo/mds:ProductLevel',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
             },
             {
                 self.Name_ID: 'productid',  # 产品id 默认取主文件全名
@@ -180,17 +240,26 @@ class CSatFilePlugins_hy1_scal2oct(CSatFilePlugins_hy1):
             {
                 self.Name_ID: self.Name_Time,
                 self.Name_XPath: '/mds:ProductMeta/mds:ProductInfo/mds:ProduceTime',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
                 self.Name_Format: self.MetaDataFormat_XML
 
             },
             {
                 self.Name_ID: self.Name_Start_Time,
                 self.Name_XPath: 'mds:ProductMeta/mds:ImageInfo/mds:StartTime',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
                 self.Name_ID: self.Name_End_Time,
                 self.Name_XPath: '/mds:ProductMeta/mds:ImageInfo/mds:EndTime',
+                self.Name_NameSpaceMap: {
+                    'mds': ''
+                },
                 self.Name_Format: self.MetaDataFormat_XML
             }
         ]

@@ -98,8 +98,8 @@ class CSatFilePlugins_gf2_wfv(CSatFilePlugins_gf2):
         固定的列表，重写时不可缺项
         self.Name_ID：字段的名称 例：self.Name_ID: 'satelliteid'
         self.Name_XPath：需要从xml中取值时的xpath 例：self.Name_XPath: '/ProductMetaData/SatelliteID'
-        self.Name_Special_Configuration：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
-        例：self.Name_Special_Configuration: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
+        self.Name_Custom_Item：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
+        例：self.Name_Custom_Item: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
         self.Name_Value：不在xml取得默认值与当XPath取不到值时取的值 例 self.Name_Value: 1
         self.Name_Map：映射，当取到的值为key的值时将值转换为value
         例 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
@@ -167,7 +167,7 @@ class CSatFilePlugins_gf2_wfv(CSatFilePlugins_gf2):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_Special_Configuration: ['/ProductMetaData/ImageGSD', 2]
+                self.Name_Custom_Item: ['/ProductMetaData/ImageGSD', 2]
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角

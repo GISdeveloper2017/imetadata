@@ -588,8 +588,8 @@ class CSatPlugins(CPlugins):
         可配置的项目：
         self.Name_ID：字段的名称 例：self.Name_ID: 'satelliteid'
         self.Name_XPath：需要从xml中取值时的xpath 例：self.Name_XPath: '/ProductMetaData/SatelliteID'
-        self.Name_Special_Configuration：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
-        例：self.Name_Special_Configuration: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
+        self.Name_Custom_Item：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
+        例：self.Name_Custom_Item: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
         self.Name_Value：不在xml取得默认值与当XPath取不到值时取的值 例 self.Name_Value: 1
         self.Name_Map：映射，当取到的值为key的值时将值转换为value
         例 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
@@ -749,13 +749,20 @@ class CSatPlugins(CPlugins):
                         metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_xpath, metadata_bus_xpath_namespace)
                 else:
                     metadata_bus_xpath_value = \
-                        self.process_special_configuration(metadata_bus_configuration, metadata_bus_xml)
+                        self.metadata_bus_to_dict_custom_transition(metadata_bus_configuration, metadata_bus_xml)
                 # 取值后的处理
                 if not CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
                     # 对部分特殊数据进行自定义处理
-                    metadata_bus_xpath_value = self.process_item_map(
-                        metadata_bus_configuration, metadata_bus_xpath_value
-                    )
+                    metadata_bus_map = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Map, None)
+                    if metadata_bus_map is not None:
+                        for map_key, map_value in metadata_bus_map.items():
+                            if CUtils.equal_ignore_case(map_key, metadata_bus_xpath_value):
+                                metadata_bus_xpath_value = map_value
+                                break
+                        else:
+                            default_value = CUtils.dict_value_by_name(metadata_bus_map, self.Name_Default, None)
+                            if default_value is not None:  # 设置不符合映射的默认值
+                                metadata_bus_xpath_value = default_value
 
                     metadata_bus_dict[metadata_bus_id] = metadata_bus_xpath_value
                 else:
@@ -765,52 +772,38 @@ class CSatPlugins(CPlugins):
 
         # 对于一些需要计算的数据进行运算
         try:
-            self.process_centerlonlat(metadata_bus_dict)
-            self.process_scientific_enumeration(metadata_bus_dict)
-            self.process_custom(metadata_bus_dict)
+            self.metadata_bus_dict_process_centerlonlat(metadata_bus_dict)
+            self.metadata_bus_dict_process_scientific_enumeration(metadata_bus_dict)
+            self.metadata_bus_dict_process_custom(metadata_bus_dict)
         except Exception:
             pass
 
         return metadata_bus_dict
 
-    def process_item_map(self, metadata_bus_configuration: dict, metadata_bus_xpath_value):
-        # 进行映射处理
-        metadata_bus_map = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Map, None)
-        if metadata_bus_map is not None:
-            for map_key, map_value in metadata_bus_map.items():
-                if CUtils.equal_ignore_case(map_key, metadata_bus_xpath_value):
-                    metadata_bus_xpath_value = map_value
-                    break
-            else:
-                default_value = CUtils.dict_value_by_name(metadata_bus_map, self.Name_Default, None)
-                if default_value is not None:  # 设置不符合映射的默认值
-                    metadata_bus_xpath_value = default_value
-        return metadata_bus_xpath_value
-
-    def process_special_configuration(self, metadata_bus_configuration, metadata_bus_xml):
+    def metadata_bus_to_dict_custom_transition(self, metadata_bus_configuration, metadata_bus_xml):
         metadata_bus_xpath_value = None
         metadata_bus_special_configuration = \
-            CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Special_Configuration, None)
+            CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Custom_Item, None)
         if metadata_bus_special_configuration is not None:
             metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, None)
             try:
                 # resolution的特殊配置
-                metadata_bus_xpath_value = self.process_special_configuration_resolution(
+                metadata_bus_xpath_value = self.metadata_bus_to_dict_custom_transition_resolution(
                     metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml
                 )
 
-                metadata_bus_xpath_value = self.process_special_configuration_centertime(
+                metadata_bus_xpath_value = self.metadata_bus_to_dict_custom_transition_centertime(
                     metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml
                 )
 
-                metadata_bus_xpath_value = self.process_special_configuration_custom(
+                metadata_bus_xpath_value = self.metadata_bus_to_dict_custom_transition_custom(
                     metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml
                 )
             except Exception:
                 pass
         return metadata_bus_xpath_value
 
-    def process_special_configuration_resolution(
+    def metadata_bus_to_dict_custom_transition_resolution(
             self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml):
         if CUtils.equal_ignore_case(metadata_bus_id, 'resolution'):
             resolution_value_list = list()
@@ -830,7 +823,7 @@ class CSatPlugins(CPlugins):
                 metadata_bus_xpath_value = min(resolution_value_list)
         return metadata_bus_xpath_value
 
-    def process_special_configuration_centertime(
+    def metadata_bus_to_dict_custom_transition_centertime(
             self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml):
         if CUtils.equal_ignore_case(metadata_bus_id, 'centertime'):
             # 取配置里的值
@@ -841,11 +834,11 @@ class CSatPlugins(CPlugins):
             metadata_bus_xpath_value = '{0}T{1}'.format(time_date, time_time)
         return metadata_bus_xpath_value
 
-    def process_special_configuration_custom(
+    def metadata_bus_to_dict_custom_transition_custom(
             self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_special_configuration, metadata_bus_xml):
         return metadata_bus_xpath_value
 
-    def process_centerlonlat(self, metadata_bus_dict: dict):
+    def metadata_bus_dict_process_centerlonlat(self, metadata_bus_dict: dict):
         centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
         centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
         if CUtils.equal_ignore_case(centerlatitude, '') or CUtils.equal_ignore_case(centerlongitude, ''):
@@ -859,7 +852,7 @@ class CSatPlugins(CPlugins):
             metadata_bus_dict['centerlongitude'] = \
                 (CUtils.to_decimal(topleftlongitude, None) + CUtils.to_decimal(bottomrightlongitude, None)) / 2
 
-    def process_scientific_enumeration(self, metadata_bus_dict: dict):
+    def metadata_bus_dict_process_scientific_enumeration(self, metadata_bus_dict: dict):
         temp_dict = dict()
         temp_dict['topleftlatitude'] = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
         temp_dict['topleftlongitude'] = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
@@ -877,7 +870,7 @@ class CSatPlugins(CPlugins):
             if ('e' in value) or ('E' in value):
                 metadata_bus_dict[name] = CUtils.to_decimal(value, value)
 
-    def process_custom(self, metadata_bus_dict):
+    def metadata_bus_dict_process_custom(self, metadata_bus_dict):
         """
         对部分需要进行运算的数据进行处理
         """

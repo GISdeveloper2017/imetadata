@@ -10,6 +10,8 @@ class CSatFilePlugins_spot(COpticalSatPlugins):
         information = super().get_information()
         information[self.Plugins_Info_Type] = 'SPOT_PMS'
         information[self.Plugins_Info_Type_Title] = 'SPOT卫星PMS传感器'
+        information[self.Plugins_Info_Group] = 'SPOT'
+        information[self.Plugins_Info_Group_Title] = 'SPOT'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
@@ -45,16 +47,16 @@ class CSatFilePlugins_spot(COpticalSatPlugins):
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
-            # {
-            #     self.Name_FileName: self.get_fuzzy_metadata_file(
-            #         r'(?i).*(sd\d{10}|SD\d{10}|DS_SPOT\d_\d{15}.*)[.]tiff$',
-            #         '{0}.tiff'.format(self.classified_object_name())),
-            #     self.Name_ID: 'pan_tif',
-            #     self.Name_Title: '全色文件',
-            #     self.Name_Group: self.QA_Group_Data_Integrity,
-            #     self.Name_Result: self.QA_Result_Error,
-            #     self.Name_Format: self.DataFormat_Raster_File
-            # }
+            {
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i)IMG_SPOT6_P_.*_R1C1[.]tif$',
+                    '{0}.tif'.format(self.classified_object_name())),
+                self.Name_ID: 'pan_tif',
+                self.Name_Title: '全色文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.DataFormat_Raster_File
+            }
         ]
 
     def parser_metadata_view_list(self, parser: CMetaDataParser):
@@ -109,8 +111,8 @@ class CSatFilePlugins_spot(COpticalSatPlugins):
         固定的列表，重写时不可缺项
         self.Name_ID：字段的名称 例：self.Name_ID: 'satelliteid'
         self.Name_XPath：需要从xml中取值时的xpath 例：self.Name_XPath: '/ProductMetaData/SatelliteID'
-        self.Name_Special_Configuration：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
-        例：self.Name_Special_Configuration: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
+        self.Name_Custom_Item：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
+        例：self.Name_Custom_Item: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
         self.Name_Value：不在xml取得默认值与当XPath取不到值时取的值 例 self.Name_Value: 1
         self.Name_Map：映射，当取到的值为key的值时将值转换为value
         例 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
@@ -179,9 +181,11 @@ class CSatFilePlugins_spot(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
-                self.Name_Special_Configuration: [
-                    '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source/IMAGING_DATE',
-                    '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source/IMAGING_TIME']
+                self.Name_Custom_Item: {
+                    self.Name_Time_Date: '/Dimap_Document/'
+                                         'Dataset_Sources/Source_Identification/Strip_Source/IMAGING_DATE',
+                    self.Name_Time_Time: '/Dimap_Document/'
+                                         'Dataset_Sources/Source_Identification/Strip_Source/IMAGING_TIME'}
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
@@ -236,14 +240,3 @@ class CSatFilePlugins_spot(COpticalSatPlugins):
                 self.Name_Value: None
             }
         ]
-
-    def process_custom(self, metadata_bus_dict):
-        """
-        对部分需要进行运算的数据进行处理
-        """
-        super().process_custom(metadata_bus_dict)
-        try:
-            centertime_list = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
-            metadata_bus_dict['centertime'] = centertime_list[0] + 'T' + centertime_list[1]
-        except Exception:
-            pass

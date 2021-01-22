@@ -149,7 +149,7 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
-                self.Name_Special_Configuration: {
+                self.Name_Custom_Item: {
                     self.Name_Time_Date: '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source'
                                          '/IMAGING_DATE',
                     self.Name_Time_Time: '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source'

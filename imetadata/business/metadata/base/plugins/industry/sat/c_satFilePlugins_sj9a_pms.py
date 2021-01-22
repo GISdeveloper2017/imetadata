@@ -110,8 +110,8 @@ class CSatFilePlugins_sj9a_pms(CSatFilePlugins_sj9a):
         固定的列表，重写时不可缺项
         self.Name_ID：字段的名称 例：self.Name_ID: 'satelliteid'
         self.Name_XPath：需要从xml中取值时的xpath 例：self.Name_XPath: '/ProductMetaData/SatelliteID'
-        self.Name_Special_Configuration：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
-        例：self.Name_Special_Configuration: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
+        self.Name_Custom_Item：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
+        例：self.Name_Custom_Item: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
         self.Name_Value：不在xml取得默认值与当XPath取不到值时取的值 例 self.Name_Value: 1
         self.Name_Map：映射，当取到的值为key的值时将值转换为value
         例 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
@@ -237,11 +237,11 @@ class CSatFilePlugins_sj9a_pms(CSatFilePlugins_sj9a):
             }
         ]
 
-    def process_custom(self, metadata_bus_dict):
+    def metadata_bus_dict_process_custom(self, metadata_bus_dict):
         """
         对部分需要进行运算的数据进行处理
         """
-        super().process_custom(metadata_bus_dict)
+        super().metadata_bus_dict_process_custom(metadata_bus_dict)
         try:
             resolution = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
             resolution_list = re.split(r'[/]|\s+', resolution.strip())
