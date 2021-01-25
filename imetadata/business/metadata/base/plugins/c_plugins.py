@@ -555,7 +555,10 @@ class CPlugins(CResource):
                             '时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
                             CUtils.dict_value_by_name(metadata_time_item, self.Name_ID, self.Name_Time),
                             CXml.get_element_text(
-                                parser.metadata.metadata_bus_xml().xpath_one(
+                                self.get_metadata_bus_xml_when_parser_time(
+                                    parser,
+                                    CUtils.dict_value_by_name(metadata_time_item, self.Name_Other_Metadata_Bus_Xml, None)
+                                ).xpath_one(
                                     CUtils.dict_value_by_name(metadata_time_item, self.Name_XPath, ''),
                                     CUtils.dict_value_by_name(metadata_time_item, self.Name_Name_Space_Map, None)
                                 )
@@ -681,6 +684,12 @@ class CPlugins(CResource):
             self.Success,
             '数据文件[{0}]的时间信息解析成功! '.format(self.file_info.file_name_with_full_path)
         )
+
+    def get_metadata_bus_xml_when_parser_time(self, parser: CMetaDataParser, xml_type) -> CXml:
+        """
+        因卫星部分插件存在多xml的情况，故而扩展出接口对卫星插件的情况做特殊处理
+        """
+        return parser.metadata.metadata_bus_xml()
 
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
         """
@@ -1103,5 +1112,12 @@ class CPlugins(CResource):
     def get_metadata_bus_configuration_list(self) -> list:
         return list()
 
-    def metadata_bus_xml_to_dict(self, metadata_bus_xml: CXml) -> dict:
+    def metadata_bus_xml_to_dict(self, metadata_bus_xml: CXml, multiple_metadata_bus_filename_dict=None) -> dict:
+        return dict()
+
+    def get_multiple_metadata_bus_filename_with_path(self, file_path):
+        """
+        获取复数的业务元数据字典
+        :return:
+        """
         return dict()

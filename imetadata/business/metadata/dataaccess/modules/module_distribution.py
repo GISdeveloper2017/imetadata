@@ -2,6 +2,7 @@
 # @Time : 2020/10/28 15:58 
 # @Author : 王西亚 
 # @File : module_distribution.py
+import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_object import CObject
 from imetadata.base.c_result import CResult
@@ -124,7 +125,16 @@ class module_distribution(CDAModule):
                     dsometadataxml_xml = CXml()
                     dsometadataxml = dataset.value_by_name(0, 'dsometadataxml_bus', '')
                     dsometadataxml_xml.load_xml(dsometadataxml)
-                    metadata_bus_dict = class_classified_obj.metadata_bus_xml_to_dict(dsometadataxml_xml)
+
+                    view_path = settings.application.xpath_one(self.Path_Setting_MetaData_Dir_View, None)
+                    browser_path = CFile.file_path(dataset.value_by_name(0, 'dso_browser', None))
+                    multiple_metadata_bus_filename_dict = \
+                        class_classified_obj.get_multiple_metadata_bus_filename_with_path(
+                            CFile.join_file(view_path, browser_path)
+                        )
+                    metadata_bus_dict = class_classified_obj.metadata_bus_xml_to_dict(
+                        dsometadataxml_xml, multiple_metadata_bus_filename_dict
+                    )
                     distribution_obj.set_metadata_bus_dict(metadata_bus_dict)
                 except Exception:
                     if CUtils.equal_ignore_case(distribution_file_main_name, 'distribution_satellite_all'):

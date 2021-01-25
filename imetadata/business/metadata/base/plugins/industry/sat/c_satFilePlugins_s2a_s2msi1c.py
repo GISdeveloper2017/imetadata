@@ -34,6 +34,19 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
             )
         )
 
+    def get_multiple_metadata_bus_filename_from_regex(self) -> dict:
+        """
+        return {
+            'PAN': '',
+            'MS': ''
+        }
+        """
+        return {
+            'MTD_TL': r'.*MTD_TL.xml',
+            'INSPIRE': r'.*INSPIRE.xml',
+            'MTD_MSIL1C': r'.*MTD_MSIL1C.xml'
+        }
+
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return []
 
@@ -61,25 +74,28 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
                 self.Name_ID: self.Name_Time,
                 self.Name_XPath: '/n1:Level-1C_Tile_ID/n1:General_Info/SENSING_TIME',
                 self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Datastrip_Metadata.xsd'
+                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Tile_Metadata.xsd'
                 },
-                self.Name_Format: self.MetaDataFormat_XML
+                self.Name_Format: self.MetaDataFormat_XML,
+                self.Name_Other_Metadata_Bus_Xml: 'MTD_TL'
             },
             {
                 self.Name_ID: self.Name_Start_Time,
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/PRODUCT_START_TIME',
+                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//PRODUCT_START_TIME',
                 self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Datastrip_Metadata.xsd'
+                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
                 },
-                self.Name_Format: self.MetaDataFormat_XML
+                self.Name_Format: self.MetaDataFormat_XML,
+                self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             },
             {
                 self.Name_ID: self.Name_End_Time,
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/PRODUCT_STOP_TIME',
+                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//PRODUCT_STOP_TIME',
                 self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Datastrip_Metadata.xsd'
+                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
                 },
-                self.Name_Format: self.MetaDataFormat_XML
+                self.Name_Format: self.MetaDataFormat_XML,
+                self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             }
         ]
 
@@ -90,17 +106,19 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
         return [
             {
                 self.Name_ID: 'satelliteid',  # 卫星，必填，从元数据组织定义，必须是标准命名的卫星名称
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/SPACECRAFT_NAME',
+                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//SPACECRAFT_NAME',
                 self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Datastrip_Metadata.xsd'
-                }
+                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
+                },
+                self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             },
             {
                 self.Name_ID: 'sensorid',  # 传感器 必填,从元数据组织定义，必须是标准命名的传感器名称
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/PRODUCT_TYPE',
+                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//PRODUCT_TYPE',
                 self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Datastrip_Metadata.xsd'
-                }
+                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
+                },
+                self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             },
             {
                 self.Name_ID: 'centerlatitude',  # 中心维度
@@ -198,36 +216,41 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
                 self.Name_XPath: '/n1:Level-1C_Tile_ID/n1:General_Info/Archiving_Info/ARCHIVING_TIME',
                 self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Datastrip_Metadata.xsd'
-                }
+                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Tile_Metadata.xsd'
+                },
+                self.Name_Other_Metadata_Bus_Xml: 'MTD_TL'
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/RESOLUTION',
+                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//RESOLUTION',
                 self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Datastrip_Metadata.xsd'
-                }
+                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
+                },
+                self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
                 self.Name_XPath: '/n1:Level-1C_Tile_ID/n1:Geometric_Info/Tile_Angles/Mean_Sun_Angle/ZENITH_ANGLE',
                 self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Datastrip_Metadata.xsd'
-                }
+                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Tile_Metadata.xsd'
+                },
+                self.Name_Other_Metadata_Bus_Xml: 'MTD_TL'
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量
                 self.Name_XPath: '/n1:Level-1C_User_Product/n1:Quality_Indicators_Info/Cloud_Coverage_Assessment',
                 self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Datastrip_Metadata.xsd'
-                }
+                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
+                },
+                self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             },
             {
                 self.Name_ID: 'dataum',  # 坐标系 默认为null
                 self.Name_XPath: '/n1:Level-1C_Tile_ID/n1:Geometric_Info/HORIZONTAL_CS_NAME',
                 self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Datastrip_Metadata.xsd'
-                }
+                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Tile_Metadata.xsd'
+                },
+                self.Name_Other_Metadata_Bus_Xml: 'MTD_TL'
             },
             {
                 self.Name_ID: 'acquisition_id',  # 轨道号
@@ -239,10 +262,11 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/GENERATION_TIME',
+                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//GENERATION_TIME',
                 self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Datastrip_Metadata.xsd'
-                }
+                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
+                },
+                self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             },
             {
                 self.Name_ID: 'remark',  # 备注 可空
@@ -263,13 +287,14 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
-                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info/PROCESSING_LEVEL',
+                self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//PROCESSING_LEVEL',
                 self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Datastrip_Metadata.xsd'
+                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
                 },
                 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
                     'Level-1C': 'L1'
-                }
+                },
+                self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             },
             {
                 self.Name_ID: 'productid',  # 产品id 默认取主文件全名

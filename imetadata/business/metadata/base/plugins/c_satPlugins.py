@@ -33,8 +33,6 @@ class CSatPlugins(CPlugins):
     # 卫星产品类型  -卫星内置
     Plugins_Info_ProductType = 'producttype'
 
-    multiple_metadata_bus_filename_by_file = dict()
-
     def __init__(self, file_info: CDMFilePathInfoEx):
         super().__init__(file_info)
         self.__object_status__ = self.Sat_Object_Status_Unknown
@@ -178,27 +176,32 @@ class CSatPlugins(CPlugins):
 
     def get_multiple_metadata_bus_filename_from_regex(self) -> dict:
         """
-        卫星数据解压后, 哪个文件是业务元数据?
-        :return:
-        """
         return {
             'PAN': '',
             'MS': ''
         }
-
-    def set_multiple_metadata_bus_filename_with_path(self, file_path):
         """
-        卫星数据解压后, 哪个文件是业务元数据?
+        return {}
+
+    def get_multiple_metadata_bus_filename_with_path(self, file_path) -> dict:
+        """
+        获取复数的业务元数据字典
         :return:
         """
-        for file_type, file_match in self.get_multiple_metadata_bus_filename_from_regex().items():
+        multiple_metadata_bus_filename_with_path = dict()
+        multiple_metadata_bus_regex = self.get_multiple_metadata_bus_filename_from_regex()
+        if len(multiple_metadata_bus_regex) == 0:
+            return dict()
+        for file_type, file_match in multiple_metadata_bus_regex.items():
             file_list = CFile.file_or_dir_fullname_of_path(
                 file_path, False, file_match, CFile.MatchType_Regex, True
             )
             if len(file_list) > 0:
-                self.multiple_metadata_bus_filename_by_file[file_type] = file_list[0]
+                multiple_metadata_bus_filename_with_path[file_type] = file_list[0]
             else:
-                self.multiple_metadata_bus_filename_by_file[file_type] = None
+                multiple_metadata_bus_filename_with_path[file_type] = None
+
+        return multiple_metadata_bus_filename_with_path
 
     def get_runtime_detail_engine(self):
         """
@@ -338,6 +341,19 @@ class CSatPlugins(CPlugins):
                         }
                     )
 
+    def get_metadata_bus_xml_when_parser_time(self, parser: CMetaDataParser, xml_type) -> CXml:
+        """
+        因卫星部分插件存在多xml的情况，故而扩展出接口对卫星插件的情况做特殊处理
+        """
+        metadata_bus_xml_dict = self.get_multiple_metadata_bus_filename_with_path(self.get_sat_file_originally_path())
+        metadata_bus_xml_file = CUtils.dict_value_by_name(metadata_bus_xml_dict, xml_type, None)
+        if metadata_bus_xml_file is None:
+            return parser.metadata.metadata_bus_xml()
+        else:
+            metadata_Cxml = CXml()
+            metadata_Cxml.load_file(metadata_bus_xml_file)
+            return metadata_Cxml
+
     def parser_metadata_spatial_after_qa(self, parser: CMetaDataParser):
         """
         继承本方法, 对详细的空间元数据信息进行处理
@@ -345,7 +361,9 @@ class CSatPlugins(CPlugins):
         :return:
         """
         metadata_bus_xml = parser.metadata.metadata_bus_xml()
-        metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml)
+        multiple_metadata_bus_filename_dict = \
+            self.get_multiple_metadata_bus_filename_with_path(self.get_sat_file_originally_path())
+        metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml, multiple_metadata_bus_filename_dict)
         topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
         topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
         toprightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', None)
@@ -404,6 +422,17 @@ class CSatPlugins(CPlugins):
         )
         return CResult.merge_result(self.Success, '空间元数据提取完成! ')
 
+    def get_sat_file_originally_path(self):
+        if self.__object_status__ == self.Sat_Object_Status_Dir:
+            originally_file_path = self.file_info.file_name_with_full_path
+        elif self.__object_status__ == self.Sat_Object_Status_Zip:
+            originally_file_path = self.file_content.content_root_dir
+        elif self.__object_status__ == self.Sat_Object_Status_File:
+            originally_file_path = self.file_info.file_path
+        else:
+            originally_file_path = self.file_content.content_root_dir
+        return originally_file_path
+
     def parser_metadata_view_after_qa(self, parser: CMetaDataParser):
         """
         继承本方法, 对详细的可视元数据信息进行处理
@@ -436,15 +465,7 @@ class CSatPlugins(CPlugins):
         data_view_path = CFile.join_file(self.file_content.view_root_dir, data_view_sub_path)
 
         # 计算原本的文件path
-        if self.__object_status__ == self.Sat_Object_Status_Dir:
-            originally_file_path = self.file_info.file_name_with_full_path
-        elif self.__object_status__ == self.Sat_Object_Status_Zip:
-            originally_file_path = self.file_content.content_root_dir
-        elif self.__object_status__ == self.Sat_Object_Status_File:
-            originally_file_path = self.file_info.file_path
-        else:
-            originally_file_path = self.file_content.content_root_dir
-
+        originally_file_path = self.get_sat_file_originally_path()
         metadata_file_copy_list = self.parser_metadata_file_copy_list(parser)
         if len(metadata_file_copy_list) > 0:
             for metadata_file_copy_item in metadata_file_copy_list:
@@ -480,15 +501,7 @@ class CSatPlugins(CPlugins):
         """
         正则获取文件夹下对应的快视拇指
         """
-        if self.__object_status__ == self.Sat_Object_Status_Dir:
-            file_path = self.file_info.file_name_with_full_path
-        elif self.__object_status__ == self.Sat_Object_Status_Zip:
-            file_path = self.file_content.content_root_dir
-        elif self.__object_status__ == self.Sat_Object_Status_File:
-            file_path = self.file_info.file_path
-        else:
-            file_path = self.file_content.content_root_dir
-
+        file_path = self.get_sat_file_originally_path()
         file_list = CFile.file_or_dir_fullname_of_path(
             file_path, False, match_str, CFile.MatchType_Regex, is_recurse_subpath
         )
@@ -517,15 +530,9 @@ class CSatPlugins(CPlugins):
         """
         metadata_file_copy_list = list()
         if not CUtils.equal_ignore_case(self.metadata_bus_src_filename_with_path, ''):
-            if self.__object_status__ == self.Sat_Object_Status_Dir:
-                originally_file_path = self.file_info.file_name_with_full_path
-            elif self.__object_status__ == self.Sat_Object_Status_Zip:
-                originally_file_path = self.file_content.content_root_dir
-            elif self.__object_status__ == self.Sat_Object_Status_File:
-                originally_file_path = self.file_info.file_path
-            else:
-                originally_file_path = self.file_content.content_root_dir
-            metadata_file_copy_list.append(self.metadata_bus_src_filename_with_path.replace(originally_file_path, ''))
+            metadata_file_copy_list.append(
+                self.metadata_bus_src_filename_with_path.replace(self.get_sat_file_originally_path(), '')
+            )
 
         metadata_view_list = self.parser_metadata_view_list(parser)
         if len(metadata_view_list) > 0:
@@ -556,6 +563,12 @@ class CSatPlugins(CPlugins):
                     )
                     if otherxml is not None:
                         metadata_file_copy_list.append(otherxml)
+
+        multiple_metadata_bus_filename_dict = \
+            self.get_multiple_metadata_bus_filename_with_path(self.get_sat_file_originally_path())
+        if len(multiple_metadata_bus_filename_dict) > 0:
+            for metadata_bus_filename in multiple_metadata_bus_filename_dict.values():
+                metadata_file_copy_list.append(metadata_bus_filename.replace(self.get_sat_file_originally_path(), ''))
 
         return metadata_file_copy_list
 
@@ -760,22 +773,45 @@ class CSatPlugins(CPlugins):
             }
         ]
 
-    def metadata_bus_xml_to_dict(self, metadata_bus_xml: CXml) -> dict:
-        metadata_bus_dict = super().metadata_bus_xml_to_dict(metadata_bus_xml)
+    def metadata_bus_xml_to_dict(self, metadata_bus_xml: CXml, multiple_metadata_bus_filename_dict=None) -> dict:
+        metadata_bus_dict = super().metadata_bus_xml_to_dict(metadata_bus_xml, multiple_metadata_bus_filename_dict)
+
+        # 预先构建其他xml的Cxml对象
+        if len(multiple_metadata_bus_filename_dict) > 0:
+            multiple_metadata_cxml_dict = dict()
+            for multiple_metadata_bus_type, multiple_metadata_bus_filename \
+                    in multiple_metadata_bus_filename_dict.items():
+                multiple_metadata_cxml = CXml()
+                try:
+                    multiple_metadata_cxml.load_file(multiple_metadata_bus_filename)
+                except:
+                    pass
+                multiple_metadata_cxml_dict[multiple_metadata_bus_type] = multiple_metadata_cxml
+        else:
+            multiple_metadata_cxml_dict = dict()
+
         for metadata_bus_configuration in self.get_metadata_bus_configuration_list():
             metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, 'None')
             metadata_bus_xpath = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_XPath, None)
             metadata_bus_value = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Value, None)
             metadata_bus_xpath_namespace = \
                 CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Name_Space_Map, None)
+            other_metadata_bus_xml_type = \
+                CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Other_Metadata_Bus_Xml, None)
             # 取值
             try:
+                if other_metadata_bus_xml_type is None:
+                    temp_metadata = metadata_bus_xml
+                else:
+                    temp_metadata = \
+                        CUtils.dict_value_by_name(multiple_metadata_cxml_dict, other_metadata_bus_xml_type, None)
+
                 if metadata_bus_xpath is not None:
                     metadata_bus_xpath_value = \
-                        metadata_bus_xml.get_element_text_by_xpath_one(metadata_bus_xpath, metadata_bus_xpath_namespace)
+                        temp_metadata.get_element_text_by_xpath_one(metadata_bus_xpath, metadata_bus_xpath_namespace)
                 else:
                     metadata_bus_xpath_value = \
-                        self.metadata_bus_to_dict_custom_transition(metadata_bus_configuration, metadata_bus_xml)
+                        self.metadata_bus_to_dict_custom_transition(metadata_bus_configuration, temp_metadata)
                 # 取值后的处理
                 if not CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
                     # 对部分特殊数据进行自定义处理
@@ -1096,7 +1132,8 @@ class CSatPlugins(CPlugins):
                 self.Name_Title: '侧摆角',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType: self.value_type_decimal_or_integer
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_NotNull: False
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -1104,7 +1141,8 @@ class CSatPlugins(CPlugins):
                 self.Name_Title: '云量',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType: self.value_type_decimal_or_integer
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_NotNull: False
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
@@ -1129,6 +1167,7 @@ class CSatPlugins(CPlugins):
                 self.Name_Title: '产品名称',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: False,
                 self.Name_Width: 100
             },
             {
@@ -1157,6 +1196,7 @@ class CSatPlugins(CPlugins):
                 self.Name_Title: '产品id',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: False,
                 self.Name_Width: 2000
             }
         ]
@@ -1168,5 +1208,7 @@ class CSatPlugins(CPlugins):
         :return:
         """
         metadata_bus_xml = parser.metadata.metadata_bus_xml()
-        metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml)
+        multiple_metadata_bus_filename_dict = \
+            self.get_multiple_metadata_bus_filename_with_path(self.get_sat_file_originally_path())
+        metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml, multiple_metadata_bus_filename_dict)
         parser.batch_qa_metadata_bus_dict(metadata_bus_dict, self.qa_sat_metadata_bus_list())
