@@ -3,12 +3,12 @@ from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CM
 from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_zy3 import CSatFilePlugins_zy3
 
 
-class CSatFilePlugins_zy3_zy3(CSatFilePlugins_zy3):
+class CSatFilePlugins_zy3_nad(CSatFilePlugins_zy3):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'ZY3_MUX'
-        information[self.Plugins_Info_Type_Title] = '资源一号01星MUX传感器'
+        information[self.Plugins_Info_Type] = 'ZY3_NAD'
+        information[self.Plugins_Info_Type_Title] = '资源一号01星NAD传感器'
         information[self.Plugins_Info_CopyRight] = '高分中心'
         return information
 
@@ -28,9 +28,9 @@ class CSatFilePlugins_zy3_zy3(CSatFilePlugins_zy3):
             TextMatchType_Regex: 正则表达式
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)^ZY3_(NAD|MUX)_E.*', self.TextMatchType_Regex
+            return r'(?i)^ZY3_NAD_E.*', self.TextMatchType_Regex
         else:
-            return r'(?i)^ZY3_(NAD|MUX)_E.*[.]tiff$', self.TextMatchType_Regex
+            return r'(?i)^ZY3_TLC_E.*-NAD[.]tiff$', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """
@@ -46,7 +46,7 @@ class CSatFilePlugins_zy3_zy3(CSatFilePlugins_zy3):
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
-                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^ZY3_(NAD|MUX)_E.*[.]tiff$',
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^ZY3_TLC_E.*-NAD[.]tiff$',
                                                                  '{0}.tiff'.format(self.classified_object_name())),
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '全色文件',

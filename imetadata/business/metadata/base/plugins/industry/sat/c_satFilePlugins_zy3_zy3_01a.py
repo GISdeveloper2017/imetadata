@@ -8,8 +8,8 @@ class CSatFilePlugins_zy3_zy3_01a(CSatFilePlugins_zy3):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'ZY3_FWD'
-        information[self.Plugins_Info_Type_Title] = '资源一号01星FWD传感器'
+        information[self.Plugins_Info_Type] = 'ZY3'
+        information[self.Plugins_Info_Type_Title] = '资源一号01星'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
