@@ -267,7 +267,8 @@ class CResource:
     DB_Column_Set_Method_Exchange = 'exchange'
 
     Name_XPath = 'xpath'
-    Name_NameSpaceMap = 'namespacemap'
+    Name_Name_Space_Map = 'name_space_map'
+    Name_Other_Metadata_Bus_Xml = 'other_metadata_bus_xml'
     Name_Custom_Item = 'custom_item'
     Name_Attr_Name = 'attr_name'
     Name_List = 'list'

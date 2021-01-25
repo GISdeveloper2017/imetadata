@@ -33,6 +33,8 @@ class CSatPlugins(CPlugins):
     # 卫星产品类型  -卫星内置
     Plugins_Info_ProductType = 'producttype'
 
+    multiple_metadata_bus_filename_by_file = dict()
+
     def __init__(self, file_info: CDMFilePathInfoEx):
         super().__init__(file_info)
         self.__object_status__ = self.Sat_Object_Status_Unknown
@@ -173,6 +175,30 @@ class CSatPlugins(CPlugins):
         :return:
         """
         return self.file_info.file_main_name
+
+    def get_multiple_metadata_bus_filename_from_regex(self) -> dict:
+        """
+        卫星数据解压后, 哪个文件是业务元数据?
+        :return:
+        """
+        return {
+            'PAN': '',
+            'MS': ''
+        }
+
+    def set_multiple_metadata_bus_filename_with_path(self, file_path):
+        """
+        卫星数据解压后, 哪个文件是业务元数据?
+        :return:
+        """
+        for file_type, file_match in self.get_multiple_metadata_bus_filename_from_regex().items():
+            file_list = CFile.file_or_dir_fullname_of_path(
+                file_path, False, file_match, CFile.MatchType_Regex, True
+            )
+            if len(file_list) > 0:
+                self.multiple_metadata_bus_filename_by_file[file_type] = file_list[0]
+            else:
+                self.multiple_metadata_bus_filename_by_file[file_type] = None
 
     def get_runtime_detail_engine(self):
         """
@@ -741,7 +767,7 @@ class CSatPlugins(CPlugins):
             metadata_bus_xpath = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_XPath, None)
             metadata_bus_value = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Value, None)
             metadata_bus_xpath_namespace = \
-                CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_NameSpaceMap, None)
+                CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Name_Space_Map, None)
             # 取值
             try:
                 if metadata_bus_xpath is not None:
