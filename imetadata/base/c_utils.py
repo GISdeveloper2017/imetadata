@@ -252,7 +252,7 @@ class CUtils(CResource):
         @param check_text:
         @return:
         """
-        time_format = "%Y{0}%m{0}%d{1}%H:%M:%S{2}{3}"
+        time_format = "%Y{0}%m{0}%d{1}%H{2}%M{2}%S{3}{4}"
         sep_real = ""
         sep_list = ['-', '/']
         for sep in sep_list:
@@ -266,14 +266,17 @@ class CUtils(CResource):
             if sign in check_text:
                 sign_real = sign
                 break
+        colon_real = ""
+        if ":" in check_text:
+            colon_real = ":"
         second_real = ""
         if "." in check_text:
             second_real = ".%f"
-        third_real = ""
+        z_real = ""
         if "Z" in check_text:
-            third_real = "Z"
+            z_real = "Z"
 
-        time_format_real = time_format.format(sep_real, sign_real, second_real, third_real)
+        time_format_real = time_format.format(sep_real, sign_real, colon_real, second_real, z_real)
         default_date = CTime.now()
         date_value = CTime.from_datetime_str(check_text, default_date, time_format_real)
         if CUtils.equal_ignore_case(date_value, default_date):
@@ -645,9 +648,10 @@ class CUtils(CResource):
 
 
 if __name__ == '__main__':
-    text = "to_jsonb(${value})"
-    print(CUtils.replace_placeholder(text, {'value': 'my_value'}))
-
+    # text = "to_jsonb(${value})"
+    # print(CUtils.replace_placeholder(text, {'value': 'my_value'}))
+    time = '20160817T034202.572678'
+    print(CUtils.text_is_datetime(time))
     # str22 = '30'
     # sa = CUtils.to_integer(str22, -1)
     # print(sa)

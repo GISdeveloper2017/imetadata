@@ -22,7 +22,6 @@ class CMDTransformerDOM(CMDTransformer):
         file_metadata_name_with_path = self.transformer_src_filename
 
         try:
-            xml_obj = None
             if CUtils.equal_ignore_case(self.transformer_type, self.Transformer_DOM_MDB):
                 xml_obj = self.mdb_to_xml(file_metadata_name_with_path)
             elif CUtils.equal_ignore_case(self.transformer_type, self.Transformer_DOM_MAT):
@@ -105,7 +104,7 @@ class CMDTransformerDOM(CMDTransformer):
         :return xml_obj:将文件内容存储好的项目对象
         """
         text_list = CFile.file_2_list(file_metadata_name_with_path)  # 获取mat文件作为列表
-        if (text_list is None) or CUtils.equal_ignore_case(CUtils.any_2_str(text_list), ''):
+        if (text_list is None) or len(text_list) or CUtils.equal_ignore_case(CUtils.any_2_str(text_list), ''):
             raise  # 如果获取的文件内容为空，则抛出异常
         flag = False  # 设置标志
 
@@ -115,7 +114,7 @@ class CMDTransformerDOM(CMDTransformer):
         for index, row_text in enumerate(text_list):
             if row_text.startswith('1\t'):  # 从开头为1+tab键的行开始录入
                 flag = True
-            row_list = re.split('\t+', row_text)  # 利用正则表达式，根据一个或多个tab剪切字符
+            row_list = re.split(r'\s+', row_text)  # 利用正则表达式，根据一个或多个tab剪切字符
             if flag:
                 node_item = xml_obj.create_element(node_root, 'item')
                 xml_obj.set_attr(node_item, self.Name_Name, CUtils.any_2_str(row_list[1]).lower())

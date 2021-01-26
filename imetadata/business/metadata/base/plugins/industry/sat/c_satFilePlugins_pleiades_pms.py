@@ -153,7 +153,7 @@ class CSatFilePlugins_pleiades_pms(COpticalSatPlugins):
                     self.Name_Time_Date: '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source'
                                          '/IMAGING_DATE',
                     self.Name_Time_Time: '/Dimap_Document/Dataset_Sources/Source_Identification/Strip_Source'
-                                         '/IMAGING_TIME '
+                                         '/IMAGING_TIME'
                 }
             },
             {

@@ -1,4 +1,7 @@
 from imetadata.base.c_file import CFile
+from imetadata.base.c_result import CResult
+from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerSat_LandSat import \
+    CMDTransformerSat_LandSat
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.plugins.industry.sat.base.base.c_opticalSatPlugins import COpticalSatPlugins
@@ -65,22 +68,44 @@ class CSatFilePlugins_landsat(COpticalSatPlugins):
             }
         ]
 
+    def init_metadata_bus(self, parser: CMetaDataParser) -> str:
+        """
+        提取xml格式的业务元数据, 加载到parser的metadata对象中
+        :param parser:
+        :return:
+        """
+        if self.metadata_bus_transformer_type is None:
+            return CResult.merge_result(
+                self.Failure,
+                '数据{0}无业务元数据文件，请检查数据业务元数据文件是否存在!'.format(self.file_info.file_main_name)
+            )
+
+        transformer = CMDTransformerSat_LandSat(
+            parser.object_id,
+            parser.object_name,
+            parser.file_info,
+            parser.file_content,
+            parser.metadata,
+            self.metadata_bus_transformer_type,
+            self.metadata_bus_src_filename_with_path
+        )
+        return transformer.process()
+
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
         return [
             {
                 self.Name_ID: self.Name_Time,
-                self.Name_XPath: '',
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="DATE_ACQUIRED"]',
                 self.Name_Format: self.MetaDataFormat_XML
-
             },
             {
                 self.Name_ID: self.Name_Start_Time,
-                self.Name_XPath: '',
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="DATE_ACQUIRED"]',
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
                 self.Name_ID: self.Name_End_Time,
-                self.Name_XPath: '',
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="DATE_ACQUIRED"]',
                 self.Name_Format: self.MetaDataFormat_XML
             }
         ]
@@ -92,51 +117,51 @@ class CSatFilePlugins_landsat(COpticalSatPlugins):
         return [
             {
                 self.Name_ID: 'satelliteid',  # 卫星，必填，从元数据组织定义，必须是标准命名的卫星名称
-                self.Name_XPath: ''
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="SPACECRAFT_ID"]'
             },
             {
                 self.Name_ID: 'sensorid',  # 传感器 必填,从元数据组织定义，必须是标准命名的传感器名称
-                self.Name_Value: ''
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="SENSOR_ID"]'
             },
             {
                 self.Name_ID: 'centerlatitude',  # 中心维度
-                self.Name_XPath: ''
+                self.Name_XPath: None
             },
             {
                 self.Name_ID: 'centerlongitude',  # 中心经度
-                self.Name_XPath: ''
+                self.Name_XPath: None
             },
             {
                 self.Name_ID: 'topleftlatitude',  # 左上角维度 必填
-                self.Name_XPath: ''
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="CORNER_UL_LAT_PRODUCT"]'
             },
             {
                 self.Name_ID: 'topleftlongitude',  # 左上角经度 必填
-                self.Name_XPath: ''
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="CORNER_UL_LON_PRODUCT"]'
             },
             {
                 self.Name_ID: 'toprightlatitude',  # 右上角维度 必填
-                self.Name_XPath: ''
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="CORNER_UR_LAT_PRODUCT"]'
             },
             {
                 self.Name_ID: 'toprightlongitude',  # 右上角经度 必填
-                self.Name_XPath: ''
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="CORNER_UR_LON_PRODUCT"]'
             },
             {
                 self.Name_ID: 'bottomrightlatitude',  # 右下角维度 必填
-                self.Name_XPath: ''
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="CORNER_LL_LAT_PRODUCT"]'
             },
             {
                 self.Name_ID: 'bottomrightlongitude',  # 右下角经度 必填
-                self.Name_XPath: ''
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="CORNER_LL_LON_PRODUCT"]'
             },
             {
                 self.Name_ID: 'bottomleftlatitude',  # 左下角维度 必填
-                self.Name_XPath: ''
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="CORNER_LR_LAT_PRODUCT"]'
             },
             {
                 self.Name_ID: 'bottomleftlongitude',  # 左下角经度 必填
-                self.Name_XPath: ''
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="CORNER_LR_LON_PRODUCT"]'
             },
             {
                 self.Name_ID: 'transformimg',  # 斜视图,可空,不用质检
@@ -144,19 +169,22 @@ class CSatFilePlugins_landsat(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
-                self.Name_XPath: ''
+                self.Name_Custom_Item: {
+                    self.Name_Time_Date: '//item[@name="PRODUCT_METADATA"]//item[@name="DATE_ACQUIRED"]',
+                    self.Name_Time_Time: '//item[@name="PRODUCT_METADATA"]//item[@name="SCENE_CENTER_TIME"]'
+                }
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_Value: 0
+                self.Name_XPath: '//item[@name="PROJECTION_PARAMETERS"]//item[@name="GRID_CELL_SIZE_PANCHROMATIC"]'
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
-                self.Name_XPath: ''
+                self.Name_XPath: '//item[@name="IMAGE_ATTRIBUTES"]//item[@name="ROLL_ANGLE"]'
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量
-                self.Name_XPath: ''
+                self.Name_XPath: '//item[@name="IMAGE_ATTRIBUTES"]//item[@name="CLOUD_COVER"]'
             },
             {
                 self.Name_ID: 'dataum',  # 坐标系 默认为null
@@ -168,11 +196,11 @@ class CSatFilePlugins_landsat(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'copyright',  # 发布来源 从info取
-                self.Name_Value: CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_CopyRight, None)
+                self.Name_XPath: '//item[@name="METADATA_FILE_INFO"]//item[@name="ORIGIN"]'
             },
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
-                self.Name_XPath: ''
+                self.Name_XPath: '//item[@name="METADATA_FILE_INFO"]//item[@name="FILE_DATE"]'
             },
             {
                 self.Name_ID: 'remark',  # 备注 可空
@@ -188,19 +216,39 @@ class CSatFilePlugins_landsat(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
-                self.Name_XPath: '',
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="DATA_TYPE"]',
                 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
-                    'Level1R': 'L1',
-                    'Level2R': 'L2',
-                    'Level4R': 'L4'
+                    'L1T': 'L1',
+                    'L2T': 'L2',
+                    'L4T': 'L4'
                 }
             },
             {
                 self.Name_ID: 'productid',  # 产品id 默认取主文件全名
-                self.Name_XPath: None
+                self.Name_XPath: '//item[@name="METADATA_FILE_INFO"]//item[@name="LANDSAT_SCENE_ID"]'
             },
             {
                 self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
                 self.Name_Value: None
             }
         ]
+
+    def metadata_bus_dict_process_custom(self, metadata_bus_dict):
+        """
+        对部分需要进行运算的数据进行处理
+        """
+        super().metadata_bus_dict_process_custom(metadata_bus_dict)
+        centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
+        if centertime is not None:
+            if '.' in centertime:
+                index = centertime.find('.')
+                second = centertime[index+1:]
+                item_Z = ''
+                if 'Z' in centertime:
+                    second = second[:-1]
+                    item_Z = 'Z'
+                if len(second) > 6:
+                    second = second[:6]
+                metadata_bus_dict['centertime'] = centertime[:index]+second+item_Z
+        else:
+            pass

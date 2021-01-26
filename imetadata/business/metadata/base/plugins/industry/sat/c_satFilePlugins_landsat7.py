@@ -1,10 +1,7 @@
-from imetadata.base.c_file import CFile
-from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
-from imetadata.base.c_utils import CUtils
-from imetadata.business.metadata.base.plugins.industry.sat.base.base.c_opticalSatPlugins import COpticalSatPlugins
+from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_landsat import CSatFilePlugins_landsat
 
 
-class CSatFilePlugins_landsat7(COpticalSatPlugins):
+class CSatFilePlugins_landsat7(CSatFilePlugins_landsat):
 
     def get_information(self) -> dict:
         information = super().get_information()

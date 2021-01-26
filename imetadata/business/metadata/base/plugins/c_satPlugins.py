@@ -54,7 +54,7 @@ class CSatPlugins(CPlugins):
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_DetailEngine] = self.get_runtime_detail_engine()
-
+        information[self.Plugins_Info_ViewEngine] = None
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_satellite_all'
 
         information[self.Plugins_Info_ProductType] = 'NDI'
@@ -240,9 +240,11 @@ class CSatPlugins(CPlugins):
         :param parser:
         :return:
         """
-        if self.metadata_bus_src_filename_with_path is None:
-            parser.metadata.set_metadata_bus(self.DB_True, '', self.MetaDataFormat_Text, '')
-            return CResult.merge_result(self.Success, '本卫星数据无业务元数据, 无须解析!')
+        if self.metadata_bus_transformer_type is None:
+            return CResult.merge_result(
+                self.Failure,
+                '数据{0}无业务元数据文件，请检查数据业务元数据文件是否存在!'.format(self.file_info.file_main_name)
+            )
 
         transformer = CMDTransformerCommon(
             parser.object_id,
@@ -444,58 +446,66 @@ class CSatPlugins(CPlugins):
         :param parser:
         :return:
         """
-        data_date_time = parser.metadata.time_information.xpath_one(self.Name_Time, CTime.format_str(CTime.today()))
-        data_date = CTime.from_datetime_str(data_date_time, CTime.today())
-        data_year = CTime.format_str(data_date, '%Y')
-        data_month = CTime.format_str(data_date, '%m')
-
-        data_view_sub_path = CFile.join_file(
-            CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Catalog, ''),
-            CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Group, '')
+        default_engine = CUtils.dict_value_by_name(
+            self.get_information(),
+            self.Plugins_Info_ViewEngine,
+            None
         )
-        data_view_sub_path = CFile.join_file(
-            data_view_sub_path,
-            CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Type, '')
-        )
-        data_view_sub_path = CFile.join_file(data_view_sub_path, data_year)
-        data_view_sub_path = CFile.join_file(data_view_sub_path, data_month)
-        data_view_sub_path = CFile.join_file(data_view_sub_path, self.classified_object_name())
-        data_view_sub_path = CFile.join_file(data_view_sub_path, self.file_info.my_id)
+        if default_engine is None:
+            data_date_time = parser.metadata.time_information.xpath_one(self.Name_Time, CTime.format_str(CTime.today()))
+            data_date = CTime.from_datetime_str(data_date_time, CTime.today())
+            data_year = CTime.format_str(data_date, '%Y')
+            data_month = CTime.format_str(data_date, '%m')
 
-        data_view_path = CFile.join_file(self.file_content.view_root_dir, data_view_sub_path)
+            data_view_sub_path = CFile.join_file(
+                CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Catalog, ''),
+                CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Group, '')
+            )
+            data_view_sub_path = CFile.join_file(
+                data_view_sub_path,
+                CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Type, '')
+            )
+            data_view_sub_path = CFile.join_file(data_view_sub_path, data_year)
+            data_view_sub_path = CFile.join_file(data_view_sub_path, data_month)
+            data_view_sub_path = CFile.join_file(data_view_sub_path, self.classified_object_name())
+            data_view_sub_path = CFile.join_file(data_view_sub_path, self.file_info.my_id)
 
-        # 计算原本的文件path
-        originally_file_path = self.get_sat_file_originally_path()
-        metadata_file_copy_list = self.parser_metadata_file_copy_list(parser)
-        if len(metadata_file_copy_list) > 0:
-            for metadata_file_copy_item in metadata_file_copy_list:
-                CFile.copy_file_to(
-                    CFile.join_file(
-                        originally_file_path,
-                        metadata_file_copy_item
-                    ), data_view_path)
+            data_view_path = CFile.join_file(self.file_content.view_root_dir, data_view_sub_path)
 
-        self.parser_metadata_file_copy_custom(parser, data_view_path)
+            # 计算原本的文件path
+            originally_file_path = self.get_sat_file_originally_path()
+            metadata_file_copy_list = self.parser_metadata_file_copy_list(parser)
+            if len(metadata_file_copy_list) > 0:
+                for metadata_file_copy_item in metadata_file_copy_list:
+                    CFile.copy_file_to(
+                        CFile.join_file(
+                            originally_file_path,
+                            metadata_file_copy_item
+                        ), data_view_path)
 
-        metadata_view_list = self.parser_metadata_view_list(parser)
-        if len(metadata_view_list) > 0:
-            for metadata_view_item in metadata_view_list:
-                parser.metadata.set_metadata_view(
-                    self.DB_True,
-                    '文件[{0}]的预览图成功加载! '.format(self.file_info.file_name_with_full_path),
-                    CUtils.dict_value_by_name(metadata_view_item, self.Name_ID, self.View_MetaData_Type_Browse),
-                    CFile.join_file(
-                        data_view_sub_path,
-                        CFile.file_name(CUtils.dict_value_by_name(metadata_view_item, self.Name_FileName, ''))
+            self.parser_metadata_file_copy_custom(parser, data_view_path)
+
+            metadata_view_list = self.parser_metadata_view_list(parser)
+            if len(metadata_view_list) > 0:
+                for metadata_view_item in metadata_view_list:
+                    parser.metadata.set_metadata_view(
+                        self.DB_True,
+                        '文件[{0}]的预览图成功加载! '.format(self.file_info.file_name_with_full_path),
+                        CUtils.dict_value_by_name(metadata_view_item, self.Name_ID, self.View_MetaData_Type_Browse),
+                        CFile.join_file(
+                            data_view_sub_path,
+                            CFile.file_name(CUtils.dict_value_by_name(metadata_view_item, self.Name_FileName, ''))
+                        )
                     )
-                )
 
-        self.parser_metadata_view_custom(parser, data_view_sub_path)
+            self.parser_metadata_view_custom(parser, data_view_sub_path)
 
-        return CResult.merge_result(
-            self.Success,
-            '数据文件[{0}]的可视化信息解析成功! '.format(self.file_info.file_name_with_full_path)
-        )
+            return CResult.merge_result(
+                self.Success,
+                '数据文件[{0}]的可视化信息解析成功! '.format(self.file_info.file_name_with_full_path)
+            )
+        else:
+            return super().parser_metadata_view_after_qa(parser)
 
     def get_fuzzy_metadata_file(self, match_str, default_file_name, is_recurse_subpath=True):
         """

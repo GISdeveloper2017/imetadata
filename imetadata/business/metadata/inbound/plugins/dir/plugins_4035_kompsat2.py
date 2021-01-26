@@ -5,5 +5,5 @@
 from imetadata.business.metadata.base.plugins.industry.sat.c_satFilePlugins_kompsat2 import CSatFilePlugins_kompsat2
 
 
-class plugins_4035_k2(CSatFilePlugins_kompsat2):
+class plugins_4035_kompsat2(CSatFilePlugins_kompsat2):
     pass
