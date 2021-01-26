@@ -231,9 +231,9 @@ class CSatFilePlugins_rapideye(COpticalSatPlugins):
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
                 self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:acquisitionParameters/re:Acquisition/re:acquisitionDateTime',
                 self.Name_Name_Space_Map: {
-                    're': '',
-                    'gml': '',
-                    'eop': ''
+                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
+                    'gml': 'http://www.opengis.net/gml',
+                    'eop': 'http://earth.esa.int/eop'
                 },
             },
             {
