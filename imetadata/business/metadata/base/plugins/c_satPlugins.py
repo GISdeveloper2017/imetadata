@@ -14,6 +14,7 @@ from imetadata.business.metadata.base.content.c_virtualContent_Package import CV
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerCommon import CMDTransformerCommon
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
+from imetadata.business.metadata.base.parser.metadata.view.c_viewCreatorSatRaster import CViewCreatorSatRaster
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
 
 
@@ -32,6 +33,9 @@ class CSatPlugins(CPlugins):
     Plugins_Info_CopyRight = 'copyright'
     # 卫星产品类型  -卫星内置
     Plugins_Info_ProductType = 'producttype'
+
+    # 由于卫星的快视图与拇指图的特殊获取方式(模糊匹配)，故而设置一个标示用于预览图状态获取
+    Sat_View_Status_Flag = True
 
     def __init__(self, file_info: CDMFilePathInfoEx):
         super().__init__(file_info)
@@ -289,59 +293,122 @@ class CSatPlugins(CPlugins):
                 }
             )
 
-        metadata_view_list = self.parser_metadata_view_list(parser)
-        for metadata_view in metadata_view_list:
-            view_id = CUtils.dict_value_by_name(metadata_view, self.Name_ID, None)
-            view_filename = CFile.join_file(
-                self.file_content.content_root_dir,
-                CUtils.dict_value_by_name(metadata_view, self.Name_FileName, None)
+        metadata_view_browse = None
+        metadata_view_thumb = None
+        metadata_view_transform_file = self.get_metadata_view_from_transform_file(parser)
+        if not CUtils.equal_ignore_case(metadata_view_transform_file, ''):
+            metadata_view_transform_file = CFile.join_file(
+                self.get_sat_file_originally_path(),
+                metadata_view_transform_file
             )
-            if CUtils.equal_ignore_case(view_id, self.View_MetaData_Type_Browse):
-                if not CFile.file_or_path_exist(view_filename):
-                    parser.metadata.quality.append_total_quality(
-                        {
-                            self.Name_FileName: '',
-                            self.Name_ID: 'browserimg',
-                            self.Name_Title: '快视图',
-                            self.Name_Result: self.QA_Result_Error,
-                            self.Name_Group: self.QA_Group_Data_Integrity,
-                            self.Name_Message: '本文件缺少快视图'
-                        }
+            md_view_creator = CViewCreatorSatRaster(
+                parser.object_id, parser.object_name, parser.file_info, parser.file_content,
+                metadata_view_transform_file
+            )
+            result = md_view_creator.process()
+            if CResult.result_success(result):
+                metadata_view_browse = CFile.join_file(
+                    self.file_content.work_root_dir,
+                    CResult.result_info(result, self.Name_Browse, None)
+                )
+                metadata_view_thumb = CFile.join_file(
+                    self.file_content.work_root_dir,
+                    CResult.result_info(result, self.Name_Thumb, None)
+                )
+                try:
+                    parser.metadata.set_metadata_view(
+                        self.DB_True,
+                        '文件[{0}]的预览图成功加载! '.format(self.classified_object_name()),
+                        self.View_MetaData_Type_Browse,
+                        metadata_view_browse
                     )
-                else:
-                    parser.metadata.quality.append_total_quality(
-                        {
-                            self.Name_FileName: view_filename,
-                            self.Name_ID: 'browserimg',
-                            self.Name_Title: '快视图',
-                            self.Name_Result: self.QA_Result_Pass,
-                            self.Name_Group: self.QA_Group_Data_Integrity,
-                            self.Name_Message: '快视图[{0}]存在'.format(view_filename)
-                        }
+                    parser.metadata.set_metadata_view(
+                        self.DB_True,
+                        '文件[{0}]的拇指图成功加载! '.format(self.classified_object_name()),
+                        self.View_MetaData_Type_Thumb,
+                        metadata_view_thumb
                     )
-            elif CUtils.equal_ignore_case(view_id, self.View_MetaData_Type_Thumb):
-                if not CFile.file_or_path_exist(view_filename):
-                    parser.metadata.quality.append_total_quality(
-                        {
-                            self.Name_FileName: '',
-                            self.Name_ID: 'thumbimg',
-                            self.Name_Title: '拇指图',
-                            self.Name_Result: self.QA_Result_Error,
-                            self.Name_Group: self.QA_Group_Data_Integrity,
-                            self.Name_Message: '本文件缺少拇指图'
-                        }
+                except Exception as error:
+                    parser.metadata.set_metadata(
+                        self.DB_False,
+                        '文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(metadata_view_transform_file,
+                                                                error.__str__()),
+                        self.MetaDataFormat_Text,
+                        '')
+            else:
+                parser.metadata.set_metadata_view(
+                    self.DB_False,
+                    CResult.result_message(result)
+                )
+
+        metadata_view_list = self.parser_metadata_view_list(parser)
+        if len(metadata_view_list) > 0:
+            for metadata_view in metadata_view_list:
+                view_id = CUtils.dict_value_by_name(metadata_view, self.Name_ID, None)
+                if CUtils.equal_ignore_case(view_id, self.View_MetaData_Type_Browse):
+                    metadata_view_browse = CFile.join_file(
+                        self.get_sat_file_originally_path(),
+                        CUtils.dict_value_by_name(metadata_view, self.Name_FileName, None)
                     )
-                else:
-                    parser.metadata.quality.append_total_quality(
-                        {
-                            self.Name_FileName: view_filename,
-                            self.Name_ID: 'thumbimg',
-                            self.Name_Title: '拇指图',
-                            self.Name_Result: self.QA_Result_Pass,
-                            self.Name_Group: self.QA_Group_Data_Integrity,
-                            self.Name_Message: '拇指图[{0}]存在'.format(view_filename)
-                        }
+                elif CUtils.equal_ignore_case(view_id, self.View_MetaData_Type_Thumb):
+                    metadata_view_thumb = CFile.join_file(
+                        self.get_sat_file_originally_path(),
+                        CUtils.dict_value_by_name(metadata_view, self.Name_FileName, None)
                     )
+
+        if not CFile.file_or_path_exist(metadata_view_browse):
+            parser.metadata.quality.append_total_quality(
+                {
+                    self.Name_FileName: '',
+                    self.Name_ID: 'browserimg',
+                    self.Name_Title: '快视图',
+                    self.Name_Result: self.QA_Result_Error,
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Message: '本文件缺少快视图'
+                }
+            )
+            self.Sat_View_Status_Flag = False
+        else:
+            parser.metadata.quality.append_total_quality(
+                {
+                    self.Name_FileName: metadata_view_browse,
+                    self.Name_ID: 'browserimg',
+                    self.Name_Title: '快视图',
+                    self.Name_Result: self.QA_Result_Pass,
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Message: '快视图[{0}]存在'.format(metadata_view_browse)
+                }
+            )
+
+        if not CFile.file_or_path_exist(metadata_view_thumb):
+            parser.metadata.quality.append_total_quality(
+                {
+                    self.Name_FileName: '',
+                    self.Name_ID: 'thumbimg',
+                    self.Name_Title: '拇指图',
+                    self.Name_Result: self.QA_Result_Error,
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Message: '本文件缺少拇指图'
+                }
+            )
+            self.Sat_View_Status_Flag = False
+        else:
+            parser.metadata.quality.append_total_quality(
+                {
+                    self.Name_FileName: metadata_view_thumb,
+                    self.Name_ID: 'thumbimg',
+                    self.Name_Title: '拇指图',
+                    self.Name_Result: self.QA_Result_Pass,
+                    self.Name_Group: self.QA_Group_Data_Integrity,
+                    self.Name_Message: '拇指图[{0}]存在'.format(metadata_view_thumb)
+                }
+            )
+
+    def get_metadata_view_from_transform_file(self, parser: CMetaDataParser):
+        """
+        对于需要由图像文件转换为预览图文件的方式进行处理
+        """
+        return ''
 
     def get_metadata_bus_xml_when_parser_time(self, parser: CMetaDataParser, xml_type) -> CXml:
         """
@@ -465,7 +532,6 @@ class CSatPlugins(CPlugins):
         data_view_sub_path = CFile.join_file(data_view_sub_path, self.file_info.my_id)
 
         data_view_path = CFile.join_file(self.file_content.view_root_dir, data_view_sub_path)
-
         # 计算原本的文件path
         originally_file_path = self.get_sat_file_originally_path()
         metadata_file_copy_list = self.parser_metadata_file_copy_list(parser)
@@ -475,29 +541,72 @@ class CSatPlugins(CPlugins):
                     CFile.join_file(
                         originally_file_path,
                         metadata_file_copy_item
-                    ), data_view_path)
+                    ),
+                    data_view_path
+                )
 
         self.parser_metadata_file_copy_custom(parser, data_view_path)
 
         metadata_view_list = self.parser_metadata_view_list(parser)
-        if len(metadata_view_list) > 0:
+        # self.Sat_View_Status_Flag为True表示质检通过
+        if len(metadata_view_list) > 0 and self.Sat_View_Status_Flag:
             for metadata_view_item in metadata_view_list:
                 parser.metadata.set_metadata_view(
                     self.DB_True,
-                    '文件[{0}]的预览图成功加载! '.format(self.file_info.file_name_with_full_path),
+                    '文件[{0}]的预览图成功加载! '.format(self.classified_object_name()),
                     CUtils.dict_value_by_name(metadata_view_item, self.Name_ID, self.View_MetaData_Type_Browse),
                     CFile.join_file(
                         data_view_sub_path,
                         CFile.file_name(CUtils.dict_value_by_name(metadata_view_item, self.Name_FileName, ''))
                     )
                 )
+            result = CResult.merge_result(
+                self.Success,
+                '数据文件[{0}]的可视化信息解析成功! '.format(self.classified_object_name())
+            )
+        # 此条件为特殊配置，即使用主文件生成预览图的情况
+        elif len(metadata_view_list) == 0 and self.Sat_View_Status_Flag:
+            mdt_view_result, mdt_view_memo, mdt_view_thumb_file, mdt_view_browse_file = parser.metadata.metadata_view()
+            # 把文件从工作目录复制到view目录
+            CFile.copy_file_to(mdt_view_browse_file, data_view_path)
+            CFile.copy_file_to(mdt_view_thumb_file, data_view_path)
+            # 转换存储的路径为复制后的相对路径
+            mdt_view_browse_file = CFile.join_file(data_view_sub_path, CFile.file_name(mdt_view_browse_file))
+            mdt_view_thumb_file = CFile.join_file(data_view_sub_path, CFile.file_name(mdt_view_thumb_file))
+            parser.metadata.set_metadata_view(
+                self.DB_True,
+                '文件[{0}]的预览图成功加载! '.format(self.classified_object_name()),
+                self.View_MetaData_Type_Browse,
+                mdt_view_browse_file
+            )
+            parser.metadata.set_metadata_view(
+                self.DB_True,
+                '文件[{0}]的拇指图成功加载! '.format(self.classified_object_name()),
+                self.View_MetaData_Type_Thumb,
+                mdt_view_thumb_file
+            )
+
+            result = CResult.merge_result(
+                self.Success,
+                '数据文件[{0}]的可视化信息解析成功! '.format(self.classified_object_name())
+            )
+        elif len(metadata_view_list) > 0 and (not self.Sat_View_Status_Flag):
+            parser.metadata.set_metadata_view(
+                self.DB_False,
+                '文件[{0}]的预览图加载失败!原因为:预览图文件不存在'
+            )
+            result = CResult.merge_result(
+                self.Failure,
+                '数据文件[{0}]的可视化信息解析失败! '.format(self.classified_object_name())
+            )
+        else:
+            result = CResult.merge_result(
+                self.Failure,
+                '数据文件[{0}]的可视化信息解析失败! '.format(self.classified_object_name())
+            )
 
         self.parser_metadata_view_custom(parser, data_view_sub_path)
-
-        return CResult.merge_result(
-            self.Success,
-            '数据文件[{0}]的可视化信息解析成功! '.format(self.file_info.file_name_with_full_path)
-        )
+        return result
 
     def get_fuzzy_metadata_file(self, match_str, default_file_name, is_recurse_subpath=True):
         """

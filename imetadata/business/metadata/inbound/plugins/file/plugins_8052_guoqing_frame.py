@@ -46,10 +46,9 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         else:
             return self.Object_Confirm_IUnKnown, self._object_name
 
-        file_main_name_with_path = CFile.join_file(file_path, file_object_name)
+        match_str = '(?i)^' + file_object_name + r'[a-zA-Z][.]tif'
         check_file_main_name_exist = \
-            CFile.file_or_path_exist('{0}o.{1}'.format(file_main_name_with_path, 'tif')) or \
-            CFile.file_or_path_exist('{0}a.{1}'.format(file_main_name_with_path, 'tif'))
+            CFile.find_file_or_subpath_of_path(file_path, match_str, CFile.MatchType_Regex)
         if not check_file_main_name_exist:  # 检查主文件存在性
             return self.Object_Confirm_IUnKnown, self._object_name
 
@@ -62,6 +61,7 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         name_sub_14_to_15 = file_main_name[13:15]
         name_sub_16 = file_main_name[15:16]
         name_sub_17_to_20 = file_main_name[16:20]
+        name_sub_21 = file_main_name[20:21]
         if CUtils.text_is_alpha(name_sub_1) is False \
                 or CUtils.text_is_numeric(name_sub_2_to_3) is False \
                 or CUtils.text_is_alpha(name_sub_4) is False \
@@ -69,20 +69,14 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
                 or CUtils.text_is_alpha(name_sub_11_to_12) is False \
                 or CUtils.text_is_numeric(name_sub_14_to_15) is False \
                 or CUtils.text_is_alpha(name_sub_16) is False \
-                or CUtils.text_is_numeric(name_sub_17_to_20) is False:
+                or CUtils.text_is_numeric(name_sub_17_to_20) is False \
+                or CUtils.text_is_alpha(name_sub_21) is False:
             return self.Object_Confirm_IUnKnown, self._object_name
 
-        if len(file_main_name) == 21:
-            name_sub_21 = file_main_name[20:21]
-            if (CUtils.equal_ignore_case(name_sub_21.lower(), 'a')
-                or CUtils.equal_ignore_case(name_sub_21.lower(), 'o')) \
-                    and CUtils.equal_ignore_case(file_ext, 'tif'):
-                self._object_confirm = self.Object_Confirm_IKnown
-                self._object_name = file_main_name
-                self.add_file_to_detail_list(file_object_name)  # 在这里设置不同名的附属文件
-            else:
-                self._object_confirm = self.Object_Confirm_IKnown_Not
-                self._object_name = None
+        if len(file_main_name) == 21 and CUtils.equal_ignore_case(file_ext, 'tif'):
+            self._object_confirm = self.Object_Confirm_IKnown
+            self._object_name = file_main_name
+            self.add_file_to_detail_list(file_object_name)  # 在这里设置不同名的附属文件
         else:
             self._object_confirm = self.Object_Confirm_IKnown_Not
             self._object_name = None

@@ -61,28 +61,14 @@ class CSatFilePlugins_rapideye(COpticalSatPlugins):
             }
         ]
 
-    def parser_metadata_view_list(self, parser: CMetaDataParser):
+    def get_metadata_view_from_transform_file(self, parser: CMetaDataParser):
         """
-        标准模式的反馈预览图和拇指图的名称
-        :param parser:
-        :return:
+        对于需要由图像文件转换为预览图文件的方式进行处理
         """
-        return [
-            # transform_rapideye.xsl中没有快视拇指信息
-            # {
-            #     self.Name_ID: self.View_MetaData_Type_Browse,
-            #     self.Name_FileName: self.get_fuzzy_metadata_file('.*MS.*_browser.jpg',
-            #                                                      '{0}_browser.jpg'.format(
-            #                                                          self.file_info.file_main_name), True
-            #                                                      )
-            # },
-            # {
-            #     self.Name_ID: self.View_MetaData_Type_Thumb,
-            #     self.Name_FileName: self.get_fuzzy_metadata_file(
-            #         '.*MS.*_thumb.jpg', '{0}_thumb.jpg'.format(self.file_info.file_main_name), True
-            #     )
-            # }
-        ]
+        return self.get_fuzzy_metadata_file(
+            r'(?i).*_browse[.]tif$',
+            '{0}_browse.tif'.format(self.classified_object_name())
+        )
 
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
         """
