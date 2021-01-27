@@ -14,7 +14,7 @@ class CSatFilePlugins_kompsat2(COpticalSatPlugins):
         information[self.Plugins_Info_Type_Title] = 'Kompsat-2星'
         information[self.Plugins_Info_Group] = 'KOMPSAT2'
         information[self.Plugins_Info_Group_Title] = 'Kompsat-2'
-        information[self.Plugins_Info_CopyRight] = 'KARI'
+        information[self.Plugins_Info_CopyRight] = '2007 KARI, All rights reserved'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
@@ -177,7 +177,7 @@ class CSatFilePlugins_kompsat2(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '//item[@name="AUX_BITS_PER_PIXEL"]//value'
+                self.Name_Value: 1
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
@@ -201,7 +201,7 @@ class CSatFilePlugins_kompsat2(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
-                self.Name_XPath: '//item[@name="AUX_STRIP_ACQ_DATE_UT"]//value'
+                self.Name_XPath: '//item[@name="AUX_IMAGE_L1R_PROCESSED_UT"]//value'
             },
             {
                 self.Name_ID: 'remark',  # 备注 可空
@@ -217,12 +217,7 @@ class CSatFilePlugins_kompsat2(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
-                self.Name_XPath: '//item[@name="AUX_IMAGE_LEVEL"]//value',
-                self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
-                    'L1R': 'L1',
-                    'L2R': 'L2',
-                    'L4R': 'L4'
-                }
+                self.Name_XPath: '//item[@name="AUX_IMAGE_LEVEL"]//value'
             },
             {
                 self.Name_ID: 'productid',  # 产品id 默认取主文件全名
@@ -234,3 +229,11 @@ class CSatFilePlugins_kompsat2(COpticalSatPlugins):
             }
         ]
 
+    def metadata_bus_dict_process_custom(self, metadata_bus_dict):
+        """
+        对部分需要进行运算的数据进行处理
+        """
+        super().metadata_bus_dict_process_custom(metadata_bus_dict)
+
+        productattribute = CUtils.dict_value_by_name(metadata_bus_dict, 'productattribute', None)
+        metadata_bus_dict['productattribute'] = productattribute[:2]

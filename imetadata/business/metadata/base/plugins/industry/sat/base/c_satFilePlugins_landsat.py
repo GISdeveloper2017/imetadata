@@ -216,12 +216,7 @@ class CSatFilePlugins_landsat(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
-                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="DATA_TYPE"]',
-                self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
-                    'L1T': 'L1',
-                    'L2T': 'L2',
-                    'L4T': 'L4'
-                }
+                self.Name_XPath: '//item[@name="PRODUCT_METADATA"]//item[@name="DATA_TYPE"]'
             },
             {
                 self.Name_ID: 'productid',  # 产品id 默认取主文件全名
@@ -252,3 +247,6 @@ class CSatFilePlugins_landsat(COpticalSatPlugins):
                 metadata_bus_dict['centertime'] = centertime[:index]+second+item_Z
         else:
             pass
+
+        productattribute = CUtils.dict_value_by_name(metadata_bus_dict, 'productattribute', None)
+        metadata_bus_dict['productattribute'] = productattribute[:2]
