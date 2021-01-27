@@ -33,7 +33,7 @@ class CSatFilePlugins_rapideye(COpticalSatPlugins):
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
             return r'(?i).*RE\d_\d(A|B).*', self.TextMatchType_Regex
         else:
-            return r'(?i).*_browse[.]tif$', self.TextMatchType_Regex
+            return r'(?i).*RE\d_\d(A|B).*_browse[.]tif$', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """

@@ -31,10 +31,10 @@ class CSatFilePlugins_planet(COpticalSatPlugins):
             TextMatchType_Regex: 正则表达式
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)[1-9]\d{3}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])_(20|21|22|23|[0-1]\d)[0-5]\d[0-5]\d(_[0-9]{1,})?_[a-zA-Z0-9]{4}', \
+            return r'(?i)^[1-9]\d{3}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])_(20|21|22|23|[0-1]\d)[0-5]\d[0-5]\d(_[0-9]{1,})?_[a-zA-Z0-9]{4}', \
                    self.TextMatchType_Regex
         else:
-            return r'(?i)[1-9]\d{3}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])_(20|21|22|23|[0-1]\d)[0-5]\d[0-5]\d(_[0-9]{1,})?_[a-zA-Z0-9]{4}[.]tiff$', self.TextMatchType_Regex
+            return r'(?i)^[1-9]\d{3}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])_(20|21|22|23|[0-1]\d)[0-5]\d[0-5]\d(_[0-9]{1,})?_[a-zA-Z0-9]{4}[.]tiff$', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """
