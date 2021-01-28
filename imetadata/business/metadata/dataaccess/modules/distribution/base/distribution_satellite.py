@@ -197,7 +197,8 @@ class distribution_satellite(distribution_base):
                 for resolution in resolution_list:
                     temp_list.append(CUtils.to_decimal(resolution, -1))
                 temp_list = list(set(temp_list))  # 去重
-                temp_list.remove(-1)
+                if -1 in temp_list:
+                    temp_list.remove(-1)
                 if len(temp_list) > 0:
                     main_table.column_list.column_by_name('resolution').set_value(min(temp_list))
                 else:
