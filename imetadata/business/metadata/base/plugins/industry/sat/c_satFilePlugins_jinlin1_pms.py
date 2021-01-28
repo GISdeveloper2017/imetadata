@@ -38,6 +38,18 @@ class CSatFilePlugins_jinlin1_pms(COpticalSatPlugins):
             )
         )
 
+    def get_multiple_metadata_bus_filename_from_regex(self) -> dict:
+        """
+        return {
+            'PAN': '',
+            'MS': ''
+        }
+        """
+        return {
+            'Pan': r'(?i)^.*MSS.*_meta.xml',
+            'Ms': r'(?i)^.*PAN.*_meta.xml',
+        }
+
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {

@@ -891,12 +891,12 @@ class CSatPlugins(CPlugins):
         if len(multiple_metadata_bus_filename_dict) > 0:
             multiple_metadata_cxml_dict = dict()
             for metadata_bus_type, metadata_bus_filename in multiple_metadata_bus_filename_dict.items():
-                metadata_bus_cxml = CXml()
+                temp_cxml = CXml()
                 try:
-                    metadata_bus_cxml.load_file(metadata_bus_filename)
+                    temp_cxml.load_file(metadata_bus_filename)
                 except Exception:
                     pass
-                multiple_metadata_cxml_dict[metadata_bus_type] = metadata_bus_cxml
+                multiple_metadata_cxml_dict[metadata_bus_type] = temp_cxml
         else:
             multiple_metadata_cxml_dict = dict()
 

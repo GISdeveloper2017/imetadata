@@ -149,7 +149,7 @@ class CSatFilePlugins_th01(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_Value: 2
+                self.Name_Value: '2/10'
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角

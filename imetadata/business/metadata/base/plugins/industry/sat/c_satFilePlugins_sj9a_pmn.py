@@ -43,6 +43,18 @@ class CSatFilePlugins_sj9a_pmn(CSatFilePlugins_sj9a):
                                          )
         )
 
+    def get_multiple_metadata_bus_filename_from_regex(self) -> dict:
+        """
+        return {
+            'PAN': '',
+            'MS': ''
+        }
+        """
+        return {
+            'Pan': r'(?i)^SJ9A_PAN.*.xml',
+            'Ms': r'(?i)^SJ9A_MUX.*.xml',
+        }
+
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
@@ -177,7 +189,10 @@ class CSatFilePlugins_sj9a_pmn(CSatFilePlugins_sj9a):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/SJ9SceneMetaData/MetaData/Resolution'
+                self.Name_Custom_Item: {
+                    'Pan': '/SJ9SceneMetaData/MetaData/Resolution',
+                    'Ms': '/SJ9SceneMetaData/MetaData/Resolution'
+                }
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角

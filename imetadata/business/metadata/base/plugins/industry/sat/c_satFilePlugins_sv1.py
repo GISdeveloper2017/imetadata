@@ -212,7 +212,8 @@ class CSatFilePlugins_sv1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量 /ProductMetaData/CloudPercent
-                self.Name_XPath: '/ProductMetaData/CloudPercent'
+                self.Name_XPath: '/ProductMetaData/CloudPercent',
+                self.Name_Value: 0
             },
             {
                 self.Name_ID: 'dataum',  # 坐标系 默认为null

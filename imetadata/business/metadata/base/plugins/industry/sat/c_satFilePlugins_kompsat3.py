@@ -153,7 +153,7 @@ class CSatFilePlugins_kompsat3(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_Value: 0.7
+                self.Name_Value: '0.7/1'
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
