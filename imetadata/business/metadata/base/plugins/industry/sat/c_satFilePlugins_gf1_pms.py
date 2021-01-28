@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*- 
 # @Time : 2020/9/21 17:35 
 # @Author : 王西亚 
-# @File : CSatFilePlugins_gf1_pms1.py
+# @File : CSatFilePlugins_gf1_pms.py
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf1 import CSatFilePlugins_gf1
 
 
-class CSatFilePlugins_gf1_pms1(CSatFilePlugins_gf1):
+class CSatFilePlugins_gf1_pms(CSatFilePlugins_gf1):
 
     def get_information(self) -> dict:
         information = super().get_information()
@@ -32,9 +32,9 @@ class CSatFilePlugins_gf1_pms1(CSatFilePlugins_gf1):
             TextMatchType_Regex: 正则表达式
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)^gf1_pms1.*[_].*', self.TextMatchType_Regex
+            return r'(?i)^gf1_pms\d.*[_].*', self.TextMatchType_Regex
         else:
-            return r'(?i)^gf1_pms1.*[_].*-pan1[.]tiff$', self.TextMatchType_Regex
+            return r'(?i)^gf1_pms\d.*[_].*-pan\d[.]tiff$', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """
@@ -43,7 +43,7 @@ class CSatFilePlugins_gf1_pms1(CSatFilePlugins_gf1):
         """
         return CFile.join_file(
             self.file_content.content_root_dir,
-            self.get_fuzzy_metadata_file('.*PAN1.xml', '{0}-PAN1.xml'.format(self.classified_object_name())
+            self.get_fuzzy_metadata_file('.*PAN\d[.]xml', '{0}-PAN.xml'.format(self.classified_object_name())
                                          )
         )
 
@@ -55,8 +55,9 @@ class CSatFilePlugins_gf1_pms1(CSatFilePlugins_gf1):
         }
         """
         return {
-            'Pan': r'.*MS.*_meta.xml',
-            'Ms': r'.*PAN.*_meta.xml',
+            'Pan1': r'.*PAN.*.xml',
+            'Pan2': r'.*PAN.*.xml',
+            'Ms': r'.*MSS.*.xml'
         }
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
@@ -78,8 +79,8 @@ class CSatFilePlugins_gf1_pms1(CSatFilePlugins_gf1):
         """
         return [
             {
-                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^gf1_pms1.*[_].*-pan1[.]tiff$',
-                                                                 '{0}-PAN1.tiff'.format(self.classified_object_name())),
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^gf1_pms\d.*[_].*-pan\d[.]tiff$',
+                                                                 '{0}-PAN.tiff'.format(self.classified_object_name())),
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '全色文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -97,13 +98,13 @@ class CSatFilePlugins_gf1_pms1(CSatFilePlugins_gf1):
         return [
             {
                 self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: self.get_fuzzy_metadata_file('.*(MUX|MSS).jpg',
-                                                                 '{0}-MSS1.jpg'.format(self.file_info.file_main_name))
+                self.Name_FileName: self.get_fuzzy_metadata_file('.*(MUX|MSS).*.jpg',
+                                                                 '{0}-MSS.jpg'.format(self.file_info.file_main_name))
             },
             {
                 self.Name_ID: self.View_MetaData_Type_Thumb,
                 self.Name_FileName: self.get_fuzzy_metadata_file('.*(MSS|MUX).*_thumb.jpg',
-                                                                 '{0}-MSS1_thumb.jpg'.format(
+                                                                 '{0}-MSS_thumb.jpg'.format(
                                                                      self.file_info.file_main_name)
                                                                  )
             }
@@ -183,7 +184,12 @@ class CSatFilePlugins_gf1_pms1(CSatFilePlugins_gf1):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_Custom_Item: ['/ProductMetaData/ImageGSDLine', '/ProductMetaData/ImageGSD']
+                # self.Name_Custom_Item: ['/ProductMetaData/ImageGSDLine', '/ProductMetaData/ImageGSD']
+                self.Name_Custom_Item: {
+                    'Pan1': '/ProductMetaData/ImageGSDLine',
+                    'Pan2': '/ProductMetaData/ImageGSD',
+                    'Ms': '/ProductMetaData/ImageGSD'
+                }
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
@@ -238,6 +244,6 @@ class CSatFilePlugins_gf1_pms1(CSatFilePlugins_gf1):
             },
             {
                 self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
-                self.Name_Value: '.*MSS1.*.xml'
+                self.Name_Value: '.*MSS.*.xml'
             }
         ]

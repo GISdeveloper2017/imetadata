@@ -52,7 +52,7 @@ class CSatFilePlugins_sj9a_pmn(CSatFilePlugins_sj9a):
         """
         return {
             'Pan': r'(?i)^SJ9A_PAN.*.xml',
-            'Ms': r'(?i)^SJ9A_MUX.*.xml',
+            'Ms': r'(?i)^SJ9A_MUX.*.xml'
         }
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:

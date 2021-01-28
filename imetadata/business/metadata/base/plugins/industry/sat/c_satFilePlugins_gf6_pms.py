@@ -43,6 +43,20 @@ class CSatFilePlugins_gf6_pms(CSatFilePlugins_gf6):
                                          )
         )
 
+    def get_multiple_metadata_bus_filename_from_regex(self) -> dict:
+        """
+        return {
+            'PAN': '',
+            'MS': ''
+        }
+        """
+        return {
+            'Pan1': r'(?i)^GF6.*PAN.xml',
+            'Pan2': r'(?i)^GF6.*PAN.xml',
+            'Ms1': r'(?i)^GF6.*MUX.xml',
+            'Ms2': r'(?i)^GF6.*MUX.xml'
+        }
+
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
@@ -187,7 +201,10 @@ class CSatFilePlugins_gf6_pms(CSatFilePlugins_gf6):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/ProductMetaData/ImageGSD'
+                self.Name_Custom_Item: {
+                    'Pan1': '/ProductMetaData/ImageGSD',
+                    'Pan2': '/ProductMetaData/ImageGSDLine'
+                }
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角

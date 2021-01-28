@@ -3,6 +3,7 @@ from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf5 import CSatFilePlugins_gf5
 
+
 # 无测试数据
 class CSatFilePlugins_gf5_emi(CSatFilePlugins_gf5):
     def get_information(self) -> dict:
@@ -191,4 +192,3 @@ class CSatFilePlugins_gf5_emi(CSatFilePlugins_gf5):
     def parser_detail_custom(self, object_name):
         match_str = '(?i){0}.*[.].*'.format(self.classified_object_name())
         self.add_different_name_detail_by_match(match_str)
-

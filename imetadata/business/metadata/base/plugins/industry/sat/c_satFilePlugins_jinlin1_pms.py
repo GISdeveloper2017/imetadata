@@ -47,7 +47,7 @@ class CSatFilePlugins_jinlin1_pms(COpticalSatPlugins):
         """
         return {
             'Pan': r'(?i)^.*MSS.*_meta.xml',
-            'Ms': r'(?i)^.*PAN.*_meta.xml',
+            'Ms': r'(?i)^.*PAN.*_meta.xml'
         }
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:

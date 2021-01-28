@@ -71,6 +71,17 @@ class CSatFilePlugins_gf1_wfv(CSatFilePlugins_gf1):
             }
         ]
 
+    def get_multiple_metadata_bus_filename_from_regex(self) -> dict:
+        """
+        return {
+            'PAN': '',
+            'MS': ''
+        }
+        """
+        return {
+            'Pan': r'(?i)GF1_WFV.*.xml'
+        }
+
     def get_metadata_bus_configuration_list(self) -> list:
         """
         固定的列表，重写时不可缺项
@@ -134,7 +145,10 @@ class CSatFilePlugins_gf1_wfv(CSatFilePlugins_gf1):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_Custom_Item: ['/ProductMetaData/ImageGSD', 2]
+                self.Name_Custom_Item: {
+                    'default': 2,
+                    'Pan': '/ProductMetaData/ImageGSD'
+                }
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角

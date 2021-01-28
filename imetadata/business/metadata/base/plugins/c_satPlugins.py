@@ -970,11 +970,11 @@ class CSatPlugins(CPlugins):
             if CUtils.text_is_string(xpath):
                 resolution_value = metadata_bus_xml.get_element_text_by_xpath_one(xpath)
                 if not CUtils.equal_ignore_case(resolution_value, ''):
-                    real_value = r'{0}/'.format(resolution_value)
+                    real_value = real_value + r'{0}/'.format(resolution_value)
             else:
                 resolution_value = CUtils.to_decimal(xpath, None)
                 if resolution_value is not None:
-                    real_value = r'{0}/'.format(resolution_value)
+                    real_value = real_value + r'{0}/'.format(resolution_value)
         if not CUtils.equal_ignore_case(real_value, ''):
             real_value = real_value[:-1]
         else:
