@@ -7,8 +7,8 @@ class CSatFilePlugins_gf7_fwd(CSatFilePlugins_gf7):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'GF7_FWD'
-        information[self.Plugins_Info_Type_Title] = '高分七号PMS传感器'
+        information[self.Plugins_Info_Type] = 'GF7'
+        information[self.Plugins_Info_Type_Title] = '高分七号'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
@@ -29,7 +29,7 @@ class CSatFilePlugins_gf7_fwd(CSatFilePlugins_gf7):
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
             return r'(?i)^GF7.*_L1.*', self.TextMatchType_Regex
         else:
-            return r'(?i)^GF7.*_L1.*[.]tiff$', self.TextMatchType_Regex
+            return r'(?i)^GF7.*_L1.*[.]tif$', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """
@@ -45,8 +45,8 @@ class CSatFilePlugins_gf7_fwd(CSatFilePlugins_gf7):
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
-                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^GF7.*_L1.*[.]tiff$',
-                                                                 '{0}.tiff'.format(self.classified_object_name())),
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^GF7.*_L1.*[.]tif$',
+                                                                 '{0}.tif'.format(self.classified_object_name())),
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '全色文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,

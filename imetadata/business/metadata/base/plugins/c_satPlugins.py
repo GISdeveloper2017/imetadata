@@ -101,15 +101,15 @@ class CSatPlugins(CPlugins):
                     self.__object_status__ = self.Sat_Object_Status_Zip
                     self._object_confirm = self.Object_Confirm_IKnown
                     self._object_name = self.file_info.file_main_name
-            else:
-                sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
-                    self.Sat_Object_Status_File)
-                if (self.classified_with_character(self.file_info.file_name_without_path, sat_classified_character,
-                                                   sat_classified_character_type)):
-                    self.__object_status__ = self.Sat_Object_Status_File
-                    self._object_confirm = self.Object_Confirm_IKnown
-                    self._object_name = self.get_classified_object_name_of_sat(self.Sat_Object_Status_File)
-                    self.parser_detail_custom(self._object_name)
+            # else:  #  基于开发出现的各种问题，暂时不考虑散列文件的情况
+            #     sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
+            #         self.Sat_Object_Status_File)
+            #     if (self.classified_with_character(self.file_info.file_name_without_path, sat_classified_character,
+            #                                        sat_classified_character_type)):
+            #         self.__object_status__ = self.Sat_Object_Status_File
+            #         self._object_confirm = self.Object_Confirm_IKnown
+            #         self._object_name = self.get_classified_object_name_of_sat(self.Sat_Object_Status_File)
+            #         self.parser_detail_custom(self._object_name)
         elif self.file_info.file_type == self.FileType_Dir:
             sat_classified_character, sat_classified_character_type = self.get_classified_character_of_sat(
                 self.Sat_Object_Status_Dir)
@@ -341,6 +341,7 @@ class CSatPlugins(CPlugins):
                     CResult.result_message(result)
                 )
 
+        # 从配置中获取值
         metadata_view_list = self.parser_metadata_view_list(parser)
         if len(metadata_view_list) > 0:
             for metadata_view in metadata_view_list:

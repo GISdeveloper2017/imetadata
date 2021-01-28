@@ -88,8 +88,9 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
         }
         """
         return {
-            'Pan': r'.*MS.*_meta.xml',
-            'Ms': r'.*PAN.*_meta.xml',
+            'Pan1': r'.*PAN.*.xml',
+            'Pan2': r'.*PAN.*.xml',
+            'Ms': r'.*MSS.*.xml'
         }
 
     def get_metadata_bus_configuration_list(self) -> list:
@@ -97,8 +98,6 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
         固定的列表，重写时不可缺项
         self.Name_ID：字段的名称 例：self.Name_ID: 'satelliteid'
         self.Name_XPath：需要从xml中取值时的xpath 例：self.Name_XPath: '/ProductMetaData/SatelliteID'
-        self.Name_Other_XPath：当有多个xpath时的配置 ,注意值为list
-        例：self.Name_Other_XPath: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD']
         self.Name_Value：不在xml取得默认值与当XPath取不到值时取的值 例 self.Name_Value: 1
         self.Name_Map：映射，当取到的值为key的值时将值转换为value
         例 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
@@ -166,7 +165,11 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/ProductMetaData/ImageGSD'
+                self.Name_Custom_Item: {
+                    'Pan1': '/ProductMetaData/ImageGSDLine',
+                    'Pan2': '/ProductMetaData/ImageGSD',
+                    'Ms': '/ProductMetaData/ImageGSD'
+                }
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
@@ -190,7 +193,7 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
-                self.Name_XPath: '/ProductMetaData/ProduceTime',
+                self.Name_XPath: '/ProductMetaData/ProduceTime'
             },
             {
                 self.Name_ID: 'remark',  # 备注 可空
@@ -206,7 +209,13 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
-                self.Name_Value: 'L1'
+                self.Name_XPath: '/ProductMetaData/ProductLevel',
+                self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
+                    'LEVEL1A': 'L1',
+                    'LEVEL2A': 'L2',
+                    'LEVEL4A': 'L4'
+                    # self.Name_Default: None # 没有对应的的映射使用默认值
+                }
             },
             {
                 self.Name_ID: 'productid',  # 产品id 默认取主文件全名
@@ -214,7 +223,7 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
-                self.Name_Value: None
+                self.Name_Value: '.*MSS.*.xml'
             }
         ]
 
