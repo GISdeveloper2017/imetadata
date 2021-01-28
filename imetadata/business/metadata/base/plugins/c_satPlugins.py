@@ -1018,8 +1018,9 @@ class CSatPlugins(CPlugins):
         temp_dict['resolution'] = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
 
         for name, value in temp_dict.items():
-            if ('e' in value) or ('E' in value):
-                metadata_bus_dict[name] = CUtils.to_decimal(value, value)
+            if not CUtils.equal_ignore_case(value, ''):
+                if ('e' in value) or ('E' in value):
+                    metadata_bus_dict[name] = CUtils.to_decimal(value, value)
 
     def metadata_bus_dict_process_time(self, metadata_bus_dict: dict):
         centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)

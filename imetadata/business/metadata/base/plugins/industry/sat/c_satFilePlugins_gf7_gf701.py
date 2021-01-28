@@ -1,10 +1,10 @@
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
-from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf6 import CSatFilePlugins_gf6
+from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf7 import CSatFilePlugins_gf7
 
 
-class CSatFilePlugins_gf7_gf701(CSatFilePlugins_gf6):
+class CSatFilePlugins_gf7_gf701(CSatFilePlugins_gf7):
 
     def get_information(self) -> dict:
         information = super().get_information()
