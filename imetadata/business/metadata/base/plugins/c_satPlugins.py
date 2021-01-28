@@ -293,53 +293,8 @@ class CSatPlugins(CPlugins):
                 }
             )
 
-        metadata_view_browse = None
-        metadata_view_thumb = None
-        metadata_view_transform_file = self.get_metadata_view_from_transform_file(parser)
-        if not CUtils.equal_ignore_case(metadata_view_transform_file, ''):
-            metadata_view_transform_file = CFile.join_file(
-                self.get_sat_file_originally_path(),
-                metadata_view_transform_file
-            )
-            md_view_creator = CViewCreatorSatRaster(
-                parser.object_id, parser.object_name, parser.file_info, parser.file_content,
-                metadata_view_transform_file
-            )
-            result = md_view_creator.process()
-            if CResult.result_success(result):
-                metadata_view_browse = CFile.join_file(
-                    self.file_content.work_root_dir,
-                    CResult.result_info(result, self.Name_Browse, None)
-                )
-                metadata_view_thumb = CFile.join_file(
-                    self.file_content.work_root_dir,
-                    CResult.result_info(result, self.Name_Thumb, None)
-                )
-                try:
-                    parser.metadata.set_metadata_view(
-                        self.DB_True,
-                        '文件[{0}]的预览图成功加载! '.format(self.classified_object_name()),
-                        self.View_MetaData_Type_Browse,
-                        metadata_view_browse
-                    )
-                    parser.metadata.set_metadata_view(
-                        self.DB_True,
-                        '文件[{0}]的拇指图成功加载! '.format(self.classified_object_name()),
-                        self.View_MetaData_Type_Thumb,
-                        metadata_view_thumb
-                    )
-                except Exception as error:
-                    parser.metadata.set_metadata(
-                        self.DB_False,
-                        '文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(metadata_view_transform_file,
-                                                                error.__str__()),
-                        self.MetaDataFormat_Text,
-                        '')
-            else:
-                parser.metadata.set_metadata_view(
-                    self.DB_False,
-                    CResult.result_message(result)
-                )
+        # 对需要使用文件生成快视拇指的情况进行处理
+        metadata_view_browse, metadata_view_thumb = self.get_metadata_view_from_transform_file(parser)
 
         # 从配置中获取值
         metadata_view_list = self.parser_metadata_view_list(parser)
@@ -404,12 +359,6 @@ class CSatPlugins(CPlugins):
                     self.Name_Message: '拇指图[{0}]存在'.format(metadata_view_thumb)
                 }
             )
-
-    def get_metadata_view_from_transform_file(self, parser: CMetaDataParser):
-        """
-        对于需要由图像文件转换为预览图文件的方式进行处理
-        """
-        return ''
 
     def get_metadata_bus_xml_when_parser_time(self, parser: CMetaDataParser, xml_type) -> CXml:
         """
@@ -608,6 +557,65 @@ class CSatPlugins(CPlugins):
 
         self.parser_metadata_view_custom(parser, data_view_sub_path)
         return result
+
+    def get_metadata_view_from_transform_file(self, parser: CMetaDataParser):
+        """
+        对于需要由图像文件转换为预览图文件的方式进行处理
+        """
+        metadata_view_browse = None
+        metadata_view_thumb = None
+        metadata_view_transform_file = self.get_transform_file_to_metadata_view(parser)
+        if not CUtils.equal_ignore_case(metadata_view_transform_file, ''):
+            metadata_view_transform_file = CFile.join_file(
+                self.get_sat_file_originally_path(),
+                metadata_view_transform_file
+            )
+            md_view_creator = CViewCreatorSatRaster(
+                parser.object_id, parser.object_name, parser.file_info, parser.file_content,
+                metadata_view_transform_file
+            )
+            result = md_view_creator.process()
+            if CResult.result_success(result):
+                metadata_view_browse = CFile.join_file(
+                    self.file_content.work_root_dir,
+                    CResult.result_info(result, self.Name_Browse, None)
+                )
+                metadata_view_thumb = CFile.join_file(
+                    self.file_content.work_root_dir,
+                    CResult.result_info(result, self.Name_Thumb, None)
+                )
+                try:
+                    parser.metadata.set_metadata_view(
+                        self.DB_True,
+                        '文件[{0}]的预览图成功加载! '.format(self.classified_object_name()),
+                        self.View_MetaData_Type_Browse,
+                        metadata_view_browse
+                    )
+                    parser.metadata.set_metadata_view(
+                        self.DB_True,
+                        '文件[{0}]的拇指图成功加载! '.format(self.classified_object_name()),
+                        self.View_MetaData_Type_Thumb,
+                        metadata_view_thumb
+                    )
+                except Exception as error:
+                    parser.metadata.set_metadata(
+                        self.DB_False,
+                        '文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(metadata_view_transform_file,
+                                                                error.__str__()),
+                        self.MetaDataFormat_Text,
+                        '')
+            else:
+                parser.metadata.set_metadata_view(
+                    self.DB_False,
+                    CResult.result_message(result)
+                )
+        return metadata_view_browse, metadata_view_thumb
+
+    def get_transform_file_to_metadata_view(self, parser: CMetaDataParser):
+        """
+        对于需要由图像文件转换为预览图文件的方式进行处理
+        """
+        return ''
 
     def get_fuzzy_metadata_file(self, match_str, default_file_name, is_recurse_subpath=True):
         """

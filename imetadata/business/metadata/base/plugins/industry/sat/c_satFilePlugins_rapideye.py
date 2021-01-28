@@ -61,7 +61,7 @@ class CSatFilePlugins_rapideye(COpticalSatPlugins):
             }
         ]
 
-    def get_metadata_view_from_transform_file(self, parser: CMetaDataParser):
+    def get_transform_file_to_metadata_view(self, parser: CMetaDataParser):
         """
         对于需要由图像文件转换为预览图文件的方式进行处理
         """
