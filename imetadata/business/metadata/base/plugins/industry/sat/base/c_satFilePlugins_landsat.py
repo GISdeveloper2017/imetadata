@@ -233,20 +233,5 @@ class CSatFilePlugins_landsat(COpticalSatPlugins):
         对部分需要进行运算的数据进行处理
         """
         super().metadata_bus_dict_process_custom(metadata_bus_dict)
-        centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
-        if centertime is not None:
-            if '.' in centertime:
-                index = centertime.find('.')
-                second = centertime[index+1:]
-                item_Z = ''
-                if 'Z' in centertime:
-                    second = second[:-1]
-                    item_Z = 'Z'
-                if len(second) > 6:
-                    second = second[:6]
-                metadata_bus_dict['centertime'] = centertime[:index]+second+item_Z
-        else:
-            pass
-
         productattribute = CUtils.dict_value_by_name(metadata_bus_dict, 'productattribute', None)
         metadata_bus_dict['productattribute'] = productattribute[:2]

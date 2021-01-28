@@ -33,6 +33,18 @@ class CSatFilePlugins_triplesat_pms(COpticalSatPlugins):
             )
         )
 
+    def get_multiple_metadata_bus_filename_from_regex(self) -> dict:
+        """
+        return {
+            'PAN': '',
+            'MS': ''
+        }
+        """
+        return {
+            'Pan': r'.*MS.*_meta.xml',
+            'Ms': r'.*PAN.*_meta.xml',
+        }
+
     def parser_detail_custom(self, object_name):
         match_str_1 = '(?i){0}.*[.].*'.format(object_name[:].replace('_PMS', '_MS', 1))
         self.add_different_name_detail_by_match(match_str_1)
@@ -192,7 +204,10 @@ class CSatFilePlugins_triplesat_pms(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/SceneMetaData/MetaData/PAN_Resampling_Space'
+                self.Name_Custom_Item: {
+                    'Pan': '/SceneMetaData/MetaData/PAN_Resampling_Space',
+                    'Ms': '/SceneMetaData/MetaData/MS_Resampling_Space'
+                }
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角

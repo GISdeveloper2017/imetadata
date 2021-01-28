@@ -46,6 +46,18 @@ class CSatFilePlugins_gf1_pms2(CSatFilePlugins_gf1):
             self.get_fuzzy_metadata_file('.*PAN2.xml', '{0}-PAN2.xml'.format(self.classified_object_name()))
         )
 
+    def get_multiple_metadata_bus_filename_from_regex(self) -> dict:
+        """
+        return {
+            'PAN': '',
+            'MS': ''
+        }
+        """
+        return {
+            'Pan': r'.*MS.*_meta.xml',
+            'Ms': r'.*PAN.*_meta.xml',
+        }
+
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 文件的质检列表

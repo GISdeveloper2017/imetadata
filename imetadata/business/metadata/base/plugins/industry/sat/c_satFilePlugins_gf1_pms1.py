@@ -47,6 +47,18 @@ class CSatFilePlugins_gf1_pms1(CSatFilePlugins_gf1):
                                          )
         )
 
+    def get_multiple_metadata_bus_filename_from_regex(self) -> dict:
+        """
+        return {
+            'PAN': '',
+            'MS': ''
+        }
+        """
+        return {
+            'Pan': r'.*MS.*_meta.xml',
+            'Ms': r'.*PAN.*_meta.xml',
+        }
+
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 文件的质检列表

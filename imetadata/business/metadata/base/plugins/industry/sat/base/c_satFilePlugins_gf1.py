@@ -80,6 +80,18 @@ class CSatFilePlugins_gf1(COpticalSatPlugins):
             )
         )
 
+    def get_multiple_metadata_bus_filename_from_regex(self) -> dict:
+        """
+        return {
+            'PAN': '',
+            'MS': ''
+        }
+        """
+        return {
+            'Pan': r'.*MS.*_meta.xml',
+            'Ms': r'.*PAN.*_meta.xml',
+        }
+
     def get_metadata_bus_configuration_list(self) -> list:
         """
         固定的列表，重写时不可缺项

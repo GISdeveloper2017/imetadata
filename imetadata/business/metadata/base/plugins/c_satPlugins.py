@@ -890,125 +890,103 @@ class CSatPlugins(CPlugins):
         # 预先构建其他xml的Cxml对象
         if len(multiple_metadata_bus_filename_dict) > 0:
             multiple_metadata_cxml_dict = dict()
-            for multiple_metadata_bus_type, multiple_metadata_bus_filename \
-                    in multiple_metadata_bus_filename_dict.items():
-                multiple_metadata_cxml = CXml()
+            for metadata_bus_type, metadata_bus_filename in multiple_metadata_bus_filename_dict.items():
+                metadata_bus_cxml = CXml()
                 try:
-                    multiple_metadata_cxml.load_file(multiple_metadata_bus_filename)
-                except:
+                    metadata_bus_cxml.load_file(metadata_bus_filename)
+                except Exception:
                     pass
-                multiple_metadata_cxml_dict[multiple_metadata_bus_type] = multiple_metadata_cxml
+                multiple_metadata_cxml_dict[metadata_bus_type] = metadata_bus_cxml
         else:
             multiple_metadata_cxml_dict = dict()
 
-        for metadata_bus_configuration in self.get_metadata_bus_configuration_list():
-            metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, 'None')
-            metadata_bus_xpath = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_XPath, None)
-            metadata_bus_value = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Value, None)
-            metadata_bus_xpath_namespace = \
-                CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Name_Space_Map, None)
-            other_metadata_bus_xml_type = \
-                CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Other_Metadata_Bus_Xml, None)
-            # 取值
+        # 开始循环处理每一个项目
+        for item_configuration in self.get_metadata_bus_configuration_list():
+            # 取出必要使用的值
+            item_id = CUtils.dict_value_by_name(item_configuration, self.Name_ID, 'None')
+            xml_xpath = CUtils.dict_value_by_name(item_configuration, self.Name_XPath, None)
+            xpath_namespace = CUtils.dict_value_by_name(item_configuration, self.Name_Name_Space_Map, None)
+            default_value = CUtils.dict_value_by_name(item_configuration, self.Name_Value, None)
+            other_xml_setting = CUtils.dict_value_by_name(item_configuration, self.Name_Other_Metadata_Bus_Xml, None)
+            custom_item = CUtils.dict_value_by_name(item_configuration, self.Name_Custom_Item, None)
+            real_value = None
+
             try:
-                if other_metadata_bus_xml_type is None:
+                # 设置对应的xml
+                if other_xml_setting is None:
                     temp_metadata = metadata_bus_xml
                 else:
                     temp_metadata = \
-                        CUtils.dict_value_by_name(multiple_metadata_cxml_dict, other_metadata_bus_xml_type, None)
+                        CUtils.dict_value_by_name(multiple_metadata_cxml_dict, other_xml_setting, CXml())
 
-                if metadata_bus_xpath is not None:
-                    metadata_bus_xpath_value = \
-                        temp_metadata.get_element_text_by_xpath_one(metadata_bus_xpath, metadata_bus_xpath_namespace)
-                else:
-                    metadata_bus_xpath_value = \
-                        self.metadata_bus_to_dict_custom_transition(metadata_bus_configuration, temp_metadata)
+                # 开始从xml里面取值
+                if xml_xpath is not None:
+                    real_value = temp_metadata.get_element_text_by_xpath_one(xml_xpath, xpath_namespace)
+                elif custom_item is not None:
+                    if CUtils.equal_ignore_case(item_id, 'resolution'):
+                        real_value = self.metadata_bus_to_dict_custom_transition_resolution(
+                            custom_item, multiple_metadata_cxml_dict
+                        )
+                    elif CUtils.equal_ignore_case(item_id, 'centertime'):
+                        real_value = self.metadata_bus_to_dict_custom_transition_centertime(
+                            custom_item, metadata_bus_xml
+                        )
+
                 # 取值后的处理
-                if not CUtils.equal_ignore_case(metadata_bus_xpath_value, ''):
+                if not CUtils.equal_ignore_case(real_value, ''):
                     # 对部分特殊数据进行自定义处理
-                    metadata_bus_map = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Map, None)
-                    if metadata_bus_map is not None:
-                        for map_key, map_value in metadata_bus_map.items():
-                            if CUtils.equal_ignore_case(map_key, metadata_bus_xpath_value):
-                                metadata_bus_xpath_value = map_value
+                    map_setting = CUtils.dict_value_by_name(item_configuration, self.Name_Map, None)
+                    if map_setting is not None:
+                        for map_key, map_value in map_setting.items():
+                            if CUtils.equal_ignore_case(map_key, real_value):
+                                real_value = map_value
                                 break
                         else:
-                            default_value = CUtils.dict_value_by_name(metadata_bus_map, self.Name_Default, None)
+                            default_value = CUtils.dict_value_by_name(map_setting, self.Name_Default, None)
                             if default_value is not None:  # 设置不符合映射的默认值
-                                metadata_bus_xpath_value = default_value
+                                real_value = default_value
 
-                    metadata_bus_dict[metadata_bus_id] = metadata_bus_xpath_value
+                    metadata_bus_dict[item_id] = real_value
                 else:
-                    metadata_bus_dict[metadata_bus_id] = metadata_bus_value
+                    metadata_bus_dict[item_id] = default_value
             except Exception:
-                pass
+                metadata_bus_dict[item_id] = default_value
 
         # 对于一些需要计算的数据进行运算
         try:
             self.metadata_bus_dict_process_centerlonlat(metadata_bus_dict)
             self.metadata_bus_dict_process_scientific_enumeration(metadata_bus_dict)
+            self.metadata_bus_dict_process_time(metadata_bus_dict)
             self.metadata_bus_dict_process_custom(metadata_bus_dict)
         except Exception:
             pass
 
         return metadata_bus_dict
 
-    def metadata_bus_to_dict_custom_transition(self, metadata_bus_configuration, metadata_bus_xml):
-        metadata_bus_xpath_value = None
-        metadata_bus_custom_item = \
-            CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_Custom_Item, None)
-        if metadata_bus_custom_item is not None:
-            metadata_bus_id = CUtils.dict_value_by_name(metadata_bus_configuration, self.Name_ID, None)
-            try:
-                # resolution的特殊配置
-                metadata_bus_xpath_value = self.metadata_bus_to_dict_custom_transition_resolution(
-                    metadata_bus_xpath_value, metadata_bus_id, metadata_bus_custom_item, metadata_bus_xml
-                )
+    def metadata_bus_to_dict_custom_transition_resolution(self, custom_item, multiple_metadata_cxml_dict):
+        real_value = ''
+        for xml_key, xpath in custom_item.items():
+            metadata_bus_xml = CUtils.dict_value_by_name(multiple_metadata_cxml_dict, xml_key, CXml())
+            if CUtils.text_is_string(xpath):
+                resolution_value = metadata_bus_xml.get_element_text_by_xpath_one(xpath)
+                if not CUtils.equal_ignore_case(resolution_value, ''):
+                    real_value = r'{0}/'.format(resolution_value)
+            else:
+                resolution_value = CUtils.to_decimal(xpath, None)
+                if resolution_value is not None:
+                    real_value = r'{0}/'.format(resolution_value)
+        if not CUtils.equal_ignore_case(real_value, ''):
+            real_value = real_value[:-1]
+        else:
+            real_value = None
+        return real_value
 
-                metadata_bus_xpath_value = self.metadata_bus_to_dict_custom_transition_centertime(
-                    metadata_bus_xpath_value, metadata_bus_id, metadata_bus_custom_item, metadata_bus_xml
-                )
-
-                metadata_bus_xpath_value = self.metadata_bus_to_dict_custom_transition_custom(
-                    metadata_bus_xpath_value, metadata_bus_id, metadata_bus_custom_item, metadata_bus_xml
-                )
-            except Exception:
-                pass
-        return metadata_bus_xpath_value
-
-    def metadata_bus_to_dict_custom_transition_resolution(
-            self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_custom_item, metadata_bus_xml):
-        if CUtils.equal_ignore_case(metadata_bus_id, 'resolution'):
-            resolution_value_list = list()
-            # 取配置里的值
-            for resolution_configuration in metadata_bus_custom_item:
-                if CUtils.text_is_string(resolution_configuration):
-                    resolution_value = metadata_bus_xml.get_element_text_by_xpath_one(resolution_configuration)
-                    resolution_value_num = CUtils.to_decimal(resolution_value, None)
-                    if (not CUtils.equal_ignore_case(resolution_value, '')) \
-                            and (resolution_value_num is not None):
-                        resolution_value_list.append(resolution_value_num)
-                else:
-                    resolution_value_num = CUtils.to_decimal(resolution_configuration, None)
-                    if resolution_value_num is not None:
-                        resolution_value_list.append(resolution_value_num)
-            if len(resolution_value_list) > 0:
-                metadata_bus_xpath_value = min(resolution_value_list)
-        return metadata_bus_xpath_value
-
-    def metadata_bus_to_dict_custom_transition_centertime(
-            self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_custom_item, metadata_bus_xml):
-        if CUtils.equal_ignore_case(metadata_bus_id, 'centertime'):
-            # 取配置里的值
-            time_date_xpath = CUtils.dict_value_by_name(metadata_bus_custom_item, self.Name_Time_Date, None)
-            time_time_xpath = CUtils.dict_value_by_name(metadata_bus_custom_item, self.Name_Time_Time, None)
-            time_date = metadata_bus_xml.get_element_text_by_xpath_one(time_date_xpath)
-            time_time = metadata_bus_xml.get_element_text_by_xpath_one(time_time_xpath)
-            metadata_bus_xpath_value = '{0}T{1}'.format(time_date, time_time)
-        return metadata_bus_xpath_value
-
-    def metadata_bus_to_dict_custom_transition_custom(
-            self, metadata_bus_xpath_value, metadata_bus_id, metadata_bus_custom_item, metadata_bus_xml):
+    def metadata_bus_to_dict_custom_transition_centertime(self, custom_item, metadata_bus_xml):
+        time_date_xpath = CUtils.dict_value_by_name(custom_item, self.Name_Time_Date, None)
+        time_time_xpath = CUtils.dict_value_by_name(custom_item, self.Name_Time_Time, None)
+        time_date = metadata_bus_xml.get_element_text_by_xpath_one(time_date_xpath)
+        time_time = metadata_bus_xml.get_element_text_by_xpath_one(time_time_xpath)
+        metadata_bus_xpath_value = '{0}T{1}'.format(time_date, time_time)
         return metadata_bus_xpath_value
 
     def metadata_bus_dict_process_centerlonlat(self, metadata_bus_dict: dict):
@@ -1042,6 +1020,33 @@ class CSatPlugins(CPlugins):
         for name, value in temp_dict.items():
             if ('e' in value) or ('E' in value):
                 metadata_bus_dict[name] = CUtils.to_decimal(value, value)
+
+    def metadata_bus_dict_process_time(self, metadata_bus_dict: dict):
+        centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
+        if not CUtils.equal_ignore_case(centertime, ''):
+            if '.' in centertime:
+                index = centertime.find('.')
+                second = centertime[index + 1:]
+                item_Z = ''
+                if 'Z' in centertime:
+                    second = second[:-1]
+                    item_Z = 'Z'
+                if len(second) > 6:
+                    second = second[:6]
+                metadata_bus_dict['centertime'] = centertime[:index + 1] + second + item_Z
+
+        publishdate = CUtils.dict_value_by_name(metadata_bus_dict, 'publishdate', None)
+        if not CUtils.equal_ignore_case(publishdate, ''):
+            if '.' in publishdate:
+                index = publishdate.find('.')
+                second = publishdate[index + 1:]
+                item_Z = ''
+                if 'Z' in publishdate:
+                    second = second[:-1]
+                    item_Z = 'Z'
+                if len(second) > 6:
+                    second = second[:6]
+                metadata_bus_dict['publishdate'] = publishdate[:index + 1] + second + item_Z
 
     def metadata_bus_dict_process_custom(self, metadata_bus_dict):
         """
@@ -1226,8 +1231,7 @@ class CSatPlugins(CPlugins):
                 self.Name_Title: '分辨率',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_decimal_or_integer
+                self.Name_NotNull: True
             },
             {
                 self.Name_Type: self.QA_Type_XML_Node_Exist,
