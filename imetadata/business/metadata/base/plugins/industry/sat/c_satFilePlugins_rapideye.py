@@ -65,9 +65,12 @@ class CSatFilePlugins_rapideye(COpticalSatPlugins):
         """
         对于需要由图像文件转换为预览图文件的方式进行处理
         """
-        return self.get_fuzzy_metadata_file(
-            r'(?i).*_browse[.]tif$',
-            '{0}_browse.tif'.format(self.classified_object_name())
+        return CFile.join_file(
+            self.get_sat_file_originally_path(),
+            self.get_fuzzy_metadata_file(
+                r'(?i).*_browse[.]tif$',
+                '{0}_browse.tif'.format(self.classified_object_name())
+            )
         )
 
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
