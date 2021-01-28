@@ -225,11 +225,12 @@ class CFile:
         return subpath_list.count(sub_path.lower()) > 0
 
     @classmethod
-    def identify_encoding(cls, text):
+    def identify_encoding(cls, text, default_encoding='UTF-8'):
         """
         完成 王学谦 编码格式识别
         :param text:需要转换的文本
         :return true_text:转换后的编码格式
+        :return default_encoding:默认的编码格式
         """
         identify_result = chardet.detect(text)
         identify_encoding = identify_result['encoding']
@@ -237,6 +238,9 @@ class CFile:
         # 由于windows系统的编码有可能是Windows-1254,打印出来后还是乱码,所以不直接用UTF-8编码
         if CUtils.equal_ignore_case(identify_encoding, 'Windows-1254'):
             identify_encoding = 'UTF-8'
+        if CUtils.equal_ignore_case(identify_encoding, ''):
+            identify_encoding = default_encoding
+
         return identify_encoding
 
     @classmethod
