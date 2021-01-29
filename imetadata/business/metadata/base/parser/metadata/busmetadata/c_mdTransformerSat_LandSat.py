@@ -7,10 +7,10 @@ import re
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
-from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerSat_k2 import CMDTransformerSat_k2
+from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerSat import CMDTransformerSat
 
 
-class CMDTransformerSat_LandSat(CMDTransformerSat_k2):
+class CMDTransformerSat_LandSat(CMDTransformerSat):
     def txt_to_xml(self, file_metadata_name_with_path: str):
         """
         完成 王学谦 txt文件转xml,在函数外提前定义xml对象并获取父节点传入，函数会将通过父节点构造xml对象 by王学谦
@@ -23,7 +23,7 @@ class CMDTransformerSat_LandSat(CMDTransformerSat_k2):
 
         xml_obj = CXml()  # 建立xml对象
         node_root = xml_obj.new_xml('root')
-        xml_obj.set_attr(node_root, self.Name_Type, self.transformer_type)  # 设置root节点与属性
+        xml_obj.set_attr(node_root, self.Name_Type, self.Transformer_TXT)  # 设置root节点与属性
         # 设置操作的节点
         current_node = node_root
         for row_text in text_list:
