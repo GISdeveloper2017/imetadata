@@ -36,84 +36,20 @@ class CSatFilePlugins_gf3_vhvv(CSatFilePlugins_gf3):
             # GF3_KAS_WSC_000823_E122.8_N39.8_20161005_L1A_VV_L10002039504_Strip_0.tiff
             # 暂定 gf3_mdj_wsc_*_l1a_vv_l1*_strip_0.tiff为主对象文件
             # 散列文件的识别方式后续有待开发，目前暂不测试
-            return r'(?i)GF3.*(_AHV_|_HH_|_HHHV_).*_strip_0.tiff', self.TextMatchType_Regex
+            return r'(?i)GF3_.*_VV_.*_strip_0[.]tiff', self.TextMatchType_Regex
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
-        """
-        初始化默认的, 文件的质检列表
-        质检项目应包括并不限于如下内容:
-        1. 实体数据的附属文件是否完整, 实体数据是否可以正常打开和读取
-        1. 元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
-        1. 业务元数据是否存在并完整, 格式是否正确, 是否可以正常打开和读取
-        示例:
         return [
-            {self.Name_FileName: '{0}-PAN1.tiff'.format(self.classified_object_name()), self.Name_ID: 'pan_tif',
-             self.Name_Title: '全色文件', self.Name_Type: self.QualityAudit_Type_Error}
-            , {self.Name_FileName: '{0}-MSS1.tiff'.format(self.classified_object_name()), self.Name_ID: 'mss_tif',
-               self.Name_Title: '多光谱文件', self.Name_Type: self.QualityAudit_Type_Error}
+            {
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)GF3_.*_VV_.*_strip_0[.]tiff',
+                                                                 '{0}.tiff'.format(self.classified_object_name())),
+                self.Name_ID: '影像tiff',
+                self.Name_Title: '影像文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.DataFormat_Raster_File
+            }
         ]
-        :param parser:
-        :return:
-        """
-        if self.__object_status__ == self.Sat_Object_Status_Dir:
-            match_list = CFile.file_or_dir_fullname_of_path(self.file_info.file_name_with_full_path, False,
-                                                            'GF3_.*_VV_.*.tiff', CFile.MatchType_Regex)
-            if len(match_list) > 1:
-                for match_file_name in match_list:
-                    if '_Strip_0' in match_file_name:
-                        return [
-                            {
-                                self.Name_FileName: CFile.file_name(match_file_name),
-                                self.Name_ID: '影像tiff',
-                                self.Name_Title: '影像文件',
-                                self.Name_Group: self.QA_Group_Data_Integrity,
-                                self.Name_Result: self.QA_Result_Error,
-                                self.Name_Format: self.DataFormat_Raster_File
-                            }
-                        ]
-                    break
-            elif len(match_list) == 1:
-                return [
-                    {
-                        self.Name_FileName: CFile.file_name(match_list[0]),
-                        self.Name_ID: '影像tiff',
-                        self.Name_Title: '影像文件',
-                        self.Name_Group: self.QA_Group_Data_Integrity,
-                        self.Name_Result: self.QA_Result_Error,
-                        self.Name_Format: self.DataFormat_Raster_File
-                    }
-                ]
-
-        if self.__object_status__ == self.Sat_Object_Status_Zip:
-            match_list = CFile.file_or_dir_fullname_of_path(self.file_content.content_root_dir, False,
-                                                            'GF3_.*_VV_.*.tiff', CFile.MatchType_Regex)
-            if len(match_list) > 1:
-                for match_file_name in match_list:
-                    if '_Strip_0' in match_file_name:
-                        return [
-                            {
-                                self.Name_FileName: CFile.file_name(match_file_name),
-                                self.Name_ID: '影像tiff',
-                                self.Name_Title: '影像文件',
-                                self.Name_Group: self.QA_Group_Data_Integrity,
-                                self.Name_Result: self.QA_Result_Error,
-                                self.Name_Format: self.DataFormat_Raster_File
-                            }
-                        ]
-                    break
-            elif len(match_list) == 1:
-                return [
-                    {
-                        self.Name_FileName: CFile.file_name(match_list[0]),
-                        self.Name_ID: '影像tiff',
-                        self.Name_Title: '影像文件',
-                        self.Name_Group: self.QA_Group_Data_Integrity,
-                        self.Name_Result: self.QA_Result_Error,
-                        self.Name_Format: self.DataFormat_Raster_File
-                    }
-                ]
-        else:
-            return super().init_qa_file_list(parser)
 
     def parser_metadata_view_list(self, parser: CMetaDataParser):
         """

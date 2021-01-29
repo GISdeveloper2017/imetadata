@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*- 
-# @Time : 2020/11/2 09:50
-# @Author : 邢凯凯
-# @File : c_satFilePlugins_gf3_hh.py
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf3 import CSatFilePlugins_gf3
 
@@ -32,16 +28,15 @@ class CSatFilePlugins_gf3_dh(CSatFilePlugins_gf3):
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
             return r'(?i)GF3.*_DH_.*', self.TextMatchType_Regex
         else:
-            # GF3_KAS_WSC_000823_E122.8_N39.8_20161005_L1A_VV_L10002039504_Strip_0.tiff
-            # 暂定 gf3_mdj_wsc_*_l1a_vv_l1*_strip_0.tiff为主对象文件
             # 散列文件的识别方式后续有待开发，目前暂不测试
-            return r'(?i)GF3.*(_AHV_|_HH_|_HHHV_).*_strip_0.tiff', self.TextMatchType_Regex
+            return r'(?i)GF3.*_DH_.*.tiff', self.TextMatchType_Regex
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
                 # 没有测试数据，后续调整
-                self.Name_FileName: '{0}.tiff'.format(self.classified_object_name()),
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)GF3.*_DH_.*_.*.tiff',
+                                                                 '{0}.tiff'.format(self.classified_object_name())),
                 self.Name_ID: '影像tiff',
                 self.Name_Title: '影像文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,

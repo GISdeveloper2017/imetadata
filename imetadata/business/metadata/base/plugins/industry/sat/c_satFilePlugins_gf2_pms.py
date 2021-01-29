@@ -30,7 +30,7 @@ class CSatFilePlugins_gf2_pms(CSatFilePlugins_gf2):
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
             return r'(?i)^gf2_pms.*[_].*', self.TextMatchType_Regex
         else:
-            return r'(?i)^gf2_pms.*[_].*-pan[.]tiff$', self.TextMatchType_Regex
+            return r'(?i)^gf2_pms.*[_].*-pan.*[.]tiff$', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """
@@ -74,7 +74,7 @@ class CSatFilePlugins_gf2_pms(CSatFilePlugins_gf2):
         """
         return [
             {
-                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^gf2_pms.*[_].*-pan[.]tiff$',
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^gf2_pms.*[_].*-pan.*[.]tiff$',
                                                                  '{0}-PAN.tiff'.format(self.classified_object_name())),
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '全色文件',
