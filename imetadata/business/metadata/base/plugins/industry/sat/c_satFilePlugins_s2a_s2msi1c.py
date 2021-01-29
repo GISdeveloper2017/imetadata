@@ -73,27 +73,18 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
             {
                 self.Name_ID: self.Name_Time,
                 self.Name_XPath: '/n1:Level-1C_Tile_ID/n1:General_Info/SENSING_TIME',
-                self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Tile_Metadata.xsd'
-                },
                 self.Name_Format: self.MetaDataFormat_XML,
                 self.Name_Other_Metadata_Bus_Xml: 'MTD_TL'
             },
             {
                 self.Name_ID: self.Name_Start_Time,
                 self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//PRODUCT_START_TIME',
-                self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
-                },
                 self.Name_Format: self.MetaDataFormat_XML,
                 self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             },
             {
                 self.Name_ID: self.Name_End_Time,
                 self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//PRODUCT_STOP_TIME',
-                self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
-                },
                 self.Name_Format: self.MetaDataFormat_XML,
                 self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             }
@@ -107,17 +98,11 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
             {
                 self.Name_ID: 'satelliteid',  # 卫星，必填，从元数据组织定义，必须是标准命名的卫星名称
                 self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//SPACECRAFT_NAME',
-                self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
-                },
                 self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             },
             {
                 self.Name_ID: 'sensorid',  # 传感器 必填,从元数据组织定义，必须是标准命名的传感器名称
                 self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//PRODUCT_TYPE',
-                self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
-                },
                 self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             },
             {
@@ -132,81 +117,49 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
                 self.Name_ID: 'topleftlatitude',  # 左上角维度 必填
                 self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/'
                                  'gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/'
-                                 'gmd:northBoundLatitude/gco:Decimal',
-                self.Name_Name_Space_Map: {
-                    'gmd': 'http://www.isotc211.org/2005/gmd',
-                    'gco': 'http://www.isotc211.org/2005/gco'
-                }
+                                 'gmd:northBoundLatitude/gco:Decimal'
             },
             {
                 self.Name_ID: 'topleftlongitude',  # 左上角经度 必填
                 self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/'
                                  'gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/'
-                                 'gmd:westBoundLongitude/gco:Decimal',
-                self.Name_Name_Space_Map: {
-                    'gmd': 'http://www.isotc211.org/2005/gmd',
-                    'gco': 'http://www.isotc211.org/2005/gco'
-                }
+                                 'gmd:westBoundLongitude/gco:Decimal'
             },
             {
                 self.Name_ID: 'toprightlatitude',  # 右上角维度 必填
                 self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/'
                                  'gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/'
-                                 'gmd:northBoundLatitude/gco:Decimal',
-                self.Name_Name_Space_Map: {
-                    'gmd': 'http://www.isotc211.org/2005/gmd',
-                    'gco': 'http://www.isotc211.org/2005/gco'
-                }
+                                 'gmd:northBoundLatitude/gco:Decimal'
             },
             {
                 self.Name_ID: 'toprightlongitude',  # 右上角经度 必填
                 self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent'
                                  '/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox'
-                                 '/gmd:eastBoundLongitude/gco:Decimal',
-                self.Name_Name_Space_Map: {
-                    'gmd': 'http://www.isotc211.org/2005/gmd',
-                    'gco': 'http://www.isotc211.org/2005/gco'
-                }
+                                 '/gmd:eastBoundLongitude/gco:Decimal'
             },
             {
                 self.Name_ID: 'bottomrightlatitude',  # 右下角维度 必填
                 self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent'
                                  '/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox'
-                                 '/gmd:southBoundLatitude/gco:Decimal',
-                self.Name_Name_Space_Map: {
-                    'gmd': 'http://www.isotc211.org/2005/gmd',
-                    'gco': 'http://www.isotc211.org/2005/gco'
-                }
+                                 '/gmd:southBoundLatitude/gco:Decimal'
             },
             {
                 self.Name_ID: 'bottomrightlongitude',  # 右下角经度 必填
                 self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent'
                                  '/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox'
-                                 '/gmd:eastBoundLongitude/gco:Decimal',
-                self.Name_Name_Space_Map: {
-                    'gmd': 'http://www.isotc211.org/2005/gmd',
-                    'gco': 'http://www.isotc211.org/2005/gco'
-                }
+                                 '/gmd:eastBoundLongitude/gco:Decimal'
             },
             {
                 self.Name_ID: 'bottomleftlatitude',  # 左下角维度 必填
                 self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent'
                                  '/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox'
-                                 '/gmd:southBoundLatitude/gco:Decimal',
-                self.Name_Name_Space_Map: {
-                    'gmd': 'http://www.isotc211.org/2005/gmd',
-                    'gco': 'http://www.isotc211.org/2005/gco'
-                }
+                                 '/gmd:southBoundLatitude/gco:Decimal'
             },
             {
                 self.Name_ID: 'bottomleftlongitude',  # 左下角经度 必填
                 self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent'
                                  '/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox'
-                                 '/gmd:westBoundLongitude/gco:Decimal',
-                self.Name_Name_Space_Map: {
-                    'gmd': 'http://www.isotc211.org/2005/gmd',
-                    'gco': 'http://www.isotc211.org/2005/gco'
-                }
+                                 '/gmd:westBoundLongitude/gco:Decimal'
             },
             {
                 self.Name_ID: 'transformimg',  # 斜视图,可空,不用质检
@@ -215,41 +168,26 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
                 self.Name_XPath: '/n1:Level-1C_Tile_ID/n1:General_Info/Archiving_Info/ARCHIVING_TIME',
-                self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Tile_Metadata.xsd'
-                },
                 self.Name_Other_Metadata_Bus_Xml: 'MTD_TL'
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
                 self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//RESOLUTION',
-                self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
-                },
                 self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
                 self.Name_XPath: '/n1:Level-1C_Tile_ID/n1:Geometric_Info/Tile_Angles/Mean_Sun_Angle/ZENITH_ANGLE',
-                self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Tile_Metadata.xsd'
-                },
                 self.Name_Other_Metadata_Bus_Xml: 'MTD_TL'
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量
                 self.Name_XPath: '/n1:Level-1C_User_Product/n1:Quality_Indicators_Info/Cloud_Coverage_Assessment',
-                self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
-                },
                 self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             },
             {
                 self.Name_ID: 'dataum',  # 坐标系 默认为null
-                self.Name_XPath: '/n1:Level-1C_Tile_ID/n1:Geometric_Info/HORIZONTAL_CS_NAME',
-                self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-12.sentinel2.eo.esa.int/PSD/S2_PDI_Level-1C_Tile_Metadata.xsd'
-                },
+                self.Name_XPath: '/n1:Level-1C_Tile_ID/n1:Geometric_Info//HORIZONTAL_CS_NAME',
                 self.Name_Other_Metadata_Bus_Xml: 'MTD_TL'
             },
             {
@@ -263,9 +201,6 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
                 self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//GENERATION_TIME',
-                self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
-                },
                 self.Name_Other_Metadata_Bus_Xml: 'MTD_MSIL1C'
             },
             {
@@ -275,11 +210,7 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
             {
                 self.Name_ID: 'productname',  # 产品名称，有的能从卫星元数据里面取，没有就不取
                 self.Name_XPath: '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation'
-                                 '/gmd:CI_Citation/gmd:title/gco:CharacterString',
-                self.Name_Name_Space_Map: {
-                    'gmd': 'http://www.isotc211.org/2005/gmd',
-                    'gco': 'http://www.isotc211.org/2005/gco'
-                }
+                                 '/gmd:CI_Citation/gmd:title/gco:CharacterString'
             },
             {
                 self.Name_ID: 'producttype',  # 产品类型 必填
@@ -288,9 +219,6 @@ class CSatFilePlugins_s2a_s2msi1c(COpticalSatPlugins):
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
                 self.Name_XPath: '/n1:Level-1C_User_Product/n1:General_Info//PROCESSING_LEVEL',
-                self.Name_Name_Space_Map: {
-                    'n1': 'https://psd-14.sentinel2.eo.esa.int/PSD/User_Product_Level-1C.xsd'
-                },
                 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
                     'Level-1C': 'L1'
                 },

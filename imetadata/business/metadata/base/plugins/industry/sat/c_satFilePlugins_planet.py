@@ -94,31 +94,19 @@ class CSatFilePlugins_planet(COpticalSatPlugins):
         return [
             {
                 self.Name_ID: self.Name_Time,
-                self.Name_XPath: '/ps:EarthObservation/gml:metaDataProperty/ps:EarthObservationMetaData/eop:downlinkedTo/eop:DownlinkInformation/eop:acquisitionDate',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': '',
-                    'eop': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:metaDataProperty/ps:EarthObservationMetaData'
+                                 '/eop:downlinkedTo/eop:DownlinkInformation/eop:acquisitionDate',
                 self.Name_Format: self.MetaDataFormat_XML
 
             },
             {
                 self.Name_ID: self.Name_Start_Time,
                 self.Name_XPath: '/ps:EarthObservation/gml:validTime/gml:TimePeriod/gml:beginPosition',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': ''
-                },
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
                 self.Name_ID: self.Name_End_Time,
                 self.Name_XPath: '/ps:EarthObservation/gml:validTime/gml:TimePeriod/gml:endPosition',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': ''
-                },
                 self.Name_Format: self.MetaDataFormat_XML
             }
         ]
@@ -149,84 +137,43 @@ class CSatFilePlugins_planet(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'centerlatitude',  # 中心维度
-                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/gml:centerOf/gml:pos',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': ''
-                },
-
+                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/gml:centerOf/gml:pos'
             },
             {
                 self.Name_ID: 'centerlongitude',  # 中心经度
-                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/gml:centerOf/gml:pos',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/gml:centerOf/gml:pos'
             },
             {
                 self.Name_ID: 'topleftlatitude',  # 左上角维度 必填
-                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:topLeft/ps:latitude',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:topLeft/ps:latitude'
             },
             {
                 self.Name_ID: 'topleftlongitude',  # 左上角经度 必填
-                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:topLeft/ps:longitude',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:topLeft/ps:longitude'
             },
             {
                 self.Name_ID: 'toprightlatitude',  # 右上角维度 必填
-                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:topRight/ps:latitude',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:topRight/ps:latitude'
             },
             {
                 self.Name_ID: 'toprightlongitude',  # 右上角经度 必填
-                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:topRight/ps:longitude',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:topRight/ps:longitude'
             },
             {
                 self.Name_ID: 'bottomrightlatitude',  # 右下角维度 必填
-                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:bottomRight/ps:latitude',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:bottomRight/ps:latitude'
             },
             {
                 self.Name_ID: 'bottomrightlongitude',  # 右下角经度 必填
-                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:bottomRight/ps:longitude',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:bottomRight/ps:longitude'
             },
             {
                 self.Name_ID: 'bottomleftlatitude',  # 左下角维度 必填
-                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:bottomLeft/ps:latitude',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:bottomLeft/ps:latitude'
             },
             {
                 self.Name_ID: 'bottomleftlongitude',  # 左下角经度 必填
-                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:bottomLeft/ps:longitude',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:target/ps:Footprint/ps:geographicLocation/ps:bottomLeft/ps:longitude'
             },
             {
                 self.Name_ID: 'transformimg',  # 斜视图,可空,不用质检
@@ -234,48 +181,23 @@ class CSatFilePlugins_planet(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
-                self.Name_XPath: '/ps:EarthObservation/gml:metaDataProperty/ps:EarthObservationMetaData/eop:downlinkedTo/eop:DownlinkInformation/eop:acquisitionDate',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': '',
-                    'eop': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:metaDataProperty/ps:EarthObservationMetaData/eop:downlinkedTo/eop:DownlinkInformation/eop:acquisitionDate'
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/ps:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:sensor/ps:Sensor/eop:resolution',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': '',
-                    'eop': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:sensor/ps:Sensor/eop:resolution'
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
-                self.Name_XPath: '/ps:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:acquisitionParameters/ps:Acquisition/ps:spaceCraftViewAngle',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': '',
-                    'eop': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:acquisitionParameters/ps:Acquisition/ps:spaceCraftViewAngle'
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量 /ProductMetaData/CloudPercent
-                self.Name_XPath: '/ps:EarthObservation/gml:resultOf/ps:EarthObservationResult/opt:cloudCoverPercentage',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': '',
-                    'opt': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:resultOf/ps:EarthObservationResult/opt:cloudCoverPercentage'
             },
             {
                 self.Name_ID: 'dataum',  # 坐标系 默认为null
-                self.Name_XPath: '/ps:EarthObservation/gml:resultOf/ps:EarthObservationResult/eop:product/ps:ProductInformation/ps:spatialReferenceSystem/ps:epsgCode',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': '',
-                    'eop': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:resultOf/ps:EarthObservationResult/eop:product/ps:ProductInformation/ps:spatialReferenceSystem/ps:epsgCode'
             },
             {
                 self.Name_ID: 'acquisition_id',  # 轨道号
@@ -304,12 +226,7 @@ class CSatFilePlugins_planet(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productattribute',  # 产品属性 必填
-                self.Name_XPath: '/ps:EarthObservation/gml:metaDataProperty/ps:EarthObservationMetaData/eop:productType',
-                self.Name_Name_Space_Map: {
-                    'ps': '',
-                    'gml': '',
-                    'eop': ''
-                },
+                self.Name_XPath: '/ps:EarthObservation/gml:metaDataProperty/ps:EarthObservationMetaData/eop:productType'
 
             },
             {

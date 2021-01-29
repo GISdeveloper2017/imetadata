@@ -36,7 +36,7 @@ class CViewCreatorSatRaster(CViewCreatorRaster):
         """
         """
         browse_full_path = CFile.join_file(self.view_path, '{0}_browse.png'.format(self.object_id))
-        thumb_full_path = CFile.join_file(self.view_path, '{0_thumb.jpg'.format(self.object_id))
+        thumb_full_path = CFile.join_file(self.view_path, '{0}_thumb.jpg'.format(self.object_id))
         geotiff_full_path = CFile.join_file(self.view_path, '{0}_browse.tiff'.format(self.object_id))
 
         # 进程调用模式
@@ -50,11 +50,33 @@ class CViewCreatorSatRaster(CViewCreatorRaster):
         # result_view = self.create_view(self.file_info.file_name_with_full_path, browse_full_path, thumb_full_path,
         #                                geotiff_full_path)
         # result_view = self.create_view_json(json_out_view)
+
         if CResult.result_success(result_view):
+            # 清理不必要的文件
+            delect_file_list = list()
+            delect_file_list.append('{0}.aux.xml'.format(browse_full_path))
+            delect_file_list.append('{0}.aux.xml'.format(thumb_full_path))
+            delect_file_list.append(geotiff_full_path)
+            for delect_file in delect_file_list:
+                if CFile.file_or_path_exist(delect_file):
+                    CFile.remove_file(delect_file)
+
             result = CResult.merge_result(self.Success, '处理完毕!')
             result = CResult.merge_result_info(result, self.Name_Browse, CFile.file_name(browse_full_path))
             result = CResult.merge_result_info(result, self.Name_Thumb, CFile.file_name(thumb_full_path))
             result = CResult.merge_result_info(result, self.Name_Browse_GeoTiff, CFile.file_name(geotiff_full_path))
         else:
+            # 清理不必要的文件
+            delect_file_list = list()
+            delect_file_list.append(browse_full_path)
+            delect_file_list.append(thumb_full_path)
+            delect_file_list.append('{0}.aux.xml'.format(browse_full_path))
+            delect_file_list.append('{0}.aux.xml'.format(thumb_full_path))
+            delect_file_list.append(geotiff_full_path)
+            for delect_file in delect_file_list:
+                if CFile.file_or_path_exist(delect_file):
+                    CFile.remove_file(delect_file)
+
             result = result_view
+
         return result

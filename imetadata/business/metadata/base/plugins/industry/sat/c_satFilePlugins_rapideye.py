@@ -82,31 +82,19 @@ class CSatFilePlugins_rapideye(COpticalSatPlugins):
         return [
             {
                 self.Name_ID: self.Name_Time,
-                self.Name_XPath: '/re:EarthObservation/gml:metaDataProperty/re:EarthObservationMetaData/eop:downlinkedTo/eop:DownlinkInformation/eop:acquisitionDate',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml',
-                    'eop': 'http://earth.esa.int/eop'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:metaDataProperty/re:EarthObservationMetaData'
+                                 '/eop:downlinkedTo/eop:DownlinkInformation/eop:acquisitionDate',
                 self.Name_Format: self.MetaDataFormat_XML
 
             },
             {
                 self.Name_ID: self.Name_Start_Time,
                 self.Name_XPath: '/re:EarthObservation/gml:validTime/gml:TimePeriod/gml:beginPosition',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml'
-                },
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
                 self.Name_ID: self.Name_End_Time,
                 self.Name_XPath: '/re:EarthObservation/gml:validTime/gml:TimePeriod/gml:endPosition',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml'
-                },
                 self.Name_Format: self.MetaDataFormat_XML
             }
         ]
@@ -133,12 +121,7 @@ class CSatFilePlugins_rapideye(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'sensorid',  # 传感器 必填,从元数据组织定义，必须是标准命名的传感器名称
-                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:sensor/re:Sensor/eop:sensorType',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml',
-                    'eop': 'http://earth.esa.int/eop'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:sensor/re:Sensor/eop:sensorType'
             },
             {
                 self.Name_ID: 'centerlatitude',  # 中心维度
@@ -150,67 +133,35 @@ class CSatFilePlugins_rapideye(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'topleftlatitude',  # 左上角维度 必填
-                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:topLeft/re:latitude',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:topLeft/re:latitude'
             },
             {
                 self.Name_ID: 'topleftlongitude',  # 左上角经度 必填
-                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:topLeft/re:longitude',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:topLeft/re:longitude'
             },
             {
                 self.Name_ID: 'toprightlatitude',  # 右上角维度 必填
-                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:topRight/re:latitude',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:topRight/re:latitude'
             },
             {
                 self.Name_ID: 'toprightlongitude',  # 右上角经度 必填
-                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:topRight/re:longitude',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:topRight/re:longitude'
             },
             {
                 self.Name_ID: 'bottomrightlatitude',  # 右下角维度 必填
-                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:bottomRight/re:latitude',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:bottomRight/re:latitude'
             },
             {
                 self.Name_ID: 'bottomrightlongitude',  # 右下角经度 必填
-                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:bottomRight/re:longitude',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:bottomRight/re:longitude'
             },
             {
                 self.Name_ID: 'bottomleftlatitude',  # 左下角维度 必填
-                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:bottomLeft/re:latitude',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:bottomLeft/re:latitude'
             },
             {
                 self.Name_ID: 'bottomleftlongitude',  # 左下角经度 必填
-                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:bottomLeft/re:longitude',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:target/re:Footprint/re:geographicLocation/re:bottomLeft/re:longitude'
             },
             {
                 self.Name_ID: 'transformimg',  # 斜视图,可空,不用质检
@@ -218,39 +169,19 @@ class CSatFilePlugins_rapideye(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'centertime',  # 影像获取时间 必填
-                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:acquisitionParameters/re:Acquisition/re:acquisitionDateTime',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml',
-                    'eop': 'http://earth.esa.int/eop'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:acquisitionParameters/re:Acquisition/re:acquisitionDateTime'
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:sensor/re:Sensor/eop:resolution',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml',
-                    'eop': 'http://earth.esa.int/eop'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:sensor/re:Sensor/eop:resolution'
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
-                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:acquisitionParameters/re:Acquisition/re:spaceCraftViewAngle',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml',
-                    'eop': 'http://earth.esa.int/eop'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:acquisitionParameters/re:Acquisition/re:spaceCraftViewAngle'
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量 /ProductMetaData/CloudPercent
-                self.Name_XPath: '/re:EarthObservation/gml:resultOf/re:EarthObservationResult/opt:cloudCoverPercentage',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml',
-                    'opt': 'http://www.w3.org/2001/XMLSchema-instance'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:resultOf/re:EarthObservationResult/opt:cloudCoverPercentage'
             },
             {
                 self.Name_ID: 'dataum',  # 坐标系 默认为null
@@ -266,11 +197,8 @@ class CSatFilePlugins_rapideye(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
-                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment/eop:acquisitionParameters/re:Acquisition/re:acquisitionDateTime',
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml'
-                },
+                self.Name_XPath: '/re:EarthObservation/gml:using/eop:EarthObservationEquipment'
+                                 '/eop:acquisitionParameters/re:Acquisition/re:acquisitionDateTime'
             },
             {
                 self.Name_ID: 'remark',  # 备注 可空
@@ -292,12 +220,7 @@ class CSatFilePlugins_rapideye(COpticalSatPlugins):
                     'L2B': 'L2',
                     'L4B': 'L4',
                     self.Name_Default: 'L1'
-                },
-                self.Name_Name_Space_Map: {
-                    're': 'http://schemas.rapideye.de/products/productMetadataSensor',
-                    'gml': 'http://www.opengis.net/gml',
-                    'eop': 'http://earth.esa.int/eop'
-                },
+                }
 
             },
             {

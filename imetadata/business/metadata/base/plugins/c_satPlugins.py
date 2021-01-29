@@ -636,10 +636,11 @@ class CSatPlugins(CPlugins):
         :return:
         """
         metadata_file_copy_list = list()
-        if not CUtils.equal_ignore_case(self.metadata_bus_src_filename_with_path, ''):
-            metadata_file_copy_list.append(
-                self.metadata_bus_src_filename_with_path.replace(self.get_sat_file_originally_path(), '')
-            )
+        # 业务元数据复制到快视拇指文件夹下，根据需要确认是否放开
+        # if not CUtils.equal_ignore_case(self.metadata_bus_src_filename_with_path, ''):
+        #     metadata_file_copy_list.append(
+        #         self.metadata_bus_src_filename_with_path.replace(self.get_sat_file_originally_path(), '')
+        #     )
 
         metadata_view_list = self.parser_metadata_view_list(parser)
         if len(metadata_view_list) > 0:
@@ -901,7 +902,6 @@ class CSatPlugins(CPlugins):
             # 取出必要使用的值
             item_id = CUtils.dict_value_by_name(item_configuration, self.Name_ID, 'None')
             xml_xpath = CUtils.dict_value_by_name(item_configuration, self.Name_XPath, None)
-            xpath_namespace = CUtils.dict_value_by_name(item_configuration, self.Name_Name_Space_Map, None)
             default_value = CUtils.dict_value_by_name(item_configuration, self.Name_Value, None)
             other_xml_setting = CUtils.dict_value_by_name(item_configuration, self.Name_Other_Metadata_Bus_Xml, None)
             custom_item = CUtils.dict_value_by_name(item_configuration, self.Name_Custom_Item, None)
@@ -917,7 +917,7 @@ class CSatPlugins(CPlugins):
 
                 # 开始从xml里面取值
                 if xml_xpath is not None:
-                    real_value = temp_metadata.get_element_text_by_xpath_one(xml_xpath, xpath_namespace)
+                    real_value = temp_metadata.get_element_text_by_xpath_one(xml_xpath)
                 elif custom_item is not None:
                     if CUtils.equal_ignore_case(item_id, 'resolution'):
                         real_value = self.metadata_bus_to_dict_custom_transition_resolution(

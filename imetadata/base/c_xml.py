@@ -95,30 +95,38 @@ class CXml:
         return etree.tostring(self.__xml_tree, xml_declaration=False, pretty_print=False, encoding="utf-8").decode(
             'utf-8')
 
-    def xpath_one(self, query, namespace=None) -> etree:
+    def xpath_one(self, query) -> etree:
         """
         根据给定的xpath查询语句, 查询出合适的节点
         :param query:
-        :param namespace:
         :return:
         """
-        list_result = self.xpath(query, namespace)
+        list_result = self.xpath(query)
         if len(list_result) == 0:
             return None
         else:
             return list_result[0]
 
-    def xpath(self, query, namespace=None) -> list:
+    def xpath(self, query) -> list:
         """
         根据给定的xpath查询语句, 查询出合适的节点
         :param query:
-        :param namespace:
         :return:
         """
         if self.__xml_tree is None:
             return []
         else:
-            return self.__xml_tree.xpath(query, namespaces=namespace)
+            namespace = self.get_name_space_map()
+            if len(namespace) > 0:
+                return self.__xml_tree.xpath(query, namespaces=namespace)
+            else:
+                return self.__xml_tree.xpath(query)
+
+    def get_name_space_map(self):
+        if self.__xml_root_node is None:
+            return {}
+
+        return self.__xml_root_node.nsmap
 
     @classmethod
     def node_xpath_one(cls, xml_node, query) -> etree:
@@ -257,14 +265,13 @@ class CXml:
         else:
             return element.text
 
-    def get_element_text_by_xpath_one(self, query: str, namespace=None):
+    def get_element_text_by_xpath_one(self, query: str):
         """
         根据xpath路径获取对应节点的文本
         :param query:
-        :param namespace:
         :return:
         """
-        node_element = self.xpath_one(query, namespace)
+        node_element = self.xpath_one(query)
         node_text = self.get_element_text(node_element)
         return node_text
 
