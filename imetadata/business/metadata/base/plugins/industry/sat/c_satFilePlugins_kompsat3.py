@@ -209,3 +209,14 @@ class CSatFilePlugins_kompsat3(COpticalSatPlugins):
                 self.Name_Value: None
             }
         ]
+
+    def metadata_bus_dict_process_custom(self, metadata_bus_dict):
+        super().metadata_bus_dict_process_custom(metadata_bus_dict)
+        centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
+        publishdate = CUtils.dict_value_by_name(metadata_bus_dict, 'publishdate', None)
+        if not CUtils.equal_ignore_case(centertime, ''):
+            centertime = centertime[0:8] + ' ' + centertime[8:]
+            metadata_bus_dict['centertime'] = centertime
+        if not CUtils.equal_ignore_case(publishdate, ''):
+            publishdate = publishdate[0:8] + ' ' + publishdate[8:]
+            metadata_bus_dict['publishdate'] = publishdate

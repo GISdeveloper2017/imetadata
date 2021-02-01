@@ -28,9 +28,9 @@ class CSatFilePlugins_zy1e_ahsi(CSatFilePlugins_zy1e):
             TextMatchType_Regex: 正则表达式
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)^ZY1E_AHSI.*', self.TextMatchType_Regex
+            return r'(?i)^ZY1E_AHSI.*_.*_.*', self.TextMatchType_Regex
         else:
-            return r'(?i)^ZY1E_AHSI.*[.]tiff$', self.TextMatchType_Regex
+            return r'(?i)^ZY1E_AHSI.*_.*_.*[.]tiff$', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """
@@ -39,7 +39,7 @@ class CSatFilePlugins_zy1e_ahsi(CSatFilePlugins_zy1e):
         """
         return CFile.join_file(
             self.file_content.content_root_dir,
-            self.get_fuzzy_metadata_file('.*(?&lt;!Check)\.xml', '{0}.xml'.format(self.classified_object_name())
+            self.get_fuzzy_metadata_file('.*(?!lt;!Check)\.xml', '{0}.xml'.format(self.classified_object_name())
                                          )
         )
 
@@ -47,7 +47,7 @@ class CSatFilePlugins_zy1e_ahsi(CSatFilePlugins_zy1e):
         return [
             {
                 self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^ZY1E_AHSI.*[.]tiff$',
-                                                                 '{0}.tiff'.format(self.classified_object_name())),
+                                                                 '{0}_OPG.tiff'.format(self.classified_object_name())),
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '全色文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -199,6 +199,6 @@ class CSatFilePlugins_zy1e_ahsi(CSatFilePlugins_zy1e):
             },
             {
                 self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
-                self.Name_Value: '.*(?&lt;!Check)\.xml'
+                self.Name_Value: '.*(?!lt;!Check)\.xml'
             }
         ]

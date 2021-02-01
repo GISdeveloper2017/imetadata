@@ -6,8 +6,8 @@ class CSatFilePlugins_gf3_dh(CSatFilePlugins_gf3):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'GF3_EXT'
-        information[self.Plugins_Info_Type_Title] = '高分三号EXT传感器'
+        information[self.Plugins_Info_Type] = 'GF3'
+        information[self.Plugins_Info_Type_Title] = '高分三号'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):

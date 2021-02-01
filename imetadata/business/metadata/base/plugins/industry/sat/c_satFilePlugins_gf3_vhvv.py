@@ -11,8 +11,8 @@ class CSatFilePlugins_gf3_vhvv(CSatFilePlugins_gf3):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'GF3_WSC'
-        information[self.Plugins_Info_Type_Title] = '高分三号WSC传感器'
+        information[self.Plugins_Info_Type] = 'GF3'
+        information[self.Plugins_Info_Type_Title] = '高分三号'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
@@ -41,7 +41,7 @@ class CSatFilePlugins_gf3_vhvv(CSatFilePlugins_gf3):
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
-                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)GF3_.*_VV_.*_strip_0[.]tiff',
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)GF3_.*_VV_.*[.]tiff',
                                                                  '{0}.tiff'.format(self.classified_object_name())),
                 self.Name_ID: '影像tiff',
                 self.Name_Title: '影像文件',

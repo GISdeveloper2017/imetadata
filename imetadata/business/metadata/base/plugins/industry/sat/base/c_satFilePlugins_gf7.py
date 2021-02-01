@@ -132,7 +132,7 @@ class CSatFilePlugins_gf7(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productid',  # 产品id 默认取主文件全名
-                self.Name_Value: None
+                self.Name_XPath: '/sensor_corrected_metadata/processInfo/ProduceID'
             },
             {
                 self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
