@@ -285,6 +285,13 @@ class CPlugins(CResource):
             else:
                 return result
 
+            # 自定义的元数据质检
+            if CResult.result_success(result):
+                self.qa_metadata_custom(parser)
+                result = parser.save_quality()
+            else:
+                return result
+
             if CResult.result_success(result):
                 return CResult.merge_result(
                     self.Success,
@@ -869,8 +876,6 @@ class CPlugins(CResource):
         else:
             parser.metadata.set_metadata_bus(
                 self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text, '')
-        # 自定义的元数据质检
-        self.qa_metadata_custom(parser)
 
     def qa_metadata_custom(self, parser: CMetaDataParser):
         """

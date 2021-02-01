@@ -112,13 +112,15 @@ class CRasterMDReader(CMDReader):
                 if spatial.ImportFromWkt(projection) == gdal.CE_None:
                     proj_wkt = spatial.ExportToWkt()
                     json_coordinate.set_value_of_name('wkt', proj_wkt)
+                    proj4 = spatial.ExportToProj4()
+                    json_coordinate.set_value_of_name('proj4', proj4)
+                    spatial.MorphToESRI()
+                    esri = spatial.ExportToWkt()
+                    json_coordinate.set_value_of_name('esri', esri)
                 else:
                     json_coordinate.set_value_of_name('wkt', projection)
-                proj4 = spatial.ExportToProj4()
-                json_coordinate.set_value_of_name('proj4', proj4)
-                spatial.MorphToESRI()
-                esri = spatial.ExportToWkt()
-                json_coordinate.set_value_of_name('esri', esri)
+                    json_coordinate.set_value_of_name('proj4', None)
+                    json_coordinate.set_value_of_name('esri', None)
                 spatial = None
             else:
                 json_coordinate.set_value_of_name('wkt', None)
@@ -298,10 +300,16 @@ class CRasterMDReader(CMDReader):
                 prosrs = osr.SpatialReference()
                 prosrs.ImportFromWkt(projection)
                 geosrs = prosrs.CloneGeogCS()
+
+                if "GetPROJVersionMajor" in dir(osr) and osr.GetPROJVersionMajor() >= 6:  # gdal>=3.0
+                    prosrs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+                    geosrs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+
                 ct = osr.CreateCoordinateTransformation(prosrs, geosrs)
                 if ct is not None:
                     rb = ct.TransformPoint(point_right_bottom_x, point_right_bottom_y)
                     lu = ct.TransformPoint(point_left_top_x, point_left_top_y)
+
                     json_bounding = CJson()
                     json_bounding.set_value_of_name('left', lu[0])
                     json_bounding.set_value_of_name('top', lu[1])

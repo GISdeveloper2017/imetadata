@@ -253,8 +253,8 @@ class CMetaDataParser(CParser):
         return md_spatial_extractor.process()
 
     def save_metadata_data_and_bus(self) -> str:
+        metadata_extract_result, metadata_extract_memo, metadata_type, metadata_text = self.metadata.metadata()
         try:
-            metadata_extract_result, metadata_extract_memo, metadata_type, metadata_text = self.metadata.metadata()
             CFactory().give_me_db(self.file_info.db_server_id).execute(
                 '''
                 update dm2_storage_object
@@ -312,10 +312,9 @@ class CMetaDataParser(CParser):
             )
 
         # 处理业务元数据
+        metadata_bus_extract_result, metadata_bus_extract_memo, metadata_bus_type, metadata_bus_text \
+            = self.metadata.metadata_bus()
         try:
-            metadata_bus_extract_result, metadata_bus_extract_memo, metadata_bus_type, metadata_bus_text \
-                = self.metadata.metadata_bus()
-
             CFactory().give_me_db(self.file_info.db_server_id).execute(
                 '''
                 update dm2_storage_object
@@ -370,6 +369,10 @@ class CMetaDataParser(CParser):
                         error.__str__())
                 }
             )
+
+        return CResult.merge_result(self.Success, '元数据和业务元数据处理完毕!')
+
+    def save_quality(self) -> str:
         try:
             file_quality_text = self.metadata.quality.to_xml()
             file_quality_summary_text = self.metadata.quality.summary()
@@ -386,10 +389,12 @@ class CMetaDataParser(CParser):
                     'dsoid': self.object_id,
                 }
             )
-            return CResult.merge_result(self.Success, '元数据和业务元数据处理完毕!')
+            return CResult.merge_result(self.Success, '质检结果分析存储完毕!')
         except Exception as error:
-            return CResult.merge_result(self.Failure,
-                                        '元数据和业务元数据处理完毕, 但质检结果入库时发生异常, 错误信息为: [{0}]'.format(error.__str__()))
+            return CResult.merge_result(
+                self.Failure,
+                '质检结果分析完毕, 但质检结果存储时发生异常, 错误信息为: [{0}]'.format(error.__str__())
+            )
 
     def save_metadata_time(self) -> str:
         """

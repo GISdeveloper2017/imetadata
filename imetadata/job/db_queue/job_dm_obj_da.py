@@ -108,7 +108,7 @@ where dso_da_status = 2
                     module_access = self.DataAccess_Unknown
                     module_access_message = '模块[{0}]解析出现异常, 原因为[{1}], 请检查!'.format(file_main_name, error.__str__())
                     module_obj = {self.Name_Audit: self.Name_System, self.Name_Result: module_access,
-                                  self.Name_Title: module_title, self.Name_Message: module_access_message}
+                                  self.Name_Title: file_main_name, self.Name_Message: module_access_message}
                     dso_da_json.set_value_of_name(file_main_name, module_obj)
 
             self.db_update_status(
