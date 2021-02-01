@@ -16,6 +16,7 @@ from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransforme
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.parser.metadata.view.c_viewCreatorSatRaster import CViewCreatorSatRaster
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
+from imetadata.database.c_factory import CFactory
 
 
 class CSatPlugins(CPlugins):
@@ -265,6 +266,26 @@ class CSatPlugins(CPlugins):
         :return:
         """
         super().qa_file_custom(parser)
+
+        for qa_file_dict in self.init_qa_file_list(parser):
+            qa_file_path = CFile.join_file(
+                self.file_content.content_root_dir, CUtils.dict_value_by_name(qa_file_dict, self.Name_FileName, '')
+            )
+            if not CFile.file_or_path_exist(qa_file_path):
+                parser.metadata.quality.append_total_quality(
+                    {
+                        self.Name_FileName: '',
+                        self.Name_ID: CUtils.dict_value_by_name(qa_file_dict, self.Name_ID, ''),
+                        self.Name_Title: CUtils.dict_value_by_name(qa_file_dict, self.Name_Title, ''),
+                        self.Name_Result:
+                            CUtils.dict_value_by_name(qa_file_dict, self.Name_Result, self.QA_Result_Pass),
+                        self.Name_Group:
+                            CUtils.dict_value_by_name(qa_file_dict, self.Name_Group, self.QA_Group_Data_Integrity),
+                        self.Name_Message:
+                            '本卫星数据缺少{0}'.format(CUtils.dict_value_by_name(qa_file_dict, self.Name_Title, ''))
+                    }
+                )
+
         self.metadata_bus_transformer_type = self.Transformer_XML
         self.metadata_bus_src_filename_with_path = self.get_metadata_bus_filename_by_file()
         if not CFile.file_or_path_exist(self.metadata_bus_src_filename_with_path):
@@ -275,7 +296,7 @@ class CSatPlugins(CPlugins):
                     self.Name_Title: '业务元数据文件',
                     self.Name_Result: self.QA_Result_Error,
                     self.Name_Group: self.QA_Group_Data_Integrity,
-                    self.Name_Message: '本文件缺少业务元数据'
+                    self.Name_Message: '本卫星数据缺少业务元数据'
                 }
             )
         else:
@@ -317,7 +338,7 @@ class CSatPlugins(CPlugins):
                         self.Name_Title: '快视图',
                         self.Name_Result: self.QA_Result_Error,
                         self.Name_Group: self.QA_Group_Data_Integrity,
-                        self.Name_Message: '本文件缺少快视图'
+                        self.Name_Message: '本卫星数据缺少快视图'
                     }
                 )
             else:
@@ -340,7 +361,7 @@ class CSatPlugins(CPlugins):
                         self.Name_Title: '拇指图',
                         self.Name_Result: self.QA_Result_Error,
                         self.Name_Group: self.QA_Group_Data_Integrity,
-                        self.Name_Message: '本文件缺少拇指图'
+                        self.Name_Message: '本卫星数据缺少拇指图'
                     }
                 )
             else:
@@ -363,7 +384,7 @@ class CSatPlugins(CPlugins):
                         self.Name_Title: '转换预览图文件',
                         self.Name_Result: self.QA_Result_Error,
                         self.Name_Group: self.QA_Group_Data_Integrity,
-                        self.Name_Message: '本文件缺少转换预览图的文件'
+                        self.Name_Message: '本卫星数据缺少转换预览图的文件'
                     }
                 )
             else:
@@ -378,18 +399,32 @@ class CSatPlugins(CPlugins):
                     }
                 )
 
-    def get_metadata_bus_xml_when_parser_time(self, parser: CMetaDataParser, xml_type) -> CXml:
+    def get_parser_time_when_metadata_bus_xml(self, parser: CMetaDataParser, metadata_time_item):
         """
         因卫星部分插件存在多xml的情况，故而扩展出接口对卫星插件的情况做特殊处理
         """
-        metadata_bus_xml_dict = self.get_multiple_metadata_bus_filename_with_path(self.get_sat_file_originally_path())
-        metadata_bus_xml_file = CUtils.dict_value_by_name(metadata_bus_xml_dict, xml_type, None)
-        if metadata_bus_xml_file is None:
-            return parser.metadata.metadata_bus_xml()
+        metadata_bus_xml_type = CUtils.dict_value_by_name(metadata_time_item, self.Name_Other_Metadata_Bus_Xml, None)
+        if metadata_bus_xml_type is not None:
+            metadata_bus_xml_dict = \
+                self.get_multiple_metadata_bus_filename_with_path(self.get_sat_file_originally_path())
+            metadata_bus_xml_file = \
+                CUtils.dict_value_by_name(metadata_bus_xml_dict, metadata_bus_xml_type, None)
+            if metadata_bus_xml_file is not None:
+                try:
+                    metadata_Cxml = CXml()
+                    metadata_Cxml.load_file(metadata_bus_xml_file)
+                except Exception:
+                    metadata_Cxml = parser.metadata.metadata_bus_xml()
+            else:
+                metadata_Cxml = parser.metadata.metadata_bus_xml()
         else:
-            metadata_Cxml = CXml()
-            metadata_Cxml.load_file(metadata_bus_xml_file)
-            return metadata_Cxml
+            metadata_Cxml = parser.metadata.metadata_bus_xml()
+
+        return CXml.get_element_text(
+            metadata_Cxml.xpath_one(
+                CUtils.dict_value_by_name(metadata_time_item, self.Name_XPath, '')
+            )
+        )
 
     def parser_metadata_spatial_after_qa(self, parser: CMetaDataParser):
         """
@@ -519,19 +554,32 @@ class CSatPlugins(CPlugins):
         metadata_view_transform_file = self.get_transform_file_to_metadata_view(parser)
         if len(metadata_view_list) > 0:
             for metadata_view_item in metadata_view_list:
-                parser.metadata.set_metadata_view(
-                    self.DB_True,
-                    '文件[{0}]的预览图成功加载! '.format(self.classified_object_name()),
-                    CUtils.dict_value_by_name(metadata_view_item, self.Name_ID, self.View_MetaData_Type_Browse),
-                    CFile.join_file(
-                        data_view_sub_path,
-                        CFile.file_name(CUtils.dict_value_by_name(metadata_view_item, self.Name_FileName, ''))
+                if CFile.file_or_path_exist(CFile.join_file(
+                        originally_file_path, CUtils.dict_value_by_name(metadata_view_item, self.Name_FileName, '')
+                )):
+                    parser.metadata.set_metadata_view(
+                        self.DB_True,
+                        '卫星数据[{0}]的预览图成功加载! '.format(self.classified_object_name()),
+                        CUtils.dict_value_by_name(metadata_view_item, self.Name_ID, self.View_MetaData_Type_Browse),
+                        CFile.join_file(
+                            data_view_sub_path,
+                            CFile.file_name(CUtils.dict_value_by_name(metadata_view_item, self.Name_FileName, ''))
+                        )
                     )
-                )
-            result = CResult.merge_result(
-                self.Success,
-                '数据文件[{0}]的可视化信息解析成功! '.format(self.classified_object_name())
-            )
+                    result = CResult.merge_result(
+                        self.Success,
+                        '数据文件[{0}]的可视化信息解析成功! '.format(self.classified_object_name())
+                    )
+                else:
+                    parser.metadata.set_metadata_view(
+                        self.DB_False,
+                        '卫星数据[{0}]的预览图不存在!'
+                    )
+                    result = CResult.merge_result(
+                        self.Failure,
+                        '数据文件[{0}]的可视化信息解析失败! '.format(self.classified_object_name())
+                    )
+                    break
         # 此条件为特殊配置，即使用主文件生成预览图的情况
         elif not CUtils.equal_ignore_case(metadata_view_transform_file, ''):
             md_view_creator = CViewCreatorSatRaster(
@@ -551,13 +599,13 @@ class CSatPlugins(CPlugins):
                 try:
                     parser.metadata.set_metadata_view(
                         self.DB_True,
-                        '文件[{0}]的预览图成功加载! '.format(self.classified_object_name()),
+                        '卫星数据[{0}]的预览图成功加载! '.format(self.classified_object_name()),
                         self.View_MetaData_Type_Browse,
                         metadata_view_browse
                     )
                     parser.metadata.set_metadata_view(
                         self.DB_True,
-                        '文件[{0}]的拇指图成功加载! '.format(self.classified_object_name()),
+                        '卫星数据[{0}]的拇指图成功加载! '.format(self.classified_object_name()),
                         self.View_MetaData_Type_Thumb,
                         metadata_view_thumb
                     )
@@ -568,12 +616,14 @@ class CSatPlugins(CPlugins):
                 except Exception as error:
                     parser.metadata.set_metadata(
                         self.DB_False,
-                        '文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(metadata_view_transform_file,
-                                                                error.__str__()),
+                        '卫星数据[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(
+                            metadata_view_transform_file,
+                            error.__str__()
+                        ),
                         self.MetaDataFormat_Text,
                         '')
                     result = CResult.merge_result(
-                        self.Success,
+                        self.Failure,
                         '数据文件[{0}]的可视化信息解析失败! '.format(self.classified_object_name())
                     )
             else:
@@ -582,13 +632,13 @@ class CSatPlugins(CPlugins):
                     CResult.result_message(result)
                 )
                 result = CResult.merge_result(
-                    self.Success,
+                    self.Failure,
                     '数据文件[{0}]的可视化信息解析失败! '.format(self.classified_object_name())
                 )
         else:
             parser.metadata.set_metadata_view(
                 self.Success,
-                '文件[{0}]的预览图未配置'
+                '卫星数据[{0}]的预览图未配置'
             )
             result = CResult.merge_result(
                 self.Failure,
@@ -991,13 +1041,36 @@ class CSatPlugins(CPlugins):
         if CUtils.equal_ignore_case(centerlatitude, '') or CUtils.equal_ignore_case(centerlongitude, ''):
             topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
             topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
+            toprightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', None)
+            toprightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlongitude', None)
             bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
             bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
+            bottomleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlatitude', None)
+            bottomleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', None)
 
-            metadata_bus_dict['centerlatitude'] = \
-                (CUtils.to_decimal(topleftlatitude, None) + CUtils.to_decimal(bottomrightlatitude, None)) / 2
-            metadata_bus_dict['centerlongitude'] = \
-                (CUtils.to_decimal(topleftlongitude, None) + CUtils.to_decimal(bottomrightlongitude, None)) / 2
+            wkt = 'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
+                bottomleftlatitude, bottomleftlongitude, topleftlatitude, topleftlongitude,
+                toprightlatitude, toprightlongitude, bottomrightlatitude, bottomrightlongitude
+            )
+
+            try:
+                try:
+                    db_id = self.file_info.db_server_id
+                except Exception:
+                    db_id = self.DB_Server_ID_Distribution
+                if CUtils.equal_ignore_case(db_id, ''):
+                    db_id = self.DB_Server_ID_Distribution
+                db = CFactory().give_me_db(db_id)
+                metadata_bus_dict['centerlatitude'] = db.one_row(
+                    '''
+                    select st_y(st_centroid('{0}')) as centerlatitude
+                    '''.format(wkt)).value_by_name(0, 'centerlatitude', None)
+                metadata_bus_dict['centerlongitude'] = db.one_row(
+                    '''
+                    select st_x(st_centroid('{0}')) as centerlongitude
+                    '''.format(wkt)).value_by_name(0, 'centerlongitude', None)
+            except Exception:
+                pass
 
     def metadata_bus_dict_process_scientific_enumeration(self, metadata_bus_dict: dict):
         temp_dict = dict()
@@ -1011,12 +1084,12 @@ class CSatPlugins(CPlugins):
         temp_dict['bottomleftlongitude'] = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', None)
         temp_dict['rollangle'] = CUtils.dict_value_by_name(metadata_bus_dict, 'rollangle', None)
         temp_dict['cloudpercent'] = CUtils.dict_value_by_name(metadata_bus_dict, 'cloudpercent', None)
-        temp_dict['resolution'] = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
 
         for name, value in temp_dict.items():
             if not CUtils.equal_ignore_case(value, ''):
-                if ('e' in value) or ('E' in value):
-                    metadata_bus_dict[name] = CUtils.to_decimal(value, value)
+                if CUtils.text_is_string(value):
+                    if ('e' in value) or ('E' in value):
+                        metadata_bus_dict[name] = CUtils.to_decimal(value, value)
 
     def metadata_bus_dict_process_time(self, metadata_bus_dict: dict):
         centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)

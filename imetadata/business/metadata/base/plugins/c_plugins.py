@@ -560,14 +560,7 @@ class CPlugins(CResource):
                             self.Success,
                             '时间信息[{0}]成功解析! '.format(self.file_info.file_name_with_full_path),
                             CUtils.dict_value_by_name(metadata_time_item, self.Name_ID, self.Name_Time),
-                            CXml.get_element_text(
-                                self.get_metadata_bus_xml_when_parser_time(
-                                    parser,
-                                    CUtils.dict_value_by_name(metadata_time_item, self.Name_Other_Metadata_Bus_Xml, None)
-                                ).xpath_one(
-                                    CUtils.dict_value_by_name(metadata_time_item, self.Name_XPath, '')
-                                )
-                            )
+                            self.get_parser_time_when_metadata_bus_xml(parser, metadata_time_item)
                         )
                     else:
                         parser.metadata.set_metadata_time(
@@ -690,11 +683,15 @@ class CPlugins(CResource):
             '数据文件[{0}]的时间信息解析成功! '.format(self.file_info.file_name_with_full_path)
         )
 
-    def get_metadata_bus_xml_when_parser_time(self, parser: CMetaDataParser, xml_type) -> CXml:
+    def get_parser_time_when_metadata_bus_xml(self, parser: CMetaDataParser, metadata_time_item):
         """
         因卫星部分插件存在多xml的情况，故而扩展出接口对卫星插件的情况做特殊处理
         """
-        return parser.metadata.metadata_bus_xml()
+        return CXml.get_element_text(
+            parser.metadata.metadata_bus_xml().xpath_one(
+                CUtils.dict_value_by_name(metadata_time_item, self.Name_XPath, '')
+            )
+        )
 
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
         """

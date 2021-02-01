@@ -10,7 +10,7 @@ from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerSat import CMDTransformerSat
 
 
-class CMDTransformerSat_alos(CMDTransformerSat):
+class CMDTransformerSat_ikonos(CMDTransformerSat):
     def txt_to_xml(self, file_metadata_name_with_path: str):
         """
         完成 王学谦 txt文件转xml,在函数外提前定义xml对象并获取父节点传入，函数会将通过父节点构造xml对象 by王学谦
@@ -31,9 +31,7 @@ class CMDTransformerSat_alos(CMDTransformerSat):
                 node_item = xml_obj.create_element(node_root, 'item')
                 xml_obj.set_attr(node_item, self.Name_Name, CUtils.any_2_str(row_list[0]).strip())
                 if len(row_list) > 1:
-                    item_value = CUtils.any_2_str(row_list[1].strip())
-                    if item_value.startswith('"') and item_value.endswith('"'):
-                        item_value = item_value[1:-1]
+                    item_value = CUtils.any_2_str(row_list[1]).strip()
                     xml_obj.set_element_text(node_item, item_value)  # 设置item节点与属性与内容
         return xml_obj
 

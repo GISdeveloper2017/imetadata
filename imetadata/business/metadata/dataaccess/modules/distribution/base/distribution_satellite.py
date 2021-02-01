@@ -189,7 +189,7 @@ class distribution_satellite(distribution_base):
         main_table.column_list.column_by_name('endtime').set_value(
             dso_time_json.xpath_one('end_time', None)
         )
-        resolution = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
+        resolution = CUtils.any_2_str(CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None))
         if not CUtils.equal_ignore_case(resolution, ''):
             if '/' in resolution:
                 resolution_list = resolution.split('/')
