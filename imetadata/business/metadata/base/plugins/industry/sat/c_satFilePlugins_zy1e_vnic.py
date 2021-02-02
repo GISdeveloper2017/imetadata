@@ -151,7 +151,7 @@ class CSatFilePlugins_zy1e_vnic(CSatFilePlugins_zy1e):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_XPath: '/ProductMetaData/ImageGSD'
+                self.Name_XPath: '/ProductMetaData/ImageGSDLine'
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
@@ -167,7 +167,7 @@ class CSatFilePlugins_zy1e_vnic(CSatFilePlugins_zy1e):
             },
             {
                 self.Name_ID: 'acquisition_id',  # 轨道号
-                self.Name_XPath: None
+                self.Name_XPath: '/ProductMetaData/POrbitID'
             },
             {
                 self.Name_ID: 'copyright',  # 发布来源 从info取

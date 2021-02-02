@@ -34,7 +34,7 @@ class CSatFilePlugins_planet(COpticalSatPlugins):
             return r'(?i)^[1-9]\d{3}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])_(20|21|22|23|[0-1]\d)[0-5]\d[0-5]\d(_[0-9]{1,})?_[a-zA-Z0-9]{4}', \
                    self.TextMatchType_Regex
         else:
-            return r'(?i)^[1-9]\d{3}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])_(20|21|22|23|[0-1]\d)[0-5]\d[0-5]\d(_[0-9]{1,})?_[a-zA-Z0-9]{4}[.]tiff$', self.TextMatchType_Regex
+            return r'(?i).*_*(_*)?_*_*_AnalyticMS[.]tif', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
         """
@@ -50,39 +50,16 @@ class CSatFilePlugins_planet(COpticalSatPlugins):
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
-            # {
-            #     self.Name_FileName: self.get_fuzzy_metadata_file(
-            #         r'(?i)[1-9]\d{3}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])_(20|21|22|23|[0-1]\d)[0-5]\d[0-5]\d(_[0-9]{1,})?_[a-zA-Z0-9]{4}[.]tiff$',
-            #         '{0}.tiff'.format(self.classified_object_name())),
-            #     self.Name_ID: 'pan_tif',
-            #     self.Name_Title: '全色文件',
-            #     self.Name_Group: self.QA_Group_Data_Integrity,
-            #     self.Name_Result: self.QA_Result_Error,
-            #     self.Name_Format: self.DataFormat_Raster_File
-            # }
-        ]
-
-    def parser_metadata_view_list(self, parser: CMetaDataParser):
-        """
-        标准模式的反馈预览图和拇指图的名称
-        :param parser:
-        :return:
-        """
-        return [
-            # transform_planet_ccd.xsl中快视拇指信息注掉了
-            # {
-            #     self.Name_ID: self.View_MetaData_Type_Browse,
-            #     self.Name_FileName: self.get_fuzzy_metadata_file('.*MS.*_browser.jpg',
-            #                                                      '{0}_browser.jpg'.format(
-            #                                                          self.file_info.file_main_name), True
-            #                                                      )
-            # },
-            # {
-            #     self.Name_ID: self.View_MetaData_Type_Thumb,
-            #     self.Name_FileName: self.get_fuzzy_metadata_file(
-            #         '.*MS.*_thumb.jpg', '{0}_thumb.jpg'.format(self.file_info.file_main_name), True
-            #     )
-            # }
+            {
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i).*_*(_*)?_*_*_AnalyticMS[.]tif',
+                    '{0}_3B_AnalyticMS.tif'.format(self.classified_object_name())),
+                self.Name_ID: 'pan_tif',
+                self.Name_Title: '全色文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.DataFormat_Raster_File
+            }
         ]
 
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
@@ -116,8 +93,6 @@ class CSatFilePlugins_planet(COpticalSatPlugins):
         固定的列表，重写时不可缺项
         self.Name_ID：字段的名称 例：self.Name_ID: 'satelliteid'
         self.Name_XPath：需要从xml中取值时的xpath 例：self.Name_XPath: '/ProductMetaData/SatelliteID'
-        self.Name_Special_Configuration：对于字段resolution做的个性化配置，将从配置的列表中取出最小的值
-        例：self.Name_Special_Configuration: ['/ProductMetaData/ImageGSDLine','/ProductMetaData/ImageGSD',4]
         self.Name_Value：不在xml取得默认值与当XPath取不到值时取的值 例 self.Name_Value: 1
         self.Name_Map：映射，当取到的值为key的值时将值转换为value
         例 self.Name_Map: {  # 映射，当取到的值为key时，将值转换为value
@@ -209,8 +184,7 @@ class CSatFilePlugins_planet(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'publishdate',  # 发布时间 必填
-                # 老版插件内容已注掉
-                self.Name_XPath: ''
+                self.Name_XPath: '/ps:EarthObservation/gml:validTime/gml:TimePeriod/gml:endPosition'
             },
             {
                 self.Name_ID: 'remark',  # 备注 可空
@@ -218,7 +192,7 @@ class CSatFilePlugins_planet(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'productname',  # 产品名称，有的能从卫星元数据里面取，没有就不取
-                self.Name_XPath: None
+                self.Name_XPath: '/ps:EarthObservation/gml:metaDataProperty/ps:EarthObservationMetaData/eop:identifier'
             },
             {
                 self.Name_ID: 'producttype',  # 产品类型 必填
@@ -238,6 +212,21 @@ class CSatFilePlugins_planet(COpticalSatPlugins):
                 self.Name_Value: None
             }
         ]
+
+    def metadata_bus_dict_process_custom(self, metadata_bus_dict):
+        """
+        对部分需要进行运算的数据进行处理
+        """
+
+        super().metadata_bus_dict_process_custom(metadata_bus_dict)
+        centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
+        publishdate = CUtils.dict_value_by_name(metadata_bus_dict, 'publishdate', None)
+        if not CUtils.equal_ignore_case(publishdate, '') and '+' in centertime:
+            centertime = centertime[:centertime.find('+')]
+            metadata_bus_dict['centertime'] = centertime
+        if not CUtils.equal_ignore_case(publishdate, '') and '+' in publishdate:
+            publishdate = publishdate[:publishdate.find('+')]
+            metadata_bus_dict['publishdate'] = publishdate
 
     def parser_detail_custom(self, object_name):
         match_str = '(?i){0}.*[.].*'.format(object_name[:])

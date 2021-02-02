@@ -19,9 +19,9 @@ class Test_plugins_4024_zy1e_ahsi_file(Plugins_Test_Base):
         return [
             {
                 self.Name_Test_File_Type: self.FileType_File,
-                self.Name_Test_file_path: 'ZY1E_AHSI_E105.28_N24.15_20200503_003359_L1A0000078032.tar.gz',
+                self.Name_Test_file_path: 'ZY1E_AHSI_E108.96_N34.68_20200203_002068_L1A0000083728.tar.gz',
                 self.Name_Test_object_confirm: self.Object_Confirm_IKnown,
-                self.Name_Test_object_name: 'ZY1E_AHSI_E105.28_N24.15_20200503_003359_L1A0000078032'
+                self.Name_Test_object_name: 'ZY1E_AHSI_E108.96_N34.68_20200203_002068_L1A0000083728'
             }
         ]
 
