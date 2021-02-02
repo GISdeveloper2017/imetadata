@@ -19,7 +19,7 @@ class CMDTransformerSat_LandSat(CMDTransformerSat):
         """
         text_list = CFile.file_2_list(file_metadata_name_with_path)  # 获取mat文件作为列表
         if (text_list is None) or len(text_list) == 0:
-            raise  # 如果获取的文件内容为空，则抛出异常
+            raise Exception('元数据文件无法读取，请检查')  # 如果获取的文件内容为空，则抛出异常
 
         xml_obj = CXml()  # 建立xml对象
         node_root = xml_obj.new_xml('root')

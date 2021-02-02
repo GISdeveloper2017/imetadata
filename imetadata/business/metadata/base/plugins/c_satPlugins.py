@@ -2,6 +2,7 @@
 # @Time : 2020/9/19 18:24 
 # @Author : 王西亚 
 # @File : c_satPlugins.py
+import re
 from abc import abstractmethod
 
 from imetadata.base.c_file import CFile
@@ -1000,7 +1001,9 @@ class CSatPlugins(CPlugins):
 
         # 对于一些需要计算的数据进行运算
         try:
-            self.metadata_bus_dict_process_centerlonlat(metadata_bus_dict)
+            self.metadata_bus_dict_process_coordinates(
+                metadata_bus_dict, metadata_bus_xml, multiple_metadata_bus_filename_dict
+            )
             self.metadata_bus_dict_process_scientific_enumeration(metadata_bus_dict)
             self.metadata_bus_dict_process_time(metadata_bus_dict)
             self.metadata_bus_dict_process_custom(metadata_bus_dict)
@@ -1035,25 +1038,34 @@ class CSatPlugins(CPlugins):
         metadata_bus_xpath_value = '{0}T{1}'.format(time_date, time_time)
         return metadata_bus_xpath_value
 
-    def metadata_bus_dict_process_centerlonlat(self, metadata_bus_dict: dict):
+    def metadata_bus_dict_process_coordinates(
+            self, metadata_bus_dict, metadata_bus_xml, multiple_metadata_bus_filename_dict
+    ):
         centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
         centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
-        if CUtils.equal_ignore_case(centerlatitude, '') or CUtils.equal_ignore_case(centerlongitude, ''):
-            topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
-            topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
-            toprightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', None)
-            toprightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlongitude', None)
-            bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
-            bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
-            bottomleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlatitude', None)
-            bottomleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', None)
-
-            wkt = 'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
-                bottomleftlatitude, bottomleftlongitude, topleftlatitude, topleftlongitude,
-                toprightlatitude, toprightlongitude, bottomrightlatitude, bottomrightlongitude
-            )
-
-            try:
+        topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
+        topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
+        toprightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', None)
+        toprightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlongitude', None)
+        bottomrightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlatitude', None)
+        bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
+        bottomleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlatitude', None)
+        bottomleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', None)
+        try:
+            if CUtils.equal_ignore_case(centerlatitude, '') and \
+                    CUtils.equal_ignore_case(centerlongitude, '') and \
+                    not CUtils.equal_ignore_case(topleftlatitude, '') and \
+                    not CUtils.equal_ignore_case(topleftlongitude, '') and \
+                    not CUtils.equal_ignore_case(toprightlatitude, '') and \
+                    not CUtils.equal_ignore_case(toprightlongitude, '') and \
+                    not CUtils.equal_ignore_case(bottomrightlatitude, '') and \
+                    not CUtils.equal_ignore_case(bottomrightlongitude, '') and \
+                    not CUtils.equal_ignore_case(bottomleftlatitude, '') and \
+                    not CUtils.equal_ignore_case(bottomleftlongitude, ''):
+                wkt = 'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
+                    bottomleftlatitude, bottomleftlongitude, topleftlatitude, topleftlongitude,
+                    toprightlatitude, toprightlongitude, bottomrightlatitude, bottomrightlongitude
+                )
                 try:
                     db_id = self.file_info.db_server_id
                 except Exception:
@@ -1063,14 +1075,63 @@ class CSatPlugins(CPlugins):
                 db = CFactory().give_me_db(db_id)
                 metadata_bus_dict['centerlatitude'] = db.one_row(
                     '''
-                    select st_y(st_centroid('{0}')) as centerlatitude
-                    '''.format(wkt)).value_by_name(0, 'centerlatitude', None)
+                        select st_x(st_centroid('{0}')) as centerlatitude
+                        '''.format(wkt)).value_by_name(0, 'centerlatitude', None)
                 metadata_bus_dict['centerlongitude'] = db.one_row(
                     '''
-                    select st_x(st_centroid('{0}')) as centerlongitude
-                    '''.format(wkt)).value_by_name(0, 'centerlongitude', None)
-            except Exception:
-                pass
+                        select st_y(st_centroid('{0}')) as centerlongitude
+                        '''.format(wkt)).value_by_name(0, 'centerlongitude', None)
+
+            elif CUtils.equal_ignore_case(centerlatitude, '') and \
+                    CUtils.equal_ignore_case(centerlongitude, '') and \
+                    CUtils.equal_ignore_case(topleftlatitude, '') and \
+                    CUtils.equal_ignore_case(topleftlongitude, '') and \
+                    CUtils.equal_ignore_case(toprightlatitude, '') and \
+                    CUtils.equal_ignore_case(toprightlongitude, '') and \
+                    CUtils.equal_ignore_case(bottomrightlatitude, '') and \
+                    CUtils.equal_ignore_case(bottomrightlongitude, '') and \
+                    CUtils.equal_ignore_case(bottomleftlatitude, '') and \
+                    CUtils.equal_ignore_case(bottomleftlongitude, ''):
+                wkt = self.get_wkt_to_transform_coordinates(
+                    metadata_bus_dict, metadata_bus_xml, multiple_metadata_bus_filename_dict
+                )
+                if not CUtils.equal_ignore_case(wkt, ''):
+                    try:
+                        db_id = self.file_info.db_server_id
+                    except Exception:
+                        db_id = self.DB_Server_ID_Distribution
+                    if CUtils.equal_ignore_case(db_id, ''):
+                        db_id = self.DB_Server_ID_Distribution
+                    db = CFactory().give_me_db(db_id)
+                    metadata_bus_dict['centerlatitude'] = db.one_row(
+                        '''
+                            select st_x(st_centroid('{0}')) as centerlatitude
+                            '''.format(wkt)).value_by_name(0, 'centerlatitude', None)
+                    metadata_bus_dict['centerlongitude'] = db.one_row(
+                        '''
+                            select st_y(st_centroid('{0}')) as centerlongitude
+                            '''.format(wkt)).value_by_name(0, 'centerlongitude', None)
+                    tran_wkt = db.one_row(
+                        '''
+                        select ST_AsText(ST_Envelope(st_geomfromtext('{0}'))) as tran_wkt
+                        '''.format(wkt)).value_by_name(0, 'tran_wkt', None)
+                    tran_wkt = tran_wkt.replace('POLYGON((', '').replace('))', '').strip()
+                    coordinates_list = re.split(r'[,]|\s+', tran_wkt)
+                    metadata_bus_dict['bottomleftlatitude'] = coordinates_list[0]
+                    metadata_bus_dict['bottomleftlongitude'] = coordinates_list[1]
+                    metadata_bus_dict['topleftlatitude'] = coordinates_list[2]
+                    metadata_bus_dict['topleftlongitude'] = coordinates_list[3]
+                    metadata_bus_dict['toprightlatitude'] = coordinates_list[4]
+                    metadata_bus_dict['toprightlongitude'] = coordinates_list[5]
+                    metadata_bus_dict['bottomrightlatitude'] = coordinates_list[6]
+                    metadata_bus_dict['bottomrightlongitude'] = coordinates_list[7]
+        except Exception:
+            pass
+
+    def get_wkt_to_transform_coordinates(
+            self, metadata_bus_dict, metadata_bus_xml, multiple_metadata_bus_filename_dict
+    ):
+        return ''
 
     def metadata_bus_dict_process_scientific_enumeration(self, metadata_bus_dict: dict):
         temp_dict = dict()
@@ -1084,12 +1145,13 @@ class CSatPlugins(CPlugins):
         temp_dict['bottomleftlongitude'] = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', None)
         temp_dict['rollangle'] = CUtils.dict_value_by_name(metadata_bus_dict, 'rollangle', None)
         temp_dict['cloudpercent'] = CUtils.dict_value_by_name(metadata_bus_dict, 'cloudpercent', None)
+        temp_dict['resolution'] = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
 
         for name, value in temp_dict.items():
             if not CUtils.equal_ignore_case(value, ''):
                 if CUtils.text_is_string(value):
                     if ('e' in value) or ('E' in value):
-                        metadata_bus_dict[name] = CUtils.to_decimal(value, value)
+                        metadata_bus_dict[name] = CUtils.any_2_str(CUtils.to_decimal(value, value))
 
     def metadata_bus_dict_process_time(self, metadata_bus_dict: dict):
         centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
