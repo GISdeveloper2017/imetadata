@@ -201,8 +201,6 @@ class CSatPlugins(CPlugins):
             )
             if len(file_list) > 0:
                 multiple_metadata_bus_filename_with_path[file_type] = file_list[0]
-            else:
-                multiple_metadata_bus_filename_with_path[file_type] = None
 
         return multiple_metadata_bus_filename_with_path
 

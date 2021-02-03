@@ -258,17 +258,19 @@ class CSatFilePlugins_ikonos(COpticalSatPlugins):
         """
         super().metadata_bus_dict_process_custom(metadata_bus_dict)
         centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
-        centertime = centertime[:10] + '.' + centertime[10:]
-        centertime = CUtils.to_decimal(centertime, None)
         if not CUtils.equal_ignore_case(centertime, ''):
-            metadata_bus_dict['centertime'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(centertime))
-        else:
-            metadata_bus_dict['centertime'] = ''
+            centertime = centertime[:10] + '.' + centertime[10:]
+            centertime = CUtils.to_decimal(centertime, None)
+            if not CUtils.equal_ignore_case(centertime, ''):
+                metadata_bus_dict['centertime'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(centertime))
+            else:
+                metadata_bus_dict['centertime'] = ''
 
         publishdate = CUtils.dict_value_by_name(metadata_bus_dict, 'publishdate', None)
-        publishdate = publishdate[:10] + '.' + publishdate[10:]
-        publishdate = CUtils.to_decimal(publishdate, None)
         if not CUtils.equal_ignore_case(publishdate, ''):
-            metadata_bus_dict['publishdate'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(publishdate))
-        else:
-            metadata_bus_dict['publishdate'] = ''
+            publishdate = publishdate[:10] + '.' + publishdate[10:]
+            publishdate = CUtils.to_decimal(publishdate, None)
+            if not CUtils.equal_ignore_case(publishdate, ''):
+                metadata_bus_dict['publishdate'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(publishdate))
+            else:
+                metadata_bus_dict['publishdate'] = ''

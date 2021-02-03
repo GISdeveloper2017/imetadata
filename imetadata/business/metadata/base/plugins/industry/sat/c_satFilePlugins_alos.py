@@ -180,7 +180,7 @@ class CSatFilePlugins_alos(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量
-                self.Name_XPath: None
+                self.Name_Value: 0
             },
             {
                 self.Name_ID: 'dataum',  # 坐标系 默认为null
