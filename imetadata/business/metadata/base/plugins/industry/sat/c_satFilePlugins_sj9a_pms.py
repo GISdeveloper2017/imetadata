@@ -242,13 +242,11 @@ class CSatFilePlugins_sj9a_pms(CSatFilePlugins_sj9a):
         对部分需要进行运算的数据进行处理
         """
         super().metadata_bus_dict_process_custom(metadata_bus_dict)
-        try:
-            resolution = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
+        resolution = CUtils.dict_value_by_name(metadata_bus_dict, 'resolution', None)
+        if not CUtils.equal_ignore_case(resolution, ''):
             resolution_list = re.split(r'[/]|\s+', resolution.strip())
             if len(resolution_list) > 0:
                 temp_resolution_list = []
                 for temp_resolution in resolution_list:
                     temp_resolution_list.append(CUtils.to_decimal(temp_resolution))
                 metadata_bus_dict['resolution'] = min(temp_resolution_list)
-        except Exception:
-            pass

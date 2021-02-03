@@ -260,7 +260,7 @@ class CSatFilePlugins_ikonos(COpticalSatPlugins):
         centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
         centertime = centertime[:10] + '.' + centertime[10:]
         centertime = CUtils.to_decimal(centertime, None)
-        if centertime is not None:
+        if not CUtils.equal_ignore_case(centertime, ''):
             metadata_bus_dict['centertime'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(centertime))
         else:
             metadata_bus_dict['centertime'] = ''
@@ -268,7 +268,7 @@ class CSatFilePlugins_ikonos(COpticalSatPlugins):
         publishdate = CUtils.dict_value_by_name(metadata_bus_dict, 'publishdate', None)
         publishdate = publishdate[:10] + '.' + publishdate[10:]
         publishdate = CUtils.to_decimal(publishdate, None)
-        if centertime is not None:
+        if not CUtils.equal_ignore_case(publishdate, ''):
             metadata_bus_dict['publishdate'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(publishdate))
         else:
             metadata_bus_dict['publishdate'] = ''

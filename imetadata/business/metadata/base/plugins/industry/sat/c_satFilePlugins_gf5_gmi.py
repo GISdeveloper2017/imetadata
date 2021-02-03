@@ -224,5 +224,5 @@ class CSatFilePlugins_gf5_gmi(CSatFilePlugins_gf5):
                 metadata_bus_dict['toprightlongitude'] = coordinates_list[5]
                 metadata_bus_dict['bottomrightlatitude'] = coordinates_list[6]
                 metadata_bus_dict['bottomrightlongitude'] = coordinates_list[7]
-            except Exception:
-                pass
+            except Exception as error:
+                raise Exception('通过中心点坐标计算四至坐标时出现异常，详细原因为:{0}'.format(error.__str__()))

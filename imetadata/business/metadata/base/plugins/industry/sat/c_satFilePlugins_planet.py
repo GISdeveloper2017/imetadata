@@ -221,7 +221,7 @@ class CSatFilePlugins_planet(COpticalSatPlugins):
         super().metadata_bus_dict_process_custom(metadata_bus_dict)
         centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
         publishdate = CUtils.dict_value_by_name(metadata_bus_dict, 'publishdate', None)
-        if not CUtils.equal_ignore_case(publishdate, '') and '+' in centertime:
+        if not CUtils.equal_ignore_case(centertime, '') and '+' in centertime:
             centertime = centertime[:centertime.find('+')]
             metadata_bus_dict['centertime'] = centertime
         if not CUtils.equal_ignore_case(publishdate, '') and '+' in publishdate:

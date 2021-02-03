@@ -265,7 +265,8 @@ class CSatFilePlugins_triplesat_pms(COpticalSatPlugins):
         """
         super().metadata_bus_dict_process_custom(metadata_bus_dict)
         productattribute = CUtils.dict_value_by_name(metadata_bus_dict, 'productattribute', None)
-        if len(productattribute) >= 18:
-            metadata_bus_dict['productattribute'] = productattribute[16:18]
-        else:
-            metadata_bus_dict['productattribute'] = None
+        if not CUtils.equal_ignore_case(productattribute, ''):
+            if len(productattribute) >= 18:
+                metadata_bus_dict['productattribute'] = productattribute[16:18]
+            else:
+                metadata_bus_dict['productattribute'] = None

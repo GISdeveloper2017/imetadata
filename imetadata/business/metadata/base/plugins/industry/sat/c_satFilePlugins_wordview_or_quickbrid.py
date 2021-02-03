@@ -220,7 +220,7 @@ class CSatFilePlugins_wordview_or_quickbrid(COpticalSatPlugins):
         """
         super().metadata_bus_dict_process_custom(metadata_bus_dict)
         satelliteid = CUtils.dict_value_by_name(metadata_bus_dict, 'satelliteid', None)
-        if satelliteid is not None:
+        if not CUtils.equal_ignore_case(satelliteid, ''):
             if ('qb' in satelliteid) or ('QB' in satelliteid):
                 metadata_bus_dict['sensorid'] = 'QB_PMS'
             elif ('wv' in satelliteid) or ('WV' in satelliteid):
