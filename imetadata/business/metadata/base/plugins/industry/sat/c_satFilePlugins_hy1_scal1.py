@@ -32,12 +32,11 @@ class CSatFilePlugins_hy1_scal1(CSatFilePlugins_hy1):
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         return [
             {
-                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^H1C_OPER_(?!AIS).*_L1.*[.]tiff$',
-                                                                 '{0}.tiff'.format(self.classified_object_name())),
+                self.Name_FileName: self.get_fuzzy_metadata_file(r'(?i)^H1C_OPER_(?!AIS).*_L1.*[.]h5$',
+                                                                 '{0}.h5'.format(self.classified_object_name())),
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '全色文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_Format: self.DataFormat_Raster_File
+                self.Name_Result: self.QA_Result_Error
             }
         ]

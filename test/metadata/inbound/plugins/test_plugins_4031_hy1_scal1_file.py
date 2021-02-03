@@ -6,22 +6,22 @@ import allure
 import pytest
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
-from imetadata.business.metadata.inbound.plugins.file.plugins_4014_landsat8 import plugins_4014_landsat8
+from imetadata.business.metadata.inbound.plugins.dir.plugins_4031_hy1_scal1 import plugins_4031_hy1_scal1
 from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
-@allure.feature("landsat8压缩包文件")  # 模块标题
-class Test_plugins_4014_landsat8_file(Plugins_Test_Base):
+@allure.feature("海洋一号scal1压缩包文件")  # 模块标题
+class Test_plugins_4031_hy1_scal1_file(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
-        return plugins_4014_landsat8(file_info)
+        return plugins_4031_hy1_scal1(file_info)
 
     def test_file_info_list(self):
         return [
             {
                 self.Name_Test_File_Type: self.FileType_File,
-                self.Name_Test_file_path: 'LS8_C_20170912_025912_000000_123046_GEOTIFF_SNC_L4.zip',
+                self.Name_Test_file_path: 'H1C_OPER_OCT_L1A_20200210T022000_20200210T022500_07474_10.tar.gz',
                 self.Name_Test_object_confirm: self.Object_Confirm_IKnown,
-                self.Name_Test_object_name: 'LS8_C_20170912_025912_000000_123046_GEOTIFF_SNC_L4'
+                self.Name_Test_object_name: 'H1C_OPER_OCT_L1A_20200210T022000_20200210T022500_07474_10'
             }
         ]
 

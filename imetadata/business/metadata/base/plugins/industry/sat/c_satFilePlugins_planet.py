@@ -62,6 +62,18 @@ class CSatFilePlugins_planet(COpticalSatPlugins):
             }
         ]
 
+    def get_transform_file_to_metadata_view(self, parser: CMetaDataParser):
+        """
+        对于需要由图像文件转换为预览图文件的方式进行处理
+        """
+        return CFile.join_file(
+            self.get_sat_file_originally_path(),
+            self.get_fuzzy_metadata_file(
+                r'(?i).*_*(_*)?_*_*_AnalyticMS[.]tif',
+                '{0}_AnalyticMS.tif'.format(self.classified_object_name())
+            )
+        )
+
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
         """
         标准模式的提取时间信息的列表
