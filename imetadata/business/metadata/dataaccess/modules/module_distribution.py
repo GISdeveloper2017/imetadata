@@ -53,8 +53,10 @@ class module_distribution(CDAModule):
         :return:
         """
         # 根据objecttype类型查找distribution文件夹下对应的类文件（识别通过objecttype找object_def表中的dsodtype字段与类对象中的info[self.Name_Type]值相同）
-        distribution_obj_real = self.__find_module_obj()
-        if distribution_obj_real is None:
+        distribution_obj_real, result = self.__find_module_obj()
+        if not CResult.result_success(result):
+            return result
+        elif distribution_obj_real is None:
             message = '没有对应的算法, 直接通过!'
             result = CResult.merge_result(self.Success, message)
             return result
@@ -132,17 +134,31 @@ class module_distribution(CDAModule):
                         class_classified_obj.get_multiple_metadata_bus_filename_with_path(
                             CFile.join_file(view_path, browser_path)
                         )
-                    metadata_bus_dict = class_classified_obj.metadata_bus_xml_to_dict(
+                    result, metadata_bus_dict = class_classified_obj.metadata_bus_xml_to_dict(
                         dsometadataxml_xml, multiple_metadata_bus_filename_dict
                     )
-                    distribution_obj.set_metadata_bus_dict(metadata_bus_dict)
-                except Exception:
                     if CUtils.equal_ignore_case(distribution_file_main_name, 'distribution_satellite_all'):
-                        raise
-
+                        if not CResult.result_success(result):
+                            return None, CResult.merge_result(
+                                self.Failure,
+                                '卫星数据的业务元数据的详细内容解析出错!原因为{0}'.format(CResult.result_message(result))
+                            )
+                    distribution_obj.set_metadata_bus_dict(metadata_bus_dict)
+                except Exception as error:
+                    if CUtils.equal_ignore_case(distribution_file_main_name, 'distribution_satellite_all'):
+                        return None, CResult.merge_result(
+                            self.Failure,
+                            '卫星数据的业务元数据的详细内容解析出错!原因为{0}'.format(error.__str__())
+                        )
                 distribution_obj_real = distribution_obj
+                result = CResult.merge_result(self.Success, '数据的信息提取完成')
+            else:
+                result = CResult.merge_result(self.Failure, '系统在构建同步模块时发生异常，原因为数据的同步模块缺失')
+        else:
+            result = CResult.merge_result(self.Failure, '系统在构建同步模块时发生异常，原因为识别模块缺失或异常')
+
         if distribution_obj_real is None:
             # 注意, 这里默认为默认处理的同步插件，先预留
             distribution_obj_real = distribution_default(db_id_distribution, object_id, object_name, obj_type_code,
                                                          quality_info, dataset)
-        return distribution_obj_real
+        return distribution_obj_real, result

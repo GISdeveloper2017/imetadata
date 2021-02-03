@@ -211,22 +211,33 @@ class CSatFilePlugins_radarsat(CRadarSatPlugins):
         )
         list_num = len(list_result)
         temp_str = ''
-        for num in range(list_num):
-            latitude = metadata_bus_xml.xpath(
-                '/product/imageAttributes/geographicInformation/geolocationGrid'
-                '/imageTiePoint[{0}]/geodeticCoordinate/latitude'.format(num+1)
-            )
-            longitude = metadata_bus_xml.xpath(
-                '/product/imageAttributes/geographicInformation/geolocationGrid'
-                '/imageTiePoint[{0}]/geodeticCoordinate/longitude'.format(num+1)
-            )
-            temp_str = temp_str+'{0} {1},'.format(
-                CUtils.any_2_str(CUtils.to_decimal(latitude, latitude)),
-                CUtils.any_2_str(CUtils.to_decimal(longitude, longitude))
-            )
+        temp_frist_flag = True
+        temp_frist_str = ''
+        for num in range(1, list_num + 1):
+            try:
+                latitude_node = metadata_bus_xml.xpath_one(
+                    '/product/imageAttributes/geographicInformation/geolocationGrid'
+                    '/imageTiePoint[{0}]/geodeticCoordinate/latitude'.format(num)
+                )
+                latitude = metadata_bus_xml.get_element_text(latitude_node)
+                longitude_node = metadata_bus_xml.xpath_one(
+                    '/product/imageAttributes/geographicInformation/geolocationGrid'
+                    '/imageTiePoint[{0}]/geodeticCoordinate/longitude'.format(num)
+                )
+                longitude = metadata_bus_xml.get_element_text(longitude_node)
+                if not CUtils.equal_ignore_case(latitude, '') and not CUtils.equal_ignore_case(longitude, ''):
+                    temp_str = temp_str + '{0} {1},'.format(
+                        CUtils.any_2_str(CUtils.to_decimal(latitude, latitude)),
+                        CUtils.any_2_str(CUtils.to_decimal(longitude, longitude))
+                    )
+                    if temp_frist_flag:
+                        temp_frist_str = temp_str[:-1]
+                        temp_frist_flag = False
+            except Exception as error:
+                raise Exception('计算wkt时出错,原因为{0}'.format(error.__str__()))
         if CUtils.equal_ignore_case(temp_str, ''):
             return ''
         else:
-            temp_str = temp_str[:-1]
+            temp_str = '{0}{1}'.format(temp_str, temp_frist_str)
             wkt = 'POLYGON( ({0}) )'.format(temp_str)
             return wkt

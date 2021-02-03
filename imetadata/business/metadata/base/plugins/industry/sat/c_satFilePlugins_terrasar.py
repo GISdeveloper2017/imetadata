@@ -152,7 +152,7 @@ class CSatFilePlugins_terrasar(CRadarSatPlugins):
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
-                self.Name_XPath: 0
+                self.Name_Value: 0
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量

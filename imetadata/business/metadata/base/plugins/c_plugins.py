@@ -287,7 +287,7 @@ class CPlugins(CResource):
 
             # 自定义的元数据质检
             if CResult.result_success(result):
-                self.qa_metadata_custom(parser)
+                self.qa_custom(parser)
                 result = parser.save_quality()
             else:
                 return result
@@ -310,6 +310,15 @@ class CPlugins(CResource):
                     error.__str__()
                 )
             )
+
+
+    def qa_custom(self, parser: CMetaDataParser):
+        """
+        自定义的质检方法, 发生在元数据解析之后
+        :param parser:
+        :return:
+        """
+        pass
 
     def parser_last_process(self, parser: CParser) -> str:
         """
@@ -874,6 +883,8 @@ class CPlugins(CResource):
             parser.metadata.set_metadata_bus(
                 self.DB_False, CResult.result_message(result), self.MetaDataFormat_Text, '')
 
+        self.qa_metadata_custom(parser)
+
     def qa_metadata_custom(self, parser: CMetaDataParser):
         """
         自定义的质检方法, 发生在元数据解析之后
@@ -1112,8 +1123,10 @@ class CPlugins(CResource):
     def get_metadata_bus_configuration_list(self) -> list:
         return list()
 
-    def metadata_bus_xml_to_dict(self, metadata_bus_xml: CXml, multiple_metadata_bus_filename_dict=None) -> dict:
-        return dict()
+    def metadata_bus_xml_to_dict(
+            self, metadata_bus_xml: CXml, multiple_metadata_bus_filename_dict=None, space_flag=False
+    ):
+        return CResult.merge_result(self.Success, '数据的业务元数据的详细内容无需解析!'), dict()
 
     def get_multiple_metadata_bus_filename_with_path(self, file_path):
         """

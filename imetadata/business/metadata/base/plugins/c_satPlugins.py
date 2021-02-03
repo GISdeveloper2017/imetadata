@@ -436,7 +436,21 @@ class CSatPlugins(CPlugins):
         metadata_bus_xml = parser.metadata.metadata_bus_xml()
         multiple_metadata_bus_filename_dict = \
             self.get_multiple_metadata_bus_filename_with_path(self.get_sat_file_originally_path())
-        metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml, multiple_metadata_bus_filename_dict)
+        try:
+            result, metadata_bus_dict = \
+                self.metadata_bus_xml_to_dict(metadata_bus_xml, multiple_metadata_bus_filename_dict, True)
+            if not CResult.result_success(result):
+                parser.metadata.set_metadata_spatial(
+                    self.DB_False,
+                    '空间元数据提取失败，四至坐标无法正常获取!具体原因为:{0}'.format(CResult.result_message(result))
+                )
+                return CResult.merge_result(self.Failure, '空间元数据提取失败，四至坐标无法正常获取! ')
+        except Exception as error:
+            parser.metadata.set_metadata_spatial(
+                self.DB_False,
+                '空间元数据提取失败，四至坐标无法正常获取!具体原因为:{0}'.format(error.__str__())
+            )
+            return CResult.merge_result(self.Failure, '空间元数据提取失败，四至坐标无法正常获取! ')
         topleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlatitude', None)
         topleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'topleftlongitude', None)
         toprightlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'toprightlatitude', None)
@@ -447,6 +461,21 @@ class CSatPlugins(CPlugins):
         bottomleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', None)
         centerlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlatitude', None)
         centerlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'centerlongitude', None)
+        if CUtils.equal_ignore_case(centerlatitude, '') or \
+                CUtils.equal_ignore_case(centerlongitude, '') or \
+                CUtils.equal_ignore_case(topleftlatitude, '') or \
+                CUtils.equal_ignore_case(topleftlongitude, '') or \
+                CUtils.equal_ignore_case(toprightlatitude, '') or \
+                CUtils.equal_ignore_case(toprightlongitude, '') or \
+                CUtils.equal_ignore_case(bottomrightlatitude, '') or \
+                CUtils.equal_ignore_case(bottomrightlongitude, '') or \
+                CUtils.equal_ignore_case(bottomleftlatitude, '') or \
+                CUtils.equal_ignore_case(bottomleftlongitude, ''):
+            parser.metadata.set_metadata_spatial(
+                self.DB_False,
+                '空间元数据提取失败，四至坐标与中心点坐标存在异常空值，请检查！'
+            )
+            return CResult.merge_result(self.Failure, '空间元数据提取失败，四至坐标与中心点坐标存在异常空值，请检查! ')
         native_center_filename_with_path = CFile.join_file(
             self.file_content.work_root_dir, '{0}_native_center.wkt'.format(self.file_info.file_main_name))
         native_bbox_filename_with_path = CFile.join_file(
@@ -574,7 +603,7 @@ class CSatPlugins(CPlugins):
                 else:
                     parser.metadata.set_metadata_view(
                         self.DB_False,
-                        '卫星数据[{0}]的预览图不存在!'
+                        '卫星数据[{0}]的预览图不存在!'.format(self.classified_object_name())
                     )
                     result = CResult.merge_result(
                         self.Failure,
@@ -639,11 +668,11 @@ class CSatPlugins(CPlugins):
         else:
             parser.metadata.set_metadata_view(
                 self.Success,
-                '卫星数据[{0}]的预览图未配置'
+                '卫星数据[{0}]的预览图未配置'.format(self.classified_object_name())
             )
             result = CResult.merge_result(
                 self.Failure,
-                '可视化信息未配置! '.format(self.classified_object_name())
+                '可视化信息未配置! '
             )
 
         self.parser_metadata_view_custom(parser, data_view_sub_path)
@@ -932,9 +961,12 @@ class CSatPlugins(CPlugins):
             }
         ]
 
-    def metadata_bus_xml_to_dict(self, metadata_bus_xml: CXml, multiple_metadata_bus_filename_dict=None) -> dict:
-        metadata_bus_dict = super().metadata_bus_xml_to_dict(metadata_bus_xml, multiple_metadata_bus_filename_dict)
-
+    def metadata_bus_xml_to_dict(
+            self, metadata_bus_xml: CXml, multiple_metadata_bus_filename_dict=None, space_flag=False
+    ):
+        result, metadata_bus_dict = \
+            super().metadata_bus_xml_to_dict(metadata_bus_xml, multiple_metadata_bus_filename_dict)
+        error_message = ''
         # 预先构建其他xml的Cxml对象
         if len(multiple_metadata_bus_filename_dict) > 0:
             multiple_metadata_cxml_dict = dict()
@@ -942,14 +974,19 @@ class CSatPlugins(CPlugins):
                 temp_cxml = CXml()
                 try:
                     temp_cxml.load_file(metadata_bus_filename)
-                except Exception:
-                    pass
+                except Exception as error:
+                    if CUtils.equal_ignore_case(error_message, ''):
+                        error_message = '业务元数据加载出错，可能为业务元数据不存在或格式错误，具体原因为:[{0}]'.format(error.__str__())
                 multiple_metadata_cxml_dict[metadata_bus_type] = temp_cxml
         else:
             multiple_metadata_cxml_dict = dict()
 
+        if not space_flag:
+            metadata_bus_configuration_list = self.get_metadata_bus_configuration_list()
+        else:
+            metadata_bus_configuration_list = self.get_metadata_bus_configuration_list_only_space()
         # 开始循环处理每一个项目
-        for item_configuration in self.get_metadata_bus_configuration_list():
+        for item_configuration in metadata_bus_configuration_list:
             # 取出必要使用的值
             item_id = CUtils.dict_value_by_name(item_configuration, self.Name_ID, 'None')
             xml_xpath = CUtils.dict_value_by_name(item_configuration, self.Name_XPath, None)
@@ -996,21 +1033,44 @@ class CSatPlugins(CPlugins):
                     metadata_bus_dict[item_id] = real_value
                 else:
                     metadata_bus_dict[item_id] = default_value
-            except Exception:
+            except Exception as error:
                 metadata_bus_dict[item_id] = default_value
+                if CUtils.equal_ignore_case(error_message, ''):
+                    error_message = '{0}的值解析出错，可能是业务元数据格式错误，具体原因为:[{1}]'.format(item_id, error.__str__())
 
         # 对于一些需要计算的数据进行运算
         try:
-            self.metadata_bus_dict_process_coordinates(
+            process_coordinates_result = self.metadata_bus_dict_process_coordinates(
                 metadata_bus_dict, metadata_bus_xml, multiple_metadata_bus_filename_dict
             )
+            if not CResult.result_success(process_coordinates_result):
+                error_message = CResult.result_message(process_coordinates_result)
             self.metadata_bus_dict_process_scientific_enumeration(metadata_bus_dict)
             self.metadata_bus_dict_process_time(metadata_bus_dict)
             self.metadata_bus_dict_process_custom(metadata_bus_dict)
-        except Exception:
-            pass
+        except Exception as error:
+            if CUtils.equal_ignore_case(error_message, ''):
+                error_message = '业务元数据详细内容解析出错，可能是业务元数据格式错误，具体原因为:[{0}]'.format(error.__str__())
 
-        return metadata_bus_dict
+        if CUtils.equal_ignore_case(error_message, ''):
+            result = CResult.merge_result(
+                self.Success, '卫星数据的业务元数据的详细内容解析成功!'
+            )
+        else:
+            result = CResult.merge_result(self.Failure, error_message)
+
+        return result, metadata_bus_dict
+
+    def get_metadata_bus_configuration_list_only_space(self) -> list:
+        metadata_bus_configuration_list = self.get_metadata_bus_configuration_list()
+        metadata_bus_configuration_list_only_space = list()
+        space_id_list = ['centerlatitude', 'centerlongitude', 'topleftlatitude', 'topleftlongitude',
+                         'toprightlatitude', 'toprightlongitude', 'bottomrightlatitude',
+                         'bottomrightlongitude', 'bottomleftlatitude', 'bottomleftlongitude']
+        for metadata_custom_item in metadata_bus_configuration_list:
+            if CUtils.dict_value_by_name(metadata_custom_item, self.Name_ID, '') in space_id_list:
+                metadata_bus_configuration_list_only_space.append(metadata_custom_item)
+        return metadata_bus_configuration_list_only_space
 
     def metadata_bus_to_dict_custom_transition_resolution(self, custom_item, multiple_metadata_cxml_dict):
         real_value = ''
@@ -1035,7 +1095,12 @@ class CSatPlugins(CPlugins):
         time_time_xpath = CUtils.dict_value_by_name(custom_item, self.Name_Time_Time, None)
         time_date = metadata_bus_xml.get_element_text_by_xpath_one(time_date_xpath)
         time_time = metadata_bus_xml.get_element_text_by_xpath_one(time_time_xpath)
-        metadata_bus_xpath_value = '{0}T{1}'.format(time_date, time_time)
+        if CUtils.equal_ignore_case(time_date, ''):
+            metadata_bus_xpath_value = ''
+        elif CUtils.equal_ignore_case(time_time, ''):
+            metadata_bus_xpath_value = time_date
+        else:
+            metadata_bus_xpath_value = '{0}T{1}'.format(time_date, time_time)
         return metadata_bus_xpath_value
 
     def metadata_bus_dict_process_coordinates(
@@ -1051,17 +1116,17 @@ class CSatPlugins(CPlugins):
         bottomrightlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomrightlongitude', None)
         bottomleftlatitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlatitude', None)
         bottomleftlongitude = CUtils.dict_value_by_name(metadata_bus_dict, 'bottomleftlongitude', None)
-        try:
-            if CUtils.equal_ignore_case(centerlatitude, '') and \
-                    CUtils.equal_ignore_case(centerlongitude, '') and \
-                    not CUtils.equal_ignore_case(topleftlatitude, '') and \
-                    not CUtils.equal_ignore_case(topleftlongitude, '') and \
-                    not CUtils.equal_ignore_case(toprightlatitude, '') and \
-                    not CUtils.equal_ignore_case(toprightlongitude, '') and \
-                    not CUtils.equal_ignore_case(bottomrightlatitude, '') and \
-                    not CUtils.equal_ignore_case(bottomrightlongitude, '') and \
-                    not CUtils.equal_ignore_case(bottomleftlatitude, '') and \
-                    not CUtils.equal_ignore_case(bottomleftlongitude, ''):
+        if CUtils.equal_ignore_case(centerlatitude, '') and \
+                CUtils.equal_ignore_case(centerlongitude, '') and \
+                not CUtils.equal_ignore_case(topleftlatitude, '') and \
+                not CUtils.equal_ignore_case(topleftlongitude, '') and \
+                not CUtils.equal_ignore_case(toprightlatitude, '') and \
+                not CUtils.equal_ignore_case(toprightlongitude, '') and \
+                not CUtils.equal_ignore_case(bottomrightlatitude, '') and \
+                not CUtils.equal_ignore_case(bottomrightlongitude, '') and \
+                not CUtils.equal_ignore_case(bottomleftlatitude, '') and \
+                not CUtils.equal_ignore_case(bottomleftlongitude, ''):
+            try:
                 wkt = 'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
                     bottomleftlatitude, bottomleftlongitude, topleftlatitude, topleftlongitude,
                     toprightlatitude, toprightlongitude, bottomrightlatitude, bottomrightlongitude
@@ -1081,17 +1146,21 @@ class CSatPlugins(CPlugins):
                     '''
                         select st_y(st_centroid('{0}')) as centerlongitude
                         '''.format(wkt)).value_by_name(0, 'centerlongitude', None)
-
-            elif CUtils.equal_ignore_case(centerlatitude, '') and \
-                    CUtils.equal_ignore_case(centerlongitude, '') and \
-                    CUtils.equal_ignore_case(topleftlatitude, '') and \
-                    CUtils.equal_ignore_case(topleftlongitude, '') and \
-                    CUtils.equal_ignore_case(toprightlatitude, '') and \
-                    CUtils.equal_ignore_case(toprightlongitude, '') and \
-                    CUtils.equal_ignore_case(bottomrightlatitude, '') and \
-                    CUtils.equal_ignore_case(bottomrightlongitude, '') and \
-                    CUtils.equal_ignore_case(bottomleftlatitude, '') and \
-                    CUtils.equal_ignore_case(bottomleftlongitude, ''):
+            except Exception as error:
+                return CResult.merge_result(
+                    self.Failure, '用四至坐标计算中心点坐标时出错，原因为{0}'.format(error.__str__())
+                )
+        elif CUtils.equal_ignore_case(centerlatitude, '') and \
+                CUtils.equal_ignore_case(centerlongitude, '') and \
+                CUtils.equal_ignore_case(topleftlatitude, '') and \
+                CUtils.equal_ignore_case(topleftlongitude, '') and \
+                CUtils.equal_ignore_case(toprightlatitude, '') and \
+                CUtils.equal_ignore_case(toprightlongitude, '') and \
+                CUtils.equal_ignore_case(bottomrightlatitude, '') and \
+                CUtils.equal_ignore_case(bottomrightlongitude, '') and \
+                CUtils.equal_ignore_case(bottomleftlatitude, '') and \
+                CUtils.equal_ignore_case(bottomleftlongitude, ''):
+            try:
                 wkt = self.get_wkt_to_transform_coordinates(
                     metadata_bus_dict, metadata_bus_xml, multiple_metadata_bus_filename_dict
                 )
@@ -1125,8 +1194,13 @@ class CSatPlugins(CPlugins):
                     metadata_bus_dict['toprightlongitude'] = coordinates_list[5]
                     metadata_bus_dict['bottomrightlatitude'] = coordinates_list[6]
                     metadata_bus_dict['bottomrightlongitude'] = coordinates_list[7]
-        except Exception:
-            pass
+            except Exception as error:
+                return CResult.merge_result(
+                    self.Failure, '用wkt计算四至坐标以及中心点坐标时出错，原因为{0}'.format(error.__str__())
+                )
+            return CResult.merge_result(
+                self.Success, '四至坐标以及中心点坐标的解析正常结束'
+            )
 
     def get_wkt_to_transform_coordinates(
             self, metadata_bus_dict, metadata_bus_xml, multiple_metadata_bus_filename_dict
@@ -1457,5 +1531,14 @@ class CSatPlugins(CPlugins):
         metadata_bus_xml = parser.metadata.metadata_bus_xml()
         multiple_metadata_bus_filename_dict = \
             self.get_multiple_metadata_bus_filename_with_path(self.get_sat_file_originally_path())
-        metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml, multiple_metadata_bus_filename_dict)
+        result, metadata_bus_dict = self.metadata_bus_xml_to_dict(metadata_bus_xml, multiple_metadata_bus_filename_dict)
+        if not CResult.result_success(result):
+            mb_result, mb_memo, mb_type, mb_text = parser.metadata.metadata_bus()
+            if CUtils.equal_ignore_case(mb_result, self.DB_True):
+                parser.metadata.set_metadata_bus(
+                    self.DB_False,
+                    '卫星数据的业务元数据解析成功，但是其详细内容解析出错!原因为[{0}]'.format(CResult.result_message(result)),
+                    mb_type, mb_text
+                )
+
         parser.batch_qa_metadata_bus_dict(metadata_bus_dict, self.qa_sat_metadata_bus_list())
