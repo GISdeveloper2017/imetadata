@@ -6,14 +6,14 @@ import allure
 import pytest
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
-from imetadata.business.metadata.inbound.plugins.dir.plugins_4004_gf1_b import plugins_4004_gf1_b
+from imetadata.business.metadata.inbound.plugins.dir.plugins_4004_gf1b import plugins_4004_gf1b
 from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
-@allure.feature("GF1_B文件夹类型成果影像")  # 模块标题
-class Test_plugins_4004_gf1_b_dir(Plugins_Test_Base):
+@allure.feature("GF1B文件夹类型成果影像")  # 模块标题
+class Test_plugins_4004_gf1b_dir(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
-        return plugins_4004_gf1_b(file_info)
+        return plugins_4004_gf1b(file_info)
 
     def test_file_info_list(self):
         return [

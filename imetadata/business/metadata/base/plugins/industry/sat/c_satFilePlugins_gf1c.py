@@ -1,10 +1,10 @@
 from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf1 import CSatFilePlugins_gf1
 
 
-class CSatFilePlugins_gf1_c(CSatFilePlugins_gf1):
+class CSatFilePlugins_gf1c(CSatFilePlugins_gf1):
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'GF1_PMS'
+        information[self.Plugins_Info_Type] = 'GF1C_PMS'
         information[self.Plugins_Info_Type_Title] = '高分一号C星PMS传感器'
         return information
 

@@ -49,7 +49,7 @@ class CSatFilePlugins_spot(COpticalSatPlugins):
         return [
             {
                 self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i)IMG_SPOT6_P_.*_R1C1[.]tif$',
+                    r'(?i)IMG_SPOT\d_P_.*_R1C1[.]tif$',
                     '{0}.tif'.format(self.classified_object_name())),
                 self.Name_ID: 'pan_tif',
                 self.Name_Title: '全色文件',
@@ -126,6 +126,11 @@ class CSatFilePlugins_spot(COpticalSatPlugins):
                 self.Name_ID: 'satelliteid',  # 卫星，必填，从元数据组织定义，必须是标准命名的卫星名称
                 self.Name_XPath: '/Dimap_Document/Metadata_Identification/METADATA_PROFILE',
                 self.Name_Map: {
+                    'S1_SENSOR': 'SPOT1',
+                    'S2_SENSOR': 'SPOT2',
+                    'S3_SENSOR': 'SPOT3',
+                    'S4_SENSOR': 'SPOT4',
+                    'S5_SENSOR': 'SPOT5',
                     'S6_SENSOR': 'SPOT6',
                     'S7_SENSOR': 'SPOT7',
                     self.Name_Default: 'SPOT'

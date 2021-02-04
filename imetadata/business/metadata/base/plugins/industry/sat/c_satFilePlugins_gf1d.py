@@ -1,12 +1,12 @@
 from imetadata.business.metadata.base.plugins.industry.sat.base.c_satFilePlugins_gf1 import CSatFilePlugins_gf1
 
 
-class CSatFilePlugins_gf1_b(CSatFilePlugins_gf1):
+class CSatFilePlugins_gf1d(CSatFilePlugins_gf1):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type] = 'GF1_PMS'
-        information[self.Plugins_Info_Type_Title] = '高分一号B星PMS传感器'
+        information[self.Plugins_Info_Type] = 'GF1D_PMS'
+        information[self.Plugins_Info_Type_Title] = '高分一号D星PMS传感器'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
@@ -25,6 +25,6 @@ class CSatFilePlugins_gf1_b(CSatFilePlugins_gf1):
             TextMatchType_Regex: 正则表达式
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)gf1b_pms.*[_].*', self.TextMatchType_Regex
+            return r'(?i)gf1d_pms.*[_].*', self.TextMatchType_Regex
         else:
-            return r'(?i)gf1b_pms.*[_].*-pan.tiff', self.TextMatchType_Regex
+            return r'(?i)gf1d_pms.*[_].*-pan.tiff', self.TextMatchType_Regex
