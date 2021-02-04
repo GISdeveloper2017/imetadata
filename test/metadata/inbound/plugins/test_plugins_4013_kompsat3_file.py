@@ -6,14 +6,14 @@ import allure
 import pytest
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
-from imetadata.business.metadata.inbound.plugins.file.plugins_4013_k3_pms import plugins_4013_k3_pms
+from imetadata.business.metadata.inbound.plugins.file.plugins_4013_kompsat3_pms import plugins_4013_kompsat3_pms
 from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
 @allure.feature("kompsat3压缩包文件")  # 模块标题
 class Test_plugins_4013_kompsat3_file(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
-        return plugins_4013_k3_pms(file_info)
+        return plugins_4013_kompsat3_pms(file_info)
 
     def test_file_info_list(self):
         return [
