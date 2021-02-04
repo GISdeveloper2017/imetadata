@@ -52,6 +52,24 @@ class CSatFilePlugins_kompsat3(COpticalSatPlugins):
             }
         ]
 
+    def parser_metadata_view_list(self, parser: CMetaDataParser):
+        return [
+            {
+                self.Name_ID: self.View_MetaData_Type_Browse,
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i)K3_.*_br[.]jpg',
+                    '{0}_br.jpg'.format(self.classified_object_name().replace('_Bundle', '', 1))
+                ),
+            },
+            {
+                self.Name_ID: self.View_MetaData_Type_Thumb,
+                self.Name_FileName: self.get_fuzzy_metadata_file(
+                    r'(?i)K3_.*_th[.]jpg',
+                    '{0}_th.jpg'.format(self.classified_object_name().replace('_Bundle', '', 1))
+                )
+            }
+        ]
+
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
         return [
             {
@@ -69,24 +87,6 @@ class CSatFilePlugins_kompsat3(COpticalSatPlugins):
                 self.Name_ID: self.Name_End_Time,
                 self.Name_XPath: '/Auxiliary/Image/PAN/ImagingTime/ImagingEndTime/UTC',
                 self.Name_Format: self.MetaDataFormat_XML
-            }
-        ]
-
-    def parser_metadata_view_list(self, parser: CMetaDataParser):
-        return [
-            {
-                self.Name_ID: self.View_MetaData_Type_Browse,
-                self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i)K3_.*_br[.]jpg',
-                    '{0}_br.jpg'.format(self.classified_object_name().replace('_Bundle', '', 1))
-                ),
-            },
-            {
-                self.Name_ID: self.View_MetaData_Type_Thumb,
-                self.Name_FileName: self.get_fuzzy_metadata_file(
-                    r'(?i)K3_.*_th[.]jpg',
-                    '{0}_th.jpg'.format(self.classified_object_name().replace('_Bundle', '', 1))
-                )
             }
         ]
 
