@@ -10,7 +10,7 @@ from imetadata.business.metadata.inbound.plugins.file.plugins_4021_rapideye impo
 from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
-@allure.feature("PAPIDEYE卫星OPTICAL传感器压缩包文件")  # 模块标题
+@allure.feature("RAPIDEYE卫星OPTICAL传感器压缩包文件")  # 模块标题
 class Test_plugins_4021_rapideye_file(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
         return plugins_4021_rapideye(file_info)
