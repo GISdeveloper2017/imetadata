@@ -5,15 +5,15 @@
 from imetadata.business.metadata.base.plugins.custom.c_dirPlugins_keyword import CDirPlugins_keyword
 
 
-class plugins_1000_0002_xqxcg(CDirPlugins_keyword):
+class plugins_1000_0004_dem(CDirPlugins_keyword):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Catalog] = '天津测绘'
         information[self.Plugins_Info_Catalog_Title] = '天津测绘'
         information[self.Plugins_Info_Group] = '中间成果'
         information[self.Plugins_Info_Group_Title] = '中间成果'
-        information[self.Plugins_Info_Type] = '镶嵌线成果'
-        information[self.Plugins_Info_Type_Title] = '镶嵌线成果'
+        information[self.Plugins_Info_Type] = '精细化DEM'
+        information[self.Plugins_Info_Type_Title] = '精细化DEM'
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
         return information
 
@@ -24,10 +24,14 @@ class plugins_1000_0002_xqxcg(CDirPlugins_keyword):
         return [
             {
                 self.Name_ID: 'file_name',
-                self.TextMatchType_Regex: '(?i)镶嵌线成果|镶嵌线'
+                self.TextMatchType_Regex: '(?i)DEM'
             },
             {
                 self.Name_ID: 'file_path',
+                self.TextMatchType_Regex: None
+            },
+            {
+                self.Name_ID: 'file_ext',
                 self.TextMatchType_Regex: None
             }
         ]

@@ -2,7 +2,6 @@
 # @Time : 2020/9/15 09:54
 # @Author : 王西亚
 # @File : plugins_4001_triplesat_pms.py
-from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.plugins.custom.c_dirPlugins_keyword import CDirPlugins_keyword
 
 
@@ -24,13 +23,14 @@ class plugins_1000_0001_ksjmcg(CDirPlugins_keyword):
         """
         return [
             {
-                self.Name_ID: 'file_name',  # 左下角经度 必填
-                self.TextMatchType_Common: None,
+                self.Name_ID: 'file_name',
                 self.TextMatchType_Regex: '(?i)空三加密成果|空三加密'
             },
             {
-                self.Name_ID: 'file_path',  # 左下角经度 必填
-                self.TextMatchType_Common: None,
+                self.Name_ID: 'file_path',
                 self.TextMatchType_Regex: None
             }
         ]
+
+    def get_classified_object_name_of_keyword(self, file_main_name) -> str:
+        return super().get_classified_object_name_of_keyword(file_main_name)
