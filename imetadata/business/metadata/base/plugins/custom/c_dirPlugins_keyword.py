@@ -19,8 +19,6 @@ class CDirPlugins_keyword(CDirPlugins):
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_HasChildObj] = self.DB_False
-        information[self.Plugins_Info_Group] = None
-        information[self.Plugins_Info_Group_Title] = None
         information[self.Plugins_Info_TagsEngine] = None
         information[self.Plugins_Info_DetailEngine] = None
         information[self.Plugins_Info_Module_Distribute_Engine] = None  # 同步的引擎，值是发布同步用的类的名字
@@ -33,7 +31,7 @@ class CDirPlugins_keyword(CDirPlugins):
         super().classified()
         file_path = self.file_info.file_path
         file_main_name = self.file_info.file_main_name
-        file_object_name = file_main_name[:]  # 这里需要取得规则匹配用的‘对象名’，即去除尾部字母等字符的名
+        # file_object_name = file_main_name[:]  # 这里需要取得规则匹配用的‘对象名’，即去除尾部字母等字符的名
         object_flag = True
         keyword_list = self.get_classified_character_of_keyword()
         if len(keyword_list) == 0:
@@ -51,15 +49,20 @@ class CDirPlugins_keyword(CDirPlugins):
                         object_flag = False
             elif CUtils.equal_ignore_case(keyword_id, 'file_path'):
                 if common_match is not None:
-                    if not CFile.file_match(file_main_name, common_match):
+                    if not CFile.file_match(file_path, common_match):
                         object_flag = False
                 if regex_match is not None:
-                    if not CUtils.text_match_re(file_main_name, regex_match):
+                    if not CUtils.text_match_re(file_path, regex_match):
                         object_flag = False
 
         if object_flag:
             self._object_confirm = self.Object_Confirm_IKnown
             self._object_name = self.file_info.file_name_without_path
+        else:
+            self._object_confirm = self.Object_Confirm_IUnKnown
+            self._object_name = None
+
+        return self._object_confirm, self._object_name
 
     @abstractmethod
     def get_classified_character_of_keyword(self):
