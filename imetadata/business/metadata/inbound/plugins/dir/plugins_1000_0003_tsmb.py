@@ -18,24 +18,20 @@ class plugins_1000_0003_tsmb(CDirPlugins_keyword):
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
         return information
 
-    def get_classified_character_of_keyword(self):
+    def get_classified_character_of_object_keyword(self):
         """
         设置识别的特征
         """
         return [
             {
-                self.Name_ID: 'file_name',
+                self.Name_ID: self.Name_FileName,
                 self.TextMatchType_Regex: '(?i)调色模板'
             },
             {
-                self.Name_ID: 'file_path',
-                self.TextMatchType_Regex: None
-            },
-            {
-                self.Name_ID: 'file_ext',
+                self.Name_ID: self.Name_FilePath,
                 self.TextMatchType_Regex: None
             }
         ]
 
-    def get_classified_object_name_of_keyword(self, file_main_name) -> str:
-        return super().get_classified_object_name_of_keyword(file_main_name)
+    def get_classified_character_of_affiliated_keyword(self):
+        return []
