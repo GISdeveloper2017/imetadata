@@ -24,11 +24,11 @@ class plugins_1000_0002_xqxcg(CDirPlugins_keyword):
         return [
             {
                 self.Name_ID: self.Name_FileName,
-                self.TextMatchType_Regex: '(?i)镶嵌线成果|镶嵌线'
+                self.Name_RegularExpression: '(?i)镶嵌线成果|镶嵌线'
             },
             {
                 self.Name_ID: self.Name_FilePath,
-                self.TextMatchType_Regex: None
+                self.Name_RegularExpression: None
             }
         ]
 

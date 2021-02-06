@@ -24,11 +24,11 @@ class plugins_1000_0007_slcg(CDirPlugins_keyword):
         return [
             {
                 self.Name_ID: self.Name_FileName,
-                self.TextMatchType_Regex: '(?i)矢量成果'
+                self.Name_RegularExpression: '(?i)矢量成果'
             },
             {
                 self.Name_ID: self.Name_FilePath,
-                self.TextMatchType_Regex: None
+                self.Name_RegularExpression: None
             }
         ]
 

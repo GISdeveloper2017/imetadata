@@ -24,11 +24,11 @@ class plugins_1000_0010_qtzjcg(CDirPlugins_keyword):
         return [
             {
                 self.Name_ID: self.Name_FileName,
-                self.TextMatchType_Regex: '(?i)其他中间成果'
+                self.Name_RegularExpression: '(?i)其他中间成果'
             },
             {
                 self.Name_ID: self.Name_FilePath,
-                self.TextMatchType_Regex: None
+                self.Name_RegularExpression: None
             }
         ]
 

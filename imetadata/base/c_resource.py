@@ -130,6 +130,8 @@ class CResource:
     Name_FileExt = 'fileext'
     Name_FileAffiliated = 'fileaffiliated'
     Name_FileMain = 'filemain'  # 作为关键字识别插件使用的公共key
+    Name_RegularExpression = 'regularexpression'
+    Name_No_Match_RegularExpression = 'nomatchregularexpression'
 
     Name_Total = 'total'
     Name_Data = 'data'

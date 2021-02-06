@@ -25,11 +25,11 @@ class plugins_1000_0001_ksjmcg(CDirPlugins_keyword):
         return [
             {
                 self.Name_ID: self.Name_FileName,
-                self.TextMatchType_Regex: '(?i)空三加密成果|空三加密'
+                self.Name_RegularExpression: '(?i)空三加密成果|空三加密'
             },
             {
                 self.Name_ID: self.Name_FilePath,
-                self.TextMatchType_Regex: None
+                self.Name_RegularExpression: None
             }
         ]
 

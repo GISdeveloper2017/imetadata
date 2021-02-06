@@ -43,7 +43,7 @@ class CDirPlugins_keyword(CDirPlugins):
         if len(object_keyword_list) > 0:
             for keyword_info in object_keyword_list:
                 keyword_id = CUtils.dict_value_by_name(keyword_info, self.Name_ID, None)
-                regex_match = CUtils.dict_value_by_name(keyword_info, self.TextMatchType_Regex, '.*')
+                regex_match = CUtils.dict_value_by_name(keyword_info, self.Name_RegularExpression, '.*')
                 if CUtils.equal_ignore_case(keyword_id, self.Name_FileName):
                     if CUtils.text_match_re(file_main_name, regex_match):
                         object_file_name_flag = True
@@ -73,7 +73,7 @@ class CDirPlugins_keyword(CDirPlugins):
         if len(affiliated_keyword_list) > 0:
             for keyword_info in affiliated_keyword_list:
                 keyword_id = CUtils.dict_value_by_name(keyword_info, self.Name_ID, None)
-                regex_match = CUtils.dict_value_by_name(keyword_info, self.TextMatchType_Regex, '.*')
+                regex_match = CUtils.dict_value_by_name(keyword_info, self.Name_RegularExpression, '.*')
                 if CUtils.equal_ignore_case(keyword_id, self.Name_FileName):
                     if CUtils.text_match_re(file_main_name, regex_match):
                         affiliated_file_name_flag = True
@@ -98,6 +98,7 @@ class CDirPlugins_keyword(CDirPlugins):
                 object_file_ext_flag and object_file_affiliated_flag:
             self._object_confirm = self.Object_Confirm_IKnown
             self._object_name = file_main_name
+            self.set_custom_affiliated_file()
         elif affiliated_file_name_flag and affiliated_file_path_flag and \
                 affiliated_file_ext_flag and affiliated_file_main_flag:
             self._object_confirm = self.Object_Confirm_IKnown_Not
@@ -116,20 +117,20 @@ class CDirPlugins_keyword(CDirPlugins):
         return [
             {
                 self.Name_ID: self.Name_FileName,
-                self.TextMatchType_Regex: None  # 配置数据文件名的匹配规则
+                self.Name_RegularExpression: None  # 配置数据文件名的匹配规则
             },
             {
                 self.Name_ID: self.Name_FilePath,
-                self.TextMatchType_Regex: None  # 配置数据文件路径的匹配规则
+                self.Name_RegularExpression: None  # 配置数据文件路径的匹配规则
             },
             {
                 self.Name_ID: self.Name_FileExt,
-                self.TextMatchType_Regex: None  # 配置数据文件后缀名的匹配规则
+                self.Name_RegularExpression: None  # 配置数据文件后缀名的匹配规则
             },
             {
                 self.Name_ID: self.Name_FileAffiliated,
                 self.Name_FilePath: None,  # 配置需要验证附属文件存在性的 文件路径
-                self.TextMatchType_Regex: None   # 配置需要验证附属文件的匹配规则,对于文件全名匹配
+                self.Name_RegularExpression: None  # 配置需要验证附属文件的匹配规则,对于文件全名匹配
             }
         ]
 
@@ -141,19 +142,51 @@ class CDirPlugins_keyword(CDirPlugins):
         return [
             {
                 self.Name_ID: self.Name_FileName,
-                self.TextMatchType_Regex: None  # 配置附属文件名的匹配规则
+                self.Name_RegularExpression: None  # 配置附属文件名的匹配规则
             },
             {
                 self.Name_ID: self.Name_FilePath,
-                self.TextMatchType_Regex: None  # 配置附属文件路径的匹配规则
+                self.Name_RegularExpression: None  # 配置附属文件路径的匹配规则
             },
             {
                 self.Name_ID: self.Name_FileExt,
-                self.TextMatchType_Regex: None  # 配置附属文件后缀名的匹配规则
+                self.Name_RegularExpression: None  # 配置附属文件后缀名的匹配规则
             },
             {
                 self.Name_ID: self.Name_FileMain,
                 self.Name_FilePath: None,  # 配置需要验证主文件存在性的 文件路径
-                self.TextMatchType_Regex: None   # 配置需要验证主文件的匹配规则,对于文件全名匹配
+                self.Name_RegularExpression: None  # 配置需要验证主文件的匹配规则,对于文件全名匹配
+            }
+        ]
+
+    def set_custom_affiliated_file(self):
+        custom_affiliated_file_list = self.get_custom_affiliated_file_character()
+        if len(custom_affiliated_file_list) > 0:
+            for affiliated_file_info in custom_affiliated_file_list:
+                affiliated_file_path = CUtils.dict_value_by_name(affiliated_file_info, self.Name_FilePath, None)
+                regex_match = CUtils.dict_value_by_name(affiliated_file_info, self.Name_RegularExpression, None)
+                no_match = CUtils.dict_value_by_name(affiliated_file_info, self.Name_No_Match_RegularExpression, None)
+                if (affiliated_file_path is not None) and (regex_match is not None):
+                    affiliated_file_name_list = CFile.file_or_dir_fullname_of_path(
+                        affiliated_file_path,  False, regex_match, CFile.MatchType_Regex
+                    )  # 模糊匹配文件列表
+                    if len(affiliated_file_name_list) > 0:
+                        for affiliated_file_name in affiliated_file_name_list:
+                            if no_match is None:
+                                self._object_detail_file_full_name_list.append(affiliated_file_name)
+                            else:
+                                if not CUtils.text_match_re(CFile.file_name(affiliated_file_name), no_match):
+                                    self._object_detail_file_full_name_list.append(affiliated_file_name)
+
+    def get_custom_affiliated_file_character(self):
+        return [
+            {
+                self.Name_FilePath: None,  # 附属文件的路径
+                self.Name_RegularExpression: None,  # 附属文件的匹配规则
+                self.Name_No_Match_RegularExpression: None  # 应该从上面匹配到的文件剔除的文件的匹配规则
+            }, {
+                self.Name_FilePath: None,  # 附属文件的路径
+                self.Name_RegularExpression: None,  # 附属文件的匹配规则
+                self.Name_No_Match_RegularExpression: None    # 应该从上面匹配到的文件剔除的文件的匹配规则
             }
         ]
