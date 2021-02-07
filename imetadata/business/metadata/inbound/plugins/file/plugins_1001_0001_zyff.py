@@ -24,8 +24,8 @@ class plugins_1001_0001_zyff(CDirPlugins_keyword):
         """
         return [
             {
-                self.Name_ID: self.Name_FileName,    # 配置数据文件名的匹配规则
-                self.Name_RegularExpression: '(?i)^([^DKL]|[DKL][^SN]|[DKL][SN].{11,}|[DKL][SN].{,2})'
+                self.Name_ID: self.Name_FileName,  # 配置数据文件名的匹配规则
+                self.Name_RegularExpression: '(?i)^([^DKL]|[DKL][^SN]|[DKL][SN].{11,}|[DKL][SN].{,2}$)'
             },
             {
                 self.Name_ID: self.Name_FilePath,  # 配置数据文件路径的匹配规则
@@ -55,7 +55,7 @@ class plugins_1001_0001_zyff(CDirPlugins_keyword):
         return [
             {
                 self.Name_ID: self.Name_FileName,  # 配置附属文件名的匹配规则
-                self.Name_RegularExpression: '(?i)^([^DKL]|[DKL][^SN]|[DKL][SN].{12,}|[DKL][SN].{,3})'
+                self.Name_RegularExpression: '(?i)^([^DKL]|[DKL][^SN]|[DKL][SN].{11,}|[DKL][SN].{,2}$)'
             },
             {
                 self.Name_ID: self.Name_FilePath,
@@ -79,7 +79,7 @@ class plugins_1001_0001_zyff(CDirPlugins_keyword):
         file_path = self.file_info.file_path
         affiliated_file_path = '矢量'.join(file_path.rsplit('影像', 1))  # 替换最后一个字符
         file_main_name = self.file_info.file_main_name
-        affiliated_file_reg = '(?i)^'+file_main_name+'.*[.]shp$'
+        affiliated_file_reg = '(?i)^' + file_main_name + '.*[.]shp$'
         return [
             {
                 self.Name_FilePath: affiliated_file_path,  # 附属文件的路径

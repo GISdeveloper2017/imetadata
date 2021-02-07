@@ -22,9 +22,9 @@ class CSatFilePlugins_yg_ccd(COpticalSatPlugins):
         北京二号卫星识别
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)^YG.*_CCD.*_L1', self.TextMatchType_Regex
+            return r'(?i)^YG.*_CCD.*_L\d', self.TextMatchType_Regex
         else:
-            return r'(?i)^YG.*_CCD.*_L1[.]tiff', self.TextMatchType_Regex
+            return r'(?i)^YG.*_CCD.*_L\d[.]tiff', self.TextMatchType_Regex
 
     def get_metadata_bus_filename_by_file(self) -> str:
         return CFile.join_file(

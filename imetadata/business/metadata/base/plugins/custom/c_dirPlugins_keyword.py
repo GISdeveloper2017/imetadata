@@ -97,14 +97,12 @@ class CDirPlugins_keyword(CDirPlugins):
                 elif CUtils.equal_ignore_case(keyword_id, self.Name_FileExt):
                     if CUtils.text_match_re(file_ext, regex_match):
                         affiliated_file_ext_flag = True
-                elif CUtils.equal_ignore_case(keyword_id, self.Name_FileAffiliated):
+                elif CUtils.equal_ignore_case(keyword_id, self.Name_FileMain):
                     affiliated_file_path = CUtils.dict_value_by_name(keyword_info, self.Name_FilePath, None)
                     if affiliated_file_path is not None:
                         if CFile.find_file_or_subpath_of_path(affiliated_file_path, regex_match,
                                                               CFile.MatchType_Regex):
                             affiliated_file_main_flag = True
-                    else:
-                        affiliated_file_main_flag = True
 
         if object_file_name_flag and object_file_path_flag and \
                 object_file_ext_flag and object_file_affiliated_flag:
@@ -154,6 +152,7 @@ class CDirPlugins_keyword(CDirPlugins):
         """
         设置异名数据附属识别的特征,不配的项目就设置为None,别删
         不用识别附属的情况就 return []
+        ！！！注意与上面的配置项目存在差别
         """
         return [
             {

@@ -56,7 +56,7 @@ class plugins_1001_0002_bzff(CDirPlugins_keyword):
         return [
             {
                 self.Name_ID: self.Name_FileName,
-                self.Name_RegularExpression: '(?i)^[DKL][SN].{4,}$'  # 配置附属文件名的匹配规则
+                self.Name_RegularExpression: '(?i)^[DKL][SN].{3,}$'  # 配置附属文件名的匹配规则
             },
             {
                 self.Name_ID: self.Name_FilePath,
