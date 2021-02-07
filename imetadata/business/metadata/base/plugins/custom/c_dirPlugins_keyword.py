@@ -45,6 +45,9 @@ class CDirPlugins_keyword(CDirPlugins):
             for keyword_info in object_keyword_list:
                 keyword_id = CUtils.dict_value_by_name(keyword_info, self.Name_ID, None)
                 regex_match = CUtils.dict_value_by_name(keyword_info, self.Name_RegularExpression, '.*')
+                if regex_match is None:
+                    regex_match = '.*'
+
                 if CUtils.equal_ignore_case(keyword_id, self.Name_FileName):
                     if CUtils.text_match_re(file_main_name, regex_match):
                         object_file_name_flag = True
@@ -82,6 +85,9 @@ class CDirPlugins_keyword(CDirPlugins):
             for keyword_info in affiliated_keyword_list:
                 keyword_id = CUtils.dict_value_by_name(keyword_info, self.Name_ID, None)
                 regex_match = CUtils.dict_value_by_name(keyword_info, self.Name_RegularExpression, '.*')
+                if regex_match is None:
+                    regex_match = '.*'
+
                 if CUtils.equal_ignore_case(keyword_id, self.Name_FileName):
                     if CUtils.text_match_re(file_main_name, regex_match):
                         affiliated_file_name_flag = True
