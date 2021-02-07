@@ -61,7 +61,7 @@ class CDirPlugins_keyword(CDirPlugins):
                         same_name_file_list = CFile.file_or_dir_fullname_of_path(
                             file_path, False, '(?i)^'+file_main_name+'[.].*$', CFile.MatchType_Regex
                         )
-                        if same_name_file_list > 0:
+                        if len(same_name_file_list) > 0:
                             for same_name_file in same_name_file_list:
                                 same_name_file_ext = CFile.file_ext(same_name_file)
                                 if CUtils.text_match_re(same_name_file_ext, regex_match):
