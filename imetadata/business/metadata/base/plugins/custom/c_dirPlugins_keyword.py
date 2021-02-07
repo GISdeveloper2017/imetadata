@@ -38,6 +38,7 @@ class CDirPlugins_keyword(CDirPlugins):
         object_file_name_flag = False
         object_file_path_flag = False
         object_file_ext_flag = False
+        object_affiliated_file_main_flag = False
         object_file_affiliated_flag = False
         object_keyword_list = self.get_classified_character_of_object_keyword()
         if len(object_keyword_list) > 0:
@@ -53,6 +54,15 @@ class CDirPlugins_keyword(CDirPlugins):
                 elif CUtils.equal_ignore_case(keyword_id, self.Name_FileExt):
                     if CUtils.text_match_re(file_ext, regex_match):
                         object_file_ext_flag = True
+                    else:
+                        same_name_file_list = CFile.file_or_dir_fullname_of_path(
+                            file_path, False, '(?i)^'+file_main_name+'[.].*$', CFile.MatchType_Regex
+                        )
+                        if same_name_file_list > 0:
+                            for same_name_file in same_name_file_list:
+                                same_name_file_ext = CFile.file_ext(same_name_file)
+                                if CUtils.text_match_re(same_name_file_ext, regex_match):
+                                    object_affiliated_file_main_flag = True
                 elif CUtils.equal_ignore_case(keyword_id, self.Name_FileAffiliated):
                     affiliated_file_path = CUtils.dict_value_by_name(keyword_info, self.Name_FilePath, None)
                     if affiliated_file_path is not None:
@@ -60,9 +70,7 @@ class CDirPlugins_keyword(CDirPlugins):
                                                               CFile.MatchType_Regex):
                             object_file_affiliated_flag = True
                     else:
-                        if CFile.find_file_or_subpath_of_path(file_path, regex_match,
-                                                              CFile.MatchType_Regex):
-                            object_file_affiliated_flag = True
+                        object_file_affiliated_flag = True
 
         # 预定义逻辑参数 附属文件匹配
         affiliated_file_name_flag = False
@@ -90,9 +98,7 @@ class CDirPlugins_keyword(CDirPlugins):
                                                               CFile.MatchType_Regex):
                             affiliated_file_main_flag = True
                     else:
-                        if CFile.find_file_or_subpath_of_path(file_path, regex_match,
-                                                              CFile.MatchType_Regex):
-                            affiliated_file_main_flag = True
+                        affiliated_file_main_flag = True
 
         if object_file_name_flag and object_file_path_flag and \
                 object_file_ext_flag and object_file_affiliated_flag:
@@ -101,6 +107,9 @@ class CDirPlugins_keyword(CDirPlugins):
             self.set_custom_affiliated_file()
         elif affiliated_file_name_flag and affiliated_file_path_flag and \
                 affiliated_file_ext_flag and affiliated_file_main_flag:
+            self._object_confirm = self.Object_Confirm_IKnown_Not
+            self._object_name = None
+        elif object_file_name_flag and object_file_path_flag and object_affiliated_file_main_flag:
             self._object_confirm = self.Object_Confirm_IKnown_Not
             self._object_name = None
         else:
@@ -112,7 +121,7 @@ class CDirPlugins_keyword(CDirPlugins):
     @abstractmethod
     def get_classified_character_of_object_keyword(self):
         """
-        设置识别的特征
+        设置数据附属识别的特征,不配的项目就设置为None,别删
         """
         return [
             {
@@ -137,7 +146,8 @@ class CDirPlugins_keyword(CDirPlugins):
     @abstractmethod
     def get_classified_character_of_affiliated_keyword(self):
         """
-        设置识别的特征
+        设置异名数据附属识别的特征,不配的项目就设置为None,别删
+        不用识别附属的情况就 return []
         """
         return [
             {
@@ -179,6 +189,8 @@ class CDirPlugins_keyword(CDirPlugins):
                                     self._object_detail_file_full_name_list.append(affiliated_file_name)
 
     def get_custom_affiliated_file_character(self):
+        """
+        设置自定义的附属文件
         return [
             {
                 self.Name_FilePath: None,  # 附属文件的路径
@@ -190,3 +202,5 @@ class CDirPlugins_keyword(CDirPlugins):
                 self.Name_No_Match_RegularExpression: None    # 应该从上面匹配到的文件剔除的文件的匹配规则
             }
         ]
+        """
+        return []

@@ -30,6 +30,15 @@ class plugins_1000_0001_ksjmcg(CDirPlugins_keyword):
             {
                 self.Name_ID: self.Name_FilePath,
                 self.Name_RegularExpression: None
+            },
+            {
+                self.Name_ID: self.Name_FileExt,
+                self.Name_RegularExpression: None  # 配置数据文件后缀名的匹配规则
+            },
+            {
+                self.Name_ID: self.Name_FileAffiliated,
+                self.Name_FilePath: None,  # 配置需要验证附属文件存在性的 文件路径
+                self.Name_RegularExpression: None  # 配置需要验证附属文件的匹配规则,对于文件全名匹配
             }
         ]
 
