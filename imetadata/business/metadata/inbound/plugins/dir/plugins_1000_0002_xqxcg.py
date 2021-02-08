@@ -15,6 +15,7 @@ class plugins_1000_0002_xqxcg(CDirPlugins_keyword):
         information[self.Plugins_Info_Type] = '镶嵌线成果'
         information[self.Plugins_Info_Type_Title] = '镶嵌线成果'
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
+        information[self.Plugins_Info_HasChildObj] = self.DB_False
         return information
 
     def get_classified_character_of_object_keyword(self):
@@ -31,15 +32,8 @@ class plugins_1000_0002_xqxcg(CDirPlugins_keyword):
                 self.Name_RegularExpression: None
             },
             {
-                self.Name_ID: self.Name_FileExt,
-                self.Name_RegularExpression: None  # 配置数据文件后缀名的匹配规则
-            },
-            {
                 self.Name_ID: self.Name_FileAffiliated,
                 self.Name_FilePath: None,  # 配置需要验证附属文件存在性的 文件路径
                 self.Name_RegularExpression: None  # 配置需要验证附属文件的匹配规则,对于文件全名匹配
             }
         ]
-
-    def get_classified_character_of_affiliated_keyword(self):
-        return []
