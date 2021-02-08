@@ -22,6 +22,13 @@ class plugins_1001_0002_bzff(CFilePlugins_keyword):
         information[self.Plugins_Info_Group_Title] = '分幅数据'
         information[self.Plugins_Info_Type] = 'JB标准分幅'
         information[self.Plugins_Info_Type_Title] = 'JB标准分幅'
+        information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Raster
+        information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
+        information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
+        information[self.Plugins_Info_SpatialEngine] = self.MetaDataEngine_Raster
+        information[self.Plugins_Info_ViewEngine] = self.BrowseEngine_Raster
+        information[self.Plugins_Info_HasChildObj] = self.DB_False
+        information[self.Plugins_Info_TagsEngine] = None
         return information
 
     def get_classified_character_of_object_keyword(self):
@@ -95,6 +102,16 @@ class plugins_1001_0002_bzff(CFilePlugins_keyword):
                 self.Name_No_Match_RegularExpression: None  # 应该从上面匹配到的文件剔除的文件的匹配规则
             }
         ]
+
+    def init_qa_file_list(self, parser: CMetaDataParser) -> list:
+        """
+        初始化ortho文件的质检列表,调用默认的img方法，并拼接剩余附属文件
+        完成 负责人 王学谦 在这里检验初始化ortho的质检列表
+        """
+        list_qa = list()
+        # 调用默认的规则列表
+        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))
+        return list_qa
 
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
@@ -409,3 +426,96 @@ class plugins_1001_0002_bzff(CFilePlugins_keyword):
                         self.Name_Message: '索引文件[{0}]存在'.format(shp_file)
                     }
                 )
+
+    def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
+        """
+        设置解析json格式元数据的检验规则列表, 为空表示无检查规则
+        完成 负责人 李宪
+        :param parser:
+        :return:
+        """
+        return [
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer_positive,
+                self.Name_XPath: 'pixelsize.width',
+                self.Name_ID: 'width',
+                self.Name_Title: '影像宽度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 1000,
+                self.Name_XPath: 'coordinate.proj4',
+                self.Name_ID: 'coordinate',
+                self.Name_Title: '坐标参考系',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.top',
+                self.Name_ID: 'top',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.left',
+                self.Name_ID: 'left',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.right',
+                self.Name_ID: 'right',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.bottom',
+                self.Name_ID: 'bottom',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            }
+        ]
