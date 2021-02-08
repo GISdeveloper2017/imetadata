@@ -6,6 +6,7 @@ from abc import abstractmethod
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.c_filePlugins import CFilePlugins
 
 
@@ -14,13 +15,13 @@ class CFilePlugins_keyword(CFilePlugins):
         information = dict()
         information[self.Plugins_Info_ID] = self.get_id()
         information[self.Plugins_Info_Title] = information[self.Plugins_Info_ID]
-        information[self.Plugins_Info_ViewEngine] = None
-        information[self.Plugins_Info_SpatialEngine] = None
-        information[self.Plugins_Info_MetaDataEngine] = None
-        information[self.Plugins_Info_BusMetaDataEngine] = None
+        information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Raster
+        information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
+        information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
+        information[self.Plugins_Info_SpatialEngine] = self.MetaDataEngine_Raster
+        information[self.Plugins_Info_ViewEngine] = self.BrowseEngine_Raster
         information[self.Plugins_Info_HasChildObj] = self.DB_False
         information[self.Plugins_Info_TagsEngine] = None
-        information[self.Plugins_Info_DetailEngine] = None
         information[self.Plugins_Info_Module_Distribute_Engine] = None  # 同步的引擎，值是发布同步用的类的名字
         return information
 
@@ -59,7 +60,7 @@ class CFilePlugins_keyword(CFilePlugins):
                         object_file_ext_flag = True
                     else:
                         same_name_file_list = CFile.file_or_dir_fullname_of_path(
-                            file_path, False, '(?i)^'+file_main_name+'[.].*$', CFile.MatchType_Regex
+                            file_path, False, '(?i)^' + file_main_name + '[.].*$', CFile.MatchType_Regex
                         )
                         if len(same_name_file_list) > 0:
                             for same_name_file in same_name_file_list:
@@ -183,7 +184,7 @@ class CFilePlugins_keyword(CFilePlugins):
                 no_match = CUtils.dict_value_by_name(affiliated_file_info, self.Name_No_Match_RegularExpression, None)
                 if (affiliated_file_path is not None) and (regex_match is not None):
                     affiliated_file_name_list = CFile.file_or_dir_fullname_of_path(
-                        affiliated_file_path,  False, regex_match, CFile.MatchType_Regex
+                        affiliated_file_path, False, regex_match, CFile.MatchType_Regex
                     )  # 模糊匹配文件列表
                     if len(affiliated_file_name_list) > 0:
                         for affiliated_file_name in affiliated_file_name_list:
@@ -209,3 +210,106 @@ class CFilePlugins_keyword(CFilePlugins):
         ]
         """
         return []
+
+    def init_qa_file_list(self, parser: CMetaDataParser) -> list:
+        """
+        初始化ortho文件的质检列表,调用默认的img方法，并拼接剩余附属文件
+        完成 负责人 王学谦 在这里检验初始化ortho的质检列表
+        """
+        list_qa = list()
+        # 调用默认的规则列表
+        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))
+        return list_qa
+
+    def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
+        """
+        设置解析json格式元数据的检验规则列表, 为空表示无检查规则
+        完成 负责人 李宪
+        :param parser:
+        :return:
+        """
+        return [
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer_positive,
+                self.Name_XPath: 'pixelsize.width',
+                self.Name_ID: 'width',
+                self.Name_Title: '影像宽度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 1000,
+                self.Name_XPath: 'coordinate.proj4',
+                self.Name_ID: 'coordinate',
+                self.Name_Title: '坐标参考系',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.top',
+                self.Name_ID: 'top',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.left',
+                self.Name_ID: 'left',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.right',
+                self.Name_ID: 'right',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.bottom',
+                self.Name_ID: 'bottom',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            }
+        ]
