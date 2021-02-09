@@ -16,6 +16,7 @@ class plugins_1000_0004_dem(CDirPlugins_keyword):
         information[self.Plugins_Info_Type_Title] = '精细化DEM'
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
         information[self.Plugins_Info_HasChildObj] = self.DB_False
+        information[self.Plugins_Info_Type_Code] = None
         return information
 
     def get_classified_character_of_object_keyword(self):

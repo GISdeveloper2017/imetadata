@@ -29,6 +29,7 @@ class plugins_1001_0002_bzff(CFilePlugins_keyword):
         information[self.Plugins_Info_ViewEngine] = self.BrowseEngine_Raster
         information[self.Plugins_Info_HasChildObj] = self.DB_False
         information[self.Plugins_Info_TagsEngine] = None
+        information[self.Plugins_Info_Type_Code] = None
         return information
 
     def get_classified_character_of_object_keyword(self):

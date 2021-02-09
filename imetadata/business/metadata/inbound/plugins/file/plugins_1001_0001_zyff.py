@@ -16,6 +16,7 @@ class plugins_1001_0001_zyff(plugins_1001_0002_bzff):
         information[self.Plugins_Info_Group_Title] = '分幅数据'
         information[self.Plugins_Info_Type] = 'JB自由分幅'
         information[self.Plugins_Info_Type_Title] = 'JB自由分幅'
+        information[self.Plugins_Info_Type_Code] = None
         return information
 
     def get_classified_character_of_object_keyword(self):
