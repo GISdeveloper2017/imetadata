@@ -46,7 +46,7 @@ set dsotagsparsestatus = {0}, dsotagsparseprocid = null
 where dsotagsparsestatus = {1}
         '''.format(self.ProcStatus_InQueue, self.ProcStatus_Processing)
 
-    def process_mission(self, dataset, is_retry_mission: bool):
+    def process_mission(self, dataset):
         dso_id = dataset.value_by_name(0, 'dsoid', '')
         dso_data_type = dataset.value_by_name(0, 'dsodatatype', '')
         dso_object_type = dataset.value_by_name(0, 'dsoobjecttype', '')

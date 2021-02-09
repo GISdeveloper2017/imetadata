@@ -1418,81 +1418,14 @@ comment on column dm2_storage_inbound.dsibatchno is '批次编号';
 
 
 /*
-    思考服务发布的数据库设计-----------------------------注意: 暂不启用!!!!!!!
-    . 从服务发布节点开始设计
-
+    2021-02-03
+    . 对dm2_storage_object的并行处理支持异常重试机制, 取消原有旧的重试框架
+    . 支持优先级策略
 */
 
-drop table if exists gis_server;
-create table if not exists gis_server
-(
-    gsid      varchar(100) not null
-        constraint dp_v_qfg_pkey
-            primary key,
-    gstitle   varchar(100) not null,
-    gshost    varchar(100),
-    gsoptions jsonb,
-    gsmemo    varchar(1000)
-);
-
-comment on table gis_server is 'GIS_server服务器';
-
-comment on column gis_server.gsid is '标示';
-comment on column gis_server.gstitle is '标题';
-comment on column gis_server.gshost is '服务器ip';
-comment on column gis_server.gsoptions is '其他配置';
-comment on column gis_server.gsmemo is '备注';
-
-alter table gis_server
-    owner to postgres;
-
-
-drop table if exists gis_storage;
-create table if not exists gis_storage
-(
-    gsid          varchar(100) not null
-        constraint dp_v_qfg_pkey primary key,
-    gsServerID    varchar(100) not null,
-    gsStorageID   varchar(100) not null,
-    gsStatus      int default 1,
-    gsMountProcID varchar(100),
-    gsMountMemo   text
-);
-
-comment on table gis_storage is 'GIS服务器';
-
-comment on column gis_storage.gsid is '标示';
-comment on column gis_storage.gsServerID is '服务器标识';
-comment on column gis_storage.gsStorageID is '存储标识';
-comment on column gis_storage.gsStatus is '状态';
-comment on column gis_storage.gsMountProcID is '并行连接标识';
-comment on column gis_storage.gsMountMemo is '连接结果';
-
-alter table gis_storage
-    owner to postgres;
-
-
-drop table if exists gis_service;
-create table if not exists gis_service
-(
-    gsid           varchar(100) not null
-        constraint dp_v_qfg_pkey primary key,
-    gsServerID     varchar(100) not null,
-    gsServiceID    varchar(100) not null,
-    gsStatus       int default 1,
-    gsDeployProcID varchar(100),
-    gsDeployMemo   text
-);
-
-comment on table gis_service is 'GIS服务器';
-
-comment on column gis_service.gsid is '标示';
-comment on column gis_service.gsServerID is '服务器标识';
-comment on column gis_service.gsServiceID is '服务标识';
-comment on column gis_service.gsStatus is '状态';
-comment on column gis_service.gsDeployProcID is '并行发布标识';
-comment on column gis_service.gsDeployMemo is '发布结果';
-
-alter table gis_service
-    owner to postgres;
+alter table dm2_storage_object
+    drop column if exists dso_metadataparser_retry;
+alter table dm2_storage_object
+    add column if not exists dso_priority int default 0;
+comment on column dm2_storage_object.dso_priority is '优先级';
 

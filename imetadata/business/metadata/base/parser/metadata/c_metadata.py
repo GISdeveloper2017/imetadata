@@ -15,14 +15,14 @@ class CMetaData(CResource):
     def __init__(self):
         self.__quality__ = CQuality()
 
-        self.__metadata_extract_result__ = self.DB_False
+        self.__metadata_extract_result__ = self.Not_Support
         self.__metadata_extract_memo__ = ''
         self.__metadata_text__ = None
         self.__metadata_xml__ = CXml()
         self.__metadata_json__ = CJson()
         self.__metadata_type__ = self.MetaDataFormat_Text
 
-        self.__metadata_bus_extract_result__ = self.DB_False
+        self.__metadata_bus_extract_result__ = self.Not_Support
         self.__metadata_bus_extract_memo__ = ''
         self.__metadata_bus_text__ = None
         self.__metadata_bus_xml__ = CXml()
@@ -31,14 +31,14 @@ class CMetaData(CResource):
 
         self.__thumb_img_file_name__ = ''
         self.__browse_img_file_name__ = ''
-        self.__metadata_view_extract_result__ = self.DB_False
+        self.__metadata_view_extract_result__ = self.Not_Support
         self.__metadata_view_extract_memo__ = ''
 
         self.__time_information__ = CJson()
-        self.__metadata_time_extract_result__ = self.DB_False
+        self.__metadata_time_extract_result__ = self.Not_Support
         self.__metadata_time_extract_memo__ = ''
 
-        self.__metadata_spatial_extract_result__ = self.DB_False
+        self.__metadata_spatial_extract_result__ = self.Not_Support
         self.__metadata_spatial_extract_memo__ = ''
         self.__metadata_spatial__ = CMDSpatial()
 
@@ -105,7 +105,7 @@ class CMetaData(CResource):
         return self.__metadata_spatial_extract_result__
 
     def metadata(self):
-        if self.__metadata_extract_result__ == self.DB_False:
+        if self.__metadata_extract_result__ != self.DB_True:
             return self.__metadata_extract_result__, self.__metadata_extract_memo__, self.__metadata_type__, None
         elif self.__metadata_type__ == self.MetaDataFormat_Json:
             return self.__metadata_extract_result__, self.__metadata_extract_memo__, self.__metadata_type__, self.__metadata_json__.to_json()
@@ -229,7 +229,9 @@ class CMetaData(CResource):
             self.__metadata_json__ = CJson()
 
     def metadata_bus(self):
-        if self.__metadata_bus_type__ == self.MetaDataFormat_Json:
+        if self.__metadata_bus_extract_result__ != self.DB_True:
+            return self.__metadata_bus_extract_result__, self.__metadata_bus_extract_memo__, self.__metadata_bus_type__, None
+        elif self.__metadata_bus_type__ == self.MetaDataFormat_Json:
             return self.__metadata_bus_extract_result__, self.__metadata_bus_extract_memo__, self.__metadata_bus_type__, self.__metadata_bus_json__.to_json()
         elif self.__metadata_bus_type__ == self.MetaDataFormat_XML:
             return self.__metadata_bus_extract_result__, self.__metadata_bus_extract_memo__, self.__metadata_bus_type__, self.__metadata_bus_xml__.to_xml()

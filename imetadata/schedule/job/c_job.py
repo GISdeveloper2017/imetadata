@@ -27,14 +27,15 @@ class CJob(CResource):
                 self.DB_Server_ID_Default
             )
         )
-        self.__abnormal_job_retry_times = settings.application.xpath_one(
-            self.Path_Setting_MetaData_InBound_Parser_MetaData_Retry_Times,
-            self.Default_Abnormal_Job_Retry_Times
+        self.__abnormal_job_retry_times = self.params_value_by_name(
+            self.Job_Params_Abnormal_Job_Retry_Times,
+            -1
         )
-        # self.__abnormal_job_retry_times = self.params_value_by_name(
-        #     self.Job_Params_Abnormal_Job_Retry_Times,
-        #     self.Default_Abnormal_Job_Retry_Times
-        # )
+        if CUtils.equal_ignore_case(self.__abnormal_job_retry_times, -1):
+            self.__abnormal_job_retry_times = settings.application.xpath_one(
+                self.Path_Setting_MetaData_InBound_Parser_MetaData_Retry_Times,
+                self.Default_Abnormal_Job_Retry_Times
+            )
 
         self.custom_init()
 

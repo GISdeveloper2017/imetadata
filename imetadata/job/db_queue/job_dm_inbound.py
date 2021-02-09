@@ -54,10 +54,9 @@ set dsistatus = {0}, dsiprocid = null
 where dsistatus = {1}
         '''.format(self.IB_Status_IB_InQueue, self.IB_Status_IB_Processing)
 
-    def process_mission(self, dataset, is_retry_mission: bool) -> str:
+    def process_mission(self, dataset) -> str:
         """
         详细算法复杂, 参见readme.md中[### 数据入库调度]章节
-        :param is_retry_mission:
         :param dataset:
         :return:
         """
@@ -593,8 +592,7 @@ where dsistatus = {1}
         . 返回CResult
             . 如果全部相符, 则返回True
             . 如果有任何一个不符, 则返回False, 且把不符的文件名通过信息返回
-        :param storage_id:
-        :param directory_name:
+        :param ib_id:
         :return:
         """
         invalid_file_list = []
