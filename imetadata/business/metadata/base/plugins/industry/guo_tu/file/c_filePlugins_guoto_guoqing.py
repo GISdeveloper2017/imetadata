@@ -61,19 +61,238 @@ class CFilePlugins_GUOTU_GuoQing(CFilePlugins_GUOTU):
             {
                 self.Name_Source: self.Name_Business,
                 self.Name_ID: self.Name_Time,
-                self.Name_XPath: "//ProduceDate",
+                self.Name_XPath: "//PhotoDate|PbandDate|MultiBandDate",
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
                 self.Name_Source: self.Name_Business,
                 self.Name_ID: self.Name_Start_Time,
-                self.Name_XPath: "//ProduceDate",
+                self.Name_XPath: "//PhotoDate|PbandDate|MultiBandDate",
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
                 self.Name_Source: self.Name_Business,
                 self.Name_ID: self.Name_End_Time,
-                self.Name_XPath: "//ProduceDate",
+                self.Name_XPath: "//PhotoDate|PbandDate|MultiBandDate",
                 self.Name_Format: self.MetaDataFormat_XML
+            }
+        ]
+
+    def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
+        """
+        初始化默认的, 业务元数据xml文件的检验列表
+        完成 负责人 王学谦
+        :param parser:
+        :return:
+        """
+        return [
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//MetaDataFileName",
+                self.Name_ID: 'MetaDataFileName',
+                self.Name_Title: '带扩展名元数据文件名',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 60
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/Metadatafile/BasicDataContent/ProductName",
+                self.Name_ID: 'ProductName',
+                self.Name_Title: '对象名称',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 20
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/Metadatafile/BasicDataContent/Owner",
+                self.Name_ID: 'Owner',
+                self.Name_Title: '所有者',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 20
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/Metadatafile/BasicDataContent/Producer",
+                self.Name_ID: 'Producer',
+                self.Name_Title: '生产商',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 20
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/Metadatafile/BasicDataContent/Publisher",
+                self.Name_ID: 'Publisher',
+                self.Name_Title: '出版商',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 20
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/Metadatafile/BasicDataContent/ProduceDate",
+                self.Name_ID: 'ProduceDate',
+                self.Name_Title: '生产日期',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_date,
+                self.Name_NotNull: True
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/Metadatafile/BasicDataContent/ConfidentialLevel",
+                self.Name_ID: 'ConfidentialLevel',
+                self.Name_Title: '密级',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 20
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/Metadatafile/BasicDataContent/GroundResolution",
+                self.Name_ID: 'GroundResolution',
+                self.Name_Title: '地面分辨率',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 10
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/Metadatafile/BasicDataContent/ImgColorModel",
+                self.Name_ID: 'ImgColorModel',
+                self.Name_Title: '影像类型',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 20
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/Metadatafile/BasicDataContent/PixelBits",
+                self.Name_ID: 'PixelBits',
+                self.Name_Title: '位深',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 50
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/Metadatafile/BasicDataContent/DataFormat",
+                self.Name_ID: 'DataFormat',
+                self.Name_Title: '格式',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 25
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "/Metadatafile/BasicDataContent/Mathfoundation/MapProjection",
+                self.Name_ID: 'MapProjection',
+                self.Name_Title: '地图投影',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 50
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//SateName",
+                self.Name_ID: 'SateName',
+                self.Name_Title: '星源',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 38
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//PBandSensorType|CameraType",
+                self.Name_ID: 'PBandSensorType_CameraType',
+                self.Name_Title: '全色传感器或航摄仪型号',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 20
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//SateResolution|DigitalPhotoResolution",
+                self.Name_ID: 'SateResolution',
+                self.Name_Title: '全色分辨率或航片分辨率',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Width: 8
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//PbandOrbitCode|PhotoCode",
+                self.Name_ID: 'PBandOribitCode',
+                self.Name_Title: '全色轨道号',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 38
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//PhotoDate|PbandDate",
+                self.Name_ID: 'PbandDate',
+                self.Name_Title: '全色拍摄日期或航片日期',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_date
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//MultiBandSensorType|CameraType",
+                self.Name_ID: 'MultiBandSensorType_CameraType',
+                self.Name_Title: '多光谱传感器或航摄仪型号',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 100
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//MultiBandResolution|DigitalPhotoResolution",
+                self.Name_ID: 'MultiBandResolution',
+                self.Name_Title: '多光谱分辨率或航片分辨率',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Width: 8
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//MultiBandOrbitCode|PhotoCode",
+                self.Name_ID: 'MultiBandOrbitCode',
+                self.Name_Title: '多光谱轨道号',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 100
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//PhotoDate|MultiBandDate",
+                self.Name_ID: 'MultiBandDate',
+                self.Name_Title: '多光谱拍摄日期或航片日期',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_decimal_or_integer
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//MultiBandNum|CameraFocus",
+                self.Name_ID: 'MultiBandNum',
+                self.Name_Title: '多光谱波段数量',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_decimal_or_integer
+            }, {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//MultiBandName|PhotoColorModel",
+                self.Name_ID: 'MultiBandName',
+                self.Name_Title: '多光谱波段名称',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 20
             }
         ]
