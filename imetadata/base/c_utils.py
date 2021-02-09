@@ -568,7 +568,7 @@ class CUtils(CResource):
         """
         # default_date = CTime.now()
         date_value = cls.standard_datetime_format(text, default_value)
-        if CUtils.equal_ignore_case(date_value, default_value):
+        if CUtils.equal_ignore_case(date_value, default_value) or CUtils.equal_ignore_case(date_value, ''):
             return default_value
         date_value = date_value.replace('-', '')
         day_format = ''

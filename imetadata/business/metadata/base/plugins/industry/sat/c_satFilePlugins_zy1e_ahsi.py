@@ -39,7 +39,7 @@ class CSatFilePlugins_zy1e_ahsi(CSatFilePlugins_zy1e):
         """
         return CFile.join_file(
             self.file_content.content_root_dir,
-            self.get_fuzzy_metadata_file('.*(?!lt;!Check)\.xml', '{0}.xml'.format(self.classified_object_name())
+            self.get_fuzzy_metadata_file('.*(?<!Check)\.xml', '{0}.xml'.format(self.classified_object_name())
                                          )
         )
 
@@ -167,7 +167,7 @@ class CSatFilePlugins_zy1e_ahsi(CSatFilePlugins_zy1e):
             },
             {
                 self.Name_ID: 'acquisition_id',  # 轨道号
-                self.Name_XPath: None
+                self.Name_XPath: '/ProductMetaData/POrbitID'
             },
             {
                 self.Name_ID: 'copyright',  # 发布来源 从info取
@@ -199,6 +199,6 @@ class CSatFilePlugins_zy1e_ahsi(CSatFilePlugins_zy1e):
             },
             {
                 self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
-                self.Name_Value: '.*(?!lt;!Check)\.xml'
+                self.Name_Value: '.*(?<!Check)\.xml'
             }
         ]

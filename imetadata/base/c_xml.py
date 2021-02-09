@@ -116,11 +116,7 @@ class CXml:
         if self.__xml_tree is None:
             return []
         else:
-            namespace = self.get_name_space_map()
-            if len(namespace) > 0:
-                return self.__xml_tree.xpath(query, namespaces=namespace)
-            else:
-                return self.__xml_tree.xpath(query)
+            return self.__xml_tree.xpath(query, namespaces=self.get_name_space_map())
 
     def get_name_space_map(self):
         if self.__xml_root_node is None:

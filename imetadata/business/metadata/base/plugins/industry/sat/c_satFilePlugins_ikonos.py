@@ -1,4 +1,3 @@
-import re
 import time
 
 from imetadata.base.c_file import CFile
@@ -8,7 +7,6 @@ from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransforme
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.plugins.industry.sat.base.base.c_opticalSatPlugins import COpticalSatPlugins
-from imetadata.database.c_factory import CFactory
 
 
 class CSatFilePlugins_ikonos(COpticalSatPlugins):
@@ -19,7 +17,8 @@ class CSatFilePlugins_ikonos(COpticalSatPlugins):
         information[self.Plugins_Info_Type_Title] = 'ikonos'
         information[self.Plugins_Info_Group] = 'ikonos'
         information[self.Plugins_Info_Group_Title] = 'ikonos'
-        information[self.Plugins_Info_CopyRight] = '洛克希德·马丁公司'
+        information[self.Plugins_Info_CopyRight] = \
+            'DigitalGlobe 1601 Dry Creek Drive, Suite 260 Longmont, Colorado 80503 U.S.A.'
         return information
 
     def get_classified_character_of_sat(self, sat_file_status):
@@ -193,7 +192,7 @@ class CSatFilePlugins_ikonos(COpticalSatPlugins):
             },
             {
                 self.Name_ID: 'resolution',  # 分辨率(米) 对应卫星的默认值，从info里取
-                self.Name_Value: '1/4'
+                self.Name_Value: '0.82/3.2'
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
@@ -242,67 +241,36 @@ class CSatFilePlugins_ikonos(COpticalSatPlugins):
             {
                 self.Name_ID: 'otherxml',  # 预留字段，可空，配置正则
                 self.Name_Value: None
-            },
-            {
-                self.Name_ID: 'shape',
-                self.Name_XPath: '//item[@name="image.shape"]'  # 用于计算四至的特殊字段
             }
         ]
+
+    def get_wkt_to_transform_coordinates(
+            self, metadata_bus_dict, metadata_bus_xml, multiple_metadata_bus_filename_dict
+    ):
+        shape = metadata_bus_xml.get_element_text_by_xpath_one('//item[@name="image.shape"]')
+        shape = shape[1:-1].replace(',', ' ').replace(') (', ',')
+        wkt = 'POLYGON( ({0}) )'.format(shape)
+        return wkt
 
     def metadata_bus_dict_process_custom(self, metadata_bus_dict):
         """
         对部分需要进行运算的数据进行处理
         """
         super().metadata_bus_dict_process_custom(metadata_bus_dict)
-        shape = CUtils.dict_value_by_name(metadata_bus_dict, 'shape', None)
-        shape = shape[1:-1].replace(',', ' ').replace(') (', ',')
-        wkt = 'POLYGON( ({0}) )'.format(shape)
-        try:
-            try:
-                db_id = self.file_info.db_server_id
-            except Exception:
-                db_id = self.DB_Server_ID_Distribution
-            if CUtils.equal_ignore_case(db_id, ''):
-                db_id = self.DB_Server_ID_Distribution
-            db = CFactory().give_me_db(db_id)
-            metadata_bus_dict['centerlatitude'] = db.one_row(
-                '''
-                select st_y(st_centroid('{0}')) as centerlatitude
-                '''.format(wkt)).value_by_name(0, 'centerlatitude', None)
-            metadata_bus_dict['centerlongitude'] = db.one_row(
-                '''
-                select st_x(st_centroid('{0}')) as centerlongitude
-                '''.format(wkt)).value_by_name(0, 'centerlongitude', None)
-
-            tran_wkt = db.one_row(
-                '''
-                select ST_AsText(ST_Envelope(st_geomfromtext('{0}'))) as tran_wkt
-                '''.format(wkt)).value_by_name(0, 'tran_wkt', None)
-            tran_wkt = tran_wkt.replace('POLYGON((', '').replace('))', '').strip()
-            coordinates_list = re.split(r'[,]|\s+', tran_wkt)
-            metadata_bus_dict['bottomleftlatitude'] = coordinates_list[0]
-            metadata_bus_dict['bottomleftlongitude'] = coordinates_list[1]
-            metadata_bus_dict['topleftlatitude'] = coordinates_list[2]
-            metadata_bus_dict['topleftlongitude'] = coordinates_list[3]
-            metadata_bus_dict['toprightlatitude'] = coordinates_list[4]
-            metadata_bus_dict['toprightlongitude'] = coordinates_list[5]
-            metadata_bus_dict['bottomrightlatitude'] = coordinates_list[6]
-            metadata_bus_dict['bottomrightlongitude'] = coordinates_list[7]
-        except Exception:
-            pass
-
         centertime = CUtils.dict_value_by_name(metadata_bus_dict, 'centertime', None)
-        centertime = centertime[:10] + '.' + centertime[10:]
-        centertime = CUtils.to_decimal(centertime, None)
-        if centertime is not None:
-            metadata_bus_dict['centertime'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(centertime))
-        else:
-            metadata_bus_dict['centertime'] = ''
+        if not CUtils.equal_ignore_case(centertime, ''):
+            centertime = centertime[:10] + '.' + centertime[10:]
+            centertime = CUtils.to_decimal(centertime, None)
+            if not CUtils.equal_ignore_case(centertime, ''):
+                metadata_bus_dict['centertime'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(centertime))
+            else:
+                metadata_bus_dict['centertime'] = ''
 
         publishdate = CUtils.dict_value_by_name(metadata_bus_dict, 'publishdate', None)
-        publishdate = publishdate[:10] + '.' + publishdate[10:]
-        publishdate = CUtils.to_decimal(publishdate, None)
-        if centertime is not None:
-            metadata_bus_dict['publishdate'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(publishdate))
-        else:
-            metadata_bus_dict['publishdate'] = ''
+        if not CUtils.equal_ignore_case(publishdate, ''):
+            publishdate = publishdate[:10] + '.' + publishdate[10:]
+            publishdate = CUtils.to_decimal(publishdate, None)
+            if not CUtils.equal_ignore_case(publishdate, ''):
+                metadata_bus_dict['publishdate'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(publishdate))
+            else:
+                metadata_bus_dict['publishdate'] = ''
