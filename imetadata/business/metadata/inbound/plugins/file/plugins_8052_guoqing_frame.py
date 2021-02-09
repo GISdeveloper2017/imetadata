@@ -142,6 +142,8 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
                     self.Name_Title: '元数据文件',
                     self.Name_Result: self.QA_Result_Pass,
                     self.Name_Group: self.QA_Group_Data_Integrity,
-                    self.Name_Message: '业务元数据[{0}]存在'.format(self.metadata_bus_src_filename_with_path)
+                    self.Name_Message: '业务元数据[{0}]存在'.format(
+                        CFile.file_name(self.metadata_bus_src_filename_with_path)
+                    )
                 }
             )

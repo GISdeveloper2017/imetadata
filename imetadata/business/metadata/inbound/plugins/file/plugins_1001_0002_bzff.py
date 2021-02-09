@@ -45,7 +45,7 @@ class plugins_1001_0002_bzff(CFilePlugins_keyword):
                 self.Name_RegularExpression: r'(?i)^.+'
                                              r'[-_/]?[1-9]\d{3}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])[-_/]?'
                                              r'.+'
-                                             r'[\\\\/]影像$'
+                                             r'[\\\\/]影像'
             },
             {
                 self.Name_ID: self.Name_FileExt,
@@ -76,7 +76,7 @@ class plugins_1001_0002_bzff(CFilePlugins_keyword):
                 self.Name_RegularExpression: r'(?i)^.+'
                                              r'[-_/]?[1-9]\d{3}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])[-_/]?'
                                              r'.+'
-                                             r'[\\\\/]矢量$'  # 配置附属文件路径的匹配规则
+                                             r'[\\\\/]矢量'  # 配置附属文件路径的匹配规则
             },
             {
                 self.Name_ID: self.Name_FileExt,
@@ -128,7 +128,7 @@ class plugins_1001_0002_bzff(CFilePlugins_keyword):
             r'(?i)^.+'
             r'[-_/]?([1-9]\d{3}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1]))[-_/]?'
             r'.+'
-            r'[\\\\/]影像$',
+            r'[\\\\/]影像',
             parser.file_info.file_path
         )
         if len(pathdata_list) > 0:
@@ -163,7 +163,7 @@ class plugins_1001_0002_bzff(CFilePlugins_keyword):
             r'(?i)^.+'
             r'[-_/]?[1-9]\d{3}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])[-_/]?'
             r'(.+)'
-            r'[\\\\/]影像$',
+            r'[\\\\/]影像',
             parser.file_info.file_path
         )
         if len(SatelliteID_list) > 0:
@@ -178,7 +178,7 @@ class plugins_1001_0002_bzff(CFilePlugins_keyword):
             r'(?i)^(.+)'
             r'[-_/]?[1-9]\d{3}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])[-_/]?'
             r'.+'
-            r'[\\\\/]影像$',
+            r'[\\\\/]影像',
             parser.file_info.file_path
         )
         if len(GeographicName_list) > 0:

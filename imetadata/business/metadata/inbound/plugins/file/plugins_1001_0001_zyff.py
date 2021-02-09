@@ -32,7 +32,7 @@ class plugins_1001_0001_zyff(plugins_1001_0002_bzff):
                 self.Name_RegularExpression: r'(?i)^.+'
                                              r'[-_/]?[1-9]\d{3}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])[-_/]?'
                                              r'.+'
-                                             r'[\\\\/]影像$'
+                                             r'[\\\\/]影像'
             },
             {
                 self.Name_ID: self.Name_FileExt,
