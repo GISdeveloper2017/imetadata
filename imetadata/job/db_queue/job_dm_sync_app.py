@@ -50,7 +50,7 @@ set dson_notify_status = {1}, dson_notify_proc_id = null
 where dson_notify_status = {0}
         '''.format(self.ProcStatus_Processing, self.ProcStatus_InQueue)
 
-    def process_mission(self, dataset, is_retry_mission: bool) -> str:
+    def process_mission(self, dataset) -> str:
         """
         :param dataset:
         :return:

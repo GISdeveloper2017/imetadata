@@ -22,35 +22,56 @@ class job_dm_obj_detail(CDMBaseJob):
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage_object 
-set dsodetailparseprocid = '{0}', dsodetailparsestatus = 2
+set dsodetailparseprocid = '{0}', dsodetailparsestatus = dsodetailparsestatus / 10 * 10 + {1}
 where dsoid = (
   select dsoid  
   from   dm2_storage_object 
-  where  dsodetailparsestatus = 1 
+  where  dsodetailparsestatus % 10 = {2} 
   limit 1
-  for update skip locked
+  for update skip locked 
 )
-        '''.format(self.SYSTEM_NAME_MISSION_ID)
+        '''.format(
+            self.SYSTEM_NAME_MISSION_ID,
+            self.ProcStatus_Processing,
+            self.ProcStatus_InQueue
+        )
 
     def get_mission_info_sql(self):
         return '''
-select dsoid, dsodatatype, dsoobjecttype, dsoobjectname from dm2_storage_object where dsodetailparseprocid = '{0}'        
+select 
+    dsoid, dsodatatype, dsoobjecttype, dsoobjectname 
+  , dsodetailparsestatus / 10 as retry_times,
+  , dsodetailparsememo as last_process_memo,
+from dm2_storage_object where dsodetailparseprocid = '{0}'        
         '''.format(self.SYSTEM_NAME_MISSION_ID)
 
     def get_abnormal_mission_restart_sql(self) -> str:
         return '''
 update dm2_storage_object 
-set dsodetailparsestatus = 1, dsodetailparseprocid = null 
-where dsodetailparsestatus = 2
-        '''
+set dsodetailparsestatus = {0}, dsodetailparseprocid = null 
+where dsodetailparsestatus % 10 = {1} 
+        '''.format(self.ProcStatus_InQueue, self.ProcStatus_Processing)
 
-    def process_mission(self, dataset, is_retry_mission: bool):
+    def process_mission(self, dataset):
         dso_id = dataset.value_by_name(0, 'dsoid', '')
         dso_data_type = dataset.value_by_name(0, 'dsodatatype', '')
         dso_object_type = dataset.value_by_name(0, 'dsoobjecttype', '')
         dso_object_name = dataset.value_by_name(0, 'dsoobjectname', '')
 
         CLogger().debug('开始处理对象: {0}.{1}.{2}.{3}的元数据'.format(dso_id, dso_data_type, dso_object_type, dso_object_name))
+
+        ds_retry_times = dataset.value_by_name(0, 'retry_times', 0)
+        if ds_retry_times >= self.abnormal_job_retry_times():
+            ds_last_process_memo = CUtils.any_2_str(dataset.value_by_name(0, 'last_process_memo', None))
+            process_result = CResult.merge_result(
+                self.Failure,
+                '{0}, \n系统已经重试{1}次, 仍然未能解决, 请人工检查修正后重试!'.format(
+                    ds_last_process_memo,
+                    ds_retry_times
+                )
+            )
+            self.db_update_object_status(dso_id, process_result, self.ProcStatus_Error)
+            return process_result
 
         ds_file_info = self.get_object_info(dso_id, dso_data_type)
 
@@ -68,7 +89,7 @@ where dsodetailparsestatus = 2
         sql_get_rule = '''
             select dsdScanRule
             from dm2_storage_directory
-            where dsdStorageid = :dsdStorageID and Position(dsddirectory || '{0}' in :dsdDirectory) = 1
+            where dsdStorageid = :dsdStorageID and position(dsddirectory || '{0}' in :dsdDirectory) = 1
                 and dsdScanRule is not null
             order by dsddirectory desc
             limit 1
@@ -113,8 +134,7 @@ where dsodetailparsestatus = 2
             )
             process_result = plugins_obj.parser_detail(detail_parser)
             if not CResult.result_success(process_result):
-                self.db_update_object_status(dso_id, self.ProcStatus_Error, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
-                    ds_file_info.value_by_name(0, 'query_object_fullname', ''), CResult.result_message(process_result)))
+                self.db_update_object_status(dso_id, process_result)
                 return process_result
 
             process_result = self.object_copy_stat(
@@ -127,34 +147,72 @@ where dsodetailparsestatus = 2
             if CResult.result_success(process_result):
                 # 更新父对象的容量和最后修改时间
                 self.__update_object_owner_object_size_and_modifytime(file_info_obj.owner_obj_id)
-
-                self.db_update_object_status(
-                    dso_id,
-                    self.ProcStatus_Finished,
+                result = CResult.merge_result(
+                    self.Success,
                     '文件或目录[{0}]对象详情解析成功结束!'.format(
                         ds_file_info.value_by_name(0, 'query_object_fullname', '')
                     )
                 )
-                return CResult.merge_result(self.Success, '文件或目录[{0}]对象详情解析成功结束!'.format(
-                    ds_file_info.value_by_name(0, 'query_object_fullname', '')))
+                self.db_update_object_status(dso_id, result)
+                return result
             else:
-                self.db_update_object_status(dso_id, self.ProcStatus_Error, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
-                    ds_file_info.value_by_name(0, 'query_object_fullname', ''), CResult.result_message(process_result)))
+                self.db_update_object_status(dso_id, process_result)
                 return process_result
         except Exception as error:
-            self.db_update_object_status(dso_id, self.ProcStatus_Error, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
-                ds_file_info.value_by_name(0, 'query_object_fullname', ''), error.__str__()))
-            return CResult.merge_result(self.Failure, '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
-                ds_file_info.value_by_name(0, 'query_object_fullname', ''), error.__str__()))
+            result = CResult.merge_result(
+                self.Failure,
+                '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
+                    ds_file_info.value_by_name(0, 'query_object_fullname', ''),
+                    error.__str__()
+                )
+            )
+            self.db_update_object_status(dso_id, result)
+            return result
 
-    def db_update_object_status(self, dso_id, dso_status, memo):
-        CFactory().give_me_db(self.get_mission_db_id()).execute('''
-            update dm2_storage_object
-            set dsodetailparsestatus = :status
-              , dsolastmodifytime = now()
-              , dsodetailparsememo = :dsodetailparsememo
-            where dsoid = :dsoid
-            ''', {'dsoid': dso_id, 'dsodetailparsememo': memo, 'status': dso_status})
+    def db_update_object_status(self, dso_id, result, status=None):
+        if status is not None:
+            CFactory().give_me_db(self.get_mission_db_id()).execute(
+                '''
+                update dm2_storage_object
+                set dsodetailparsestatus = :status
+                  , dsolastmodifytime = now()
+                  , dsodetailparsememo = :dsodetailparsememo
+                where dsoid = :dsoid
+                ''',
+                {
+                    'dsoid': dso_id,
+                    'dsodetailparsememo': CResult.result_message(result),
+                    'status': status
+                }
+            )
+        elif CResult.result_success(result):
+            CFactory().give_me_db(self.get_mission_db_id()).execute(
+                '''
+                update dm2_storage_object
+                set dsodetailparsestatus = {0}
+                  , dsolastmodifytime = now()
+                  , dsodetailparsememo = :dsodetailparsememo
+                where dsoid = :dsoid
+                '''.format(self.ProcStatus_Finished),
+                {
+                    'dsoid': dso_id,
+                    'dsodetailparsememo': CResult.result_message(result)
+                }
+            )
+        else:
+            CFactory().give_me_db(self.get_mission_db_id()).execute(
+                '''
+                update dm2_storage_object
+                set dsodetailparsestatus = (dsodetailparsestatus / 10 + 1) * 10 + {0},
+                  , dsolastmodifytime = now()
+                  , dsodetailparsememo = :dsodetailparsememo
+                where dsoid = :dsoid
+                '''.format(self.ProcStatus_InQueue),
+                {
+                    'dsoid': dso_id,
+                    'dsodetailparsememo': CResult.result_message(result)
+                }
+            )
 
     def object_copy_stat(self, storage_id, object_id, object_name, object_relation_name):
         try:
@@ -173,12 +231,12 @@ where dsodetailparsestatus = 2
 
             batch_root_relation_dir = CFactory().give_me_db(self.get_mission_db_id()).one_value(
                 '''
-                select dsddirectory
-                from dm2_storage_directory
-                where dsdStorageid = :storage_id and Position(dsddirectory || '{0}' in :directory) = 1
-                    and dsddirectory <> ''
+                select dsddirectory 
+                from dm2_storage_directory 
+                where dsdStorageid = :storage_id and position(dsddirectory || '{0}' in :directory) = 1 
+                    and dsddirectory <> '' 
                 order by dsddirectory 
-                limit 1
+                limit 1 
                 '''.format(CFile.sep()),
                 {'storage_id': storage_id, 'directory': object_relation_name},
                 object_relation_name
@@ -211,7 +269,8 @@ where dsodetailparsestatus = 2
                     and dm2_storage_object.dsoid <> :object_id
                     and dm2_storage_object.dsodatatype = '{1}'
                 '''.format(self.Storage_Type_Core, self.FileType_Dir),
-                {'object_id': object_id, 'object_name': object_name}, 0
+                {'object_id': object_id, 'object_name': object_name},
+                0
             ) + CFactory().give_me_db(self.get_mission_db_id()).one_value(
                 '''
                 select count(dm2_storage_object.dsoid)
@@ -225,7 +284,8 @@ where dsodetailparsestatus = 2
                     and dm2_storage_object.dsoid <> :object_id
                     and dm2_storage_object.dsodatatype = '{1}'
                 '''.format(self.Storage_Type_Core, self.FileType_File),
-                {'object_id': object_id, 'object_name': object_name}, 0
+                {'object_id': object_id, 'object_name': object_name},
+                0
             )
 
             count_copy_same_filename_and_size_core = CFactory().give_me_db(self.get_mission_db_id()).one_value(
@@ -242,7 +302,8 @@ where dsodetailparsestatus = 2
                     and dm2_storage_object.dsoid <> :object_id
                     and dm2_storage_object.dsodatatype = '{1}'
                 '''.format(self.Storage_Type_Core, self.FileType_Dir),
-                {'object_id': object_id, 'object_name': object_name, 'object_size': object_size}, 0
+                {'object_id': object_id, 'object_name': object_name, 'object_size': object_size},
+                0
             ) + CFactory().give_me_db(self.get_mission_db_id()).one_value(
                 '''
                 select count(dm2_storage_object.dsoid)
@@ -257,7 +318,8 @@ where dsodetailparsestatus = 2
                     and dm2_storage_object.dsoid <> :object_id
                     and dm2_storage_object.dsodatatype = '{1}'
                 '''.format(self.Storage_Type_Core, self.FileType_File),
-                {'object_id': object_id, 'object_name': object_name, 'object_size': object_size}, 0
+                {'object_id': object_id, 'object_name': object_name, 'object_size': object_size},
+                0
             )
 
             count_copy_same_filename_same_batch = CFactory().give_me_db(self.get_mission_db_id()).one_value(

@@ -363,9 +363,8 @@ class CResource:
     Path_Setting_MetaData_InBound_Parser = '{0}.{1}'.format(Path_Setting_MetaData_InBound, Name_Parser)
     Path_Setting_MetaData_InBound_Parser_MetaData = '{0}.{1}'.format(Path_Setting_MetaData_InBound_Parser,
                                                                      Name_MetaData)
-    Name_Retry_Times = 'retry_times'
     Path_Setting_MetaData_InBound_Parser_MetaData_Retry_Times = '{0}.{1}'.format(
-        Path_Setting_MetaData_InBound_Parser_MetaData, Name_Retry_Times)
+        Path_Setting_MetaData_InBound_Parser_MetaData, Job_Params_Abnormal_Job_Retry_Times)
 
     Name_QI = 'qi'
     Path_Setting_MetaData_QI = '{0}.{1}'.format(Path_Setting_MetaData, Name_QI)
@@ -388,6 +387,7 @@ class CResource:
 
     DB_True = -1
     DB_False = 0
+    Not_Support = 1
 
     Engine_Custom = Name_Custom
 

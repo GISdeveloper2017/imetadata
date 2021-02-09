@@ -103,7 +103,7 @@ class job_command_runner(CDBQueueJob):
                 and (scmcenterid in (select scid from sch_center where scserver = '{0}'))
             '''.format(CUtils.any_2_str(self.__application_id))
 
-    def process_mission(self, dataset, is_retry_mission: bool):
+    def process_mission(self, dataset):
         mission_id = dataset.value_by_name(0, 'scmid', '')
         mission_title = dataset.value_by_name(0, 'scmtitle', '')
 

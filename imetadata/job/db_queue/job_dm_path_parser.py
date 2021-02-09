@@ -20,19 +20,24 @@ class job_dm_path_parser(CDMBaseJob):
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage_directory 
-set dsdscanfileprocessid = '{0}', dsdscanfilestatus = 2
+set dsdscanfileprocessid = '{0}', dsdscandirstatus = 0, dsdscanfilestatus = dsdscanfilestatus / 10 * 10 + {1}
 where dsdid = (
-  select dsdid  
+  select dsdid 
   from   dm2_storage_directory 
-  where  dsdscanfilestatus = 1 
-    and dsdscanstatus = 0  
-    and dsd_directory_valid = -1
-    and dsddirtype <> '2'
-  order by dsddirscanpriority desc, dsdaddtime
-  limit 1
+  where  dsdscanfilestatus % 10 = {2}
+    and dsdscanstatus = {3} 
+    and dsd_directory_valid = -1 
+    and dsddirtype <> '2' 
+  order by dsddirscanpriority desc, dsdaddtime 
+  limit 1 
   for update skip locked
 )
-        '''.format(self.SYSTEM_NAME_MISSION_ID)
+        '''.format(
+            self.SYSTEM_NAME_MISSION_ID,
+            self.ProcStatus_Processing,
+            self.ProcStatus_InQueue,
+            self.ProcStatus_Finished
+        )
 
     def get_mission_info_sql(self) -> str:
         return '''
@@ -49,6 +54,8 @@ select
   , dm2_storage.dstOtherOption as query_storage_OtherOption  
   , COALESCE(dm2_storage_directory.dsd_object_id, dm2_storage_directory.dsdparentobjid)  as query_dir_parent_objid
   , dm2_storage_object.dsoobjecttype as query_dir_parent_objtype
+  , dm2_storage_directory.dsdscanfilestatus / 10 as retry_times,
+  , dm2_storage_directory.dsdscanmemo as last_process_memo,
 from dm2_storage_directory 
   left join dm2_storage on dm2_storage.dstid = dm2_storage_directory.dsdstorageid 
   left join dm2_storage_object on dm2_storage_object.dsoid = COALESCE(dm2_storage_directory.dsd_object_id, dm2_storage_directory.dsdparentobjid) 
@@ -58,16 +65,29 @@ where dm2_storage_directory.dsdscanfileprocessid = '{0}'
     def get_abnormal_mission_restart_sql(self) -> str:
         return '''
 update dm2_storage_directory 
-set dsdscanfilestatus = 1, dsdscanfileprocessid = null 
-where dsdscanfilestatus = 2
-        '''
+set dsdscanfilestatus = {0}, dsdscanfileprocessid = null 
+where dsdscanfilestatus % 10 = {1} 
+        '''.format(self.ProcStatus_InQueue, self.ProcStatus_Processing)
 
-    def process_mission(self, dataset, is_retry_mission: bool) -> str:
+    def process_mission(self, dataset) -> str:
         ds_id = dataset.value_by_name(0, 'query_dir_id', '')
         ds_storage_id = dataset.value_by_name(0, 'query_storage_id', '')
         inbound_id = dataset.value_by_name(0, 'query_dir_ib_id', None)
         ds_subpath = dataset.value_by_name(0, 'query_subpath', '')
         ds_root_path = dataset.value_by_name(0, 'query_rootpath', '')
+
+        ds_retry_times = dataset.value_by_name(0, 'retry_times', 0)
+        if ds_retry_times >= self.abnormal_job_retry_times():
+            ds_last_process_memo = CUtils.any_2_str(dataset.value_by_name(0, 'last_process_memo', None))
+            process_result = CResult.merge_result(
+                self.Failure,
+                '{0}, \n系统已经重试{1}次, 仍然未能解决, 请人工检查修正后重试!'.format(
+                    ds_last_process_memo,
+                    ds_retry_times
+                )
+            )
+            self.update_dir_status(ds_id, process_result, self.ProcStatus_Error)
+            return process_result
 
         if ds_subpath == '':
             ds_subpath = ds_root_path
@@ -98,15 +118,20 @@ where dsdscanfilestatus = 2
             CLogger().debug('处理的目录为: {0}'.format(ds_subpath))
 
             self.parser_file_or_subpath_of_path(dataset, ds_id, ds_subpath, ds_rule_content, inbound_id)
-            return CResult.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_subpath))
+
+            result = CResult.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_subpath))
+            self.update_dir_status(ds_id, result)
+            return result
         except Exception as err:
-            return CResult.merge_result(
+            result = CResult.merge_result(
                 self.Failure,
                 '目录为[{0}]下的文件和子目录扫描处理出现错误!错误原因为: {1}'.format(
                     ds_subpath,
                     err.__str__()
                 )
             )
+            self.update_dir_status(ds_id, result)
+            return result
         finally:
             self.exchange_file_or_subpath_valid_unknown2invalid(ds_id)
 
@@ -170,15 +195,6 @@ where dsdscanfilestatus = 2
                 else:
                     CLogger().info('文件[{0}]未通过黑白名单检验, 不允许入库! '.format(file_name_with_full_path))
 
-        CFactory().give_me_db(self.get_mission_db_id()).execute(
-            '''
-            update dm2_storage_directory
-            set dsdscandirstatus = 0, dsdscanfilestatus = 0, dsddirscanpriority = 0
-            where dsdid = :dsdid
-            ''', {'dsdid': ds_id}
-        )
-        return CResult.merge_result(self.Success, '目录为[{0}]下的文件和子目录扫描处理成功!'.format(ds_path))
-
     def init_file_or_subpath_valid_unknown(self, ds_id):
         """
         将指定目录标识下的子目录和文件都更新为未知
@@ -212,6 +228,40 @@ where dsdscanfilestatus = 2
                     set dsffilevalid = {0}
                     where dsfdirectoryid = :id and dsffilevalid = {1}
                     '''.format(self.File_Status_Invalid, self.File_Status_Unknown), {'id': ds_id})
+
+    def update_dir_status(self, dir_id, result, status=None):
+        if status is not None:
+            sql_update_directory_status = '''
+            update dm2_storage_directory
+            set 
+                dsdscanfilestatus = :status,
+                dsdscanmemo = :memo,
+                dsdlastmodifytime = now()
+            where dsdid = :dsdid
+            '''
+        elif CResult.result_success(result):
+            sql_update_directory_status = '''
+            update dm2_storage_directory
+            set 
+                dsdscanfilestatus = {0},
+                dsdscanmemo = :memo, 
+                dsdlastmodifytime = now()
+            where dsdid = :dsdid
+            '''.format(self.ProcStatus_Finished)
+        else:
+            sql_update_directory_status = '''
+            update dm2_storage_directory
+            set 
+                dsdscanfilestatus = (dsdscanfilestatus / 10 + 1) * 10 + {0},
+                dsdscanmemo = :memo, 
+                dsdlastmodifytime = now()
+            where dsdid = :dsdid
+            '''.format(self.ProcStatus_InQueue)
+        params = dict()
+        params['dsdid'] = dir_id
+        params['memo'] = CResult.result_message(result)
+        params['status'] = status
+        CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_directory_status, params)
 
 
 if __name__ == '__main__':

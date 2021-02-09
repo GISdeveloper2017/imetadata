@@ -34,11 +34,6 @@ class job_dm_inbound_qi_monitor(CTimeJob):
         if inbound_qi_list.is_empty():
             return CResult.merge_result(CResult.Success, '本次没有需要检查的入库质检任务！')
 
-        abnormal_job_retry_times = settings.application.xpath_one(
-            self.Path_Setting_MetaData_InBound_Parser_MetaData_Retry_Times,
-            self.Default_Abnormal_Job_Retry_Times
-        )
-
         for data_index in range(inbound_qi_list.size()):
             ds_ib_id = inbound_qi_list.value_by_name(data_index, 'query_ib_id', '')
             ds_storage_id = inbound_qi_list.value_by_name(data_index, 'query_storage_id', '')
@@ -173,9 +168,8 @@ class job_dm_inbound_qi_monitor(CTimeJob):
                     select count(*)
                     from dm2_storage_object
                     where dso_ib_id = :ib_id
-                        and dsometadataparsestatus <> {0}
-                        and dso_metadataparser_retry = {1}
-                    '''.format(self.ProcStatus_Finished, abnormal_job_retry_times),
+                        and dsometadataparsestatus = {0}
+                    '''.format(self.ProcStatus_Error),
                     {
                         'ib_id': ds_ib_id
                     },

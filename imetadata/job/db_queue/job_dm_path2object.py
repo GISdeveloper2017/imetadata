@@ -18,16 +18,20 @@ class job_dm_path2object(CDMBaseJob):
     def get_mission_seize_sql(self) -> str:
         return '''
 update dm2_storage_directory 
-set dsdprocessid = '{0}', dsdscanstatus = 2
+set dsdprocessid = '{0}', dsdscanstatus = dsdscanstatus / 10 * 10 + {1}
 where dsdid = (
   select dsdid  
   from   dm2_storage_directory 
-  where  dsdscanstatus = 1 and dsddirtype <> '2'
+  where  dsdscanstatus % 10 = {2} and dsddirtype <> '2'
   order by dsdaddtime 
   limit 1
   for update skip locked
 )
-        '''.format(self.SYSTEM_NAME_MISSION_ID)
+        '''.format(
+            self.SYSTEM_NAME_MISSION_ID,
+            self.ProcStatus_Processing,
+            self.ProcStatus_InQueue
+        )
 
     def get_mission_info_sql(self) -> str:
         return '''
@@ -47,6 +51,8 @@ select
   , dm2_storage_directory.dsdscandirstatus as query_dir_ScanDirStatus
   , dm2_storage_directory.dsdparentobjid as query_dir_parent_objid
   , dm2_storage_object.dsoobjecttype as query_dir_parent_objtype
+  , dm2_storage_directory.dsdscanstatus / 10 as retry_times,
+  , dm2_storage_directory.dsdscanmemo as last_process_memo,
 from dm2_storage_directory 
   left join dm2_storage on dm2_storage.dstid = dm2_storage_directory.dsdstorageid 
   left join dm2_storage_object on dm2_storage_object.dsoid = dm2_storage_directory.dsdparentobjid
@@ -56,17 +62,38 @@ where dm2_storage_directory.dsdprocessid = '{0}'
     def get_abnormal_mission_restart_sql(self) -> str:
         return '''
 update dm2_storage_directory 
-set dsdscanstatus = 1, dsdprocessid = null 
-where dsdscanstatus = 2
-        '''
+set dsdscanstatus = {0}, dsdprocessid = null 
+where dsdscanstatus % 10 = {1}
+        '''.format(self.ProcStatus_InQueue, self.ProcStatus_Processing)
 
-    def process_mission(self, dataset, is_retry_mission: bool) -> str:
+    def process_mission(self, dataset) -> str:
         ds_subpath = dataset.value_by_name(0, 'query_subpath', '')
         ds_root_path = dataset.value_by_name(0, 'query_root_path', '')
         ds_storage_id = dataset.value_by_name(0, 'query_storage_id', '')
         ds_id = dataset.value_by_name(0, 'query_dir_id', '')
         owner_obj_id = dataset.value_by_name(0, 'query_dir_parent_objid', '')
         parent_id = dataset.value_by_name(0, 'query_dir_parent_id', '')
+
+        ds_retry_times = dataset.value_by_name(0, 'retry_times', 0)
+        if ds_retry_times >= self.abnormal_job_retry_times():
+            ds_last_process_memo = CUtils.any_2_str(dataset.value_by_name(0, 'last_process_memo', None))
+            process_result = CResult.merge_result(
+                self.Failure,
+                '{0}, \n系统已经重试{1}次, 仍然未能解决, 请人工检查修正后重试!'.format(
+                    ds_last_process_memo,
+                    ds_retry_times
+                )
+            )
+            self.update_dir_status(ds_id, process_result, self.ProcStatus_Error)
+            return process_result
+
+        if CUtils.equal_ignore_case(ds_subpath, ''):
+            result = CResult.merge_result(CResult.Success, '根目录[{0}]不支持识别为对象, 当前流程被忽略!')
+            self.update_dir_status(ds_id, result)
+            return result
+
+        ds_path_full_name = CFile.join_file(ds_root_path, ds_subpath)
+        CLogger().debug('处理的子目录为: {0}'.format(ds_path_full_name))
 
         try:
             sql_get_rule = '''
@@ -86,12 +113,6 @@ where dsdscanstatus = 2
             )
             ds_rule_content = rule_ds.value_by_name(0, 'dsdScanRule', '')
 
-            if CUtils.equal_ignore_case(ds_subpath, ''):
-                ds_path_full_name = ds_root_path
-            else:
-                ds_path_full_name = CFile.join_file(ds_root_path, ds_subpath)
-            CLogger().debug('处理的子目录为: {0}'.format(ds_path_full_name))
-
             path_obj = CDMPathInfo(self.FileType_Dir, ds_path_full_name, ds_storage_id, ds_id, parent_id, owner_obj_id,
                                    self.get_mission_db_id(), ds_rule_content)
             if not path_obj.file_existed:
@@ -104,7 +125,6 @@ where dsdscanstatus = 2
                 path_obj.db_check_and_update_metadata_rule(
                     CFile.join_file(ds_path_full_name, self.FileName_MetaData_Rule)
                 )
-
                 path_obj.db_path2object()
 
             result = CResult.merge_result(CResult.Success, '目录[{0}]处理顺利完成!'.format(ds_path_full_name))
@@ -118,28 +138,38 @@ where dsdscanstatus = 2
             self.update_dir_status(ds_id, result)
             return result
 
-    def update_dir_status(self, dir_id, result):
-        if CResult.result_success(result):
+    def update_dir_status(self, dir_id, result, status=None):
+        if status is not None:
             sql_update_directory_status = '''
             update dm2_storage_directory
             set 
-                dsdscanstatus = 0,
-                dsdscanmemo = :memo, 
+                dsdscanstatus = :status,
+                dsdscanmemo = :memo,
                 dsdlastmodifytime = now()
             where dsdid = :dsdid
             '''
+        elif CResult.result_success(result):
+            sql_update_directory_status = '''
+            update dm2_storage_directory
+            set 
+                dsdscanstatus = {0},
+                dsdscanmemo = :memo, 
+                dsdlastmodifytime = now()
+            where dsdid = :dsdid
+            '''.format(self.ProcStatus_Finished)
         else:
             sql_update_directory_status = '''
             update dm2_storage_directory
             set 
-                dsdscanstatus = 3,
+                dsdscanstatus = (dsdscanstatus / 10 + 1) * 10 + {0},
                 dsdscanmemo = :memo, 
                 dsdlastmodifytime = now()
             where dsdid = :dsdid
-            '''
+            '''.format(self.ProcStatus_InQueue)
         params = dict()
         params['dsdid'] = dir_id
         params['memo'] = CResult.result_message(result)
+        params['status'] = status
         CFactory().give_me_db(self.get_mission_db_id()).execute(sql_update_directory_status, params)
 
 

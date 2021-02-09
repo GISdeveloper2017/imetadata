@@ -216,7 +216,8 @@ application = CSettings(
                 },
                 'parser': {
                     'metadata': {
-                        'retry_times': 3
+                        'title': '异常任务的默认重试次数',
+                        'abnormal_job_retry_times': 3
                     }
                 }
             },

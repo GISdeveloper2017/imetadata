@@ -47,7 +47,7 @@ set dpStatus = 5, dpprocessid = null
 where dpStatus = 6
         '''
 
-    def process_mission(self, dataset, is_retry_mission: bool) -> str:
+    def process_mission(self, dataset) -> str:
         """
         详细算法复杂, 参见readme.md中[##### 服务发布调度]章节
         todo(张雄雄) 开始开发服务发布框架

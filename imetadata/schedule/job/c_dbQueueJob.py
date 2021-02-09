@@ -37,20 +37,16 @@ class CDBQueueJob(CJob):
         return ''
 
     @abstractmethod
-    def process_mission(self, dataset, is_retry_mission: bool) -> str:
+    def process_mission(self, dataset) -> str:
         return CResult.merge_result(CResult.Success, '测试成功')
 
     def execute(self) -> str:
-        mission_data_retry = False
         mission_data = self.get_mission_info()
-        if mission_data.is_empty():
-            mission_data_retry = True
-            mission_data = self.get_retry_mission_info()
-            if mission_data is None:
-                return CResult.merge_result(CResult.Failure, '没有可执行的任务！')
+        if mission_data is None:
+            return CResult.merge_result(CResult.Failure, '任务配置异常, 系统无法处理该任务！')
 
         if not mission_data.is_empty():
-            return self.process_mission(mission_data, mission_data_retry)
+            return self.process_mission(mission_data)
         else:
             return CResult.merge_result(CResult.Failure, '没有可执行的任务！')
 
@@ -86,32 +82,3 @@ class CDBQueueJob(CJob):
                 db.execute(sql)
             except:
                 pass
-
-    def get_retry_mission_info(self):
-        """
-        获取重试的任务
-        :return:
-        """
-        mission_flag = CUtils.one_id()
-        mission_seize_sql = self.get_mission_retry_sql()
-        mission_info_sql = self.get_mission_info_sql()
-
-        if CUtils.equal_ignore_case(mission_seize_sql, ''):
-            return None
-        if CUtils.equal_ignore_case(mission_info_sql, ''):
-            return None
-
-        mission_seize_sql = mission_seize_sql.replace(self.SYSTEM_NAME_MISSION_ID, mission_flag)
-        mission_info_sql = mission_info_sql.replace(self.SYSTEM_NAME_MISSION_ID, mission_flag)
-
-        try:
-            factory = CFactory()
-            db = factory.give_me_db(self.get_mission_db_id())
-            db.execute(mission_seize_sql)
-
-            return db.one_row(mission_info_sql)
-        except:
-            return CDataSet()
-
-    def get_mission_retry_sql(self) -> str:
-        return ''
