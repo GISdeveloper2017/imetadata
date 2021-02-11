@@ -40,8 +40,8 @@ where dsoid = (
         return '''
 select 
     dsoid, dsodatatype, dsoobjecttype, dsoobjectname 
-  , dsodetailparsestatus / 10 as retry_times,
-  , dsodetailparsememo as last_process_memo,
+  , dsodetailparsestatus / 10 as retry_times
+  , dsodetailparsememo as last_process_memo
 from dm2_storage_object where dsodetailparseprocid = '{0}'        
         '''.format(self.SYSTEM_NAME_MISSION_ID)
 

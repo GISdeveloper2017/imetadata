@@ -27,7 +27,7 @@ class plugins_6050_layer_vector(CVectorChildPlugins):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_string,
                 self.Name_Width: 1000,
-                self.Name_XPath: 'layers[0].wgs84.coordinate',
+                self.Name_XPath: 'layers[0].coordinate.wkt',
                 self.Name_ID: 'coordinate',
                 self.Name_Title: '坐标参考系',
                 self.Name_Group: self.QA_Group_Data_Integrity,

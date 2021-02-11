@@ -54,8 +54,8 @@ select
   , dm2_storage.dstOtherOption as query_storage_OtherOption  
   , COALESCE(dm2_storage_directory.dsd_object_id, dm2_storage_directory.dsdparentobjid)  as query_dir_parent_objid
   , dm2_storage_object.dsoobjecttype as query_dir_parent_objtype
-  , dm2_storage_directory.dsdscanfilestatus / 10 as retry_times,
-  , dm2_storage_directory.dsdscanmemo as last_process_memo,
+  , dm2_storage_directory.dsdscanfilestatus / 10 as retry_times
+  , dm2_storage_directory.dsdscanmemo as last_process_memo
 from dm2_storage_directory 
   left join dm2_storage on dm2_storage.dstid = dm2_storage_directory.dsdstorageid 
   left join dm2_storage_object on dm2_storage_object.dsoid = COALESCE(dm2_storage_directory.dsd_object_id, dm2_storage_directory.dsdparentobjid) 

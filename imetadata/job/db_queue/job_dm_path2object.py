@@ -51,8 +51,8 @@ select
   , dm2_storage_directory.dsdscandirstatus as query_dir_ScanDirStatus
   , dm2_storage_directory.dsdparentobjid as query_dir_parent_objid
   , dm2_storage_object.dsoobjecttype as query_dir_parent_objtype
-  , dm2_storage_directory.dsdscanstatus / 10 as retry_times,
-  , dm2_storage_directory.dsdscanmemo as last_process_memo,
+  , dm2_storage_directory.dsdscanstatus / 10 as retry_times
+  , dm2_storage_directory.dsdscanmemo as last_process_memo
 from dm2_storage_directory 
   left join dm2_storage on dm2_storage.dstid = dm2_storage_directory.dsdstorageid 
   left join dm2_storage_object on dm2_storage_object.dsoid = dm2_storage_directory.dsdparentobjid

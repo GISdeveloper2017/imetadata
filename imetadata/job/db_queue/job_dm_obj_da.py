@@ -43,8 +43,8 @@ where dsoid = (
         return '''
 select dsoid, dsodatatype, dsoobjecttype, dsoobjectname, dso_quality
     , dso_da_result 
-    , dso_da_status / 10 as retry_times,
-    , dso_da_proc_memo as last_process_memo,
+    , dso_da_status / 10 as retry_times
+    , dso_da_proc_memo as last_process_memo
 from dm2_storage_object where dso_da_proc_id = '{0}'        
         '''.format(self.SYSTEM_NAME_MISSION_ID)
 

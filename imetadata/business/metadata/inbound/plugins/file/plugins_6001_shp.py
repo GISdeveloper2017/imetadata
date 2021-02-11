@@ -31,10 +31,10 @@ class plugins_6001_shp(CVectorFilePlugins):
         else:
             if CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Shp)):
                 self._object_confirm = self.Object_Confirm_IKnown_Not
-                self._object_name = None
+                self._object_name = ''
             else:
                 self._object_confirm = self.Object_Confirm_IUnKnown
-                self._object_name = None
+                self._object_name = ''
 
         return self._object_confirm, self._object_name
 
@@ -105,7 +105,7 @@ class plugins_6001_shp(CVectorFilePlugins):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_string,
                 self.Name_Width: 1000,
-                self.Name_XPath: 'layers[0].wgs84.coordinate',
+                self.Name_XPath: 'layers[0].coordinate.wkt',
                 self.Name_ID: 'coordinate',
                 self.Name_Title: '坐标参考系',
                 self.Name_Group: self.QA_Group_Data_Integrity,
@@ -180,7 +180,7 @@ class plugins_6001_shp(CVectorFilePlugins):
                 self.Name_Not_List: ['0'],
                 self.Name_XPath: 'layers[0].features.count',
                 self.Name_ID: 'features_count',
-                self.Name_Title: 'features_count',
+                self.Name_Title: '图斑数',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Warn
             }

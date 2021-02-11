@@ -147,7 +147,7 @@ class CAudit(CResource):
         element_obj = xml_obj.xpath_one(xpath)
         if element_obj is not None:
             element_text = CXml.get_element_text(element_obj)
-            return cls.__a_check_value__(result_dict, element_text, 'XML对象的节点[{0}]'.format(xpath), qa_items)
+            return cls.__a_check_value__(result_dict, element_text, '属性[{0}]'.format(audit_title), qa_items)
         else:
             result_dict[cls.Name_Message] = 'XML对象的节点[{0}]不存在, 请检查修正!'.format(xpath)
             return [result_dict]
@@ -164,12 +164,14 @@ class CAudit(CResource):
         if element_obj is not None:
             if CXml.attr_exist(element_obj, attr_name):
                 attr_text = CXml.get_attr(element_obj, attr_name, '')
-                return cls.__a_check_value__(result_dict, attr_text, 'XML对象的节点[{0}]的属性[{1}]'.format(xpath, attr_name),
+                return cls.__a_check_value__(result_dict, attr_text,
+                                             '属性[{0}]在XML节点[{1}.{2}]'.format(audit_title, xpath, attr_name),
                                              qa_items)
             else:
-                result_dict[cls.Name_Message] = 'XML对象的节点[{0}]无属性[{1}], 请检查修正!'.format(xpath, attr_name)
+                result_dict[cls.Name_Message] = '属性[{0}]在XML节点[{1}.{2}]未找到, 请检查修正!'.format(audit_title, xpath,
+                                                                                           attr_name)
         else:
-            result_dict[cls.Name_Message] = 'XML对象的节点[{0}]不存在, 请检查修正!'.format(xpath)
+            result_dict[cls.Name_Message] = '属性[{0}]在XML节点[{1}]未找到, 请检查修正!'.format(audit_title, xpath)
 
         return [result_dict]
 
@@ -194,7 +196,7 @@ class CAudit(CResource):
 
         json_value = json_obj.xpath_one(xpath, None)
         if json_value is not None:
-            return cls.__a_check_value__(result_dict, json_value, 'Json对象的节点[{0}]'.format(xpath), qa_items)
+            return cls.__a_check_value__(result_dict, json_value, '属性[{0}]'.format(audit_title), qa_items)
         else:
             result_dict[cls.Name_Message] = 'Json对象的节点[{0}]不存在, 请检查修正!'.format(xpath)
             return [result_dict]
@@ -212,7 +214,7 @@ class CAudit(CResource):
         :return:
         """
         result_dict = cls.__init_audit_dict__(audit_id, audit_title, audit_group, audit_result)
-        return cls.__a_check_value__(result_dict, item_value, '元数据的[{0}]'.format(audit_title), qa_items)
+        return cls.__a_check_value__(result_dict, item_value, '属性[{0}]'.format(audit_title), qa_items)
 
     @classmethod
     def __a_check_value_width__(cls, result_template: dict, value, title_prefix, value_width):

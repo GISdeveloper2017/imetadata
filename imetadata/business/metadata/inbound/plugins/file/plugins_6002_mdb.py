@@ -76,79 +76,79 @@ class plugins_6002_mdb(CVectorFilePlugins):
             #     self.Name_Group: self.QA_Group_Data_Integrity,
             #     self.Name_Result: self.QA_Result_Error
             # },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 1000,
-                self.Name_XPath: 'layers[0].wgs84.coordinate',
-                self.Name_ID: 'coordinate',
-                self.Name_Title: '坐标参考系',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Range:
-                    {
-                        self.Name_Min: -90,
-                        self.Name_Max: 90
-                    },
-                self.Name_XPath: 'layers[0].wgs84.extent.maxy',
-                self.Name_ID: 'maxy',
-                self.Name_Title: 'maxy',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Range:
-                    {
-                        self.Name_Min: -180,
-                        self.Name_Max: 180
-                    },
-                self.Name_XPath: 'layers[0].wgs84.extent.maxx',
-                self.Name_ID: 'maxx',
-                self.Name_Title: 'maxx',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Range:
-                    {
-                        self.Name_Min: -180,
-                        self.Name_Max: 180
-                    },
-                self.Name_XPath: 'layers[0].wgs84.extent.minx',
-                self.Name_ID: 'minx',
-                self.Name_Title: 'minx',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_decimal_or_integer,
-                self.Name_Range:
-                    {
-                        self.Name_Min: -90,
-                        self.Name_Max: 90
-                    },
-                self.Name_XPath: 'layers[0].wgs84.extent.miny',
-                self.Name_ID: 'miny',
-                self.Name_Title: 'miny',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error
-            }
+            # {
+            #     self.Name_Type: self.QA_Type_XML_Node_Exist,
+            #     self.Name_NotNull: True,
+            #     self.Name_DataType: self.value_type_string,
+            #     self.Name_Width: 1000,
+            #     self.Name_XPath: 'layers[0].coordinate.wkt',
+            #     self.Name_ID: 'coordinate',
+            #     self.Name_Title: '坐标参考系',
+            #     self.Name_Group: self.QA_Group_Data_Integrity,
+            #     self.Name_Result: self.QA_Result_Error
+            #
+            # },
+            # {
+            #     self.Name_Type: self.QA_Type_XML_Node_Exist,
+            #     self.Name_NotNull: True,
+            #     self.Name_DataType: self.value_type_decimal_or_integer,
+            #     self.Name_Range:
+            #         {
+            #             self.Name_Min: -90,
+            #             self.Name_Max: 90
+            #         },
+            #     self.Name_XPath: 'layers[0].wgs84.extent.maxy',
+            #     self.Name_ID: 'maxy',
+            #     self.Name_Title: 'maxy',
+            #     self.Name_Group: self.QA_Group_Data_Integrity,
+            #     self.Name_Result: self.QA_Result_Error
+            #
+            # },
+            # {
+            #     self.Name_Type: self.QA_Type_XML_Node_Exist,
+            #     self.Name_NotNull: True,
+            #     self.Name_DataType: self.value_type_decimal_or_integer,
+            #     self.Name_Range:
+            #         {
+            #             self.Name_Min: -180,
+            #             self.Name_Max: 180
+            #         },
+            #     self.Name_XPath: 'layers[0].wgs84.extent.maxx',
+            #     self.Name_ID: 'maxx',
+            #     self.Name_Title: 'maxx',
+            #     self.Name_Group: self.QA_Group_Data_Integrity,
+            #     self.Name_Result: self.QA_Result_Error
+            # },
+            # {
+            #     self.Name_Type: self.QA_Type_XML_Node_Exist,
+            #     self.Name_NotNull: True,
+            #     self.Name_DataType: self.value_type_decimal_or_integer,
+            #     self.Name_Range:
+            #         {
+            #             self.Name_Min: -180,
+            #             self.Name_Max: 180
+            #         },
+            #     self.Name_XPath: 'layers[0].wgs84.extent.minx',
+            #     self.Name_ID: 'minx',
+            #     self.Name_Title: 'minx',
+            #     self.Name_Group: self.QA_Group_Data_Integrity,
+            #     self.Name_Result: self.QA_Result_Error
+            # },
+            # {
+            #     self.Name_Type: self.QA_Type_XML_Node_Exist,
+            #     self.Name_NotNull: True,
+            #     self.Name_DataType: self.value_type_decimal_or_integer,
+            #     self.Name_Range:
+            #         {
+            #             self.Name_Min: -90,
+            #             self.Name_Max: 90
+            #         },
+            #     self.Name_XPath: 'layers[0].wgs84.extent.miny',
+            #     self.Name_ID: 'miny',
+            #     self.Name_Title: 'miny',
+            #     self.Name_Group: self.QA_Group_Data_Integrity,
+            #     self.Name_Result: self.QA_Result_Error
+            # }
         ]
 
     def parser_metadata_custom(self, parser: CMetaDataParser) -> str:

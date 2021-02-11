@@ -67,10 +67,14 @@ class CDBQueueJob(CJob):
             factory = CFactory()
             db = factory.give_me_db(self.get_mission_db_id())
             db.execute(mission_seize_sql)
-
-            return db.one_row(mission_info_sql)
         except:
             CLogger().debug('任务抢占查询语句有误, 请修正! 详细错误信息为: {0}'.format(mission_seize_sql))
+            return CDataSet()
+
+        try:
+            return db.one_row(mission_info_sql)
+        except:
+            CLogger().debug('任务抢占查询语句有误, 请修正! 详细错误信息为: {0}'.format(mission_info_sql))
             return CDataSet()
 
     def abnormal_mission_restart(self):

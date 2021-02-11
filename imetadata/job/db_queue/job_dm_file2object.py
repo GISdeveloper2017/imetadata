@@ -52,8 +52,8 @@ select
   , dm2_storage_file.dsf_object_confirm as query_file_object_confirm
   , dm2_storage_file.dsf_object_id as query_file_object_id
   , dm2_storage_file.dsfparentobjid as query_dir_parent_objid
-  , dm2_storage_file.dsfscanstatus / 10 as retry_times,
-  , dm2_storage_file.dsfscanmemo as last_process_memo,
+  , dm2_storage_file.dsfscanstatus / 10 as retry_times
+  , dm2_storage_file.dsfscanmemo as last_process_memo
 from dm2_storage, dm2_storage_directory, dm2_storage_file
 where dm2_storage.dstid = dm2_storage_directory.dsdstorageid 
   and dm2_storage_file.dsfdirectoryid = dm2_storage_directory.dsdid

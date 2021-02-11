@@ -228,8 +228,9 @@ class CMetaDataParser(CParser):
         :param metadata_engine_type:
         :return:
         """
-        md_extractor = CMDExtractorMng.give_me_extractor(metadata_engine_type, self.object_id, self.object_name,
-                                                         self.file_info, self.file_content)
+        md_extractor = CMDExtractorMng.give_me_extractor(
+            metadata_engine_type, self.object_id, self.object_name,
+            self.file_info, self.file_content)
         return md_extractor.process()
 
     def process_default_view(self, engine_type):

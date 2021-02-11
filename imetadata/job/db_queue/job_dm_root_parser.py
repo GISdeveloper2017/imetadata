@@ -38,8 +38,8 @@ where dstid = (
         return '''
 select dstid as root_directory_id
     , coalesce(dm2_storage.dstownerpath, dm2_storage.dstunipath) as root_directory 
-    , dstscanstatus / 10 as retry_times,
-    , dstscanmemo as last_process_memo,
+    , dstscanstatus / 10 as retry_times
+    , dstscanmemo as last_process_memo
 from dm2_storage where dstprocessid = '{0}'        
         '''.format(
             self.SYSTEM_NAME_MISSION_ID

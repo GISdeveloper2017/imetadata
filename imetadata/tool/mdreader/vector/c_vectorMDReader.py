@@ -8,9 +8,9 @@ from osgeo import ogr, osr, gdal
 
 from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
-from imetadata.base.c_utils import CUtils
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_result import CResult
+from imetadata.base.c_utils import CUtils
 from imetadata.tool.mdreader.c_mdreader import CMDReader
 
 
@@ -29,8 +29,8 @@ class CVectorMDReader(CMDReader):
         result_success = self.Success  # 成功的标记-1
 
         gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
-        # gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
-        gdal.SetConfigOption("SHAPE_ENCODING", "UTF-8")
+        gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
+        # gdal.SetConfigOption("SHAPE_ENCODING", "UTF-8")
 
         # 定义矢量的json对象
         json_vector = CJson()
@@ -48,8 +48,10 @@ class CVectorMDReader(CMDReader):
             # 判断路径是否存在，不存在则创建
             if CFile.check_and_create_directory(file_name_with_path):
                 json_vector.to_file(file_name_with_path)
-            return CResult.merge_result(CResult.Failure,
-                                        '文件[{0}]打开失败!'.format(self.__file_name_with_path__))
+            return CResult.merge_result(
+                CResult.Failure,
+                '文件[{0}]打开失败!'.format(self.__file_name_with_path__)
+            )
 
         try:
             layer_count = vector_ds.GetLayerCount()
@@ -60,8 +62,10 @@ class CVectorMDReader(CMDReader):
                 # 判断路径是否存在，不存在则创建
                 if CFile.check_and_create_directory(file_name_with_path):
                     json_vector.to_file(file_name_with_path)
-                return CResult.merge_result(CResult.Failure,
-                                            '文件[{0}]没有图层!'.format(self.__file_name_with_path__))
+                return CResult.merge_result(
+                    CResult.Failure,
+                    '文件[{0}]没有图层!'.format(self.__file_name_with_path__)
+                )
 
             shp_lyr = vector_ds.GetLayer(0)
             if shp_lyr is None:
@@ -71,8 +75,10 @@ class CVectorMDReader(CMDReader):
                 # 判断路径是否存在，不存在则创建
                 if CFile.check_and_create_directory(file_name_with_path):
                     json_vector.to_file(file_name_with_path)
-                return CResult.merge_result(CResult.Failure,
-                                            '文件[{0}]读取图层失败!'.format(self.__file_name_with_path__))
+                return CResult.merge_result(
+                    CResult.Failure,
+                    '文件[{0}]读取图层失败!'.format(self.__file_name_with_path__)
+                )
             driver = vector_ds.GetDriver()
             if driver is None:
                 message = '文件[{0}]读取驱动失败!'.format(self.__file_name_with_path__)
@@ -81,8 +87,10 @@ class CVectorMDReader(CMDReader):
                 # 判断路径是否存在，不存在则创建
                 if CFile.check_and_create_directory(file_name_with_path):
                     json_vector.to_file(file_name_with_path)
-                return CResult.merge_result(CResult.Failure,
-                                            '文件[{0}]读取驱动失败!'.format(self.__file_name_with_path__))
+                return CResult.merge_result(
+                    CResult.Failure,
+                    '文件[{0}]读取驱动失败!'.format(self.__file_name_with_path__)
+                )
 
             # 定义datasource子节点,并添加到矢量json对象中
             json_datasource = CJson()
@@ -118,7 +126,7 @@ class CVectorMDReader(CMDReader):
                     # print(layer_name)
                     # projwkt 节点
                     json_proj_wkt = self.get_projwkt_by_layer(layer_temp)
-                    json_layer.set_value_of_name("wkt", json_proj_wkt.json_obj)
+                    json_layer.set_value_of_name("coordinate", json_proj_wkt.json_obj)
                     # features节点
                     json_features = CJson()
                     feature_count = layer_temp.GetFeatureCount()
@@ -134,17 +142,19 @@ class CVectorMDReader(CMDReader):
                     json_attributes = self.get_attributes_by_vectorlayer(layer_temp, mdb_flag)
                     json_layer.set_value_of_name("attributes", json_attributes.json_obj)
                     # wgs84节点
-                    json_wgs84 = self.transform_to_WGS84(layer_temp, feature_count)
+                    json_wgs84 = self.transform_to_wgs84(layer_temp, feature_count)
                     json_layer.set_value_of_name('wgs84', json_wgs84.json_obj)
                 json_vector.set_value_of_name('layers', list_json_layers)
-            json_shp_str = json_vector.to_json()
+            # json_shp_str = json_vector.to_json()
             # print(json_shp_str)
             # 判断路径是否存在，不存在则创建
             if CFile.check_and_create_directory(file_name_with_path):
                 json_vector.to_file(file_name_with_path)
             CLogger().info('文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
-            return CResult.merge_result(CResult.Success,
-                                        '文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__))
+            return CResult.merge_result(
+                CResult.Success,
+                '文件[{0}]元数据信息读取成功!'.format(self.__file_name_with_path__)
+            )
         except Exception as error:
             CLogger().info('get_metadata_2_file解析错误：{0}'.format(error))
             message = 'get_metadata_2_file解析错误：文件：｛0｝,错误信息为{1}'.format(self.__file_name_with_path__, error)
@@ -153,13 +163,15 @@ class CVectorMDReader(CMDReader):
             # 判断路径是否存在，不存在则创建
             if CFile.check_and_create_directory(file_name_with_path):
                 json_vector.to_file(file_name_with_path)
-            return CResult.merge_result(CResult.Failure,
-                                        '文件[{0}]读取异常!{1}'.format(self.__file_name_with_path__, error.__str__()))
+            return CResult.merge_result(
+                CResult.Failure,
+                '文件[{0}]读取异常!{1}'.format(self.__file_name_with_path__, error.__str__())
+            )
         finally:
             vector_ds.Destroy()
             vector_ds = None
 
-    def transform_to_WGS84(self, layer, feature_count) -> CJson:
+    def transform_to_wgs84(self, layer, feature_count) -> CJson:
         """
         wgs84坐标系转换结果（wgs84节点）
         :param layer:
@@ -322,7 +334,7 @@ class CVectorMDReader(CMDReader):
         spatialRef = layer.GetSpatialRef()
         if spatialRef is None:
             json_proj_wkt.set_value_of_name('valid', False)
-            json_proj_wkt.set_value_of_name('data', None)
+            json_proj_wkt.set_value_of_name('wkt', None)
             json_proj_wkt.set_value_of_name('proj4', None)
             json_proj_wkt.set_value_of_name('esri', None)
         else:
@@ -331,7 +343,7 @@ class CVectorMDReader(CMDReader):
             spatialRef.MorphToESRI()
             proj_esri = spatialRef.ExportToWkt()
             json_proj_wkt.set_value_of_name('valid', True)
-            json_proj_wkt.set_value_of_name('data', proj_wkt)
+            json_proj_wkt.set_value_of_name('wkt', proj_wkt)
             json_proj_wkt.set_value_of_name('proj4', proj4)
             json_proj_wkt.set_value_of_name('esri', proj_esri)
             spatialRef = None
