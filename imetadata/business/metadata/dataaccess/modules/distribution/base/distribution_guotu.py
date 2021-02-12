@@ -24,13 +24,11 @@ class distribution_guotu(distribution_base):
         return info
 
     def access(self) -> str:
+        super().access()
+
         self._before_access()
         result_do = self._do_access()
         return result_do
-        # if not CResult.result_success(result_do):
-        #     return result_do
-        # return CResult.merge_result_info(result_do, self.Name_Access, self.DataAccess_Forbid)
-        # return CResult.merge_result_info(result_do, self.Name_Access, self.DataAccess_Pass)
 
     def _before_access(self):
         pass

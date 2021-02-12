@@ -15,7 +15,6 @@ class distribution_guotu_object(distribution_guotu):
     """
     对象的处理基类（即时服务）
     """
-
     def information(self) -> dict:
         info = super().information()
         return info

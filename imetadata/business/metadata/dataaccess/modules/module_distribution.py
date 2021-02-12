@@ -33,15 +33,26 @@ class module_distribution(CDAModule):
         注意: 一定要反馈Access属性
         :return:
         """
-        module_obj_real = self.__find_module_obj()
+        module_obj_real, result = self.__find_module_obj()
+        if not CResult.result_success(result):
+            return result
         if module_obj_real is None:
             message = '没有对应的算法, 直接通过!'
             result = CResult.merge_result(self.Success, message)
             return result
-        result = module_obj_real.access()
-        return result
-        # result = super().access()
-        # return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Pass)
+
+        module_obj_real_type = type(module_obj_real)
+        try:
+            result = module_obj_real.access()
+            return result
+        except Exception as error:
+            return CResult.merge_result(
+                self.Failure,
+                '模块插件{0}检查访问可用性出现异常, 具体错误原因为: {1}'.format(
+                    module_obj_real_type,
+                    error.__str__()
+                )
+            )
 
     def sync(self) -> str:
         """
@@ -62,15 +73,6 @@ class module_distribution(CDAModule):
             return result
         result = distribution_obj_real.sync()
         return result
-
-        # return CResult.merge_result(
-        #     self.Success,
-        #     '在[{0}]里写对象[{1}]向模块[{2}]中同步的算法! '.format(
-        #         CUtils.dict_value_by_name(self.information(), self.Name_ID, ''),
-        #         self._obj_name,
-        #         CUtils.dict_value_by_name(self.information(), self.Name_Title, '')
-        #     )
-        # )
 
     def __find_module_obj(self) -> distribution_base:
         sql_query = '''
@@ -95,8 +97,6 @@ class module_distribution(CDAModule):
         quality_info_xml = CXml()
         quality_info_xml.load_xml(quality_info)  # 加载查询出来的xml
 
-        obj_type_code = None
-        distribution_obj_real = None
         db_id_distribution = self.DB_Server_ID_Distribution  # 同步处理的目标数据库标识id
         # 构建数据对象object对应的识别插件，获取get_information里面的Plugins_Info_Module_Distribute_Engine信息
         class_classified_obj = CObject.get_plugins_instance_by_object_id(db_id, object_id)
@@ -143,22 +143,24 @@ class module_distribution(CDAModule):
                                 self.Failure,
                                 '卫星数据的业务元数据的详细内容解析出错!原因为{0}'.format(CResult.result_message(result))
                             )
+
                     distribution_obj.set_metadata_bus_dict(metadata_bus_dict)
+                    result = CResult.merge_result(self.Success, '数据的信息提取完成')
+                    return distribution_obj, result
                 except Exception as error:
                     if CUtils.equal_ignore_case(distribution_file_main_name, 'distribution_satellite_all'):
                         return None, CResult.merge_result(
                             self.Failure,
                             '卫星数据的业务元数据的详细内容解析出错!原因为{0}'.format(error.__str__())
                         )
-                distribution_obj_real = distribution_obj
-                result = CResult.merge_result(self.Success, '数据的信息提取完成')
+                    else:
+                        return None, CResult.merge_result(
+                            self.Failure,
+                            '卫星数据的业务元数据的详细内容解析出错!原因为{0}'.format(error.__str__())
+                        )
             else:
                 result = CResult.merge_result(self.Failure, '系统在构建同步模块时发生异常，原因为数据的同步模块缺失')
+                return None, result
         else:
             result = CResult.merge_result(self.Failure, '系统在构建同步模块时发生异常，原因为识别模块缺失或异常')
-
-        if distribution_obj_real is None:
-            # 注意, 这里默认为默认处理的同步插件，先预留
-            distribution_obj_real = distribution_default(db_id_distribution, object_id, object_name, obj_type_code,
-                                                         quality_info, dataset)
-        return distribution_obj_real, result
+            return None, result

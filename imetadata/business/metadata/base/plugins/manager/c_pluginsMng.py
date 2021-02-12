@@ -116,20 +116,33 @@ class CPluginsMng(CResource):
         for file_name_without_path in plugins_file_list:
             file_main_name = CFile.file_main_name(file_name_without_path)
             try:
-                class_classified_obj = CObject.create_plugins_instance(plugins_root_package_name, file_main_name,
-                                                                       file_info)
-                object_confirm, object_name = class_classified_obj.classified()
-                if object_confirm != cls.Object_Confirm_IUnKnown:
-                    obj_info = class_classified_obj.get_information()
-                    obj_id = class_classified_obj.get_id()
-                    CLogger().debug(
-                        '{0} is classified as {1}.{2}'.format(
-                            target,
-                            obj_info,
-                            obj_id
+                class_classified_obj = CObject.create_plugins_instance(
+                    plugins_root_package_name,
+                    file_main_name,
+                    file_info
+                )
+                obj_info = class_classified_obj.get_information()
+                # 王西亚 添加逻辑于2021-02-12, 解决项目插件调试不方便的问题
+                obj_classified_valid = False
+                obj_owner_project_id = CUtils.dict_value_by_name(obj_info, CPlugins.Plugins_Info_Project_ID, None)
+                system_project_id = settings.application.xpath_one(cls.Path_Setting_Project_ID, None)
+                if obj_owner_project_id is None:
+                    obj_classified_valid = True
+                else:
+                    obj_classified_valid = CUtils.equal_ignore_case(obj_owner_project_id, system_project_id)
+
+                if obj_classified_valid:
+                    object_confirm, object_name = class_classified_obj.classified()
+                    if object_confirm != cls.Object_Confirm_IUnKnown:
+                        obj_id = class_classified_obj.get_id()
+                        CLogger().debug(
+                            '{0} is classified as {1}.{2}'.format(
+                                target,
+                                obj_info,
+                                obj_id
+                            )
                         )
-                    )
-                    return class_classified_obj
+                        return class_classified_obj
             except Exception as error:
                 CLogger().debug('插件[{0}]解析出现异常, 错误信息为: [{1}], 请检查!'.format(file_main_name, error.__str__()))
                 if settings.application.xpath_one('{0}.{1}'.format(cls.Name_Application, cls.Name_Debug),

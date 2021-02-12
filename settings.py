@@ -25,6 +25,10 @@ application = CSettings(
             'directory': '/Users/wangxiya/Documents/Develop/tsdb',
             'name': 'tsdb'
         },
+        'project': {
+            'id': None,
+            'title': '天津测绘'
+        },
         'databases': [
             {
                 'id': '0',

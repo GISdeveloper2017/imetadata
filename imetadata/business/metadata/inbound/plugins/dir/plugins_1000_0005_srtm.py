@@ -8,6 +8,7 @@ from imetadata.business.metadata.base.plugins.custom.c_dirPlugins_keyword import
 class plugins_1000_0005_srtm(CDirPlugins_keyword):
     def get_information(self) -> dict:
         information = super().get_information()
+        information[self.Plugins_Info_Project_ID] = 'tjch'
         information[self.Plugins_Info_Catalog] = '天津测绘'
         information[self.Plugins_Info_Catalog_Title] = '天津测绘'
         information[self.Plugins_Info_Group] = '中间成果'

@@ -94,10 +94,14 @@ class job_dm_inbound_qi_monitor(CTimeJob):
                     continue
 
                 if dir_record_total_count != dir_record_finished_count:
-                    CLogger().debug(
-                        '存储[{0}]下的目录[{1}]质检任务正在进行, 目录还未扫描完毕! '.format(
-                            ds_storage_title,
-                            CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+                    self.update_inbound_qi_result(
+                        ds_ib_id,
+                        CResult.merge_result(
+                            self.Failure,
+                            '存储[{0}]下的目录[{1}]质检任务正在进行, 目录还未扫描完毕! '.format(
+                                ds_storage_title,
+                                CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+                            )
                         )
                     )
                     continue
@@ -128,10 +132,14 @@ class job_dm_inbound_qi_monitor(CTimeJob):
                 )
 
                 if file_record_total_count != file_record_finished_count:
-                    CLogger().debug(
-                        '存储[{0}]下的目录[{1}]质检任务正在进行, 文件还未扫描完毕! '.format(
-                            ds_storage_title,
-                            CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+                    self.update_inbound_qi_result(
+                        ds_ib_id,
+                        CResult.merge_result(
+                            self.Failure,
+                            '存储[{0}]下的目录[{1}]质检任务正在进行, 文件还未扫描完毕! '.format(
+                                ds_storage_title,
+                                CFile.join_file(ds_storage_root_dir, ds_ib_directory_name)
+                            )
                         )
                     )
                     continue
@@ -168,7 +176,12 @@ class job_dm_inbound_qi_monitor(CTimeJob):
                     select count(*)
                     from dm2_storage_object
                     where dso_ib_id = :ib_id
-                        and dsometadataparsestatus = {0}
+                        and 
+                        (
+                            (dsometadataparsestatus = {0}) 
+                            or 
+                            (dso_da_status = {0})
+                        )
                     '''.format(self.ProcStatus_Error),
                     {
                         'ib_id': ds_ib_id
@@ -177,13 +190,17 @@ class job_dm_inbound_qi_monitor(CTimeJob):
                 )
 
                 if obj_record_total_count != obj_record_correct_count + obj_record_error_count:
-                    CLogger().debug(
-                        '存储[{0}]下的目录[{1}]质检任务正在进行, 识别的数据还未分析处理完毕, 已经识别数据[{2}]个, 成功质检[{3}]个, 失败[{4}]个, 请稍后...'.format(
-                            ds_storage_title,
-                            CFile.join_file(ds_storage_root_dir, ds_ib_directory_name),
-                            obj_record_total_count,
-                            obj_record_correct_count,
-                            obj_record_error_count
+                    self.update_inbound_qi_result(
+                        ds_ib_id,
+                        CResult.merge_result(
+                            self.Failure,
+                            '存储[{0}]下的目录[{1}]质检任务正在进行, 识别的数据还未分析处理完毕, 已经识别数据[{2}]个, 完成质检[{3}]个, 异常[{4}]个, 请稍后...'.format(
+                                ds_storage_title,
+                                CFile.join_file(ds_storage_root_dir, ds_ib_directory_name),
+                                obj_record_total_count,
+                                obj_record_correct_count,
+                                obj_record_error_count
+                            )
                         )
                     )
                     continue

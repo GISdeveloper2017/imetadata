@@ -15,6 +15,7 @@ class plugins_1000_1001_ffyx_tj2000(plugins_8052_guoqing_frame, CFilePlugins_key
 
     def get_information(self) -> dict:
         information = super().get_information()
+        information[self.Plugins_Info_Project_ID] = 'tjch'
         information[self.Plugins_Info_Catalog] = '天津测绘'
         information[self.Plugins_Info_Catalog_Title] = '天津测绘'
         information[self.Plugins_Info_Group] = '成果影像'

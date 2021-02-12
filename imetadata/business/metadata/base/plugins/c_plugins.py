@@ -93,6 +93,9 @@ class CPlugins(CResource):
     # 插件分组名称(中文)-内置
     Plugins_Info_Group_Title = 'dsodgrouptitle'
 
+    # 插件所属项目标识
+    Plugins_Info_Project_ID = 'dsodprojectid'
+
     # 插件中文描述-内置
     Plugins_Info_Title = 'dsodtitle'
     # 插件大类-英文-内置
@@ -182,6 +185,7 @@ class CPlugins(CResource):
         information[self.Plugins_Info_TagsEngine] = None
         information[self.Plugins_Info_DetailEngine] = None
         information[self.Plugins_Info_Module_Distribute_Engine] = None  # 同步的引擎，值是发布同步用的类的名字
+        information[self.Plugins_Info_Project_ID] = None
         return information
 
     def get_id(self) -> str:
