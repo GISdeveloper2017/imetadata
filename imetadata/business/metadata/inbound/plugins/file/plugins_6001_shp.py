@@ -31,10 +31,10 @@ class plugins_6001_shp(CVectorFilePlugins):
         else:
             if CFile.file_or_path_exist('{0}.{1}'.format(file_main_name_with_path, self.Name_Shp)):
                 self._object_confirm = self.Object_Confirm_IKnown_Not
-                self._object_name = ''
+                self._object_name = None
             else:
                 self._object_confirm = self.Object_Confirm_IUnKnown
-                self._object_name = ''
+                self._object_name = None
 
         return self._object_confirm, self._object_name
 

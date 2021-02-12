@@ -84,7 +84,7 @@ where dsodetailparsestatus % 10 = {1}
                 where dsoid = :dsoid
                 ''', {'dsoid': dso_id})
             return CResult.merge_result(self.Success, '文件或目录[{0}]不存在，元数据无法解析, 元数据处理正常结束!'.format(
-                ds_file_info.value_by_name(0, 'query_object_fullname', '')))
+                ds_file_info.value_by_name(0, 'query_object_relation_path', '')))
 
         sql_get_rule = '''
             select dsdScanRule
@@ -118,7 +118,7 @@ where dsodetailparsestatus % 10 = {1}
             return CResult.merge_result(
                 self.Failure,
                 '文件或目录[{0}]的类型插件[{1}]不存在，对象详情无法解析, 处理结束!'.format(
-                    ds_file_info.value_by_name(0, 'query_object_fullname', ''),
+                    ds_file_info.value_by_name(0, 'query_object_relation_path', ''),
                     dso_object_type
                 )
             )
@@ -150,7 +150,7 @@ where dsodetailparsestatus % 10 = {1}
                 result = CResult.merge_result(
                     self.Success,
                     '文件或目录[{0}]对象详情解析成功结束!'.format(
-                        ds_file_info.value_by_name(0, 'query_object_fullname', '')
+                        ds_file_info.value_by_name(0, 'query_object_relation_path', '')
                     )
                 )
                 self.db_update_object_status(dso_id, result)
@@ -162,7 +162,7 @@ where dsodetailparsestatus % 10 = {1}
             result = CResult.merge_result(
                 self.Failure,
                 '文件或目录[{0}]对象详情解析过程出现错误! 错误原因为: {1}'.format(
-                    ds_file_info.value_by_name(0, 'query_object_fullname', ''),
+                    ds_file_info.value_by_name(0, 'query_object_relation_path', ''),
                     error.__str__()
                 )
             )

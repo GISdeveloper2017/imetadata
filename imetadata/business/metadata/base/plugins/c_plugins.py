@@ -128,7 +128,6 @@ class CPlugins(CResource):
     __metadata_rule_obj: CXml = None
 
     _object_confirm: int
-    _object_name: str
     _object_detail_file_full_name_list: list
 
     metadata_bus_transformer_type = None
@@ -140,14 +139,14 @@ class CPlugins(CResource):
         """
         self.__metadata_rule_obj = CXml()
         self.__file_info = file_info
+        self._object_name = None
+        self._object_detail_file_full_name_list = []
 
         # 在质检中或者在识别过程中, 需要明确元数据的类型, 和文件名!!!否则将被视为无业务数据集
         self.metadata_bus_transformer_type = None
         self.metadata_bus_src_filename_with_path = None
         if self.file_info is not None:
             self.__metadata_rule_obj.load_xml(self.file_info.rule_content)
-
-        self._object_detail_file_full_name_list = []
 
     @property
     def file_content(self):
@@ -391,8 +390,8 @@ class CPlugins(CResource):
             else:
                 return result
         else:
-            parser.metadata.set_metadata(self.DB_True, None, self.MetaDataFormat_Text, None)
-            return CResult.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
+            parser.metadata.set_metadata(self.Not_Support, None, self.MetaDataFormat_Text, None)
+            return CResult.merge_result(self.Success, '不支持解析实体元数据! ')
 
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
@@ -400,8 +399,8 @@ class CPlugins(CResource):
         :param parser:
         :return:
         """
-        parser.metadata.set_metadata_bus(self.DB_True, None, self.MetaDataFormat_Text, None)
-        return CResult.merge_result(self.Success, '元数据引擎未设置, 将在子类中自行实现! ')
+        parser.metadata.set_metadata_bus(self.Not_Support, None, self.MetaDataFormat_Text, None)
+        return CResult.merge_result(self.Success, '不支持解析业务元数据! ')
 
     def parser_metadata_after_qa(self, parser: CMetaDataParser):
         """
@@ -787,10 +786,10 @@ class CPlugins(CResource):
                 return result
         else:
             parser.metadata.set_metadata_spatial(
-                self.DB_True,
-                '空间元数据引擎未设置, 将在子类中自行实现! '
+                self.Not_Support,
+                '不支持解析空间元数据! '
             )
-            return CResult.merge_result(self.Success, '空间元数据引擎未设置, 将在子类中自行实现! ')
+            return CResult.merge_result(self.Success, '不支持解析空间元数据! ')
 
     def parser_metadata_view_after_qa(self, parser: CMetaDataParser):
         """
@@ -845,10 +844,10 @@ class CPlugins(CResource):
                 return result
         else:
             parser.metadata.set_metadata_view(
-                self.DB_True,
-                '文件[{0}]的快视图元数据引擎未设置! '.format(self.file_info.file_name_with_full_path)
+                self.Not_Support,
+                '不支持解析快视图元数据! '
             )
-            return CResult.merge_result(self.Success, '可视元数据引擎未设置, 将在子类中自行实现! ')
+            return CResult.merge_result(self.Success, '不支持解析快视图元数据! ')
 
     def parser_metadata_with_qa(self, parser: CMetaDataParser):
         """
