@@ -5,17 +5,15 @@
 import re
 
 from imetadata.base.c_file import CFile
-from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.custom.c_filePlugins_keyword import CFilePlugins_keyword
-from imetadata.business.metadata.inbound.plugins.file.plugins_8030_mosaic import plugins_8030_mosaic
+from imetadata.business.metadata.inbound.plugins.file.plugins_8052_guoqing_frame import plugins_8052_guoqing_frame
 
 
-class plugins_1000_1003_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword):
+class plugins_1000_1002_ffyx_tj2000(plugins_8052_guoqing_frame, CFilePlugins_keyword):
     Plugins_Info_Coordinate_System = 'coordinate_system'
     Plugins_Info_Coordinate_System_Title = 'coordinate_system_title'
-    Plugins_Info_yuji = 'yuji'
 
     def get_information(self) -> dict:
         information = super().get_information()
@@ -24,9 +22,9 @@ class plugins_1000_1003_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
         information[self.Plugins_Info_Catalog_Title] = '天津测绘'
         information[self.Plugins_Info_Group] = '成果影像'
         information[self.Plugins_Info_Group_Title] = '成果影像'
-        information[self.Plugins_Info_Type] = '区域镶嵌'
-        information[self.Plugins_Info_Type_Title] = '区域镶嵌'
-        information[self.Plugins_Info_Type_Code] = '10001003'
+        information[self.Plugins_Info_Type] = '分幅影像'
+        information[self.Plugins_Info_Type_Title] = '分幅影像'
+        information[self.Plugins_Info_Type_Code] = '10001002'
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Raster
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
@@ -37,14 +35,13 @@ class plugins_1000_1003_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
 
         information[self.Plugins_Info_Coordinate_System] = 'tj2000'
         information[self.Plugins_Info_Coordinate_System_Title] = '2000天津城市坐标系'
-        information[self.Plugins_Info_yuji] = '区域镶嵌'
         return information
 
     def classified(self):
         file_path = self.file_info.file_path
         file_ext = self.file_info.file_ext
-        if CUtils.text_match_re(file_path, r'(?i)\d{4}.{2}[\\\\/]影像时相接边图[\\\\/]' + self.get_yuji()) and \
-                CUtils.equal_ignore_case(file_ext, 'shp'):
+        if CUtils.text_match_re(file_path, r'(?i)\d{4}.{2}[\\\\/]FenFu[\\\\/]' + self.get_coordinate_system_title()) \
+                and CUtils.equal_ignore_case(file_ext, 'shp'):
             self._object_confirm = self.Object_Confirm_IKnown_Not
             self._object_name = None
             return self._object_confirm, self._object_name
@@ -58,16 +55,15 @@ class plugins_1000_1003_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
         return [
             {
                 self.Name_ID: self.Name_FileName,
-                self.Name_RegularExpression: r'(?i).*_\d{8}_.{3}_.*_' + self.get_coordinate_system()  # 配置数据文件名的匹配规则
+                self.Name_RegularExpression: r'(?i)^.{10}\d{2}[pm]\d{4}[ao]$'  # 配置数据文件名的匹配规则
             },
             {
                 self.Name_ID: self.Name_FilePath,  # 配置数据文件路径的匹配规则
-                self.Name_RegularExpression: r'(?i)\d{4}.{2}[\\\\/]镶嵌影像成果[\\\\/]' +
-                                             self.get_yuji() + '[\\\\/]' + self.get_coordinate_system_title()
+                self.Name_RegularExpression: r'(?i)\d{4}.{2}[\\\\/]FenFu[\\\\/]' + self.get_coordinate_system_title()
             },
             {
                 self.Name_ID: self.Name_FileExt,
-                self.Name_RegularExpression: '(?i)^img$'  # 配置数据文件后缀名的匹配规则
+                self.Name_RegularExpression: '(?i)^(tif|tiff)$'  # 配置数据文件后缀名的匹配规则
             },
             {
                 self.Name_ID: self.Name_FileAffiliated,
@@ -84,44 +80,49 @@ class plugins_1000_1003_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
         return [
             {
                 self.Name_ID: self.Name_FileName,
-                self.Name_RegularExpression: r'(?i).*_\d{8}_.{3}_.*_' + self.get_coordinate_system()  # 配置数据文件名的匹配规则
+                self.Name_RegularExpression: r'(?i)^.{10}\d{2}[pm]\d{4}[bcdmp]$'  # 配置附属文件名的匹配规则
             },
             {
-                self.Name_ID: self.Name_FilePath,  # 配置数据文件路径的匹配规则
-                self.Name_RegularExpression: r'(?i)\d{4}.{2}[\\\\/]镶嵌影像成果[\\\\/]' +
-                                             self.get_yuji() + '[\\\\/]' + self.get_coordinate_system_title()
+                self.Name_ID: self.Name_FilePath,
+                # 配置附属文件路径的匹配规则
+                self.Name_RegularExpression: r'(?i)\d{4}.{2}[\\\\/]FenFu[\\\\/]' + self.get_coordinate_system_title()
             },
             {
                 self.Name_ID: self.Name_FileExt,
-                self.Name_RegularExpression: '.*'  # 配置附属文件后缀名的匹配规则
+                self.Name_RegularExpression: '(?i)^(tif|tiff|tfw|xml)$'  # 配置附属文件后缀名的匹配规则
             },
             {
                 self.Name_ID: self.Name_FileMain,  # 配置需要验证主文件存在性的 文件路径
                 self.Name_FilePath: self.file_info.file_path,
                 # 配置需要验证主文件的匹配规则,对于文件全名匹配
-                self.Name_RegularExpression: r'(?i)' + self.file_info.file_main_name + '.img'
+                self.Name_RegularExpression: '(?i)^' + self.file_info.file_main_name[:-1] + '[ao].tif[f]?'
             }
         ]
 
     def get_custom_affiliated_file_character(self):
         file_path = self.file_info.file_path
+        file_main_name = self.file_info.file_main_name
+        regularexpression = '(?i)^' + file_main_name[:-1] + '.[.].*'
 
-        shp_path_list = re.split(
-            file_path,
-            '(?i)[\\\\/]镶嵌影像成果[\\\\/]' + self.get_yuji() + '[\\\\/]' + self.get_coordinate_system_title()
-        )
-        if len(shp_path_list) > 0:
-            time_path = CFile.file_name(shp_path_list[0])
-            shp_path = CFile.join_file(shp_path_list[0], '影像时相接边图', self.get_yuji())
-            shp_regularexpression = '(?i)^' + time_path + '_.*_' + self.get_coordinate_system() + '[.]shp$'
+        shp_path_list = re.split(file_path, '(?i)[\\\\/]FenFu[\\\\/]' + self.get_coordinate_system_title())
+        if len(shp_path_list) > 1:
+            shp_path = file_path.replace(shp_path_list[1], '')
         else:
-            shp_path = CFile.join_file('镶嵌影像成果', self.get_yuji(), self.get_coordinate_system_title())
-            shp_path = file_path.replace(shp_path, '影像时相接边图' + CFile.sep() + self.get_yuji())
-            shp_regularexpression = '(?i)^.*_.*_' + self.get_coordinate_system() + '[.]shp$'
+            if len(shp_path_list) > 0:
+                shp_path = CFile.join_file(shp_path_list[0], 'FenFu', self.get_coordinate_system_title())
+            else:
+                shp_path = file_path
+        if shp_path.endswith(r'/') or shp_path.endswith('\\'):
+            shp_path = shp_path[:-1]
         return [
             {
+                self.Name_FilePath: file_path,  # 附属文件的路径
+                self.Name_RegularExpression: regularexpression,  # 附属文件的匹配规则
+                # 应该从上面匹配到的文件剔除的文件的匹配规则
+                self.Name_No_Match_RegularExpression: '(?i)^' + file_main_name + '[.].*$'
+            }, {
                 self.Name_FilePath: shp_path,  # 附属文件的路径
-                self.Name_RegularExpression: shp_regularexpression,  # 附属文件的匹配规则
+                self.Name_RegularExpression: '(?i).shp$',  # 附属文件的匹配规则
                 # 应该从上面匹配到的文件剔除的文件的匹配规则
                 self.Name_No_Match_RegularExpression: None
             }
@@ -133,8 +134,19 @@ class plugins_1000_1003_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
         完成 负责人 王学谦 在这里检验初始化ortho的质检列表
         """
         list_qa = list()
+        file_main_name = self.file_info.file_main_name
         # 调用默认的规则列表
-        # list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))
+        list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))
+        list_qa.extend([
+            {
+                self.Name_FileName: '{0}p.xml'.format(file_main_name[:-1]),
+                self.Name_ID: 'p_xml',
+                self.Name_Title: '投影信息文件',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.MetaDataFormat_XML
+            }
+        ])
         return list_qa
 
     def qa_file_custom(self, parser: CMetaDataParser):
@@ -144,22 +156,20 @@ class plugins_1000_1003_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
         :param parser:
         :return:
         """
+        super().qa_file_custom(parser)
         file_path = self.file_info.file_path
-
-        shp_path_list = re.split(
-            file_path,
-            '(?i)[\\\\/]镶嵌影像成果[\\\\/]' + self.get_yuji() + '[\\\\/]' + self.get_coordinate_system_title()
-        )
-        if len(shp_path_list) > 0:
-            time_path = CFile.file_name(shp_path_list[0])
-            shp_path = CFile.join_file(shp_path_list[0], '影像时相接边图', self.get_yuji())
-            shp_regularexpression = '(?i)^' + time_path + '_.*_' + self.get_coordinate_system() + '[.]shp$'
+        shp_path_list = re.split(file_path, '(?i)[\\\\/]FenFu[\\\\/]' + self.get_coordinate_system_title())
+        if len(shp_path_list) > 1:
+            shp_path = file_path.replace(shp_path_list[1], '')
         else:
-            shp_path = CFile.join_file('镶嵌影像成果', self.get_yuji(), self.get_coordinate_system_title())
-            shp_path = file_path.replace(shp_path, '影像时相接边图' + CFile.sep() + self.get_yuji())
-            shp_regularexpression = '(?i)^.*_.*_' + self.get_coordinate_system() + '[.]shp$'
+            if len(shp_path_list) > 0:
+                shp_path = CFile.join_file(shp_path_list[0], 'FenFu', self.get_coordinate_system_title())
+            else:
+                shp_path = file_path
+        if shp_path.endswith(r'/') or shp_path.endswith('\\'):
+            shp_path = shp_path[:-1]
 
-        shp_list = CFile.file_or_subpath_of_path(shp_path, shp_regularexpression, CFile.MatchType_Regex)
+        shp_list = CFile.file_or_subpath_of_path(shp_path, '(?i).shp$', CFile.MatchType_Regex)
         if len(shp_list) == 0:
             parser.metadata.quality.append_total_quality(
                 {
@@ -183,26 +193,8 @@ class plugins_1000_1003_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
                 }
             )
 
-    def init_metadata_bus(self, parser: CMetaDataParser) -> str:
-        """
-        提取xml或json格式的业务元数据, 加载到parser的metadata对象中
-        :param parser:
-        :return:
-        """
-        parser.metadata.set_metadata_bus(self.Not_Support, None, self.MetaDataFormat_Text, None)
-        return CResult.merge_result(self.Success, '不支持解析业务元数据! ')
-
-    def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
-        return list()
-
-    def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
-        return list()
-
     def get_coordinate_system(self):
         return CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Coordinate_System, None)
 
     def get_coordinate_system_title(self):
         return CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Coordinate_System_Title, None)
-
-    def get_yuji(self):
-        return CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_yuji, None)
