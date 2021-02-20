@@ -27,7 +27,8 @@ application = CSettings(
         },
         'project': {
             'id': None,
-            'title': '天津测绘'
+            'title': '天津测绘',
+            'comment': 'project.id为none时, 表明当前应用运行在产品模式下, 仅仅属于产品的入库插件方可运行; 如果project.id设置为非None值, 则特定项目的, 以及产品的入库插件被激活, 非本项目的入库插件则被忽略; 本设置的优先级, 弱于metadata.plugins下的配置.'
         },
         'databases': [
             {

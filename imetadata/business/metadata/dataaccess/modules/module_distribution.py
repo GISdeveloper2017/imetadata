@@ -123,6 +123,7 @@ class module_distribution(CDAModule):
                     dataset
                 )
 
+                # todo (王西亚) 这个地方的逻辑值得思考, 一定是问题所在!!!
                 try:  # 主要用于卫星插件的方法
                     dsometadataxml_xml = CXml()
                     dsometadataxml = dataset.value_by_name(0, 'dsometadataxml_bus', '')

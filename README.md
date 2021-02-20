@@ -11,7 +11,7 @@ python.exe ScheduleCreator.py -log /your_log_file_path
 
 ## 设置
 ### 全局设置
-在iMetaData子目录下, 修改配置文件settings.py
+在根目录下, 修改配置文件settings.py
 1. 示例
 ```python
 from imetadata.base.c_settings import CSettings
