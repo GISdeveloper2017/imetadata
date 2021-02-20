@@ -2,8 +2,6 @@
 # @Time : 2020/9/15 09:54
 # @Author : 王西亚
 # @File : plugins_4001_triplesat_pms.py
-import re
-
 from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
@@ -12,7 +10,7 @@ from imetadata.business.metadata.inbound.plugins.file.plugins_8050_guoqing_scene
     plugins_8050_guoqing_scene_noblock
 
 
-class plugins_1000_1002_zjyx_tj2000(plugins_8050_guoqing_scene_noblock, CFilePlugins_keyword):
+class plugins_1000_1005_zjyx_tj2000(plugins_8050_guoqing_scene_noblock, CFilePlugins_keyword):
     Plugins_Info_Coordinate_System = 'coordinate_system'
     Plugins_Info_Coordinate_System_Title = 'coordinate_system_title'
 
@@ -25,7 +23,7 @@ class plugins_1000_1002_zjyx_tj2000(plugins_8050_guoqing_scene_noblock, CFilePlu
         information[self.Plugins_Info_Group_Title] = '成果影像'
         information[self.Plugins_Info_Type] = '整景影像'
         information[self.Plugins_Info_Type_Title] = '整景影像'
-        information[self.Plugins_Info_Type_Code] = '10001002'
+        information[self.Plugins_Info_Type_Code] = '10001005'
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Raster
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
@@ -39,34 +37,16 @@ class plugins_1000_1002_zjyx_tj2000(plugins_8050_guoqing_scene_noblock, CFilePlu
         return information
 
     def classified(self):
-        file_path = self.file_info.file_path
-        file_ext = self.file_info.file_ext
-        if CUtils.text_match_re(file_path, r'(?i)\d{4}.{2}[\\\\/]影像时相接边图') and \
-                CUtils.equal_ignore_case(file_ext, 'shp'):
-            self._object_confirm = self.Object_Confirm_IKnown_Not
-            self._object_name = None
-            return self._object_confirm, self._object_name
-        else:
-            return CFilePlugins_keyword.classified(self)
+        return CFilePlugins_keyword.classified(self)
 
     def get_classified_character_of_object_keyword(self):
         """
         设置识别的特征
         """
-        file_path = self.file_info.file_path
-        file_main_name = self.file_info.file_main_name
-        regex_match_fm = r'(?i)^' + file_main_name[:-1] + '[fm][.]img$'
-        regex_match_f = r'(?i)^' + file_main_name[:-1] + '[f][.]img$'
-        if not CFile.find_file_or_subpath_of_path(file_path, regex_match_fm, CFile.MatchType_Regex):
-            regex_match = r'(?i)^.{4,}\d{8}[p]$'
-        elif not CFile.find_file_or_subpath_of_path(file_path, regex_match_f, CFile.MatchType_Regex):
-            regex_match = r'(?i)^.{4,}\d{8}[m]$'
-        else:
-            regex_match = r'(?i)^.{4,}\d{8}[f]$'
         return [
             {
                 self.Name_ID: self.Name_FileName,
-                self.Name_RegularExpression: regex_match  # 配置数据文件名的匹配规则
+                self.Name_RegularExpression: r'(?i)^.{4,}\d{8}[f]$'  # 配置数据文件名的匹配规则
             },
             {
                 self.Name_ID: self.Name_FilePath,  # 配置数据文件路径的匹配规则
@@ -89,16 +69,7 @@ class plugins_1000_1002_zjyx_tj2000(plugins_8050_guoqing_scene_noblock, CFilePlu
         """
         设置识别的特征
         """
-        file_path = self.file_info.file_path
         file_main_name = self.file_info.file_main_name
-        regex_match_fm = r'(?i)^' + file_main_name[:-1] + '[fm][.]img$'
-        regex_match_f = r'(?i)^' + file_main_name[:-1] + 'f[.]img$'
-        if not CFile.find_file_or_subpath_of_path(file_path, regex_match_fm, CFile.MatchType_Regex):
-            regex_match = r'(?i)^' + file_main_name[:-1] + 'p.img$'
-        elif not CFile.find_file_or_subpath_of_path(file_path, regex_match_f, CFile.MatchType_Regex):
-            regex_match = r'(?i)^' + file_main_name[:-1] + 'm.img$'
-        else:
-            regex_match = r'(?i)^' + file_main_name[:-1] + 'f.img$'
         return [
             {
                 self.Name_ID: self.Name_FileName,
@@ -116,9 +87,9 @@ class plugins_1000_1002_zjyx_tj2000(plugins_8050_guoqing_scene_noblock, CFilePlu
             },
             {
                 self.Name_ID: self.Name_FileMain,  # 配置需要验证主文件存在性的 文件路径
-                self.Name_FilePath: file_path,
+                self.Name_FilePath: self.file_info.file_path,
                 # 配置需要验证主文件的匹配规则,对于文件全名匹配
-                self.Name_RegularExpression: regex_match
+                self.Name_RegularExpression: r'(?i)^' + file_main_name[:-1] + 'f.img$'
             }
         ]
 
@@ -126,27 +97,12 @@ class plugins_1000_1002_zjyx_tj2000(plugins_8050_guoqing_scene_noblock, CFilePlu
         file_path = self.file_info.file_path
         file_main_name = self.file_info.file_main_name
         regularexpression = '(?i)^' + file_main_name[:-1] + '.[.].*'
-
-        shp_path_list = re.split(file_path, '(?i)[\\\\/]ZhengJing[\\\\/]' + self.get_coordinate_system_title())
-        if len(shp_path_list) > 0:
-            time_path = CFile.file_name(shp_path_list[0])
-            shp_path = CFile.join_file(shp_path_list[0], '影像时相接边图')
-            shp_regularexpression = '(?i)^' + time_path + '_.*_' + self.get_coordinate_system() + '[.]shp$'
-        else:
-            shp_path = 'ZhengJing{0}'.format(CFile.sep()) + self.get_coordinate_system_title()
-            shp_path = file_path.replace(shp_path, '影像时相接边图')
-            shp_regularexpression = '(?i)^.*_.*_' + self.get_coordinate_system() + '[.]shp$'
         return [
             {
                 self.Name_FilePath: file_path,  # 附属文件的路径
                 self.Name_RegularExpression: regularexpression,  # 附属文件的匹配规则
                 # 应该从上面匹配到的文件剔除的文件的匹配规则
                 self.Name_No_Match_RegularExpression: '(?i)^' + file_main_name + '[.].*$'
-            }, {
-                self.Name_FilePath: shp_path,  # 附属文件的路径
-                self.Name_RegularExpression: shp_regularexpression,  # 附属文件的匹配规则
-                # 应该从上面匹配到的文件剔除的文件的匹配规则
-                self.Name_No_Match_RegularExpression: None
             }
         ]
 
@@ -210,40 +166,6 @@ class plugins_1000_1002_zjyx_tj2000(plugins_8050_guoqing_scene_noblock, CFilePlu
                     self.Name_Message: '业务元数据[{0}]存在'.format(
                         CFile.file_name(self.metadata_bus_src_filename_with_path)
                     )
-                }
-            )
-
-        shp_path_list = re.split('(?i)[\\\\/]ZhengJing[\\\\/]' + self.get_coordinate_system_title(), file_path)
-        if len(shp_path_list) > 0:
-            time_path = CFile.file_name(shp_path_list[0])
-            shp_path = CFile.join_file(shp_path_list[0], '影像时相接边图')
-            shp_regularexpression = '(?i)^' + time_path + '_.*_' + self.get_coordinate_system() + '[.]shp$'
-        else:
-            shp_path = 'ZhengJing{0}'.format(CFile.sep()) + self.get_coordinate_system_title()
-            shp_path = file_path.replace(shp_path, '影像时相接边图')
-            shp_regularexpression = '(?i)^.*_.*_' + self.get_coordinate_system() + '[.]shp$'
-
-        shp_list = CFile.file_or_subpath_of_path(shp_path, shp_regularexpression, CFile.MatchType_Regex)
-        if len(shp_list) == 0:
-            parser.metadata.quality.append_total_quality(
-                {
-                    self.Name_FileName: '',
-                    self.Name_ID: 'shp_file',
-                    self.Name_Title: '影像时相接边图',
-                    self.Name_Result: self.QA_Result_Error,
-                    self.Name_Group: self.QA_Group_Data_Integrity,
-                    self.Name_Message: '本文件缺少影像时相接边图'
-                }
-            )
-        else:
-            parser.metadata.quality.append_total_quality(
-                {
-                    self.Name_FileName: shp_list[0],
-                    self.Name_ID: 'shp_file',
-                    self.Name_Title: '影像时相接边图',
-                    self.Name_Result: self.QA_Result_Pass,
-                    self.Name_Group: self.QA_Group_Data_Integrity,
-                    self.Name_Message: '影像时相接边图[{0}]存在'.format(shp_list[0])
                 }
             )
 
