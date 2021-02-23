@@ -105,7 +105,10 @@ class distribution_object_shp(distribution_guotu):
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedatetag',
-            object_table_data.value_by_name(0, 'query_directory_lastmodifytime', '').replace(r'[-/\.年月日]', '')[:8])
+            self.transform_time_to_imagedatetag(
+                object_table_data.value_by_name(0, 'query_directory_lastmodifytime', '')
+            )
+        )
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'centerx',

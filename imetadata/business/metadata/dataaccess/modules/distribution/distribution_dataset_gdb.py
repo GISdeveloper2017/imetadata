@@ -44,7 +44,10 @@ class distribution_dataset_gdb(distribution_vector_with_layers_object):
 
         self.add_value_to_sync_dict_list(  # 配置子查询，调用函数
             sync_dict_list, 'imagedatetag',
-            object_table_data.value_by_name(0, 'query_directory_lastmodifytime', '').replace(r'[-/\.年月日]', '')[:8])
+            self.transform_time_to_imagedatetag(
+                object_table_data.value_by_name(0, 'query_directory_lastmodifytime', '')
+            )
+        )
         if insert_or_updata:
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'isdel', '0')

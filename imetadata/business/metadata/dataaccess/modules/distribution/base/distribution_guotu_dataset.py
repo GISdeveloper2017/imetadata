@@ -155,6 +155,6 @@ class distribution_guotu_dataset(distribution_guotu):
             sync_dict_list, 'dsdid', object_table_data.value_by_name(0, 'query_dataset_directory_id', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedatetag',
-            dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date').replace(r'[-/\.年月日]', '')[:8])
+            self.transform_time_to_imagedatetag(dsometadataxml_xml.get_element_text_by_xpath_one('/root/Date')))
 
         return sync_dict_list
