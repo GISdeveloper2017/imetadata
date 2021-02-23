@@ -482,8 +482,8 @@ class CSatPlugins(CPlugins):
         CFile.str_2_file('point({0} {1})'.format(centerlatitude, centerlongitude), native_center_filename_with_path)
         CFile.str_2_file(
             'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
-                bottomleftlatitude, bottomleftlongitude, topleftlatitude, topleftlongitude,
-                toprightlatitude, toprightlongitude, bottomrightlatitude, bottomrightlongitude),
+                bottomleftlongitude, bottomleftlatitude, topleftlongitude, topleftlatitude,
+                toprightlongitude, toprightlatitude, bottomrightlongitude, bottomrightlatitude),
             native_bbox_filename_with_path
         )
 
@@ -1184,14 +1184,15 @@ class CSatPlugins(CPlugins):
                         '''.format(wkt)).value_by_name(0, 'tran_wkt', None)
                     tran_wkt = tran_wkt.replace('POLYGON((', '').replace('))', '').strip()
                     coordinates_list = re.split(r'[,]|\s+', tran_wkt)
-                    metadata_bus_dict['bottomleftlatitude'] = coordinates_list[0]
-                    metadata_bus_dict['bottomleftlongitude'] = coordinates_list[1]
-                    metadata_bus_dict['topleftlatitude'] = coordinates_list[2]
-                    metadata_bus_dict['topleftlongitude'] = coordinates_list[3]
-                    metadata_bus_dict['toprightlatitude'] = coordinates_list[4]
-                    metadata_bus_dict['toprightlongitude'] = coordinates_list[5]
-                    metadata_bus_dict['bottomrightlatitude'] = coordinates_list[6]
-                    metadata_bus_dict['bottomrightlongitude'] = coordinates_list[7]
+                    metadata_bus_dict['bottomleftlongitude'] = coordinates_list[0]
+                    metadata_bus_dict['bottomleftlatitude'] = coordinates_list[1]
+                    metadata_bus_dict['topleftlongitude'] = coordinates_list[2]
+                    metadata_bus_dict['topleftlatitude'] = coordinates_list[3]
+                    metadata_bus_dict['toprightlongitude'] = coordinates_list[4]
+                    metadata_bus_dict['toprightlatitude'] = coordinates_list[5]
+                    metadata_bus_dict['bottomrightlongitude'] = coordinates_list[6]
+                    metadata_bus_dict['bottomrightlatitude'] = coordinates_list[7]
+
             except Exception as error:
                 return CResult.merge_result(
                     self.Failure, '用wkt计算四至坐标以及中心点坐标时出错，原因为{0}'.format(error.__str__())
