@@ -269,17 +269,21 @@ class distribution_satellite(distribution_base):
         dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml_bus', None)
         metadata_table.column_list.column_by_name('metaxml').set_value(dsometadataxml)
 
-        otherxml = CUtils.dict_value_by_name(metadata_bus_dict, 'otherxml', None)
-        if not CUtils.equal_ignore_case(otherxml, ''):
-            view_path = settings.application.xpath_one(self.Path_Setting_MetaData_Dir_View, None)
-            browser_path = CFile.file_path(self._dataset.value_by_name(0, 'dso_browser', None))
-            file_list = CFile.file_or_dir_fullname_of_path(
-                CFile.join_file(view_path, browser_path), False, otherxml, CFile.MatchType_Regex
-            )
-            if len(file_list) > 0:
-                metadata_table.column_list.column_by_name('otherxml').set_value(
-                    CFile.file_2_str(file_list[0])
-                )
+        # otherxml = CUtils.dict_value_by_name(metadata_bus_dict, 'otherxml', None)
+        # if not CUtils.equal_ignore_case(otherxml, ''):
+        #     view_path = settings.application.xpath_one(self.Path_Setting_MetaData_Dir_View, None)
+        #     browser_path = CFile.file_path(self._dataset.value_by_name(0, 'dso_browser', None))
+        #     file_list = CFile.file_or_dir_fullname_of_path(
+        #         CFile.join_file(view_path, browser_path), False, otherxml, CFile.MatchType_Regex
+        #     )
+        #     if len(file_list) > 0:
+        #         metadata_table.column_list.column_by_name('otherxml').set_value(
+        #             CFile.file_2_str(file_list[0])
+        #         )
+
+        metadata_table.column_list.column_by_name('otherxml').set_value('''
+        <?xml version="1.0" encoding="UTF-8"?><root><plugin name="{0}"/></root>
+        '''.format(CUtils.dict_value_by_name(metadata_bus_dict, 'satelliteid', None)))
 
         if not metadata_table.if_exists():
             metadata_table.column_list.column_by_name('version').set_value('1.0')
