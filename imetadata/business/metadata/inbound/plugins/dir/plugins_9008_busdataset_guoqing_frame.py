@@ -54,7 +54,7 @@ class plugins_9008_busdataset_guoqing_frame(C21ATBusDataSetPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date_nosep,
+                self.Name_DataType: self.value_type_date,
                 # self.Name_Width: 8
             },
             {
@@ -121,7 +121,7 @@ class plugins_9008_busdataset_guoqing_frame(C21ATBusDataSetPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date_month_nosep,
+                self.Name_DataType: self.value_type_date_or_datetime,
                 # self.Name_Width: 8
             },
             {
@@ -132,7 +132,7 @@ class plugins_9008_busdataset_guoqing_frame(C21ATBusDataSetPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date_month_nosep,
+                self.Name_DataType: self.value_type_date_or_datetime,
                 # self.Name_Width: 8
             },
             {
