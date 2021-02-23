@@ -1126,8 +1126,8 @@ class CSatPlugins(CPlugins):
                 not CUtils.equal_ignore_case(bottomleftlongitude, ''):
             try:
                 wkt = 'POLYGON( ({0} {1},{2} {3},{4} {5},{6} {7},{0} {1}) )'.format(
-                    bottomleftlatitude, bottomleftlongitude, topleftlatitude, topleftlongitude,
-                    toprightlatitude, toprightlongitude, bottomrightlatitude, bottomrightlongitude
+                    bottomleftlongitude, bottomleftlatitude, topleftlongitude, topleftlatitude,
+                    toprightlongitude, toprightlatitude, bottomrightlongitude, bottomrightlatitude
                 )
                 try:
                     db_id = self.file_info.db_server_id
