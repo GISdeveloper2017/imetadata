@@ -281,9 +281,11 @@ class distribution_satellite(distribution_base):
         #             CFile.file_2_str(file_list[0])
         #         )
 
-        metadata_table.column_list.column_by_name('otherxml').set_value('''
-        <?xml version="1.0" encoding="UTF-8"?><root><plugin name="{0}"/></root>
-        '''.format(CUtils.dict_value_by_name(metadata_bus_dict, 'satelliteid', None)))
+        metadata_table.column_list.column_by_name('otherxml').set_value(
+            '''<?xml version="1.0" encoding="UTF-8"?><root><plugin name="{0}"/></root>'''.format(
+                CUtils.dict_value_by_name(metadata_bus_dict, 'satelliteid', None)
+            )
+        )
 
         if not metadata_table.if_exists():
             metadata_table.column_list.column_by_name('version').set_value('1.0')
