@@ -18,7 +18,7 @@ class distribution_dataset_gdb(distribution_vector_with_layers_object):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = 'GDB数据集'
-        info['table_name'] = 'ap3_product_rsp_vp_detail'
+        info['table_name'] = ''
         return info
 
     def get_sync_dict_list(self, insert_or_updata) -> list:

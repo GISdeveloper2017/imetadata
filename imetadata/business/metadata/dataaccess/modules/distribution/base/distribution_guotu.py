@@ -54,6 +54,9 @@ class distribution_guotu(distribution_base):
                     or CUtils.equal_ignore_case(image_qa, self.QA_Result_Warn):
                 message = message + '[数据与其相关文件的质检存在warn!请进行检查！]'
                 access_wait_flag = self.DB_True
+            elif CUtils.equal_ignore_case(quality_summary, ''):
+                message = message + '[数据质检未进行，可能数据存在问题!请进行检查！]'
+                access_forbid_flag = self.DB_True
             else:
                 pass
 
