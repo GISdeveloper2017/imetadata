@@ -113,15 +113,15 @@ class plugins_8052_guoqing_frame(CFilePlugins_GUOTU_GuoQing):
         :return:
         """
         super().qa_file_custom(parser)
-        metadata_main_name_with_path = CFile.join_file(self.file_info.file_path, self.file_info.file_main_name)
-        metadata_main_name_with_path = metadata_main_name_with_path[:-1]  # 剪切文件最后的a/o
+        file_path = self.file_info.file_path
+        file_main_name = self.file_info.file_main_name
         check_file_metadata_bus_exist = False
         ext = self.Transformer_XML
-        temp_metadata_bus_file_M = '{0}M.xml'.format(metadata_main_name_with_path)  # 三种元数据
-        if CFile.file_or_path_exist(temp_metadata_bus_file_M):
+        metadata_name_with_path = CFile.join_file(file_path, '{0}M.xml'.format(file_main_name[:-1]))
+        if CFile.file_or_path_exist(metadata_name_with_path):
             check_file_metadata_bus_exist = True
             self.metadata_bus_transformer_type = ext
-            self.metadata_bus_src_filename_with_path = temp_metadata_bus_file_M
+            self.metadata_bus_src_filename_with_path = metadata_name_with_path
 
         if not check_file_metadata_bus_exist:
             parser.metadata.quality.append_total_quality(

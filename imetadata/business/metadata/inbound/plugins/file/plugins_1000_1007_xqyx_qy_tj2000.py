@@ -7,12 +7,12 @@ import re
 from imetadata.base.c_file import CFile
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.custom.c_filePlugins_keyword import CFilePlugins_keyword
-from imetadata.business.metadata.inbound.plugins.file.plugins_8030_mosaic import plugins_8030_mosaic
 
 
-class plugins_1000_1007_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword):
+class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
     Plugins_Info_Coordinate_System = 'coordinate_system'
     Plugins_Info_Coordinate_System_Title = 'coordinate_system_title'
     Plugins_Info_yuji = 'yuji'
@@ -58,7 +58,7 @@ class plugins_1000_1007_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
         return [
             {
                 self.Name_ID: self.Name_FileName,
-                self.Name_RegularExpression: r'(?i).*_\d{8}_.{3}_.*_' + self.get_coordinate_system()  # 配置数据文件名的匹配规则
+                self.Name_RegularExpression: r'(?i).*_\d{6,8}_.{3}_.*_' + self.get_coordinate_system()  # 配置数据文件名的匹配规则
             },
             {
                 self.Name_ID: self.Name_FilePath,  # 配置数据文件路径的匹配规则
@@ -83,8 +83,9 @@ class plugins_1000_1007_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
         """
         return [
             {
-                self.Name_ID: self.Name_FileName,
-                self.Name_RegularExpression: r'(?i).*_\d{8}_.{3}_.*_' + self.get_coordinate_system()  # 配置数据文件名的匹配规则
+                self.Name_ID: self.Name_FileName,  # 配置数据文件名的匹配规则
+                self.Name_RegularExpression: r'.*_\d{6,8}_.{3}_.*_' + self.get_coordinate_system() +
+                                             r'|.*_.{3}_.*_' + self.get_coordinate_system()
             },
             {
                 self.Name_ID: self.Name_FilePath,  # 配置数据文件路径的匹配规则
@@ -105,19 +106,9 @@ class plugins_1000_1007_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
 
     def get_custom_affiliated_file_character(self):
         file_path = self.file_info.file_path
-
-        shp_path_list = re.split(
-            file_path,
-            '(?i)[\\\\/]镶嵌影像成果[\\\\/]' + self.get_yuji() + '[\\\\/]' + self.get_coordinate_system_title()
-        )
-        if len(shp_path_list) > 0:
-            time_path = CFile.file_name(shp_path_list[0])
-            shp_path = CFile.join_file(shp_path_list[0], '影像时相接边图', self.get_yuji())
-            shp_regularexpression = '(?i)^' + time_path + '_.*_' + self.get_coordinate_system() + '[.]shp$'
-        else:
-            shp_path = CFile.join_file('镶嵌影像成果', self.get_yuji(), self.get_coordinate_system_title())
-            shp_path = file_path.replace(shp_path, '影像时相接边图' + CFile.sep() + self.get_yuji())
-            shp_regularexpression = '(?i)^.*_.*_' + self.get_coordinate_system() + '[.]shp$'
+        letter_location = file_path.find('镶嵌影像成果')
+        shp_path = CFile.join_file(file_path[:letter_location - 1], '影像时相接边图', self.get_yuji())
+        shp_regularexpression = '(?i)^.*_.*_' + self.get_coordinate_system() + r'\.shp$'
         return [
             {
                 self.Name_FilePath: shp_path,  # 附属文件的路径
@@ -132,10 +123,16 @@ class plugins_1000_1007_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
         初始化ortho文件的质检列表,调用默认的img方法，并拼接剩余附属文件
         完成 负责人 王学谦 在这里检验初始化ortho的质检列表
         """
-        list_qa = list()
-        # 调用默认的规则列表
-        # list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))
-        return list_qa
+        return [
+            {
+                self.Name_FileName: self.file_info.file_name_without_path,
+                self.Name_ID: 'img',
+                self.Name_Title: 'IMG影像',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_Format: self.DataFormat_Raster_File
+            }
+        ]
 
     def qa_file_custom(self, parser: CMetaDataParser):
         """
@@ -146,19 +143,9 @@ class plugins_1000_1007_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
         """
         file_path = self.file_info.file_path
 
-        shp_path_list = re.split(
-            file_path,
-            '(?i)[\\\\/]镶嵌影像成果[\\\\/]' + self.get_yuji() + '[\\\\/]' + self.get_coordinate_system_title()
-        )
-        if len(shp_path_list) > 0:
-            time_path = CFile.file_name(shp_path_list[0])
-            shp_path = CFile.join_file(shp_path_list[0], '影像时相接边图', self.get_yuji())
-            shp_regularexpression = '(?i)^' + time_path + '_.*_' + self.get_coordinate_system() + '[.]shp$'
-        else:
-            shp_path = CFile.join_file('镶嵌影像成果', self.get_yuji(), self.get_coordinate_system_title())
-            shp_path = file_path.replace(shp_path, '影像时相接边图' + CFile.sep() + self.get_yuji())
-            shp_regularexpression = '(?i)^.*_.*_' + self.get_coordinate_system() + '[.]shp$'
-
+        letter_location = file_path.find('镶嵌影像成果')
+        shp_path = CFile.join_file(file_path[:letter_location - 1], '影像时相接边图', self.get_yuji())
+        shp_regularexpression = '(?i)^.*_.*_' + self.get_coordinate_system() + r'\.shp$'
         shp_list = CFile.file_or_subpath_of_path(shp_path, shp_regularexpression, CFile.MatchType_Regex)
         if len(shp_list) == 0:
             parser.metadata.quality.append_total_quality(
@@ -185,18 +172,251 @@ class plugins_1000_1007_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
 
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
-        提取xml或json格式的业务元数据, 加载到parser的metadata对象中
+        通过相应信息转换xml
+        """
+        file_main_name = parser.file_info.file_main_name
+        file_path = parser.file_info.file_path
+        xml_obj = CXml()  # 建立xml对象
+        node_root = xml_obj.new_xml('root')
+
+        node_item1 = xml_obj.create_element(node_root, 'item')
+        xml_obj.set_attr(node_item1, self.Name_Name, 'ProductName')
+        xml_obj.set_element_text(node_item1, file_main_name)  # 设置item节点与属性与内容
+
+        if CUtils.text_match_re(file_main_name, r'.*_\d{6,8}_.{3}_.*_' + self.get_coordinate_system()):
+            pathdata_list = re.findall(
+                r'.*_(\d{6,8})_.{3}_.*_' + self.get_coordinate_system(),
+                file_main_name
+            )
+            if len(pathdata_list) > 0:
+                pathdata = pathdata_list[0][0]
+            else:
+                pathdata = ''
+        else:
+            pathdata_list = re.findall(
+                r'(?i)(\d{4}.{2})[\\\\/]镶嵌影像成果',
+                file_path
+            )
+            if len(pathdata_list) > 0:
+                pathdata = pathdata_list[0][0]
+            else:
+                pathdata = ''
+        node_item2 = xml_obj.create_element(node_root, 'item')
+        xml_obj.set_attr(node_item2, self.Name_Name, 'DataDate')
+        xml_obj.set_element_text(node_item2, pathdata)  # 设置item节点与属性与内容
+
+        if CUtils.text_match_re(file_main_name, r'.*_\d{6,8}_.{3}_.*_' + self.get_coordinate_system()):
+            pixelsize_list = re.findall(
+                r'.*_\d{6,8}_.{3}_(.*)_' + self.get_coordinate_system(),
+                file_main_name
+            )
+            if len(pathdata_list) > 0:
+                pixelsize = pixelsize_list[0][0]
+            else:
+                pixelsize = ''
+        elif CUtils.text_match_re(file_main_name, r'.*_.{3}_.*_' + self.get_coordinate_system()):
+            pixelsize_list = re.findall(
+                r'.*_.{3}_(.*)_' + self.get_coordinate_system(),
+                file_main_name
+            )
+            if len(pathdata_list) > 0:
+                pixelsize = pixelsize_list[0][0]
+            else:
+                pixelsize = ''
+        else:
+            pixelsize = ''
+        pixelsize = CUtils.any_2_str(pixelsize)
+        if CUtils.text_match_re(pixelsize, r'^\d+[a-zA-z]+$'):
+            pixelsize_list = re.findall(r'(\d+)[a-zA-z]+', pixelsize)
+            if len(pathdata_list) > 0:
+                pixelsize = pixelsize_list[0][0]
+
+        if len(pixelsize) == 2:
+            pixelsize_value = '{0}.{1}'.format(pixelsize[:1], pixelsize[-1:])
+        else:
+            pixelsize_value = pixelsize
+        node_item3 = xml_obj.create_element(node_root, 'item')
+        xml_obj.set_attr(node_item3, self.Name_Name, 'Resolution')
+        xml_obj.set_element_text(node_item3, pixelsize_value)  # 设置item节点与属性与内容
+
+        if CUtils.text_match_re(file_main_name, r'.*_\d{6,8}_.{3}_.*_' + self.get_coordinate_system()):
+            SatelliteID_list = re.findall(
+                r'.*_\d{6,8}_(.{3})_.*_' + self.get_coordinate_system(),
+                file_main_name
+            )
+            if len(pathdata_list) > 0:
+                SatelliteID = SatelliteID_list[0][0]
+            else:
+                SatelliteID = ''
+        elif CUtils.text_match_re(file_main_name, r'.*_.{3}_.*_' + self.get_coordinate_system()):
+            SatelliteID_list = re.findall(
+                r'.*_(.{3})_.*_' + self.get_coordinate_system(),
+                file_main_name
+            )
+            if len(pathdata_list) > 0:
+                SatelliteID = SatelliteID_list[0][0]
+            else:
+                SatelliteID = ''
+        else:
+            SatelliteID = ''
+        node_item4 = xml_obj.create_element(node_root, 'item')
+        xml_obj.set_attr(node_item4, self.Name_Name, 'SatelliteID')
+        xml_obj.set_element_text(node_item4, SatelliteID)  # 设置item节点与属性与内容
+
+        if CUtils.text_match_re(file_main_name, r'.*_\d{6,8}_.{3}_.*_' + self.get_coordinate_system()):
+            GeographicName_list = re.findall(
+                r'(.*)_\d{6,8}_.{3}_.*_' + self.get_coordinate_system(),
+                file_main_name
+            )
+            if len(pathdata_list) > 0:
+                GeographicName = GeographicName_list[0][0]
+            else:
+                GeographicName = ''
+        elif CUtils.text_match_re(file_main_name, r'.*_.{3}_.*_' + self.get_coordinate_system()):
+            GeographicName_list = re.findall(
+                r'(.*)_.{3}_.*_' + self.get_coordinate_system(),
+                file_main_name
+            )
+            if len(pathdata_list) > 0:
+                GeographicName = GeographicName_list[0][0]
+            else:
+                GeographicName = ''
+        else:
+            GeographicName = ''
+        node_item5 = xml_obj.create_element(node_root, 'item')
+        xml_obj.set_attr(node_item5, self.Name_Name, 'GeographicName')
+        xml_obj.set_element_text(node_item5, GeographicName)  # 设置item节点与属性与内容
+
+        node_item6 = xml_obj.create_element(node_root, 'item')
+        xml_obj.set_attr(node_item6, self.Name_Name, 'Description')
+        xml_obj.set_element_text(node_item6, '')  # 设置item节点与属性与内容
+
+        try:
+            if xml_obj is not None:
+                parser.metadata.set_metadata_bus(
+                    self.Success,
+                    '元数据文件成功构建! ',
+                    self.MetaDataFormat_XML,
+                    xml_obj.to_xml()
+                )
+
+                return CResult.merge_result(
+                    self.Success,
+                    '元数据文件成功构建! '
+                )
+            else:
+                raise
+        except Exception as error:
+            parser.metadata.set_metadata_bus(
+                self.Exception,
+                '构建元数据文件失败, 无法处理! 错误原因为{0}'.format(error.__str__()),
+                self.MetaDataFormat_Text,
+                ''
+            )
+            return CResult.merge_result(
+                self.Exception,
+                '构建元数据文件失败, 无法处理! 错误原因为{0}'.format(error.__str__())
+            )
+
+    def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
+        """
+        初始化默认的, 业务元数据xml文件的检验列表
+        完成 负责人 王学谦
         :param parser:
         :return:
         """
-        parser.metadata.set_metadata_bus(self.Not_Support, None, self.MetaDataFormat_Text, None)
-        return CResult.merge_result(self.Success, '不支持解析业务元数据! ')
-
-    def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
-        return list()
+        return [
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//item[@name='ProductName']",
+                self.Name_ID: 'ProductName',
+                self.Name_Title: 'ProductName',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 100
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//item[@name='DataDate']",
+                self.Name_ID: 'DataDate',
+                self.Name_Title: 'DataDate',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_date,
+                # self.Name_Width: 8
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//item[@name='SatelliteID']",
+                self.Name_ID: 'SatelliteID',
+                self.Name_Title: 'SatelliteID',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 20
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//item[@name='Resolution']",
+                self.Name_ID: 'Resolution',
+                self.Name_Title: 'Resolution',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 10
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//item[@name='GeographicName']",
+                self.Name_ID: 'GeographicName',
+                self.Name_Title: 'GeographicName',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 20
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_XPath: "//item[@name='Description']",
+                self.Name_ID: 'Description',
+                self.Name_Title: 'Description',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 500
+            }
+        ]
 
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
-        return list()
+        """
+        标准模式的提取时间信息的列表
+        """
+        return [
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Time,
+                self.Name_XPath: '//item[@name="DataDate"]',
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Start_Time,
+                self.Name_XPath: '//item[@name="DataDate"]',
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_End_Time,
+                self.Name_XPath: '//item[@name="DataDate"]',
+                self.Name_Format: self.MetaDataFormat_XML
+            }
+        ]
 
     def get_coordinate_system(self):
         return CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Coordinate_System, None)
@@ -206,3 +426,96 @@ class plugins_1000_1007_xqyx_qy_tj2000(plugins_8030_mosaic, CFilePlugins_keyword
 
     def get_yuji(self):
         return CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_yuji, None)
+
+    def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
+        """
+        设置解析json格式元数据的检验规则列表, 为空表示无检查规则
+        完成 负责人 李宪
+        :param parser:
+        :return:
+        """
+        return [
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer_positive,
+                self.Name_XPath: 'pixelsize.width',
+                self.Name_ID: 'width',
+                self.Name_Title: '影像宽度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 1000,
+                self.Name_XPath: 'coordinate.proj4',
+                self.Name_ID: 'coordinate',
+                self.Name_Title: '坐标参考系',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.top',
+                self.Name_ID: 'top',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.left',
+                self.Name_ID: 'left',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.right',
+                self.Name_ID: 'right',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.bottom',
+                self.Name_ID: 'bottom',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            }
+        ]
