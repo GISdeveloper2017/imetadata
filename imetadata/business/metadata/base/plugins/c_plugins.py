@@ -613,11 +613,13 @@ class CPlugins(CResource):
                 self.Name_End_Time_Native,
                 end_time_text)
 
-            # 监测time_text是否是合法的日期...
+            # 监测time_text是否是合法的日期，开始结束时间是否为空值
             if (not CUtils.equal_ignore_case(time_text, '')) \
                     and (not CUtils.text_is_datetime(time_text)) \
-                    and (not CUtils.text_is_date_day(time_text)):
-                # 从数据库中查询为标准格式（2020，202009，2020Q1），如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
+                    and (not CUtils.text_is_date_day(time_text)) \
+                    or (CUtils.equal_ignore_case(start_time_text, '')) \
+                    or (CUtils.equal_ignore_case(end_time_text, '')):
+                    # 从数据库中查询为标准格式（2020，202009，2020Q1），如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
                 # time_text_temp = time_text.replace('-', '').replace('/', '').replace('\\', '').replace('.', '').replace('年', '').replace('月', '')
                 time_text_standard = CUtils.standard_datetime_format(time_text, time_text)
                 if not CUtils.equal_ignore_case(time_text_standard, ''):
@@ -643,14 +645,89 @@ class CPlugins(CResource):
                         parser.metadata.set_metadata_time(
                             self.Success,
                             '时间信息[{0}]成功从ro_global_dim_time表中解析',
+                            self.Name_Time,
+                            starttime)
+                    if CUtils.equal_ignore_case(start_time_text, ''):
+                        if starttime is not None:
+                            parser.metadata.set_metadata_time(
+                                self.Success,
+                                '时间信息[{0}]成功从ro_global_dim_time表中解析',
+                                self.Name_Start_Time,
+                                starttime)
+                    if CUtils.equal_ignore_case(end_time_text, ''):
+                        if endtime is not None:
+                            parser.metadata.set_metadata_time(
+                                self.Success,
+                                '时间信息[{0}]成功从ro_global_dim_time表中解析',
+                                self.Name_End_Time,
+                                endtime)
+
+            # 监测start_time_text是否是合法的日期
+            if (not CUtils.equal_ignore_case(start_time_text, '')) \
+                    and (not CUtils.text_is_datetime(start_time_text)) \
+                    and (not CUtils.text_is_date_day(start_time_text)):
+                    # 从数据库中查询为标准格式（2020，202009，2020Q1），如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
+                # time_text_temp = time_text.replace('-', '').replace('/', '').replace('\\', '').replace('.', '').replace('年', '').replace('月', '')
+                time_text_standard = CUtils.standard_datetime_format(start_time_text, start_time_text)
+                if not CUtils.equal_ignore_case(time_text_standard, ''):
+                    time_text_temp = CUtils.any_2_str(time_text_standard).replace('-', '')
+                    # 从配置中读取时间信息查询的SQL语句, 获取对应的开始时间、结束时间
+                    sql = settings.application.xpath_one(self.Path_Setting_MetaData_Time_Query, None)
+                    db_server_id = settings.application.xpath_one(self.Path_Setting_MetaData_Time_Server,
+                                                                  self.file_info.db_server_id)
+                    if CUtils.equal_ignore_case(sql, ''):
+                        parser.metadata.set_metadata_time(
+                            self.Failure,
+                            '系统设置中, 缺少时间信息解析的内容, 请修正后重试! '
+                        )
+                        return CResult.merge_result(
+                            self.Failure,
+                            '系统设置中, 缺少时间信息解析的内容, 请修正后重试! '
+                        )
+
+                    ds_time = CFactory().give_me_db(db_server_id).one_row(sql, {self.Name_Value: time_text_temp})
+                    starttime = ds_time.value_by_name(0, 'starttime', None)
+                    # endtime = ds_time.value_by_name(0, 'endtime', None)
+                    if starttime is not None:
+                        parser.metadata.set_metadata_time(
+                            self.Success,
+                            '时间信息[{0}]成功从ro_global_dim_time表中解析',
                             self.Name_Start_Time,
                             starttime)
-                    if endtime is not None:
+
+            # 监测end_time_text是否是合法的日期
+            if (not CUtils.equal_ignore_case(end_time_text, '')) \
+                    and (not CUtils.text_is_datetime(end_time_text)) \
+                    and (not CUtils.text_is_date_day(end_time_text)):
+                    # 从数据库中查询为标准格式（2020，202009，2020Q1），如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
+                # time_text_temp = time_text.replace('-', '').replace('/', '').replace('\\', '').replace('.', '').replace('年', '').replace('月', '')
+                time_text_standard = CUtils.standard_datetime_format(end_time_text, end_time_text)
+                if not CUtils.equal_ignore_case(time_text_standard, ''):
+                    time_text_temp = CUtils.any_2_str(time_text_standard).replace('-', '')
+                    # 从配置中读取时间信息查询的SQL语句, 获取对应的开始时间、结束时间
+                    sql = settings.application.xpath_one(self.Path_Setting_MetaData_Time_Query, None)
+                    db_server_id = settings.application.xpath_one(self.Path_Setting_MetaData_Time_Server,
+                                                                  self.file_info.db_server_id)
+                    if CUtils.equal_ignore_case(sql, ''):
+                        parser.metadata.set_metadata_time(
+                            self.Failure,
+                            '系统设置中, 缺少时间信息解析的内容, 请修正后重试! '
+                        )
+                        return CResult.merge_result(
+                            self.Failure,
+                            '系统设置中, 缺少时间信息解析的内容, 请修正后重试! '
+                        )
+
+                    ds_time = CFactory().give_me_db(db_server_id).one_row(sql, {self.Name_Value: time_text_temp})
+                    starttime = ds_time.value_by_name(0, 'starttime', None)
+                    # endtime = ds_time.value_by_name(0, 'endtime', None)
+                    if starttime is not None:
                         parser.metadata.set_metadata_time(
                             self.Success,
                             '时间信息[{0}]成功从ro_global_dim_time表中解析',
                             self.Name_End_Time,
-                            endtime)
+                            starttime)
+
             # 将time, start_time和end_time进行格式化到日的修正处理（如2020变为20200101，202009变为20200901，其他的不变）
             # 再次从json中获取（可能从ro_global_dim_time取值过了）
             time_json = parser.metadata.time_information

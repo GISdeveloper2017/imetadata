@@ -90,6 +90,32 @@ class C21ATBusDataSetPlugins(CDirPlugins):
             return CResult.merge_result(self.Exception,
                                         '元数据文件[{0}]格式不合法, 无法处理! '.format(self.__bus_metadata_xml_file_name__))
 
+    def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:
+        """
+        标准模式的提取时间信息的列表
+        示例:
+        """
+        return [
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Time,
+                self.Name_XPath: '//Date',
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_Start_Time,
+                self.Name_XPath: '//BeginDate',
+                self.Name_Format: self.MetaDataFormat_XML
+            },
+            {
+                self.Name_Source: self.Name_Business,
+                self.Name_ID: self.Name_End_Time,
+                self.Name_XPath: '//EndDate',
+                self.Name_Format: self.MetaDataFormat_XML
+            }
+        ]
+
     def init_qa_metadata_bus_xml_list(self, parser: CMetaDataParser) -> list:
         """
         初始化默认的, 业务元数据xml文件的检验列表

@@ -104,7 +104,7 @@ class CMDTransformerDOM(CMDTransformer):
         :return xml_obj:将文件内容存储好的项目对象
         """
         text_list = CFile.file_2_list(file_metadata_name_with_path)  # 获取mat文件作为列表
-        if (text_list is None) or len(text_list) or CUtils.equal_ignore_case(CUtils.any_2_str(text_list), ''):
+        if (text_list is None) or len(text_list) == 0 or CUtils.equal_ignore_case(CUtils.any_2_str(text_list), ''):
             raise  # 如果获取的文件内容为空，则抛出异常
         flag = False  # 设置标志
 

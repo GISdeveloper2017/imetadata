@@ -3,14 +3,14 @@
 # @Author : 王西亚
 # @File : plugins_4001_triplesat_pms.py
 from imetadata.base.c_file import CFile
+from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.base.parser.metadata.busmetadata.c_mdTransformerCommon import CMDTransformerCommon
 from imetadata.business.metadata.base.parser.metadata.c_metaDataParser import CMetaDataParser
 from imetadata.business.metadata.base.plugins.custom.c_filePlugins_keyword import CFilePlugins_keyword
-from imetadata.business.metadata.inbound.plugins.file.plugins_8050_guoqing_scene_noblock import \
-    plugins_8050_guoqing_scene_noblock
 
 
-class plugins_1000_1005_zjyx_tj2000(plugins_8050_guoqing_scene_noblock, CFilePlugins_keyword):
+class plugins_1000_1005_zjyx_tj2000(CFilePlugins_keyword):
     Plugins_Info_Coordinate_System = 'coordinate_system'
     Plugins_Info_Coordinate_System_Title = 'coordinate_system_title'
 
@@ -35,9 +35,6 @@ class plugins_1000_1005_zjyx_tj2000(plugins_8050_guoqing_scene_noblock, CFilePlu
         information[self.Plugins_Info_Coordinate_System] = 'tj2000'
         information[self.Plugins_Info_Coordinate_System_Title] = '2000天津城市坐标系'
         return information
-
-    def classified(self):
-        return CFilePlugins_keyword.classified(self)
 
     def get_classified_character_of_object_keyword(self):
         """
@@ -96,13 +93,13 @@ class plugins_1000_1005_zjyx_tj2000(plugins_8050_guoqing_scene_noblock, CFilePlu
     def get_custom_affiliated_file_character(self):
         file_path = self.file_info.file_path
         file_main_name = self.file_info.file_main_name
-        regularexpression = '(?i)^' + file_main_name[:-1] + '.[.].*'
+        regularexpression = '(?i)^' + file_main_name[:-1] + r'.\..*'
         return [
             {
                 self.Name_FilePath: file_path,  # 附属文件的路径
                 self.Name_RegularExpression: regularexpression,  # 附属文件的匹配规则
                 # 应该从上面匹配到的文件剔除的文件的匹配规则
-                self.Name_No_Match_RegularExpression: '(?i)^' + file_main_name + '[.].*$'
+                self.Name_No_Match_RegularExpression: '(?i)^' + file_main_name + r'\..*$'
             }
         ]
 
@@ -135,14 +132,14 @@ class plugins_1000_1005_zjyx_tj2000(plugins_8050_guoqing_scene_noblock, CFilePlu
         :return:
         """
         file_path = self.file_info.file_path
-        metadata_main_name_with_path = CFile.join_file(file_path, self.file_info.file_main_name)
-        metadata_main_name_with_path = metadata_main_name_with_path[:-1]  # 剪切文件最后
+        file_main_name = self.file_info.file_main_name
         check_file_metadata_bus_exist = False
-        temp_metadata_bus_file_y = '{0}Y.xml'.format(metadata_main_name_with_path)
-        if CFile.file_or_path_exist(temp_metadata_bus_file_y):
+        ext = self.Transformer_XML
+        metadata_name_with_path = CFile.join_file(file_path, '{0}Y.xml'.format(file_main_name[:-1]))
+        if CFile.file_or_path_exist(metadata_name_with_path):
             check_file_metadata_bus_exist = True
-            self.metadata_bus_transformer_type = self.Transformer_XML
-            self.metadata_bus_src_filename_with_path = temp_metadata_bus_file_y
+            self.metadata_bus_transformer_type = ext
+            self.metadata_bus_src_filename_with_path = metadata_name_with_path
 
         if not check_file_metadata_bus_exist:
             parser.metadata.quality.append_total_quality(
@@ -419,3 +416,120 @@ class plugins_1000_1005_zjyx_tj2000(plugins_8050_guoqing_scene_noblock, CFilePlu
 
     def get_coordinate_system_title(self):
         return CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Coordinate_System_Title, None)
+
+    def init_metadata_bus(self, parser: CMetaDataParser) -> str:
+        """
+        提取xml格式的业务元数据, 加载到parser的metadata对象中
+        完成 负责人 王学谦 在这里将业务元数据***Y/M/P.xml, 存储到parser.metadata.set_metadata_bus_file中
+        :param parser:
+        :return:
+        """
+        if self.metadata_bus_transformer_type is None:
+            return CResult.merge_result(
+                self.Failure,
+                '数据{0}无业务元数据文件，请检查数据业务元数据文件是否存在!'.format(self.file_info.file_main_name)
+            )
+
+        transformer = CMDTransformerCommon(
+            parser.object_id,
+            parser.object_name,
+            parser.file_info,
+            parser.file_content,
+            parser.metadata,
+            self.metadata_bus_transformer_type,
+            self.metadata_bus_src_filename_with_path
+        )
+        return transformer.process()
+
+    def init_qa_metadata_json_list(self, parser: CMetaDataParser) -> list:
+        """
+        设置解析json格式元数据的检验规则列表, 为空表示无检查规则
+        完成 负责人 李宪
+        :param parser:
+        :return:
+        """
+        return [
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer_positive,
+                self.Name_XPath: 'pixelsize.width',
+                self.Name_ID: 'width',
+                self.Name_Title: '影像宽度',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_string,
+                self.Name_Width: 1000,
+                self.Name_XPath: 'coordinate.proj4',
+                self.Name_ID: 'coordinate',
+                self.Name_Title: '坐标参考系',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.top',
+                self.Name_ID: 'top',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.left',
+                self.Name_ID: 'left',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -180,
+                        self.Name_Max: 180
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.right',
+                self.Name_ID: 'right',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            },
+            {
+                self.Name_Type: self.QA_Type_XML_Node_Exist,
+                self.Name_NotNull: True,
+                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_Range:
+                    {
+                        self.Name_Min: -90,
+                        self.Name_Max: 90
+                    },
+                self.Name_XPath: 'wgs84.boundingbox.bottom',
+                self.Name_ID: 'bottom',
+                self.Name_Title: '经纬度坐标',
+                self.Name_Group: self.QA_Group_Data_Integrity,
+                self.Name_Result: self.QA_Result_Error
+            }
+        ]
