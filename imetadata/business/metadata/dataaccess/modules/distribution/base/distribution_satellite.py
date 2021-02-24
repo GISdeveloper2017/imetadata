@@ -184,6 +184,7 @@ class distribution_satellite(distribution_base):
             main_table.column_list.column_by_name('imgdate').set_value(imgdate[0:4])
         else:
             main_table.column_list.column_by_name('imgdate').set_null()
+
         main_table.column_list.column_by_name('starttime').set_value(
             dso_time_json.xpath_one('start_time', None)
         )
