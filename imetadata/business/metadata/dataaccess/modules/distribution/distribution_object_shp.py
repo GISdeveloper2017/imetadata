@@ -19,6 +19,16 @@ class distribution_object_shp(distribution_guotu):
         info['table_name'] = 'ap3_product_rsp_vp_detail'
         return info
 
+    def db_access_check(self, access_wait_flag, access_forbid_flag, message):
+        temporary_dict = dict()
+        temporary_dict['dso_geo_wgs84'] = self._dataset.value_by_name(0, 'dso_geo_wgs84', '')
+        temporary_dict['dso_prj_proj4'] = self._dataset.value_by_name(0, 'dso_prj_proj4', '')
+        for key, value in temporary_dict.items():
+            if CUtils.equal_ignore_case(value, ''):
+                message = message + '[数据{0}入库异常!请进行检查与修正！]'.format(key.replace('dso_', ''))
+                access_forbid_flag = self.DB_True
+        return access_wait_flag, access_forbid_flag, message
+
     def get_sync_dict_list(self, insert_or_updata) -> list:
         """
         insert_or_updata 中 self.DB_True为insert，DB_False为updata
@@ -105,7 +115,10 @@ class distribution_object_shp(distribution_guotu):
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedatetag',
-            object_table_data.value_by_name(0, 'query_directory_lastmodifytime', '').replace(r'[-/\.年月日]', '')[:8])
+            self.transform_time_to_imagedatetag(
+                object_table_data.value_by_name(0, 'query_directory_lastmodifytime', '')
+            )
+        )
 
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'centerx',

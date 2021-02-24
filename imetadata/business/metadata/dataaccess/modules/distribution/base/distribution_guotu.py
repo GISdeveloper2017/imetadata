@@ -54,6 +54,9 @@ class distribution_guotu(distribution_base):
                     or CUtils.equal_ignore_case(image_qa, self.QA_Result_Warn):
                 message = message + '[数据与其相关文件的质检存在warn!请进行检查！]'
                 access_wait_flag = self.DB_True
+            elif CUtils.equal_ignore_case(quality_summary, ''):
+                message = message + '[数据质检未进行，可能数据存在问题!请进行检查！]'
+                access_forbid_flag = self.DB_True
             else:
                 pass
 
@@ -199,3 +202,17 @@ class distribution_guotu(distribution_base):
                 'field_value_type': field_value_type
             }
         ])
+
+    def transform_time_to_imagedatetag(self, time) -> str:
+        """
+        insert_or_updata 指明配置的是更新还是插入，-1时为插入，0为更新
+        本方法的写法为强规则，调用add_value_to_sync_dict_list配置
+        第一个参数为list，第二个参数为字段名，第三个参数为字段值，第四个参数为特殊配置
+        """
+        time = time.replace('-', '').replace('/', '').replace('\\', '').replace('.', '')
+        time = time.replace('年', '').replace('月', '').replace('日', '')
+
+        if len(time) >= 8:
+            return time[:8]
+        else:
+            return time

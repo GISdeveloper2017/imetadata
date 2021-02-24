@@ -46,8 +46,9 @@ class distribution_dataset_gdb(distribution_vector_with_layers_object):
             CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedatetag',
-            CUtils.to_day_format(dso_time_json.xpath_one('time', ''),
-                                 dso_time_json.xpath_one('time', '')).replace(r'[-/\.年月日]', '')[:8])
+            self.transform_time_to_imagedatetag(
+                CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', '')))
+            )
         if insert_or_updata:
             self.add_value_to_sync_dict_list(
                 sync_dict_list, 'isdel', '1')

@@ -15,6 +15,7 @@ class distribution_guotu_object(distribution_guotu):
     """
     对象的处理基类（即时服务）
     """
+
     def information(self) -> dict:
         info = super().information()
         return info
@@ -148,7 +149,9 @@ class distribution_guotu_object(distribution_guotu):
             sync_dict_list, 'dsfid', object_table_data.value_by_name(0, 'query_file_id', ''))
         self.add_value_to_sync_dict_list(
             sync_dict_list, 'imagedatetag',
-            CUtils.to_day_format(dso_time_json.xpath_one('time', ''),
-                                 dso_time_json.xpath_one('time', '')).replace(r'[-/\.年月日]', '')[:8])
+            self.transform_time_to_imagedatetag(
+                CUtils.to_day_format(dso_time_json.xpath_one('time', ''), dso_time_json.xpath_one('time', ''))
+            )
+        )
 
         return sync_dict_list

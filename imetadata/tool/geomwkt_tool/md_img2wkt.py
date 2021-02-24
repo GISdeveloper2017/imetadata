@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import argparse
 import os
 import subprocess
-
-from osgeo import gdal
+import argparse
 from osgeo import ogr
+from osgeo import gdal
 
 
 # 判断文件夹是否存在，若不存在则创建
@@ -50,7 +49,7 @@ def process_bus(input_filename, output_filename, result_filename):
             tmp_path = shp_path.replace('.shp', ext)
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
-        cmd = '"{0}" -src "{1}" -dst "{2}" -mode 0 -level 7 -WGS84'.format(exe_path, input_filename, shp_path)
+        cmd = '"{0}" -src "{1}" -dst "{2}" -mode 0 -level 20 -WGS84'.format(exe_path, input_filename, shp_path)
         print(cmd)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()

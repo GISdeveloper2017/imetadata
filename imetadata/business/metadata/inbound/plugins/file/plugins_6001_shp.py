@@ -17,6 +17,7 @@ class plugins_6001_shp(CVectorFilePlugins):
         # information[self.Plugins_Info_Group_Name] = self.DataGroup_Vector
         # information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group_Name])
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_shp'
+        information[self.Plugins_Info_Type_Code] = '020201'
         return information
 
     def classified(self):

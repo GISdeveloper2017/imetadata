@@ -134,7 +134,6 @@ class distribution_satellite(distribution_base):
         main_table = CTable()
         main_table.load_info(self._db_id, main_table_name)
         main_table.column_list.column_by_name('id').set_value(object_table_id)
-
         productname = CUtils.dict_value_by_name(metadata_bus_dict, 'productname', None)
         if CUtils.equal_ignore_case(productname, ''):
             productname = object_table_data.value_by_name(0, 'dsoobjectname', None)
@@ -180,9 +179,12 @@ class distribution_satellite(distribution_base):
         dso_time = object_table_data.value_by_name(0, 'dso_time', None)
         dso_time_json = CJson()
         dso_time_json.load_obj(dso_time)
-        main_table.column_list.column_by_name('imgdate').set_value(
-            dso_time_json.xpath_one('time', None)
-        )
+        imgdate = dso_time_json.xpath_one('time', None)
+        if not CUtils.equal_ignore_case(imgdate, ''):
+            main_table.column_list.column_by_name('imgdate').set_value(imgdate[0:4])
+        else:
+            main_table.column_list.column_by_name('imgdate').set_null()
+
         main_table.column_list.column_by_name('starttime').set_value(
             dso_time_json.xpath_one('start_time', None)
         )
@@ -242,7 +244,7 @@ class distribution_satellite(distribution_base):
         )
         main_table.column_list.column_by_name('proj').set_null()  # 原始数据保持空
 
-        main_table.column_list.column_by_name('dataid').set_null()  # ap_monitor_data表对应id(数据id)，目前不清楚怎么取
+        main_table.column_list.column_by_name('dataid').set_value(object_table_id)
         main_table.column_list.column_by_name('shplog').set_null()
 
         if not main_table.if_exists():
@@ -269,17 +271,23 @@ class distribution_satellite(distribution_base):
         dsometadataxml = object_table_data.value_by_name(0, 'dsometadataxml_bus', None)
         metadata_table.column_list.column_by_name('metaxml').set_value(dsometadataxml)
 
-        otherxml = CUtils.dict_value_by_name(metadata_bus_dict, 'otherxml', None)
-        if not CUtils.equal_ignore_case(otherxml, ''):
-            view_path = settings.application.xpath_one(self.Path_Setting_MetaData_Dir_View, None)
-            browser_path = CFile.file_path(self._dataset.value_by_name(0, 'dso_browser', None))
-            file_list = CFile.file_or_dir_fullname_of_path(
-                CFile.join_file(view_path, browser_path), False, otherxml, CFile.MatchType_Regex
+        # otherxml = CUtils.dict_value_by_name(metadata_bus_dict, 'otherxml', None)
+        # if not CUtils.equal_ignore_case(otherxml, ''):
+        #     view_path = settings.application.xpath_one(self.Path_Setting_MetaData_Dir_View, None)
+        #     browser_path = CFile.file_path(self._dataset.value_by_name(0, 'dso_browser', None))
+        #     file_list = CFile.file_or_dir_fullname_of_path(
+        #         CFile.join_file(view_path, browser_path), False, otherxml, CFile.MatchType_Regex
+        #     )
+        #     if len(file_list) > 0:
+        #         metadata_table.column_list.column_by_name('otherxml').set_value(
+        #             CFile.file_2_str(file_list[0])
+        #         )
+
+        metadata_table.column_list.column_by_name('otherxml').set_value(
+            '<?xml version="1.0" encoding="UTF-8"?><root><plugin name="{0}"/></root>'.format(
+                CUtils.dict_value_by_name(metadata_bus_dict, 'satelliteid', None)
             )
-            if len(file_list) > 0:
-                metadata_table.column_list.column_by_name('otherxml').set_value(
-                    CFile.file_2_str(file_list[0])
-                )
+        )
 
         if not metadata_table.if_exists():
             metadata_table.column_list.column_by_name('version').set_value('1.0')
