@@ -179,9 +179,11 @@ class distribution_satellite(distribution_base):
         dso_time = object_table_data.value_by_name(0, 'dso_time', None)
         dso_time_json = CJson()
         dso_time_json.load_obj(dso_time)
-        main_table.column_list.column_by_name('imgdate').set_value(
-            dso_time_json.xpath_one('time', None)
-        )
+        imgdate = dso_time_json.xpath_one('time', None)
+        if not CUtils.equal_ignore_case(imgdate, ''):
+            main_table.column_list.column_by_name('imgdate').set_value(imgdate[0:4])
+        else:
+            main_table.column_list.column_by_name('imgdate').set_null()
         main_table.column_list.column_by_name('starttime').set_value(
             dso_time_json.xpath_one('start_time', None)
         )
