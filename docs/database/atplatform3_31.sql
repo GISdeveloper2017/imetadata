@@ -1246,3 +1246,66 @@ VALUES ('23.job_dm_sync_app', '元数据-同步-应用', 'shutdown', 0, 'd5c381d
       "parallel_count": 3
     }
   }', null);
+
+
+
+CREATE SEQUENCE if not exists public.sys_seq_autoinc
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE public.sys_seq_autoinc
+    OWNER TO postgres;
+
+CREATE SEQUENCE if not exists public.sys_seq_date_autoinc
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE public.sys_seq_date_autoinc
+    OWNER TO postgres;
+
+
+CREATE TABLE if not exists public.dm2_modules
+(
+    dmid    character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    dmtitle character varying(200) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT dm2_modules_pkey PRIMARY KEY (dmid)
+)
+    TABLESPACE pg_default;
+
+ALTER TABLE public.dm2_modules
+    OWNER to postgres;
+
+COMMENT ON TABLE public.dm2_modules
+    IS '数管-第三方模块';
+
+COMMENT ON COLUMN public.dm2_modules.dmid
+    IS '标识';
+
+COMMENT ON COLUMN public.dm2_modules.dmtitle
+    IS '名称';
+
+CREATE TABLE if not exists public.dm2_quality_group
+(
+    dqgid    character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    dqgtitle character varying(200) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT dm2_quality_group_pkey PRIMARY KEY (dqgid)
+)
+    TABLESPACE pg_default;
+
+ALTER TABLE public.dm2_quality_group
+    OWNER to postgres;
+
+COMMENT ON TABLE public.dm2_quality_group
+    IS '数管-质检-分组';
+
+COMMENT ON COLUMN public.dm2_quality_group.dqgid
+    IS '标识';
+
+COMMENT ON COLUMN public.dm2_quality_group.dqgtitle
+    IS '描述';

@@ -36,7 +36,7 @@ application = CSettings(
                 'type': 'postgresql',
                 'host': '127.0.0.1',
                 'port': '5432',
-                'database': 'atplatform4',
+                'database': 'atplatform5',
                 'username': 'postgres',
                 'password': 'postgres'
             }
