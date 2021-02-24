@@ -7,6 +7,7 @@
 @Description: a python class to handle MapServer mapfile
 '''
 
+import os
 import re
 import sys
 from collections import OrderedDict

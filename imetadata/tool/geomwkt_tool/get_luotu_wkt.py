@@ -1,26 +1,25 @@
 # coding:utf-8
 import os
-import subprocess
 import sys
 import time
-
+import subprocess
 from osgeo import ogr
-
 
 def CreateLuotu(imgpath, wktpath):
     try:
         basedir = os.path.abspath(os.path.dirname(__file__))
-        exepath = os.path.join(basedir, "binX64\\BPDS_CutImageOutline.exe")
-
+        exepath = os.path.join(basedir,"binX64\\BPDS_CutImageOutline.exe")
+        
         shppath = wktpath.replace('.txt', '.shp')
 
-        cmd = "{0} -src {1} -dst {2} -mode 0 -level 7 -WGS84".format(exepath, imgpath, shppath)
+        cmd = "{0} -src {1} -dst {2} -mode 0 -level 20 -WGS84".format(exepath, imgpath, shppath)
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         p.wait()
         # os.system(cmd)
         print('create luotu shapefile success')
-
+        
         time.sleep(1)
+
 
         driver = ogr.GetDriverByName("ESRI Shapefile")
         shpds = driver.Open(shppath, 0)
@@ -41,8 +40,8 @@ def CreateLuotu(imgpath, wktpath):
     except Exception as ex:
         print(ex.message)
         return False
-
-
+    
+    
 if __name__ == "__main__":
     issuccess = CreateLuotu(sys.argv[1], sys.argv[2])
     if issuccess:

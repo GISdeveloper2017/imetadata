@@ -134,7 +134,6 @@ class distribution_satellite(distribution_base):
         main_table = CTable()
         main_table.load_info(self._db_id, main_table_name)
         main_table.column_list.column_by_name('id').set_value(object_table_id)
-
         productname = CUtils.dict_value_by_name(metadata_bus_dict, 'productname', None)
         if CUtils.equal_ignore_case(productname, ''):
             productname = object_table_data.value_by_name(0, 'dsoobjectname', None)
@@ -242,7 +241,7 @@ class distribution_satellite(distribution_base):
         )
         main_table.column_list.column_by_name('proj').set_null()  # 原始数据保持空
 
-        main_table.column_list.column_by_name('dataid').set_null()  # ap_monitor_data表对应id(数据id)，目前不清楚怎么取
+        main_table.column_list.column_by_name('dataid').set_value(object_table_id)
         main_table.column_list.column_by_name('shplog').set_null()
 
         if not main_table.if_exists():
