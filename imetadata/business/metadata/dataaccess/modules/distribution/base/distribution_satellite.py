@@ -282,7 +282,7 @@ class distribution_satellite(distribution_base):
         #         )
 
         metadata_table.column_list.column_by_name('otherxml').set_value(
-            '''<?xml version="1.0" encoding="UTF-8"?><root><plugin name="{0}"/></root>'''.format(
+            '<?xml version="1.0" encoding="UTF-8"?><root><plugin name="{0}"/></root>'.format(
                 CUtils.dict_value_by_name(metadata_bus_dict, 'satelliteid', None)
             )
         )
