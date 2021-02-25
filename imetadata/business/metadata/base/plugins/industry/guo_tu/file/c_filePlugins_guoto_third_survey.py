@@ -269,19 +269,20 @@ class CFilePlugins_GUOTU_Third_Survey(CFilePlugins_GUOTU):
             {
                 self.Name_Source: self.Name_Business,
                 self.Name_ID: self.Name_Time,
-                self.Name_XPath: "//item[@name='sjscsj']",
+                self.Name_XPath: "//item[@name='sx']",
+                # self.Name_XPath: "//item[@name='sjscsj']",
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
                 self.Name_Source: self.Name_Business,
                 self.Name_ID: self.Name_Start_Time,
-                self.Name_XPath: "//item[@name='sjscsj']",
+                self.Name_XPath: "//item[@name='sx']",
                 self.Name_Format: self.MetaDataFormat_XML
             },
             {
                 self.Name_Source: self.Name_Business,
                 self.Name_ID: self.Name_End_Time,
-                self.Name_XPath: "//item[@name='sjscsj']",
+                self.Name_XPath: "//item[@name='sx']",
                 self.Name_Format: self.MetaDataFormat_XML
             }
         ]

@@ -155,7 +155,7 @@ class CSatFilePlugins_zy1e_vnic(CSatFilePlugins_zy1e):
             },
             {
                 self.Name_ID: 'rollangle',  # 侧摆角
-                self.Name_XPath: None
+                self.Name_XPath: '/ProductMetaData/RollSatelliteAngle'
             },
             {
                 self.Name_ID: 'cloudpercent',  # 云量
