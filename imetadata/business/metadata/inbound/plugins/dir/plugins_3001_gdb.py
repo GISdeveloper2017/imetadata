@@ -32,6 +32,8 @@ class plugins_3001_gdb(CDirPlugins):
         information[self.Plugins_Info_Child_Layer_Data_Type] = 'layer'
         information[self.Plugins_Info_Child_Layer_Plugins_Name] = 'plugins_6050_layer_vector'
         information[self.Plugins_Info_Type_Code] = '020203'
+        information[self.Plugins_Info_Is_Space] = self.DB_True
+        information[self.Plugins_Info_Is_Dataset] = self.DB_True
         return information
 
     def classified(self):

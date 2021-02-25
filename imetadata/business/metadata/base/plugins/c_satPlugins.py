@@ -54,6 +54,10 @@ class CSatPlugins(CPlugins):
             self.Plugins_Info_Group_Title] = None  # self.data_group_title(information[self.Plugins_Info_Group_Name])
         information[self.Plugins_Info_Catalog] = self.DataCatalog_Sat  # '卫星数据'
         information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
+
+        information[self.Plugins_Info_Is_Space] = self.DB_True
+        information[self.Plugins_Info_Is_Dataset] = self.DB_False
+
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom
         information[self.Plugins_Info_DetailEngine] = self.get_runtime_detail_engine()

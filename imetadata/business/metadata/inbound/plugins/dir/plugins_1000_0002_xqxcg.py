@@ -18,6 +18,8 @@ class plugins_1000_0002_xqxcg(CDirPlugins_keyword):
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
         information[self.Plugins_Info_HasChildObj] = self.DB_False
         information[self.Plugins_Info_Type_Code] = None
+        information[self.Plugins_Info_Is_Space] = self.DB_False
+        information[self.Plugins_Info_Is_Dataset] = self.DB_False
         return information
 
     def get_classified_character_of_object_keyword(self):

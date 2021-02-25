@@ -255,17 +255,20 @@ class CAudit(CResource):
         result_dict = copy.deepcopy(result_template)
         if value.endswith(','):
             value = value.strip(',')
-            if value.count(',') > 0:
-                value_list = value.split(',', value_number)
-                value_mun = len(value_list)
-                if value_mun <= value_number:
-                    result_dict[cls.Name_Message] = '{0}的值的数量不超过{1}, 符合要求!'.format(title_prefix, value_number)
-                    result_dict[cls.Name_Result] = cls.QA_Result_Pass
-                else:
-                    result_dict[cls.Name_Message] = '{0}的值[{1}],宽度为[{2}]，不符合要求的宽度不超过[{3}], 请检查修正!'.format(title_prefix,
-                                                                                                          value,
-                                                                                                          value_mun,
-                                                                                                          value_number)
+        if value.count(',') > 0:
+            value_list = value.split(',', value_number)
+            value_mun = len(value_list)
+            if value_mun <= value_number:
+                result_dict[cls.Name_Message] = '{0}的值的数量不超过{1}, 符合要求!'.format(title_prefix, value_number)
+                result_dict[cls.Name_Result] = cls.QA_Result_Pass
+            else:
+                result_dict[cls.Name_Message] = '{0}的值[{1}],宽度为[{2}]，不符合要求的宽度不超过[{3}], 请检查修正!'.format(title_prefix,
+                                                                                                      value,
+                                                                                                      value_mun,
+                                                                                                      value_number)
+        else:
+            result_dict[cls.Name_Message] = '{0}的值的数量不超过{1}, 符合要求!'.format(title_prefix, value_number)
+            result_dict[cls.Name_Result] = cls.QA_Result_Pass
         return result_dict
 
     @classmethod
