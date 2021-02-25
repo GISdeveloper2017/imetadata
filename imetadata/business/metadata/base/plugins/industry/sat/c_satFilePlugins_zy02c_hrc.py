@@ -28,7 +28,7 @@ class CSatFilePlugins_zy02c_hrc(CSatFilePlugins_zy02c):
             TextMatchType_Regex: 正则表达式
         """
         if (sat_file_status == self.Sat_Object_Status_Zip) or (sat_file_status == self.Sat_Object_Status_Dir):
-            return r'(?i)^ZY02C_HRC.*', self.TextMatchType_Regex
+            return r'(?i)^ZY02C_HRC.*_.*', self.TextMatchType_Regex
         else:
             return r'(?i)^ZY02C_HRC.*[.]tiff$', self.TextMatchType_Regex
 
