@@ -164,10 +164,10 @@ class distribution_satellite(distribution_base):
             '''.format(object_table_id)
         )
         main_table.column_list.column_by_name('browserimg').set_value(
-            object_table_data.value_by_name(0, 'dso_browser', None)
+            '{0}{1}'.format(CFile.sep(),object_table_data.value_by_name(0, 'dso_browser', None))
         )
         main_table.column_list.column_by_name('thumbimg').set_value(
-            object_table_data.value_by_name(0, 'dso_thumb', None)
+            '{0}{1}'.format(CFile.sep(),object_table_data.value_by_name(0, 'dso_thumb', None))
         )
         main_table.column_list.column_by_name('publishdate').set_value(
             CUtils.dict_value_by_name(metadata_bus_dict, 'publishdate', None)
@@ -358,7 +358,7 @@ class distribution_satellite(distribution_base):
             )
             if len(file_list) > 0:
                 ndi_table.column_list.column_by_name('transformimg').set_value(
-                    CFile.join_file(browser_path, CFile.file_name(file_list[0]))
+                    '{0}{1}'.format(CFile.sep(),CFile.join_file(browser_path, CFile.file_name(file_list[0])))
                 )
 
         ndi_table.column_list.column_by_name('filesize').set_sql(
