@@ -2,7 +2,6 @@
 # @Time : 2020/10/28 15:58 
 # @Author : 王西亚 
 # @File : module_distribution.py
-import settings
 from imetadata.base.c_file import CFile
 from imetadata.base.c_object import CObject
 from imetadata.base.c_result import CResult
@@ -11,7 +10,6 @@ from imetadata.base.c_utils import CUtils
 from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.base.c_daModule import CDAModule
 from imetadata.business.metadata.dataaccess.modules.distribution.base import distribution_base
-from imetadata.business.metadata.dataaccess.modules.distribution.distribution_default import distribution_default
 from imetadata.database.c_factory import CFactory
 
 
@@ -122,43 +120,9 @@ class module_distribution(CDAModule):
                     quality_info_xml,
                     dataset
                 )
-
-                # todo (王西亚) 这个地方的逻辑值得思考, 一定是问题所在!!!
-                try:  # 主要用于卫星插件的方法
-                    dsometadataxml_xml = CXml()
-                    dsometadataxml = dataset.value_by_name(0, 'dsometadataxml_bus', '')
-                    dsometadataxml_xml.load_xml(dsometadataxml)
-
-                    view_path = settings.application.xpath_one(self.Path_Setting_MetaData_Dir_View, None)
-                    browser_path = CFile.file_path(dataset.value_by_name(0, 'dso_browser', None))
-                    multiple_metadata_bus_filename_dict = \
-                        class_classified_obj.get_multiple_metadata_bus_filename_with_path(
-                            CFile.join_file(view_path, browser_path)
-                        )
-                    result, metadata_bus_dict = class_classified_obj.metadata_bus_xml_to_dict(
-                        dsometadataxml_xml, multiple_metadata_bus_filename_dict
-                    )
-                    if CUtils.equal_ignore_case(distribution_file_main_name, 'distribution_satellite_all'):
-                        if not CResult.result_success(result):
-                            return None, CResult.merge_result(
-                                self.Failure,
-                                '卫星数据的业务元数据的详细内容解析出错!原因为{0}'.format(CResult.result_message(result))
-                            )
-
-                    distribution_obj.set_metadata_bus_dict(metadata_bus_dict)
-                    result = CResult.merge_result(self.Success, '数据的信息提取完成')
-                    return distribution_obj, result
-                except Exception as error:
-                    if CUtils.equal_ignore_case(distribution_file_main_name, 'distribution_satellite_all'):
-                        return None, CResult.merge_result(
-                            self.Failure,
-                            '卫星数据的业务元数据的详细内容解析出错!原因为{0}'.format(error.__str__())
-                        )
-                    else:
-                        return None, CResult.merge_result(
-                            self.Failure,
-                            '卫星数据的业务元数据的详细内容解析出错!原因为{0}'.format(error.__str__())
-                        )
+                distribution_obj.set_class_plugins(class_classified_obj)
+                result = CResult.merge_result(self.Success, '数据的信息提取完成')
+                return distribution_obj, result
             else:
                 result = CResult.merge_result(self.Failure, '系统在构建同步模块时发生异常，原因为数据的同步模块缺失')
                 return None, result

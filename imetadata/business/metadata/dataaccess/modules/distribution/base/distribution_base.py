@@ -18,6 +18,7 @@ class distribution_base(CResource):
     _dataset: CDataSet
 
     _metadata_bus_dict = dict()
+    _class_plugins = None
 
     def __init__(self, db_id, obj_id, obj_name, obj_type_code, quality, dataset):
         self._db_id = db_id
@@ -70,3 +71,9 @@ class distribution_base(CResource):
 
     def get_metadata_bus_dict(self):
         return self._metadata_bus_dict
+
+    def set_class_plugins(self, class_plugins):
+        self._class_plugins = class_plugins
+
+    def get_class_plugins(self):
+        return self._class_plugins

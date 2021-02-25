@@ -7,6 +7,7 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_json import CJson
 from imetadata.base.c_result import CResult
 from imetadata.base.c_utils import CUtils
+from imetadata.base.c_xml import CXml
 from imetadata.business.metadata.dataaccess.modules.distribution.base.distribution_base import distribution_base
 from imetadata.database.tools.c_table import CTable
 import datetime
@@ -101,6 +102,12 @@ class distribution_satellite(distribution_base):
 
     def sync(self) -> str:
         try:
+            result = self.process_metadata_bus_dict()
+            if not CResult.result_success(result):
+                return CResult.merge_result(
+                    self.Failure,
+                    '卫星数据的业务元数据的详细内容解析出错!原因为{0}'.format(CResult.result_message(result))
+                )
             main_result = self.process_main_table()
             metadata_result = self.process_metadata_table()
             ndi_result = self.process_ndi_table()
@@ -123,6 +130,32 @@ class distribution_satellite(distribution_base):
                     self._obj_name,
                     error.__str__()
                 )
+            )
+
+    def process_metadata_bus_dict(self):
+        dataset = self._dataset
+        class_plugins = self.get_class_plugins()
+        try:
+            dsometadataxml_xml = CXml()
+            dsometadataxml = dataset.value_by_name(0, 'dsometadataxml_bus', '')
+            dsometadataxml_xml.load_xml(dsometadataxml)
+
+            view_path = settings.application.xpath_one(self.Path_Setting_MetaData_Dir_View, None)
+            browser_path = CFile.file_path(dataset.value_by_name(0, 'dso_browser', None))
+            multiple_metadata_bus_filename_dict = \
+                class_plugins.get_multiple_metadata_bus_filename_with_path(
+                    CFile.join_file(view_path, browser_path)
+                )
+            result, metadata_bus_dict = class_plugins.metadata_bus_xml_to_dict(
+                dsometadataxml_xml, multiple_metadata_bus_filename_dict
+            )
+
+            self.set_metadata_bus_dict(metadata_bus_dict)
+            return result
+        except Exception as error:
+            return CResult.merge_result(
+                self.Failure,
+                '卫星数据的业务元数据的详细内容解析出错!原因为{0}'.format(error.__str__())
             )
 
     def process_main_table(self):
