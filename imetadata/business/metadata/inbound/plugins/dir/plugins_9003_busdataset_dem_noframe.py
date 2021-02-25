@@ -44,7 +44,7 @@ class plugins_9003_busdataset_dem_noframe(C21ATBusDataSetPlugins):
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_string,
                 self.Name_List: ['单景正射', '镶嵌影像', '国情影像_整景纠正', '国情影像_分幅影像', '三调影像', 'DOM', 'DEM_分幅', 'DEM_非分幅',
-                                 '自定义影像'],
+                                 '自定义影像']
                 # self.Name_Width: 38
             },
             {
@@ -55,7 +55,7 @@ class plugins_9003_busdataset_dem_noframe(C21ATBusDataSetPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date_nosep,
+                self.Name_DataType: self.value_type_date
                 # self.Name_Width: 8
             },
             {
@@ -67,7 +67,7 @@ class plugins_9003_busdataset_dem_noframe(C21ATBusDataSetPlugins):
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_integer,
-                self.Name_List: [1000000, 500000, 250000, 100000, 50000, 25000, 10000, 5000, 2000, 1000, 500],
+                self.Name_List: [1000000, 500000, 250000, 100000, 50000, 25000, 10000, 5000, 2000, 1000, 500]
                 # self.Name_Width: 38
             },
             {
@@ -78,7 +78,7 @@ class plugins_9003_busdataset_dem_noframe(C21ATBusDataSetPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_decimal_or_integer,
+                self.Name_DataType: self.value_type_decimal_or_integer
                 # self.Name_Width: 10
             },
             {
@@ -88,8 +88,8 @@ class plugins_9003_busdataset_dem_noframe(C21ATBusDataSetPlugins):
                 self.Name_Title: 'MajorSource',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Number: 5,
+                self.Name_DataType: self.value_type_string
+                # self.Name_Number: 5,
                 # self.Name_Width: 38
             },
             {
@@ -122,7 +122,7 @@ class plugins_9003_busdataset_dem_noframe(C21ATBusDataSetPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date_month_nosep,
+                self.Name_DataType: self.value_type_date_or_datetime
                 # self.Name_Width: 8
             },
             {
@@ -133,7 +133,7 @@ class plugins_9003_busdataset_dem_noframe(C21ATBusDataSetPlugins):
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
-                self.Name_DataType: self.value_type_date_month_nosep,
+                self.Name_DataType: self.value_type_date_or_datetime
                 # self.Name_Width: 8
             },
             {
