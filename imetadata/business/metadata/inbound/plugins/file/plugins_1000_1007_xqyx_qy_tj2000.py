@@ -153,7 +153,7 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
                     self.Name_FileName: '',
                     self.Name_ID: 'shp_file',
                     self.Name_Title: '影像时相接边图',
-                    self.Name_Result: self.QA_Result_Error,
+                    self.Name_Result: self.QA_Result_Warn,
                     self.Name_Group: self.QA_Group_Data_Integrity,
                     self.Name_Message: '本文件缺少影像时相接边图'
                 }

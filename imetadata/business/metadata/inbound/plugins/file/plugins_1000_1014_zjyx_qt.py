@@ -18,7 +18,7 @@ class plugins_1000_1014_zjyx_qt(plugins_1000_1005_zjyx_tj2000):
         information[self.Plugins_Info_Type_Code] = '10001014'
 
         information[self.Plugins_Info_Coordinate_System] = ''
-        information[self.Plugins_Info_Coordinate_System_Title] = '其他国家标准坐标系'
+        information[self.Plugins_Info_Coordinate_System_Title] = ''
         return information
 
     def get_classified_character_of_object_keyword(self):

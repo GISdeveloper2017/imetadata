@@ -17,8 +17,8 @@ class plugins_1000_1015_xqyx_qy_qt(plugins_1000_1007_xqyx_qy_tj2000):
         information = super().get_information()
         information[self.Plugins_Info_Type_Code] = '10001015'
 
-        information[self.Plugins_Info_Coordinate_System] = 'default'
-        information[self.Plugins_Info_Coordinate_System_Title] = '其他国家标准坐标系'
+        information[self.Plugins_Info_Coordinate_System] = ''
+        information[self.Plugins_Info_Coordinate_System_Title] = ''
         information[self.Plugins_Info_yuji] = '区域镶嵌'
         return information
 

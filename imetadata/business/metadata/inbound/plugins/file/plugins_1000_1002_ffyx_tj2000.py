@@ -152,8 +152,10 @@ class plugins_1000_1002_ffyx_tj2000(CFilePlugins_keyword):
         file_main_name = self.file_info.file_main_name
         regularexpression = '(?i)^' + file_main_name[:-1] + r'.\..*'
 
-        letter_location = file_path.find('FenFu')
-        shp_path = CFile.join_file(file_path[:letter_location - 1], 'FenFu', self.get_coordinate_system_title())
+        letter_location_FenFu = file_path.find('FenFu')
+        file_path_sub = file_path[letter_location_FenFu + 6:]
+        letter_location = file_path_sub.find(CFile.sep())
+        shp_path = CFile.join_file(file_path[:letter_location_FenFu + 5], file_path_sub[:letter_location])
         return [
             {
                 self.Name_FilePath: file_path,  # 附属文件的路径
@@ -231,8 +233,10 @@ class plugins_1000_1002_ffyx_tj2000(CFilePlugins_keyword):
                 }
             )
 
-        letter_location = file_path.find('FenFu')
-        shp_path = CFile.join_file(file_path[:letter_location - 1], 'FenFu', self.get_coordinate_system_title())
+        letter_location_FenFu = file_path.find('FenFu')
+        file_path_sub = file_path[letter_location_FenFu + 6:]
+        letter_location = file_path_sub.find(CFile.sep())
+        shp_path = CFile.join_file(file_path[:letter_location_FenFu + 5], file_path_sub[:letter_location])
         shp_list = CFile.file_or_subpath_of_path(shp_path, '(?i).shp$', CFile.MatchType_Regex)
         if len(shp_list) == 0:
             parser.metadata.quality.append_total_quality(
@@ -240,7 +244,7 @@ class plugins_1000_1002_ffyx_tj2000(CFilePlugins_keyword):
                     self.Name_FileName: '',
                     self.Name_ID: 'shp_file',
                     self.Name_Title: '影像时相接边图',
-                    self.Name_Result: self.QA_Result_Error,
+                    self.Name_Result: self.QA_Result_Warn,
                     self.Name_Group: self.QA_Group_Data_Integrity,
                     self.Name_Message: '本文件缺少影像时相接边图'
                 }
