@@ -49,7 +49,7 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
             self._object_name = None
             return self._object_confirm, self._object_name
         else:
-            return CFilePlugins_keyword.classified(self)
+            return super().classified()
 
     def get_classified_character_of_object_keyword(self):
         """

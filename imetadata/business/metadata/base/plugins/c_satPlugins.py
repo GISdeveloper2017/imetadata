@@ -546,21 +546,15 @@ class CSatPlugins(CPlugins):
         """
         data_date_time = parser.metadata.time_information.xpath_one(self.Name_Time, CTime.format_str(CTime.today()))
         data_date = CTime.from_datetime_str(data_date_time, CTime.today())
-        data_year = CTime.format_str(data_date, '%Y')
-        data_month = CTime.format_str(data_date, '%m')
 
         data_view_sub_path = CFile.join_file(
             CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Catalog, ''),
-            CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Group, '')
+            CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Group, ''),
+            CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Type, ''),
+            CTime.format_str(data_date, '%Y')+CTime.format_str(data_date, '%m'),
+            self.classified_object_name(),
+            self.file_info.my_id
         )
-        data_view_sub_path = CFile.join_file(
-            data_view_sub_path,
-            CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Type, '')
-        )
-        data_view_sub_path = CFile.join_file(data_view_sub_path, data_year)
-        data_view_sub_path = CFile.join_file(data_view_sub_path, data_month)
-        data_view_sub_path = CFile.join_file(data_view_sub_path, self.classified_object_name())
-        data_view_sub_path = CFile.join_file(data_view_sub_path, self.file_info.my_id)
 
         data_view_path = CFile.join_file(self.file_content.view_root_dir, data_view_sub_path)
         # 计算原本的文件path
