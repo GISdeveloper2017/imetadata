@@ -1017,85 +1017,115 @@ alter table dp_v_qfg_layer
     add column if not exists dplayer_object jsonb;
 COMMENT ON COLUMN public.dp_v_qfg_layer.dplayer_object IS '图层对象集合';
 
-
 /*
-    思考服务发布的数据库设计-----------------------------注意: 暂不启用!!!!!!!
+    服务发布的数据库设计
     . 从服务发布节点开始设计
-
 */
 
-drop table if exists gis_server;
-create table if not exists gis_server
+drop table if exists dp_gis_server;
+create table if not exists dp_gis_server
 (
-    gsid      varchar(100) not null
-        constraint dp_v_qfg_pkey
+    dgsid             varchar(100) not null
+        constraint dp_gis_server_pkey
             primary key,
-    gstitle   varchar(100) not null,
-    gshost    varchar(100),
-    gsoptions jsonb,
-    gsmemo    varchar(1000)
+    dgstitle          varchar(200) not null,
+    dgshost           varchar(100),
+    dgsport           varchar(100),
+    dgsoptions        jsonb,
+    dgsmemo           text,
+    dgslastmodifytime timestamp(6) without time zone DEFAULT now()
 );
 
-comment on table gis_server is 'GIS_server服务器';
+comment on table dp_gis_server is 'dp_GIS_server服务器';
 
-comment on column gis_server.gsid is '标示';
-comment on column gis_server.gstitle is '标题';
-comment on column gis_server.gshost is '服务器ip';
-comment on column gis_server.gsoptions is '其他配置';
-comment on column gis_server.gsmemo is '备注';
+comment on column dp_gis_server.dgsid is '标示';
+comment on column dp_gis_server.dgstitle is '标题';
+comment on column dp_gis_server.dgshost is '服务器ip';
+comment on column dp_gis_server.dgsoptions is '其他配置';
+comment on column dp_gis_server.dgsmemo is '备注';
 
-alter table gis_server
+alter table dp_gis_server
     owner to postgres;
 
 
-drop table if exists gis_storage;
-create table if not exists gis_storage
+drop table if exists dp_gis_storage;
+create table if not exists dp_gis_storage
 (
-    gsid          varchar(100) not null
-        constraint dp_v_qfg_pkey primary key,
-    gsServerID    varchar(100) not null,
-    gsStorageID   varchar(100) not null,
-    gsStatus      int default 1,
-    gsMountProcID varchar(100),
-    gsMountMemo   text
+    dgsid                 varchar(100) not null
+        constraint dp_gis_storage_pkey primary key,
+    dgsServerID           varchar(100) not null,
+    dgsStorageID          varchar(100) not null,
+    dgsStorageLastCfgTime timestamp(6) without time zone,
+    dgsStatus             int                            default 1,
+    dgsMountProcID        varchar(100),
+    dgsMountUrl           varchar(2000),
+    dgsMountMemo          text,
+    dgsMemo               text,
+    dgslastmodifytime     timestamp(6) without time zone DEFAULT now()
 );
 
-comment on table gis_storage is 'GIS服务器';
+comment on table dp_gis_storage is 'GIS服务器';
 
-comment on column gis_storage.gsid is '标示';
-comment on column gis_storage.gsServerID is '服务器标识';
-comment on column gis_storage.gsStorageID is '存储标识';
-comment on column gis_storage.gsStatus is '状态';
-comment on column gis_storage.gsMountProcID is '并行连接标识';
-comment on column gis_storage.gsMountMemo is '连接结果';
+comment on column dp_gis_storage.dgsid is '标示';
+comment on column dp_gis_storage.dgsServerID is '服务器标识';
+comment on column dp_gis_storage.dgsStorageID is '存储标识';
+comment on column dp_gis_storage.dgsStatus is '状态';
+comment on column dp_gis_storage.dgsMountProcID is '并行连接标识';
+comment on column dp_gis_storage.dgsMountUrl is '路径';
+comment on column dp_gis_storage.dgsMountMemo is '连接结果';
 
-alter table gis_storage
+alter table dp_gis_storage
     owner to postgres;
 
-
-drop table if exists gis_service;
-create table if not exists gis_service
+drop table if exists dp_gis_service;
+create table if not exists dp_gis_service
 (
-    gsid           varchar(100) not null
-        constraint dp_v_qfg_pkey primary key,
-    gsServerID     varchar(100) not null,
-    gsServiceID    varchar(100) not null,
-    gsStatus       int default 1,
-    gsDeployProcID varchar(100),
-    gsDeployMemo   text
+    dgsid             varchar(100) not null
+        constraint dp_gis_service_pkey primary key,
+    dgsServerID       varchar(100) not null,
+    dgsServiceID      varchar(100) not null,
+    dgsServiceUrl     varchar(2000),
+    dgsStatus         int                            default 1,
+    dgsDeployProcID   varchar(100),
+    dgsDeployMemo     text,
+    dgsMemo           text,
+    dgslastmodifytime timestamp(6) without time zone DEFAULT now()
 );
 
-comment on table gis_service is 'GIS服务器';
+comment on table dp_gis_service is 'GIS服务器';
 
-comment on column gis_service.gsid is '标示';
-comment on column gis_service.gsServerID is '服务器标识';
-comment on column gis_service.gsServiceID is '服务标识';
-comment on column gis_service.gsStatus is '状态';
-comment on column gis_service.gsDeployProcID is '并行发布标识';
-comment on column gis_service.gsDeployMemo is '发布结果';
+comment on column dp_gis_service.dgsid is '标示';
+comment on column dp_gis_service.dgsServerID is '服务器标识';
+comment on column dp_gis_service.dgsServiceID is '服务标识';
+comment on column dp_gis_service.dgsStatus is '状态';
+comment on column dp_gis_service.dgsDeployProcID is '并行发布标识';
+comment on column dp_gis_service.dgsDeployMemo is '发布结果';
 
-alter table gis_service
+alter table dp_gis_service
     owner to postgres;
+
+truncate table dp_gis_server;
+INSERT INTO public.dp_gis_server (dgsid, dgstitle, dgshost, dgsport, dgsoptions, dgsmemo)
+VALUES ('localhost', '本地服务器', 'localhost', null, null, null);
+
+alter table dp_v_qfg
+    drop column if exists serverip;
+alter table dp_v_qfg
+    drop column if exists dplog;
+alter table dp_v_qfg
+    drop column if exists serviceurl;
+
+alter table dp_v_qfg
+    add column if not exists dp_server_id varchar(100);
+comment on column dp_v_qfg.dp_server_id is 'GIS服务器标识';
+
+alter table dp_v_qfg
+    add column if not exists dp_result text;
+comment on column dp_v_qfg.dp_result is '服务发布结果';
+
+alter table dp_v_qfg
+    add column if not exists dp_service text;
+comment on column dp_v_qfg.dp_service is 'GIS服务';
 
 
 
