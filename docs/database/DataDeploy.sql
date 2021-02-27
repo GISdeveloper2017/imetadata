@@ -1115,17 +1115,27 @@ alter table dp_v_qfg
 alter table dp_v_qfg
     drop column if exists serviceurl;
 
-alter table dp_v_qfg
-    add column if not exists dp_server_id varchar(100);
-comment on column dp_v_qfg.dp_server_id is 'GIS服务器标识';
+alter table dm2_storage
+    drop column if exists isdel;
 
-alter table dp_v_qfg
-    add column if not exists dp_result text;
-comment on column dp_v_qfg.dp_result is '服务发布结果';
+alter table dm2_storage
+    drop column if exists userid;
 
-alter table dp_v_qfg
-    add column if not exists dp_service text;
-comment on column dp_v_qfg.dp_service is 'GIS服务';
+alter table dm2_storage
+    drop column if exists status;
+
+alter table dm2_storage
+    drop column if exists mountserver;
+
+alter table dm2_storage
+    drop column if exists mounturl1;
+
+alter table dm2_storage
+    drop column if exists username;
+
+alter table dm2_storage
+    drop column if exists passwd;
+
 
 
 
