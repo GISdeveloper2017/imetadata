@@ -1022,6 +1022,16 @@ COMMENT ON COLUMN public.dp_v_qfg_layer.dplayer_object IS '图层对象集合';
     . 从服务发布节点开始设计
 */
 
+/*
+    dp_gis_server
+    . 每一个GIS服务器的信息, 登记在这个表里
+    . dgsport是为我们包装的应用的端口
+    . 其他的信息, 存储在dgsoptions里面
+    . dgsid标识, 不是ip地址, 是一个id
+        . 当前应用启动时, 在settings中设置了"我"的标识
+        . "我"的标识, 与当前数据表的dgsid相同, 就代表"我"和当前GIS服务器是统一的
+        . "我"和GIS服务器的统一, 不采用IP地址匹配进行计算!!!
+*/
 drop table if exists dp_gis_server;
 create table if not exists dp_gis_server
 (
@@ -1047,7 +1057,22 @@ comment on column dp_gis_server.dgsmemo is '备注';
 alter table dp_gis_server
     owner to postgres;
 
-
+/*
+    dp_gis_storage
+    . GIS服务器中的存储, 登记在这里
+    . 当前表中的存储设置, 包括两个类型:
+        . owner
+            . 在当前表中自行维护的存储
+            . 在当前表中维护的存储, 定义存储在dgsDefine中
+        . dm
+            . 数管中维护的存储
+            . dgsDefine中存储为Null
+            . 原始存储, 登记在dm2_storage中
+            . 每一个GIS服务器都需要将所有dm2_storage中设定的存储, 登记并维护好
+            . 如果dm2_storage中有两个路径, GIS服务器有3个, 那么这里就有2 * 3 = 6个
+            . 当前表的每一个存储mount时, 可能会失败. 失败的状态不应该在dm2_storage数据管理的界面中管理, 应该在GIS服务器的管理界面中
+            . 同时取消了dm2_storage表中的相关定义
+*/
 drop table if exists dp_gis_storage;
 create table if not exists dp_gis_storage
 (
@@ -1061,6 +1086,8 @@ create table if not exists dp_gis_storage
     dgsMountUrl           varchar(2000),
     dgsMountMemo          text,
     dgsMemo               text,
+    dgsDefineType         varchar(100)                   default 'owner',
+    dgsDefine             jsonb,
     dgslastmodifytime     timestamp(6) without time zone DEFAULT now()
 );
 
@@ -1073,10 +1100,41 @@ comment on column dp_gis_storage.dgsStatus is '状态';
 comment on column dp_gis_storage.dgsMountProcID is '并行连接标识';
 comment on column dp_gis_storage.dgsMountUrl is '路径';
 comment on column dp_gis_storage.dgsMountMemo is '连接结果';
+comment on column dp_gis_storage.dgsMemo is '备注';
+comment on column dp_gis_storage.dgsDefineType is '存储定义类型_dm-数管_owner-自行维护';
+comment on column dp_gis_storage.dgsDefine is '存储定义';
 
 alter table dp_gis_storage
     owner to postgres;
 
+alter table dm2_storage
+    drop column if exists isdel;
+
+alter table dm2_storage
+    drop column if exists userid;
+
+alter table dm2_storage
+    drop column if exists status;
+
+alter table dm2_storage
+    drop column if exists mountserver;
+
+alter table dm2_storage
+    drop column if exists mounturl1;
+
+alter table dm2_storage
+    drop column if exists username;
+
+alter table dm2_storage
+    drop column if exists passwd;
+
+/*
+    dp_gis_service
+    . GIS服务发布之后的结果, 存储在这里
+    . 一个服务定义(dp_v_qfg), 可以发布在多个GIS服务器(dp_gis_server)中, 这个配置在当前表中维护
+    . 当前表中定义, 支持并行发布!!!
+    . 同时取消dp_v_qfg表中的相关定义!!!
+*/
 drop table if exists dp_gis_service;
 create table if not exists dp_gis_service
 (
@@ -1104,9 +1162,6 @@ comment on column dp_gis_service.dgsDeployMemo is '发布结果';
 alter table dp_gis_service
     owner to postgres;
 
-truncate table dp_gis_server;
-INSERT INTO public.dp_gis_server (dgsid, dgstitle, dgshost, dgsport, dgsoptions, dgsmemo)
-VALUES ('localhost', '本地服务器', 'localhost', null, null, null);
 
 alter table dp_v_qfg
     drop column if exists serverip;
@@ -1115,26 +1170,12 @@ alter table dp_v_qfg
 alter table dp_v_qfg
     drop column if exists serviceurl;
 
-alter table dm2_storage
-    drop column if exists isdel;
 
-alter table dm2_storage
-    drop column if exists userid;
+truncate table dp_gis_server;
+INSERT INTO public.dp_gis_server (dgsid, dgstitle, dgshost, dgsport, dgsoptions, dgsmemo)
+VALUES ('localhost', '本地服务器', 'localhost', null, null, null);
 
-alter table dm2_storage
-    drop column if exists status;
 
-alter table dm2_storage
-    drop column if exists mountserver;
-
-alter table dm2_storage
-    drop column if exists mounturl1;
-
-alter table dm2_storage
-    drop column if exists username;
-
-alter table dm2_storage
-    drop column if exists passwd;
 
 
 

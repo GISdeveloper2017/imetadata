@@ -1429,3 +1429,13 @@ alter table dm2_storage_object
     add column if not exists dso_priority int default 0;
 comment on column dm2_storage_object.dso_priority is '优先级';
 
+
+/*
+    2021-02-28
+    . 对dm2_storage_object扩展, 增加存储业务元数据\快视图\拇指图的存储目录
+*/
+
+alter table dm2_storage_object
+    add column if not exists dso_metadata_path varchar(2000);
+comment on column dm2_storage_object.dso_metadata_path is '元数据存储路径';
+
