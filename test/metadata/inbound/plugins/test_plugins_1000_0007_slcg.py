@@ -24,7 +24,7 @@ class Test_plugins_1000_0007_slcg(Plugins_Test_Base):
 
             {
                 self.Name_Test_File_Type: self.FileType_Dir,
-                self.Name_Test_file_path: '2020年土地执法项目{0}矢量成果'.format(CFile.sep()),
+                self.Name_Test_file_path: '202008{0}信息产品{0}2020年土地执法项目{0}矢量成果'.format(CFile.sep()),
                 self.Name_Test_object_confirm: self.Object_Confirm_IKnown,
                 self.Name_Test_object_name: '矢量成果'
             }
@@ -37,9 +37,7 @@ class Test_plugins_1000_0007_slcg(Plugins_Test_Base):
         self._test_file_root_path = settings.application.xpath_one(self.Path_Setting_Dir_Test_Data, '')
         self._test_file_parent_path = CFile.join_file(
             settings.application.xpath_one(self.Path_Setting_Dir_Test_Data, ''),
-            plugins_catalog,
-            '202008',
-            plugins_type
+            plugins_catalog
         )
 
 
