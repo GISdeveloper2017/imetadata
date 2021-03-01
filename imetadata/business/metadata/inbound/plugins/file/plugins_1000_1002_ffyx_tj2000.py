@@ -59,7 +59,7 @@ class plugins_1000_1002_ffyx_tj2000(CFilePlugins_keyword):
         if len(same_name_list) > 0:
             for same_file_full_name in same_name_list:
                 same_file_name = CFile.file_name(same_file_full_name)
-                last_letter_list.append(same_file_name[-1:])
+                last_letter_list.append(same_file_name[-1:].lower())
             if 'a' in last_letter_list:
                 RegularExpression_letter = 'a'
             elif 'b' in last_letter_list:
@@ -105,7 +105,7 @@ class plugins_1000_1002_ffyx_tj2000(CFilePlugins_keyword):
         if len(same_name_list) > 0:
             for same_file_full_name in same_name_list:
                 same_file_name = CFile.file_name(same_file_full_name)
-                last_letter_list.append(same_file_name[-1:])
+                last_letter_list.append(same_file_name[-1:].lower())
             if 'a' in last_letter_list:
                 RegularExpression_letter = 'bcd'
                 RegularExpression_main_letter = 'a'
