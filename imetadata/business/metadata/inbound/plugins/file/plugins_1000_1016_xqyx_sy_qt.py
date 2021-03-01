@@ -13,5 +13,5 @@ class plugins_1000_1016_xqyx_sy_qt(plugins_1000_1015_xqyx_qy_qt):
 
         information[self.Plugins_Info_Coordinate_System] = ''
         information[self.Plugins_Info_Coordinate_System_Title] = ''
-        information[self.Plugins_Info_yuji] = '区域镶嵌'
+        information[self.Plugins_Info_yuji] = '市域镶嵌'
         return information
