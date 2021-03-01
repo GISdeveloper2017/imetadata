@@ -1057,6 +1057,10 @@ comment on column dp_gis_server.dgsmemo is '备注';
 alter table dp_gis_server
     owner to postgres;
 
+truncate table dp_gis_server;
+INSERT INTO public.dp_gis_server (dgsid, dgstitle, dgshost, dgsport, dgsoptions, dgsmemo)
+VALUES ('m1', '本地服务器', 'localhost', null, null, null);
+
 /*
     dp_gis_storage
     . GIS服务器中的存储, 登记在这里
@@ -1171,9 +1175,7 @@ alter table dp_v_qfg
     drop column if exists serviceurl;
 
 
-truncate table dp_gis_server;
-INSERT INTO public.dp_gis_server (dgsid, dgstitle, dgshost, dgsport, dgsoptions, dgsmemo)
-VALUES ('localhost', '本地服务器', 'localhost', null, null, null);
+
 
 
 

@@ -1439,3 +1439,29 @@ alter table dm2_storage_object
     add column if not exists dso_metadata_path varchar(2000);
 comment on column dm2_storage_object.dso_metadata_path is '元数据存储路径';
 
+/*
+    2021-03-01
+    . 对dm2_storage_object扩展, 增加对并行入库的处理
+*/
+
+alter table dm2_storage_object
+    add column if not exists dso_ib_procid varchar(100);
+comment on column dm2_storage_object.dso_ib_procid is '入库多进程标识';
+
+alter table dm2_storage_object
+    add column if not exists dso_ib_status int default 1;
+comment on column dm2_storage_object.dso_ib_status is '入库状态';
+
+alter table dm2_storage_object
+    add column if not exists dso_ib_memo text;
+comment on column dm2_storage_object.dso_ib_memo is '入库结果';
+
+/*
+    2021-03-01
+    . 对dm2_storage_obj_detail扩展, 增加附属文件类型
+*/
+
+alter table dm2_storage_obj_detail
+    add column if not exists dodtype varchar(100) default 'common';
+comment on column dm2_storage_obj_detail.dodtype is '附属文件类型';
+

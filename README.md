@@ -1302,6 +1302,9 @@ application = CSettings(
             1. 附属文件处理完毕
                 1. dsodetailparsestatus = 0
     1. 如果所有都处理完毕
+        1. 判断dsiStorage对应的存储的类型
+            1. 是[入库存储], 表明该数据必须要迁移到核心存储中
+                1. 不符合质检要求的数据对象, 将业务状态dso_bus_status改为not_inbound
         1. 将处理成功的dm2_storage_inbound记录状态标记为质检结束
             1. dsiStatus=4 质检完毕
         1. 根据项目情况, 如用户要求质检完全通过的数据, 应能自动入库, 则这里需要有判断标准, 如质检无误, 可将 状态修改为提交入库 1. dsiStatus=5 提交入库
@@ -1318,11 +1321,21 @@ application = CSettings(
         1. 检查所有的目录\子目录是否都存在
         1. 检查所有的文件是否都存在
         1. 如果有任何一个目录或文件不存在, 或者最后修改时间\大小发生改变, 都提示, 并停止入库
+    1. 记录批次入库日志
+        1. 清除上次日志
+        1. 记录日志
+            1. 入库批次标识
+            1. 对象标识
+            1. 对象路径
+            1. 对象文件名
+            1. 对象类型
+            1. 对象数据类型
+            1. 对象入库状态
     1. 判断dsiStorage对应的存储的类型
         1. 是[入库存储], 表明该数据必须要迁移到核心存储中
             1. 预处理:
                 1. 计算目录所需要的空间
-                    1. 空间大小 = 全部空间 - 不入库的对象的空间
+                    1. 空间大小 = 入库的对象的空间合计
                 1. 检查目录下是否有metadata.21at文件
                     1. 如果文件不存在:
                         * 标记当前目录的数据集类型为other
@@ -1349,45 +1362,89 @@ application = CSettings(
                 1. 检查待入库数据目录, 确定所有文件都可以移动
                     1. 如果有某一个文件无法移动, 则将该文件名称记入入库备注, 并结束
                     1. !!!
-            1. 实体数据迁移
-                1. 在指定存储下, 创建入库目标目录
-                1. 将待入库数据移动至入库目标目录
-                    1. 如果有文件移动异常, 则将所有已迁移的文件迁回
-                    1. 将移动异常的文件名称, 记入入库备注中, 并结束
-                    1. !!!
-            1. 编目更新
-                1. 根据目标目录, 从dm2_storage_directory表中搜索其id
-                    1. 如果目标目录不存在, 则根据规则, 自动创建(这里可以折中, 直接挂接在根目录下)
-                    1. 理论上, 目标目录一定可以创建成功, 并返回
-                    1. 如果过程出现异常, 则将异常情况记入入库备注中, 并结束
-                    1. !!!
-                1. 将已入库目录的记录, 批量更新至目标存储和目录下
-                    1. dm2_storage_directory
-                        1. 将源存储和目录下的所有记录的目录和相对目录, 批量更新至目标目录下
-                        1. 将源存储, 更改为目标存储
-                        1. 将源根目录的父目录标识, 改为新计算出的目标目录标识(这里可以折中, 可以直接改为存储标识, 这就表明直接挂接在存储的根目录下)
-                    1. dm2_storage_file
-                        1. 重算文件的相对文件名字段: dsffilerelationname
-                    1. dm2_storage_obj_detail
-                        1. 重算附属文件的相对文件名字段: dodfilename
-                1. 将对应的directory\file\object表的业务状态改为[online](原默认为: inbound)
-                    1. dm2_storage_directory.dsd_bus_status = 'online'
-                    1. dm2_storage_file.dsf_bus_status = 'online'
-                    1. dm2_storage_object.dso_bus_status = 'online'
+            1. 将处理成功的dm2_storage_inbound记录状态改为等待并行入库完成
+                1. dsiStatus=7 等待并行入库完成
         1. 如果是[混合存储], 表明该数据不需要迁移, 只需要把状态修改即可
-            1. 将对应的directory\file\object表的业务状态改为[online](原默认为: inbound)
+            1. 判断object表中, 是否有业务状态为[not_inbound], 该状态为禁止入库
+                1. 注意: 数据集的业务状态改为[not_inbound]时, 其下的所有对象也应该为[not_inbound]!!!这部分由可视化界面处理!
+                1. 循环处理禁止入库的对象
+                    1. 将禁止入库的对象, 迁移至质检有问题的目标目录下, 目标目录为settings中的路径, 添加[批次子目录]
+                    1. 从obj_detail表中删除对应的附属文件记录
+                    1. 从file表中删除对应的文件记录
+                    1. 从object表中删除对应的记录
+            1. 将当前批次下剩余的directory\file\object记录的业务状态改为[online](原默认为: inbound)
                 1. dm2_storage_directory.dsd_bus_status = 'online'
                 1. dm2_storage_file.dsf_bus_status = 'online'
                 1. dm2_storage_object.dso_bus_status = 'online'
+                1. dm2_storage_object.dso_ib_status = 0
+            1. 将处理成功的dm2_storage_inbound记录状态改为成功入库
+                1. dsiStatus=0 成功入库
     1. 异常
         1. 将处理成功的dm2_storage_inbound记录状态改为异常
             1. dsiStatus=61 入库过程出现异常
         1. 修改重试
             1. 将处理成功的dm2_storage_inbound记录状态改为等待入库
                 1. dsiStatus=5 等待入库
-    1. 最后
-        1. 将处理成功的dm2_storage_inbound记录状态改为成功入库
-            1. dsiStatus=0 成功入库
+
+##### 数据入库后通知第三方应用调度-job_dm_inbound_object
+
+1. 名称: job_dm_inbound_object
+1. 类型: db_queue
+1. 算法:
+    1. 抢占dm2_storage_object表中dso_ib_status=1, 对应的dm2_storage_inbound.dsistatus = 7(IB_Status_IB_WaitingFinish)的记录,
+       状态更新为2
+        1. dso_ib_status=1 等待提交入库
+        1. dso_ib_status=2 正在提交入库
+    1. 从dm2_storage_inbound_log中获取对象存储的原目录和文件信息
+    1. 从dm2_storage_obj_detail中获取对象的附属文件信息
+        1. 计算所有附属文件的目标目录和文件名
+        1. 如果目标文件已经存在
+            1. 表明其他并行入库已经将文件移动到目标地址, 可认为目标文件已经正确入库
+        1. 如果目标文件不存在
+            1. 如果源文件不存在
+                1. 标记异常的文件名称, 记入入库备注中, 并修改dso_ib_status=3, 结束并行
+            1. 如果源文件存在
+                1. 在指定存储下, 创建入库目标目录
+                1. 将待入库数据移动至入库目标目录
+                1. 如果有文件移动异常
+                    1. 标记异常的文件名称, 记入入库备注中, 并修改dso_ib_status=3, 结束并行
+                    1. !!!
+    1. 所有附属文件移动均正常, 表明实体数据入库正确
+        1. 将数据对象的编目路径信息, 更新至目标存储和目录下
+            1. dm2_storage_directory
+                1. 将源存储和目录下的所有记录的目录和相对目录, 批量更新至目标目录下
+                1. 将源存储, 更改为目标存储
+                1. 将源根目录的父目录标识, 改为新计算出的目标目录标识(这里可以折中, 可以直接改为存储标识, 这就表明直接挂接在存储的根目录下)
+            1. dm2_storage_file
+                1. 重算文件的相对文件名字段: dsffilerelationname
+            1. dm2_storage_obj_detail
+                1. 重算附属文件的相对文件名字段: dodfilename
+                1. 将对应的directory\file\object表的业务状态改为[online](原默认为: inbound)
+                    1. dm2_storage_directory.dsd_bus_status = 'online'
+                    1. dm2_storage_file.dsf_bus_status = 'online'
+            1. dm2_storage_object
+                1. dm2_storage_object.dso_bus_status = 'online'
+                1. dm2_storage_object.dso_ib_status = 0
+
+##### 数据入库后通知第三方应用调度-job_dm_inbound_object_monitor
+
+1. 名称: job_dm_inbound_object_monitor
+1. 类型: interval(30秒)
+1. 算法:
+    1. 搜索dm2_storage_inbound表中dsistatus=7(IB_Status_IB_WaitingFinish)的记录
+        1. 检查该批次下, dm2_storage_object中的记录中
+            1. 记录总和 = dm2_storage_inbound_log.dso_bus_status='not_inbound'
+                +
+               dm2_storage_object.dso_bus_status='online'
+            1. 如果等式不成立
+                1. 将当前入库的进度, 以文字信息的模式, 更新到dm2_storage_inbound.dsiprocmemo中
+                    1. 共有多少对象
+                    1. 已经入库多少对象
+                    1. 入库成功对象个数
+                    1. 入库失败对象个数
+                    1. 注意: dm2_storage_inbound.dsistatus=7不改变
+            1. 如果等式成立
+                1. 设定dm2_storage_inbound.dsistatus=0
 
 ##### 数据入库后通知第三方应用调度-job_dm_inbound_notify
 
