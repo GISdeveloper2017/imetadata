@@ -196,7 +196,7 @@ class job_dm_inbound_notify_monitor(CTimeJob):
             set dsi_na_proc_memo = :notify_message, dsiproctime = now()
             where dsiid = :notify_id   
             ''',
-            {'notify_id': notify_id, 'notify_message': message}
+            {'notify_id': notify_id, 'notify_message': CResult.result_message(message)}
         )
 
 
