@@ -1429,6 +1429,22 @@ alter table dm2_storage_object
     add column if not exists dso_priority int default 0;
 comment on column dm2_storage_object.dso_priority is '优先级';
 
+/*
+    2021-02-25
+    . 对dm2_storage_object_def表增加插件是否为数据集和是否为空间数据的标识
+    . 支持优先级策略
+*/
+
+ALTER TABLE "public"."dm2_storage_object_def"
+    ADD COLUMN "dsod_isspace" int4;
+
+COMMENT ON COLUMN "public"."dm2_storage_object_def"."dsod_isspace" IS '是否为空间数据，-1是，0不是';
+
+ALTER TABLE "public"."dm2_storage_object_def"
+    ADD COLUMN "dsod_isdataset" int4;
+
+COMMENT ON COLUMN "public"."dm2_storage_object_def"."dsod_isdataset" IS '是否为数据集，-1是，0不是';
+
 
 /*
     2021-02-28
