@@ -75,7 +75,7 @@ class plugins_1000_1015_xqyx_qy_qt(plugins_1000_1007_xqyx_qy_tj2000):
         ]
 
     def get_custom_affiliated_file_character(self):
-        pass
+        return []
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
         """
