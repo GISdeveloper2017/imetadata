@@ -100,7 +100,7 @@ class plugins_1000_1015_xqyx_qy_qt(plugins_1000_1007_xqyx_qy_tj2000):
         :param parser:
         :return:
         """
-        pass
+        return []
 
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
         """
