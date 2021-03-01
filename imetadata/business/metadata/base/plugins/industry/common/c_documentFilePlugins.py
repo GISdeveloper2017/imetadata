@@ -18,6 +18,8 @@ class CDocumentFilePlugins(CFilePlugins):
         information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Document_Tika
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_File_Itself
+        information[self.Plugins_Info_Is_Space] = self.DB_False
+        information[self.Plugins_Info_Is_Dataset] = self.DB_False
         return information
 
     def get_classified_character(self):

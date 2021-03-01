@@ -19,6 +19,9 @@ class CVectorFilePlugins(CFilePlugins):
         information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
         information[self.Plugins_Info_SpatialEngine] = self.MetaDataEngine_Vector  # 通用的矢量数据的空间引擎（解析自身元数据json用的）
+
+        information[self.Plugins_Info_Is_Space] = self.DB_True
+        information[self.Plugins_Info_Is_Dataset] = self.DB_False
         return information
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:
