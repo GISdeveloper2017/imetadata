@@ -114,8 +114,8 @@ class plugins_1000_1005_zjyx_tj2000(CFilePlugins_keyword):
         list_qa.extend(self.init_qa_file_integrity_default_list(self.file_info.file_name_with_full_path))
         list_qa.extend([
             {
-                self.Name_FileName: '{0}t.xml'.format(file_main_name[:-1]),
-                self.Name_ID: 't_xml',
+                self.Name_FileName: '{0}T.xml'.format(file_main_name[:-1]),
+                self.Name_ID: 'T_xml',
                 self.Name_Title: '投影信息文件',
                 self.Name_Group: self.QA_Group_Data_Integrity,
                 self.Name_Result: self.QA_Result_Error,
