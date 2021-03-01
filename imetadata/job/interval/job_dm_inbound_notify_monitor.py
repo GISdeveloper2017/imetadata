@@ -142,7 +142,7 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                         record_error_count
                     )
                     CLogger().debug(message)
-                    self.update_inbound_na_progress(ds_ib_id, message)
+                    self.update_inbound_na_progress(ds_ib_id, CResult.merge_result(self.Failure, message))
                 else:
                     message = '入库任务[{0}]下的数据已经通知其他子系统, 共有[{1}]个, 已正确完成[{2}]个, 失败[{3}]个, 请检查修正! '.format(
                         ds_ib_id,
@@ -151,7 +151,7 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                         record_error_count
                     )
                     CLogger().debug(message)
-                    self.update_inbound_na_result(ds_ib_id, message)
+                    self.update_inbound_na_result(ds_ib_id, CResult.merge_result(self.Success, message))
 
             except Exception as error:
                 self.update_inbound_na_result(
