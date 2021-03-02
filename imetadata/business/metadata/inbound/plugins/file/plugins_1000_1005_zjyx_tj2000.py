@@ -23,7 +23,7 @@ class plugins_1000_1005_zjyx_tj2000(CFilePlugins_keyword):
         information[self.Plugins_Info_Group_Title] = '成果影像'
         information[self.Plugins_Info_Type] = '整景影像'
         information[self.Plugins_Info_Type_Title] = '整景影像'
-        information[self.Plugins_Info_Is_Space] = self.DB_True
+        information[self.Plugins_Info_Is_Spatial] = self.DB_True
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
 
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Raster
