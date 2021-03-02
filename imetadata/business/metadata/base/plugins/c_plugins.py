@@ -400,7 +400,7 @@ class CPlugins(CResource):
             else:
                 return result
         else:
-            parser.metadata.set_metadata(self.Not_Support, None, self.MetaDataFormat_Text, None)
+            parser.metadata.set_metadata(self.Not_Support, '不支持解析实体元数据! ', self.MetaDataFormat_Text, None)
             return CResult.merge_result(self.Success, '不支持解析实体元数据! ')
 
     def init_metadata_bus(self, parser: CMetaDataParser) -> str:
@@ -409,7 +409,7 @@ class CPlugins(CResource):
         :param parser:
         :return:
         """
-        parser.metadata.set_metadata_bus(self.Not_Support, None, self.MetaDataFormat_Text, None)
+        parser.metadata.set_metadata_bus(self.Not_Support, '不支持解析业务元数据! ', self.MetaDataFormat_Text, None)
         return CResult.merge_result(self.Success, '不支持解析业务元数据! ')
 
     def parser_metadata_after_qa(self, parser: CMetaDataParser):
