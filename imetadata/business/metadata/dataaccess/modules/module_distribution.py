@@ -131,8 +131,8 @@ class module_distribution(CDAModule):
                 result = CResult.merge_result(self.Success, '数据的信息提取完成')
                 return distribution_obj, result
             else:
-                result = CResult.merge_result(self.Failure, '系统在构建同步模块时发生异常，原因为数据的同步模块缺失')
+                result = CResult.merge_result(self.Failure, '同步失败，因为本类数据的同步模块未建立')
                 return None, result
         else:
-            result = CResult.merge_result(self.Failure, '系统在构建同步模块时发生异常，原因为识别模块缺失或异常')
+            result = CResult.merge_result(self.Failure, '同步失败，因为本类数据的识别模块缺失')
             return None, result

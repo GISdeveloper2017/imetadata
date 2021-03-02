@@ -11,7 +11,6 @@ class plugins_1000_1001_ffyx_cgcs2000(plugins_1000_1002_ffyx_tj2000):
     def get_information(self) -> dict:
         information = super().get_information()
 
-        information[self.Plugins_Info_Type_Code] = '10001001'
         information[self.Plugins_Info_Coordinate_System] = 'cgcs2000'
         information[self.Plugins_Info_Coordinate_System_Title] = '2000国家标准坐标系'
         return information

@@ -47,8 +47,9 @@ application = CSettings(
         'directory': {
             'work': '/Users/wangxiya/Documents/我的测试数据/90.工作',
             'test': {
-                'data': '/Users/wangxiya/Documents/我的测试数据/31.混合存储/数据测试'
-            }
+                'data': 'D:/work/测试数据'
+            },
+            'not_inbound': '',
         },
         'data2service': {
             'system': {

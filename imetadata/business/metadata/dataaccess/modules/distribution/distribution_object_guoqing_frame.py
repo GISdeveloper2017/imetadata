@@ -111,7 +111,7 @@ class distribution_object_guoqing_frame(distribution_guotu_object):
         # self.add_value_to_sync_dict_list(sync_dict, 'scale', xml.get_element_text_by_xpath_one(''))
         # 主要星源
         self.add_value_to_sync_dict_list(sync_dict, 'mainrssource',
-                                         xml.get_element_text_by_xpath_one('/Metadatafile/SATEIMGSOURCE/SateName'))
+                                         xml.get_element_text_by_xpath_one('//SateName'))
         # 备注
         # self.add_value_to_sync_dict_list(sync_dict, 'remark', xml.get_element_text_by_xpath_one(''))
 
@@ -132,15 +132,5 @@ class distribution_object_guoqing_frame(distribution_guotu_object):
         check_dict['DataFormat'] = 'DataFormat'
         check_dict['MapProjection'] = 'MapProjection'
         check_dict['SateName'] = 'SateName'
-        check_dict['PBandSensorType'] = 'PBandSensorType'
-        check_dict['SateResolution'] = 'SateResolution'
-        check_dict['PBandOribitCode'] = 'PBandOribitCode'
-        check_dict['PBandDate'] = 'PBandDate'
-        check_dict['MultiBandSensorType'] = 'MultiBandSensorType'
-        check_dict['MultiBandResolution'] = 'MultiBandResolution'
-        check_dict['MultiBandOrbitCode'] = 'MultiBandOrbitCode'
-        check_dict['MultiBandDate'] = 'MultiBandDate'
-        check_dict['MultiBandNum'] = 'MultiBandNum'
-        check_dict['MultiBandName'] = 'MultiBandName'
 
         return check_dict
