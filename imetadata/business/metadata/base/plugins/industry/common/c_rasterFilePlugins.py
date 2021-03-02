@@ -21,7 +21,7 @@ class CRasterFilePlugins(CFilePlugins):
         information[self.Plugins_Info_SpatialEngine] = self.MetaDataEngine_Raster  # 通用的影像数据的空间引擎（解析自身元数据json用的）
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_object_custom'  # 即时服务中通用影像被认为自定义影像
         information[self.Plugins_Info_ViewEngine] = self.BrowseEngine_Raster  # 通用的影像数据抽取快视图的引擎设置
-        information[self.Plugins_Info_Is_Space] = self.DB_True
+        information[self.Plugins_Info_Is_Spatial] = self.DB_True
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
         return information
 

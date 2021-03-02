@@ -20,7 +20,7 @@ from imetadata.base.c_settings import CSettings
 application = CSettings(
     {
         'application': {
-            'id': 'm1',
+            'id': None,
             'debug': -1,
             'directory': '/Users/wangxiya/Documents/Develop/tsdb',
             'name': 'tsdb'
@@ -51,6 +51,14 @@ application = CSettings(
             }
         },
         'data2service': {
+            'system': {
+                'connect': {
+                    'host': '127.0.0.1',
+                    'username': '',
+                    'password': '',
+                    'port': 22
+                }
+            },
             'local_dir': '/home/geocube/local',
             "update_cache": "mapproxy-seed  -f  $yaml_file$  -s  $seed_yaml$  -c  20 -q",
             "tindex_dir": "F:/work/debug/tileIndex",

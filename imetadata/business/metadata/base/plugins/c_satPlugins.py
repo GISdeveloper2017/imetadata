@@ -55,7 +55,7 @@ class CSatPlugins(CPlugins):
         information[self.Plugins_Info_Catalog] = self.DataCatalog_Sat  # '卫星数据'
         information[self.Plugins_Info_Catalog_Title] = self.data_catalog_title(information[self.Plugins_Info_Catalog])
 
-        information[self.Plugins_Info_Is_Space] = self.DB_True
+        information[self.Plugins_Info_Is_Spatial] = self.DB_True
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
 
         information[self.Plugins_Info_MetaDataEngine] = None

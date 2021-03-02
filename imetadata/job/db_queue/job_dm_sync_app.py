@@ -22,13 +22,15 @@ where dsonid = (
   select dsonid  
   from   dm2_storage_obj_na 
   where  dson_notify_status = {2}
-    and dson_object_access = '{3}'
   order by dson_addtime
   limit 1
   for update skip locked
 )
-        '''.format(self.SYSTEM_NAME_MISSION_ID, self.ProcStatus_Processing, self.ProcStatus_InQueue,
-                   self.DataAccess_Pass)
+        '''.format(
+            self.SYSTEM_NAME_MISSION_ID,
+            self.ProcStatus_Processing,
+            self.ProcStatus_InQueue
+        )
 
     def get_mission_info_sql(self) -> str:
         return '''
@@ -38,6 +40,7 @@ select
   , dm2_storage_object.dsoid as object_id
   , dm2_storage_object.dsoobjecttype as object_type
   , dm2_storage_object.dsoobjectname as object_name
+  , dm2_storage_obj_na.dson_object_access as object_access
 from dm2_storage_obj_na 
   left join dm2_storage_object on dm2_storage_obj_na.dson_object_id = dm2_storage_object.dsoid 
 where dm2_storage_obj_na.dson_notify_proc_id = '{0}'
@@ -60,6 +63,7 @@ where dson_notify_status = {0}
         ds_object_id = dataset.value_by_name(0, 'object_id', '')
         ds_object_type = dataset.value_by_name(0, 'object_type', '')
         ds_object_name = dataset.value_by_name(0, 'object_name', '')
+        ds_object_access = dataset.value_by_name(0, 'object_access', self.DataAccess_Forbid)
 
         CLogger().debug('与第三方模块[{0}]同步的对象为: [{1}]'.format(ds_app_id, ds_object_name))
         try:
@@ -90,7 +94,7 @@ where dson_notify_status = {0}
 
             module_title = CUtils.dict_value_by_name(module_obj.information(), self.Name_Title, '')
 
-            result = module_obj.sync()
+            result = module_obj.sync(ds_object_access)
             self.update_sync_result(ds_na_id, result)
             return result
         except Exception as error:

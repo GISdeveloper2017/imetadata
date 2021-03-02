@@ -18,7 +18,7 @@ class plugins_1000_0010_qtzjcg(CDirPlugins_keyword):
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
         information[self.Plugins_Info_HasChildObj] = self.DB_False
         information[self.Plugins_Info_Type_Code] = None
-        information[self.Plugins_Info_Is_Space] = self.DB_False
+        information[self.Plugins_Info_Is_Spatial] = self.DB_False
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
         return information
 

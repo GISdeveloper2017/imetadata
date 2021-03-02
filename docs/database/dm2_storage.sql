@@ -1430,23 +1430,6 @@ alter table dm2_storage_object
 comment on column dm2_storage_object.dso_priority is '优先级';
 
 /*
-    2021-02-25
-    . 对dm2_storage_object_def表增加插件是否为数据集和是否为空间数据的标识
-    . 支持优先级策略
-*/
-
-ALTER TABLE "public"."dm2_storage_object_def"
-    ADD COLUMN "dsod_isspace" int4;
-
-COMMENT ON COLUMN "public"."dm2_storage_object_def"."dsod_isspace" IS '是否为空间数据，-1是，0不是';
-
-ALTER TABLE "public"."dm2_storage_object_def"
-    ADD COLUMN "dsod_isdataset" int4;
-
-COMMENT ON COLUMN "public"."dm2_storage_object_def"."dsod_isdataset" IS '是否为数据集，-1是，0不是';
-
-
-/*
     2021-02-28
     . 对dm2_storage_object扩展, 增加存储业务元数据\快视图\拇指图的存储目录
 */
@@ -1480,4 +1463,74 @@ comment on column dm2_storage_object.dso_ib_memo is '入库结果';
 alter table dm2_storage_obj_detail
     add column if not exists dodtype varchar(100) default 'common';
 comment on column dm2_storage_obj_detail.dodtype is '附属文件类型';
+
+/*
+    2021-03-02
+    . 增加数管的缓存表和缓存定义表
+    . 数管的缓存表为内置的, 可以复用, 也可弃之不用
+    . 数管的缓存定义表, 是数管内置的, 在每一个批次入库时, 都将自动触发缓存定义表中的每一个统计逻辑
+*/
+
+drop table if exists dm2_cache;
+
+create table if not exists dm2_cache
+(
+    dc_id             bigserial not null
+        constraint dm2_cache_pkey
+            primary key,
+    dc_type           varchar(100),
+    dc_code           varchar(100),
+    dc_value          varchar(100),
+    dc_title          varchar(200),
+    dc_lastmodifytime timestamp(6) default now()
+);
+
+comment on column dm2_cache.dc_id is '自增';
+
+comment on column dm2_cache.dc_type is '类型，与dm2_cache_define表中的type字段对应';
+
+comment on column dm2_cache.dc_code is '代码';
+
+comment on column dm2_cache.dc_value is '统计值';
+
+comment on column dm2_cache.dc_title is '标题';
+
+comment on column dm2_cache.dc_lastmodifytime is '最后修改时间';
+
+alter table dm2_cache
+    owner to postgres;
+
+
+drop table if exists dm2_cache_define;
+
+create table if not exists dm2_cache_define
+(
+    dcd_id    bigserial not null,
+    dcd_type  varchar(100),
+    dcd_title varchar(200),
+    dcd_sql   text,
+    dcd_seqno integer,
+    dcd_memo  text,
+    dcd_dbid  varchar(100)
+);
+
+comment on column dm2_cache_define.dcd_id is '自增';
+
+comment on column dm2_cache_define.dcd_type is '类型';
+
+comment on column dm2_cache_define.dcd_title is '类型标题，方便中文查看';
+
+comment on column dm2_cache_define.dcd_sql is '查询的sql语句';
+
+comment on column dm2_cache_define.dcd_seqno is '排序字段';
+
+comment on column dm2_cache_define.dcd_memo is '执行失败的日志记录，执行成功无';
+
+comment on column dm2_cache_define.dcd_dbid is '数据库的id，可能有多个服务器id';
+
+alter table dm2_cache_define
+    owner to postgres;
+
+
+
 

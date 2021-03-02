@@ -52,7 +52,7 @@ class module_distribution(CDAModule):
                 )
             )
 
-    def sync(self) -> str:
+    def sync(self, object_access) -> str:
         """
         处理数管中识别的对象, 与第三方模块的同步
         . 如果第三方模块自行处理, 则无需继承本方法
@@ -62,17 +62,24 @@ class module_distribution(CDAModule):
         :return:
         """
         # 根据objecttype类型查找distribution文件夹下对应的类文件（识别通过objecttype找object_def表中的dsodtype字段与类对象中的info[self.Name_Type]值相同）
-        distribution_obj_real, result = self.__find_module_obj()
-        if not CResult.result_success(result):
+        if CUtils.equal_ignore_case(self.DataAccess_Pass, object_access):
+            distribution_obj_real, result = self.__find_module_obj()
+            if not CResult.result_success(result):
+                return result
+            elif distribution_obj_real is None:
+                message = '没有对应的算法, 直接通过!'
+                result = CResult.merge_result(self.Success, message)
+                return result
+            result = distribution_obj_real.sync()
             return result
-        elif distribution_obj_real is None:
-            message = '没有对应的算法, 直接通过!'
-            result = CResult.merge_result(self.Success, message)
-            return result
-        result = distribution_obj_real.sync()
-        return result
+        else:
+            # todo(赵宇飞) 这里如果权限是等待审批或禁用, 则从ap3系列表中删除记录
+            return CResult.merge_result(
+                self.Success,
+                '这里需要从ap3系列表中删除记录, 等待实现!'
+            )
 
-    def __find_module_obj(self) -> distribution_base:
+    def __find_module_obj(self):
         sql_query = '''
             SELECT
                 dm2_storage_file.dsfid as query_file_id,

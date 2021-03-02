@@ -33,7 +33,7 @@ class CFilePlugins_GUOTU(CFilePlugins):
         information[self.Plugins_Info_SpatialEngine] = self.MetaDataEngine_Raster  # 国土的统一都是影像数据
         information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_default'
         information[self.Plugins_Info_ViewEngine] = self.BrowseEngine_Raster  # 抽取快视图都是影像类型
-        information[self.Plugins_Info_Is_Space] = self.DB_True
+        information[self.Plugins_Info_Is_Spatial] = self.DB_True
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
         return information
 

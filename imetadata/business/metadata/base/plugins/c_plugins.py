@@ -111,9 +111,9 @@ class CPlugins(CResource):
     # 插件-对象是否允许包含子对象
     Plugins_Info_HasChildObj = 'dsod_has_child_obj'
     # 插件-对象是否允许包含子对象
-    Plugins_Info_Is_Space = 'dsod_isspace'
+    Plugins_Info_Is_Spatial = 'dsod_is_spatial'
     # 插件-对象是否允许包含子对象
-    Plugins_Info_Is_Dataset = 'dsod_isdataset'
+    Plugins_Info_Is_Dataset = 'dsod_is_dataset'
 
     # 插件处理引擎-内置-元数据处理
     Plugins_Info_MetaDataEngine = 'dsod_metadata_engine'
@@ -190,7 +190,7 @@ class CPlugins(CResource):
         information[self.Plugins_Info_DetailEngine] = None
         information[self.Plugins_Info_Module_Distribute_Engine] = None  # 同步的引擎，值是发布同步用的类的名字
         information[self.Plugins_Info_Project_ID] = None
-        information[self.Plugins_Info_Is_Space] = self.DB_False
+        information[self.Plugins_Info_Is_Spatial] = self.DB_False
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
         return information
 

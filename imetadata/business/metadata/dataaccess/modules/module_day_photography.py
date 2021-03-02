@@ -13,6 +13,7 @@ class module_day_photography(CDAModule):
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '日新图'
+        info[self.Name_Enable] = False
 
         return info
 

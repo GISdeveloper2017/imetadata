@@ -108,6 +108,7 @@ where dsi_na_status = 2
                     dataset.size()
                 )
             )
+
             data_count = dataset.size()
             error_message = ''
             for data_index in range(data_count):
@@ -133,6 +134,9 @@ where dsi_na_status = 2
                     )
                     module_id = module_name
                     module_title = CUtils.dict_value_by_name(module_obj.information(), self.Name_Title, '')
+                    module_enable = CUtils.dict_value_by_name(module_obj.information(), self.Name_Enable, True)
+                    if not module_enable:
+                        continue
 
                     module_access = object_da_result.xpath_one(
                         '{0}.{1}'.format(module_id, self.Name_Result),

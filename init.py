@@ -8,12 +8,15 @@ import logging
 
 import settings
 from imetadata.base.c_file import CFile
+from imetadata.base.c_json import CJson
 from imetadata.base.c_logger import CLogger
 from imetadata.base.c_object import CObject
 from imetadata.base.c_resource import CResource
 from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CUtils
+from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
 from imetadata.database.c_factory import CFactory
+from imetadata.database.tools.c_table import CTable
 
 
 class CApplicationInit(CResource):
@@ -28,12 +31,15 @@ class CApplicationInit(CResource):
         sql_register_dm_metadata_plugins = '''
         insert into dm2_storage_object_def(
             dsodid, dsodtitle, dsodtype, dsodtypetitle, dsodtypecode, dsodgroup, dsodgrouptitle, 
-            dsodcatalog, dsodcatalogtitle, dsod_isspace, dsod_isdataset) 
+            dsodcatalog, dsodcatalogtitle, dsod_otheroption) 
             values (:dsodid, :dsodtitle, :dsodtype, :dsodtypetitle, :dsodtypecode, :dsodgroup, :dsodgrouptitle, 
-            :dsodcatalog, :dsodcatalogtitle, :dsod_isspace, :dsod_isdataset) 
+            :dsodcatalog, :dsodcatalogtitle, :dsod_otheroption) 
         '''
 
         CFactory().give_me_db().execute(sql_register_dm_metadata_plugins_clear)
+
+        table_object_def = CTable()
+        table_object_def.load_info(CResource.DB_Server_ID_Default, 'dm2_storage_object_def')
 
         plugins_root_dir = CSys.get_plugins_root_dir()
         plugins_type_list = CFile.file_or_subpath_of_path(plugins_root_dir)
@@ -42,8 +48,13 @@ class CApplicationInit(CResource):
                     not (str(plugins_type)).startswith('_')):
                 plugins_root_package_name = '{0}.{1}'.format(CSys.get_plugins_package_root_name(), plugins_type)
                 path = CFile.join_file(CSys.get_plugins_root_dir(), plugins_type)
-                plugins_file_list = CFile.file_or_subpath_of_path(path, '{0}_*.{1}'.format(self.Name_Plugins,
-                                                                                           self.FileExt_Py))
+                plugins_file_list = CFile.file_or_subpath_of_path(
+                    path,
+                    '{0}_*.{1}'.format(
+                        self.Name_Plugins,
+                        self.FileExt_Py
+                    )
+                )
                 for file_name_without_path in plugins_file_list:
                     file_main_name = CFile.file_main_name(file_name_without_path)
                     class_classified_obj = CObject.create_plugins_instance(
@@ -52,9 +63,33 @@ class CApplicationInit(CResource):
                         None
                     )
                     plugins_info = class_classified_obj.get_information()
-                    print('{0}/{1}:{2}'.format(plugins_type, file_main_name, plugins_info))
+                    json_obj = CJson()
+                    json_obj.set_value_of_name(
+                        self.Name_Is_Spatial,
+                        CUtils.dict_value_by_name(
+                            plugins_info,
+                            CPlugins.Plugins_Info_Is_Spatial,
+                            False
+                        )
+                    )
+                    json_obj.set_value_of_name(
+                        self.Name_Is_DataSet,
+                        CUtils.dict_value_by_name(
+                            plugins_info,
+                            CPlugins.Plugins_Info_Is_Dataset,
+                            False
+                        )
+                    )
+                    plugins_info['dsod_otheroption'] = json_obj.to_json()
 
+                    table_object_def.column_list.reset()
+                    for column_index in range(table_object_def.column_list.size()):
+                        column = table_object_def.column_list.column_by_index(column_index)
+                        column.set_value(CUtils.dict_value_by_name(plugins_info, column.name, None))
+
+                    print('{0}/{1}:{2}'.format(plugins_type, file_main_name, plugins_info))
                     CFactory().give_me_db().execute(sql_unregister_dm_metadata_plugins, plugins_info)
+                    # table_object_def.save_data()
                     CFactory().give_me_db().execute(sql_register_dm_metadata_plugins, plugins_info)
 
     def register_dm_modules(self):

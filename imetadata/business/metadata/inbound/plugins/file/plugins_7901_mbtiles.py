@@ -24,7 +24,7 @@ class plugins_7901_mbtiles(CFilePlugins):
         information[self.Plugins_Info_BusMetaDataEngine] = None
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Same_File_Main_Name
         information[self.Plugins_Info_SpatialEngine] = self.MetaDataEngine_Attached_File
-        information[self.Plugins_Info_Is_Space] = self.DB_True
+        information[self.Plugins_Info_Is_Spatial] = self.DB_True
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
         return information
 

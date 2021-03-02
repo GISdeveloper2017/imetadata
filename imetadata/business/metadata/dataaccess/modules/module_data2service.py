@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*- 
-# @Time : 2020/10/28 15:58 
+# @Time : 2020/11/13 18:56 
 # @Author : 王西亚 
-# @File : module_distribution.py
+# @File : module_data2service.py
 from imetadata.base.c_result import CResult
 from imetadata.business.metadata.dataaccess.base.c_daModule import CDAModule
 
 
-class module_datamining(CDAModule):
+class module_data2service(CDAModule):
     """
-    数据挖掘模块对数管编目的质检要求
+    数据服务发布模块
     """
 
     def information(self) -> dict:
         info = super().information()
-        info[self.Name_Title] = '数据分析挖掘'
+        info[self.Name_Title] = '数据服务发布'
+        info[self.Name_Enable] = False
 
         return info
 
@@ -25,4 +26,4 @@ class module_datamining(CDAModule):
         :return:
         """
         result = super().access()
-        return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Wait)
+        return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Pass)

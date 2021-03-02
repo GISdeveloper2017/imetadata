@@ -29,6 +29,7 @@ class CDAModule(CResource):
         info[self.Name_ID] = type(self).__name__
         info[self.Name_Title] = None
         info[self.Name_Type] = None
+        info[self.Name_Enable] = True
 
         return info
 
@@ -118,7 +119,7 @@ class CDAModule(CResource):
             )
         )
 
-    def sync(self) -> str:
+    def sync(self, object_access) -> str:
         """
         处理数管中识别的对象, 与第三方模块的同步
         . 如果第三方模块自行处理, 则无需继承本方法

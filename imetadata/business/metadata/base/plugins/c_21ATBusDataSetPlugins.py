@@ -34,7 +34,7 @@ class C21ATBusDataSetPlugins(CDirPlugins):
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_Busdataset
         information[self.Plugins_Info_HasChildObj] = self.DB_True
 
-        information[self.Plugins_Info_Is_Space] = self.DB_False
+        information[self.Plugins_Info_Is_Spatial] = self.DB_False
         information[self.Plugins_Info_Is_Dataset] = self.DB_True
 
         return information

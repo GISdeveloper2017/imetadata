@@ -253,6 +253,9 @@ class CResource:
     Name_OutBound = 'outbound'
     Name_Map = 'map'
 
+    Name_Is_Spatial = 'is_spatial'
+    Name_Is_DataSet = 'is_dataset'
+
     Name_Columns = 'columns'
     Name_PrimaryKey = 'primarykey'
     Name_DataType = 'datatype'

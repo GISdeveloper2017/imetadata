@@ -16,6 +16,6 @@ class CVectorChildPlugins(CSpatialChildPlugins):
         information[self.Plugins_Info_Group] = self.DataGroup_Vector
         information[self.Plugins_Info_Group_Title] = self.data_group_title(information[self.Plugins_Info_Group])
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Spatial_Layer
-        information[self.Plugins_Info_Is_Space] = self.DB_True
+        information[self.Plugins_Info_Is_Spatial] = self.DB_True
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
         return information

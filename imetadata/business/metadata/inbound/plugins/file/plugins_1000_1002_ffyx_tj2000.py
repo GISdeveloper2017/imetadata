@@ -25,7 +25,7 @@ class plugins_1000_1002_ffyx_tj2000(CFilePlugins_keyword):
         information[self.Plugins_Info_Type_Title] = '分幅影像'
         information[self.Plugins_Info_Type_Code] = '10001002'
 
-        information[self.Plugins_Info_Is_Space] = self.DB_True
+        information[self.Plugins_Info_Is_Spatial] = self.DB_True
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
 
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Raster

@@ -1174,11 +1174,56 @@ alter table dp_v_qfg
 alter table dp_v_qfg
     drop column if exists serviceurl;
 
+/*
+    dp_dm2_auto_deploy
+    . 服务自动发布配置
+    . ddad_datatype: 发布的数据类型
+    . ddad_service: 发布的目标服务参数
+*/
 
+drop table if exists dp_dm2_auto_deploy;
 
+create table if not exists dp_dm2_auto_deploy
+(
+    ddad_id             varchar(100) not null,
+    ddad_title          varchar(200),
+    ddad_datatype       jsonb,
+    ddad_startdate      date,
+    ddad_enddate        date,
+    ddad_spatial        Geometry,
+    ddad_servicetype    varchar(1000)                  default 'wms,wmts'::character varying,
+    ddad_service        jsonb,
+    ddad_memo           text,
+    ddad_enable         integer                        default -1,
 
+    ddad_proc_id        varchar(100),
+    ddad_status         int                            default 1,
+    ddad_proc_memo      text,
 
+    ddad_addtime        timestamp(6) without time zone DEFAULT now(),
+    ddad_lastmodifytime timestamp(6) without time zone DEFAULT now()
+);
 
+comment on column dp_dm2_auto_deploy.ddad_id is '标识';
+comment on column dp_dm2_auto_deploy.ddad_title is '标题';
+
+comment on column dp_dm2_auto_deploy.ddad_startdate is '开始日期';
+comment on column dp_dm2_auto_deploy.ddad_enddate is '结束日期';
+comment on column dp_dm2_auto_deploy.ddad_spatial is '空间范围';
+
+comment on column dp_dm2_auto_deploy.ddad_servicetype is '服务类型';
+
+comment on column dp_dm2_auto_deploy.ddad_service is '服务配置项';
+
+comment on column dp_dm2_auto_deploy.ddad_memo is '备注';
+comment on column dp_dm2_auto_deploy.ddad_enable is '启用';
+
+comment on column dp_dm2_auto_deploy.ddad_addtime is '添加时间';
+
+comment on column dp_dm2_auto_deploy.ddad_lastmodifytime is '最后修改时间';
+
+alter table dp_dm2_auto_deploy
+    owner to postgres;
 
 
 
