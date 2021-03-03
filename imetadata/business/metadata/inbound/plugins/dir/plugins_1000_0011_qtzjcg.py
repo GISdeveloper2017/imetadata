@@ -5,7 +5,7 @@
 from imetadata.business.metadata.base.plugins.custom.c_dirPlugins_keyword import CDirPlugins_keyword
 
 
-class plugins_1000_0010_qtzjcg(CDirPlugins_keyword):
+class plugins_1000_0011_qtzjcg(CDirPlugins_keyword):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Project_ID] = 'tjch'

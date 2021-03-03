@@ -1531,6 +1531,17 @@ comment on column dm2_cache_define.dcd_dbid is '数据库的id，可能有多个
 alter table dm2_cache_define
     owner to postgres;
 
+/*
+    2021-03-03
+    . 增加dsilobjectid字段，用于关联object表
+    . 增加dsilbusstatus字段，记录业务状态
+*/
+ALTER TABLE "public"."dm2_storage_inbound_log"
+  ADD COLUMN "dsilobjectid" varchar(100),
+  ADD COLUMN "dsilbusstatus" varchar(100);
 
+COMMENT ON COLUMN "public"."dm2_storage_inbound_log"."dsilobjectid" IS '外键，对应的object表的id';
+
+COMMENT ON COLUMN "public"."dm2_storage_inbound_log"."dsilbusstatus" IS '业务状态';
 
 

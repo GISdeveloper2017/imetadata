@@ -10,23 +10,23 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
-from imetadata.business.metadata.inbound.plugins.dir.plugins_1000_0011_qtxxcp import plugins_1000_0011_qtxxcp
+from imetadata.business.metadata.inbound.plugins.dir.plugins_1000_0008_slcg import plugins_1000_0008_slcg
 from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
-@allure.feature("天津测绘其他信息产品成果")  # 模块标题
-class Test_plugins_1000_0011_qtxxcp(Plugins_Test_Base):
+@allure.feature("天津测绘矢量成果")  # 模块标题
+class Test_plugins_1000_0008_slcg(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
-        return plugins_1000_0011_qtxxcp(file_info)
+        return plugins_1000_0008_slcg(file_info)
 
     def test_file_info_list(self):
         return [
 
             {
                 self.Name_Test_File_Type: self.FileType_Dir,
-                self.Name_Test_file_path: '202008{0}信息产品{0}2020年土地执法项目{0}其他信息产品成果'.format(CFile.sep()),
+                self.Name_Test_file_path: '202008{0}信息产品{0}2020年土地执法项目{0}矢量成果'.format(CFile.sep()),
                 self.Name_Test_object_confirm: self.Object_Confirm_IKnown,
-                self.Name_Test_object_name: '其他信息产品成果'
+                self.Name_Test_object_name: '矢量成果'
             }
         ]
 

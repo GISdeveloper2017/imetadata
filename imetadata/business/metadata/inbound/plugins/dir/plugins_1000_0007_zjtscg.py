@@ -5,16 +5,17 @@
 from imetadata.business.metadata.base.plugins.custom.c_dirPlugins_keyword import CDirPlugins_keyword
 
 
-class plugins_1000_0008_zttcg(CDirPlugins_keyword):
+class plugins_1000_0007_zjtscg(CDirPlugins_keyword):
+
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Project_ID] = 'tjch'
         information[self.Plugins_Info_Catalog] = '天津测绘'
         information[self.Plugins_Info_Catalog_Title] = '天津测绘'
-        information[self.Plugins_Info_Group] = '信息产品'
-        information[self.Plugins_Info_Group_Title] = '信息产品'
-        information[self.Plugins_Info_Type] = '专题图成果'
-        information[self.Plugins_Info_Type_Title] = '专题图成果'
+        information[self.Plugins_Info_Group] = '中间成果'
+        information[self.Plugins_Info_Group_Title] = '中间成果'
+        information[self.Plugins_Info_Type] = '整景调色成果'
+        information[self.Plugins_Info_Type_Title] = '整景调色成果'
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
         information[self.Plugins_Info_HasChildObj] = self.DB_False
         information[self.Plugins_Info_Type_Code] = None
@@ -29,7 +30,7 @@ class plugins_1000_0008_zttcg(CDirPlugins_keyword):
         return [
             {
                 self.Name_ID: self.Name_FileName,
-                self.Name_RegularExpression: '(?i)专题图成果'
+                self.Name_RegularExpression: '(?i)整景调色成果|整景调色'
             },
             {
                 self.Name_ID: self.Name_FilePath,
