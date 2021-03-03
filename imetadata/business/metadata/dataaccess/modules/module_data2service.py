@@ -18,12 +18,12 @@ class module_data2service(CDAModule):
 
         return info
 
-    def access(self) -> str:
+    def access(self, obj_id, obj_name, obj_type, quality) -> str:
         """
         解析数管中识别出的对象, 与第三方模块的访问能力, 在本方法中进行处理
         返回的json格式字符串中, 是默认的CResult格式, 但是在其中还增加了Access属性, 通过它反馈当前对象是否满足第三方模块的应用要求
         注意: 一定要反馈Access属性
         :return:
         """
-        result = super().access()
+        result = super().access(obj_id, obj_name, obj_type, quality)
         return CResult.merge_result_info(result, self.Name_Access, self.DataAccess_Pass)

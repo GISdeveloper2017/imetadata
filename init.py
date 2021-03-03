@@ -103,11 +103,7 @@ class CApplicationInit(CResource):
                 module_obj = CObject.create_module_instance(
                     CSys.get_metadata_data_access_modules_root_name(),
                     module_name,
-                    CResource.DB_Server_ID_Default,
-                    '',
-                    '',
-                    '',
-                    None
+                    CResource.DB_Server_ID_Default
                 )
                 module_info = module_obj.information()
                 CFactory().give_me_db().execute(
