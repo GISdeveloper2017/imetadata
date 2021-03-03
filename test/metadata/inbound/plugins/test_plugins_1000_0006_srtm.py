@@ -10,23 +10,23 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
-from imetadata.business.metadata.inbound.plugins.dir.plugins_1000_0011_qtzjcg import plugins_1000_0011_qtzjcg
+from imetadata.business.metadata.inbound.plugins.dir.plugins_1000_0006_srtm import plugins_1000_0006_srtm
 from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
-@allure.feature("天津测绘其他中间成果")  # 模块标题
-class Test_plugins_1000_0011_qtzjcg(Plugins_Test_Base):
+@allure.feature("天津测绘SRTM")  # 模块标题
+class Test_plugins_1000_0006_srtm(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
-        return plugins_1000_0011_qtzjcg(file_info)
+        return plugins_1000_0006_srtm(file_info)
 
     def test_file_info_list(self):
         return [
 
             {
                 self.Name_Test_File_Type: self.FileType_Dir,
-                self.Name_Test_file_path: '202008{0}其他中间成果'.format(CFile.sep()),
+                self.Name_Test_file_path: '202008{0}srtm'.format(CFile.sep()),
                 self.Name_Test_object_confirm: self.Object_Confirm_IKnown,
-                self.Name_Test_object_name: '其他中间成果'
+                self.Name_Test_object_name: 'srtm'
             }
         ]
 

@@ -5,7 +5,7 @@
 from imetadata.business.metadata.base.plugins.custom.c_dirPlugins_keyword import CDirPlugins_keyword
 
 
-class plugins_1000_0011_qtzjcg(CDirPlugins_keyword):
+class plugins_1000_0005_xqdem(CDirPlugins_keyword):
     def get_information(self) -> dict:
         information = super().get_information()
         information[self.Plugins_Info_Project_ID] = 'tjch'
@@ -13,8 +13,8 @@ class plugins_1000_0011_qtzjcg(CDirPlugins_keyword):
         information[self.Plugins_Info_Catalog_Title] = '天津测绘'
         information[self.Plugins_Info_Group] = '中间成果'
         information[self.Plugins_Info_Group_Title] = '中间成果'
-        information[self.Plugins_Info_Type] = '其他中间成果'
-        information[self.Plugins_Info_Type_Title] = '其他中间成果'
+        information[self.Plugins_Info_Type] = '镶嵌DEM'
+        information[self.Plugins_Info_Type_Title] = '镶嵌DEM'
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_All_File_Of_Dir
         information[self.Plugins_Info_HasChildObj] = self.DB_False
         information[self.Plugins_Info_Type_Code] = None
@@ -29,7 +29,7 @@ class plugins_1000_0011_qtzjcg(CDirPlugins_keyword):
         return [
             {
                 self.Name_ID: self.Name_FileName,
-                self.Name_RegularExpression: '(?i)其他中间成果'
+                self.Name_RegularExpression: '(?i)镶嵌DEM'
             },
             {
                 self.Name_ID: self.Name_FilePath,

@@ -10,14 +10,14 @@ from imetadata.base.c_file import CFile
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.fileinfo.c_dmFilePathInfoEx import CDMFilePathInfoEx
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
-from imetadata.business.metadata.inbound.plugins.dir.plugins_1000_0009_zttcg import plugins_1000_0009_zttcg
+from imetadata.business.metadata.inbound.plugins.dir.plugins_1000_0010_zttcg import plugins_1000_0010_zttcg
 from test.metadata.inbound.plugins.plugins_test_base import Plugins_Test_Base
 
 
 @allure.feature("天津测绘专题图成果")  # 模块标题
-class Test_plugins_1000_0009_zttcg(Plugins_Test_Base):
+class Test_plugins_1000_0010_zttcg(Plugins_Test_Base):
     def create_plugins(self, file_info: CDMFilePathInfoEx = None) -> CPlugins:
-        return plugins_1000_0009_zttcg(file_info)
+        return plugins_1000_0010_zttcg(file_info)
 
     def test_file_info_list(self):
         return [
