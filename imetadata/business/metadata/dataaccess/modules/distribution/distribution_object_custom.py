@@ -21,7 +21,7 @@ class distribution_object_custom(distribution_guotu_object):
         return info
 
     def access_check_dict(self) -> dict:  # 预留的方法，sync写完后再调
-        pass
+        return dict()
 
     def get_sync_dict_list(self, insert_or_updata) -> list:
         """

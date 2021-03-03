@@ -192,6 +192,7 @@ class CResource:
     Name_Plugins = 'plugins'
     Name_Plugin = 'plugin'
     Name_Work = 'work'
+    Name_NoInbound = 'not_inbound'
     Name_Business = 'business'
     Name_View = 'view'
     Name_DataAccess = 'dataaccess'
@@ -332,6 +333,7 @@ class CResource:
     Path_Setting_Dir_WorkDir = '{0}.{1}'.format(Path_Setting_Dir, Name_Work)
     Path_Setting_Dir_Test = '{0}.{1}'.format(Path_Setting_Dir, Name_Test)
     Path_Setting_Dir_Test_Data = '{0}.{1}'.format(Path_Setting_Dir_Test, Name_Data)
+    Path_Setting_Dir_NoInboundDir = '{0}.{1}'.format(Path_Setting_Dir, Name_NoInbound)
 
     Path_Setting_Dependence = 'dependence'
 

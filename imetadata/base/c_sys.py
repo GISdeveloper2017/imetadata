@@ -111,6 +111,14 @@ class CSys(CResource):
         return rt_path
 
     @classmethod
+    def get_no_inbound_root_dir(cls):
+        rt_path = settings.application.xpath_one(cls.Path_Setting_Dir_NoInboundDir, None)
+        if CUtils.equal_ignore_case(CUtils.any_2_str(rt_path), ''):
+            rt_path = os.path.join(cls.get_project_dir(), cls.Name_NoInbound)
+
+        return rt_path
+
+    @classmethod
     def get_metadata_data_access_modules_root_dir(cls):
         return os.path.join(cls.get_dataaccess_root_dir(), cls.Name_Modules)
 
