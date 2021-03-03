@@ -521,3 +521,35 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
                 self.Name_Result: self.QA_Result_Error
             }
         ]
+
+    def parser_metadata_spatial_after_qa(self, parser: CMetaDataParser):
+        """
+        在这里直接指定坐标系
+        """
+        result = super().parser_metadata_spatial_after_qa(parser)
+        try:
+            Prj_Project = CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Coordinate_System, '')
+            if not CUtils.equal_ignore_case(Prj_Project, ''):
+                parser.metadata.set_metadata_spatial(
+                    self.DB_True,
+                    '元数据文件[{0}]成功加载! '.format(self.file_info.file_name_with_full_path),
+                    self.Spatial_MetaData_Type_Prj_Project,
+                    Prj_Project
+                )
+                parser.metadata.set_metadata_spatial(
+                    self.DB_True,
+                    '元数据文件[{0}]成功加载! '.format(self.file_info.file_name_with_full_path),
+                    self.Spatial_MetaData_Type_Prj_Source,
+                    self.Prj_Source_Custom
+                )
+        except Exception as error:
+            parser.metadata.set_metadata_spatial(
+                self.DB_False,
+                '元数据文件[{0}]格式不合法, 无法处理! 详细错误为: {1}'.format(self.file_info.file_name_with_full_path,
+                                                           error.__str__()),
+                self.MetaDataFormat_Text,
+                '')
+            return CResult.merge_result(self.Exception,
+                                        '元数据文件[{0}]格式不合法, 无法处理! '.format(
+                                            self.file_info.file_name_with_full_path))
+        return result
