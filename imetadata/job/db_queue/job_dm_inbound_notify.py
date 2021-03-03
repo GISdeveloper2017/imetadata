@@ -126,11 +126,7 @@ where dsi_na_status = 2
                     module_obj = CObject.create_module_instance(
                         CSys.get_metadata_data_access_modules_root_name(),
                         module_name,
-                        self.get_mission_db_id(),
-                        object_id,
-                        object_name,
-                        object_type,
-                        None
+                        self.get_mission_db_id()
                     )
                     module_id = module_name
                     module_title = CUtils.dict_value_by_name(module_obj.information(), self.Name_Title, '')
@@ -164,7 +160,12 @@ where dsi_na_status = 2
                     #         ):
                     #     continue
 
-                    result = module_obj.notify(ds_ib_id, module_access, module_access_memo)
+                    result = module_obj.notify_object(ds_ib_id, module_access, module_access_memo,
+                                                      object_id,
+                                                      object_name,
+                                                      object_type,
+                                                      None
+                                                      )
                     if not CResult.result_success(result):
                         message = CResult.result_message(result)
                         CLogger().debug(

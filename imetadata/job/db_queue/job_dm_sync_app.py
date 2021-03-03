@@ -80,11 +80,7 @@ where dson_notify_status = {0}
             module_obj = CObject.create_module_instance(
                 CSys.get_metadata_data_access_modules_root_name(),
                 ds_app_id,
-                self.get_mission_db_id(),
-                ds_object_id,
-                ds_object_name,
-                ds_object_type,
-                None
+                self.get_mission_db_id()
             )
             if module_obj is None:
                 message = '第三方模块[{0}]没有设置对应的算法, 直接通过!'.format(ds_app_id)
@@ -94,7 +90,11 @@ where dson_notify_status = {0}
 
             module_title = CUtils.dict_value_by_name(module_obj.information(), self.Name_Title, '')
 
-            result = module_obj.sync(ds_object_access)
+            result = module_obj.sync(ds_object_access,
+                                     ds_object_id,
+                                     ds_object_name,
+                                     ds_object_type,
+                                     None)
             self.update_sync_result(ds_na_id, result)
             return result
         except Exception as error:
