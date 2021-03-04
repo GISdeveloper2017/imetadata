@@ -65,14 +65,14 @@ WHERE
                         '''
                         select dgsid, dgsserverid, dgsstorageid, dgsstoragelastcfgtime
                         from dp_gis_storage
-                        '''
+                        where dgsstorageid = :storage_id and dgsserverid = :server_id
+                        ''',
+                            {'storage_id': storage_id, 'server_id': server_id}
                     )
-                    for data_index in range(gis_storage_list.size()):
-                        gis_storage_id = gis_storage_list.value_by_name(data_index, 'dgsid', '')
-                        # gis_storage_server_id = gis_storage_list.value_by_name(data_index, 'dgsserverid', '')
-                        # gis_storage_storage_id = gis_storage_list.value_by_name(data_index, 'dgsstorageid', '')
-                        gis_storage_dgslastmodifytime = gis_storage_list.value_by_name(data_index, 'dgslastmodifytime', '')
-                        CLogger().debug('正在检查和启动存储[{0}.{1}]的定时扫描...'.format(server_id, server_title))
+                    gis_storage_id = gis_storage_list.value_by_name(data_index, 'dgsid', '')
+                    # gis_storage_server_id = gis_storage_list.value_by_name(data_index, 'dgsserverid', '')
+                    # gis_storage_storage_id = gis_storage_list.value_by_name(data_index, 'dgsstorageid', '')
+                    gis_storage_dgslastmodifytime = gis_storage_list.value_by_name(data_index, 'dgslastmodifytime', '')
                     if gis_storage_list.is_empty():
                         gis_storage_id = CUtils.one_id()
                         database = CFactory().give_me_db(self.get_mission_db_id())
@@ -112,7 +112,7 @@ WHERE
                                 'dgsserverid': server_id,
                                 'dgsstorageid': storage_id,
                                 'dgsstoragelastcfgtime': None,
-                                'dgsstatus': 1,
+                                'dgsstatus': 2,
                                 'dgsmountprocid': None,
                                 'dgsmounturl': None,
                                 'dgsmountmemo': None,
@@ -158,6 +158,7 @@ WHERE
                                 error_msg = cmderr.read().decode('utf-8')
                                 if len(error_msg) > 1:
                                     CLogger().error(error_msg)
+                                    message = error_msg
                             # echo into fstab
                             CLogger().info(fstab_line.format(win_path, linux_path, username, password))
                             # 向fstab中写配置文件
@@ -170,7 +171,7 @@ WHERE
                             CFactory().give_me_db(self.get_mission_db_id()).execute(
                                 '''
                                 update dp_gis_storage 
-                                set dgsstatus = 1,
+                                set dgsstatus = 0,
                                 dgsserverid = :server_id,
                                 dgsmounturl = :linux_path,
                                 dgslastmodifytime = :lastmodifytime,
@@ -199,7 +200,7 @@ WHERE
                                 dgsmountmemo = :message
                                 where dgsid = :gis_storage_id
                                 ''',
-                                {'message': message}
+                                {'gis_storage_id': gis_storage_id, 'message': message}
                             )
                             CLogger().error(message)
 
@@ -208,6 +209,14 @@ WHERE
                             if CUtils.equal_ignore_case(storage_dstscanlasttime, gis_storage_dgslastmodifytime):
                                 pass
                             else:
+                                CFactory().give_me_db(self.get_mission_db_id()).execute(
+                                    '''
+                                    update dp_gis_storage 
+                                    set dgsstatus = 2
+                                    where dgsid = :gis_storage_id
+                                    ''',
+                                    {'gis_storage_id': gis_storage_id}
+                                )
                                 try:
                                     mountcmd = "mount -t cifs {0} {1} -o username={2},password={3} "  # 挂接
                                     fstab_line = "echo '{0}  {1}  cifs  defaults,username={2},password={3}  0  0' >> /etc/fstab"  # 挂接
@@ -253,7 +262,7 @@ WHERE
                                     CFactory().give_me_db(self.get_mission_db_id()).execute(
                                         '''
                                         update dp_gis_storage 
-                                        set dgsstatus = 1,
+                                        set dgsstatus = 0,
                                         dgsserverid = :server_id,
                                         dgsmounturl = :linux_path,
                                         dgslastmodifytime = :lastmodifytime,
@@ -285,7 +294,7 @@ WHERE
                                         dgsmountmemo = :message
                                         where dgsid = :gis_storage_id
                                         ''',
-                                        {'message': message}
+                                        {'gis_storage_id': gis_storage_id, 'message': message}
                                     )
                                     CLogger().debug(message)
         return CResult.merge_result(CResult.Success, '服务mount监控任务执行成功结束！')
