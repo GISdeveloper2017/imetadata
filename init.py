@@ -16,7 +16,6 @@ from imetadata.base.c_sys import CSys
 from imetadata.base.c_utils import CUtils
 from imetadata.business.metadata.base.plugins.c_plugins import CPlugins
 from imetadata.database.c_factory import CFactory
-from imetadata.database.tools.c_table import CTable
 
 
 class CApplicationInit(CResource):
@@ -37,9 +36,6 @@ class CApplicationInit(CResource):
         '''
 
         CFactory().give_me_db().execute(sql_register_dm_metadata_plugins_clear)
-
-        table_object_def = CTable()
-        table_object_def.load_info(CResource.DB_Server_ID_Default, 'dm2_storage_object_def')
 
         plugins_root_dir = CSys.get_plugins_root_dir()
         plugins_type_list = CFile.file_or_subpath_of_path(plugins_root_dir)
@@ -82,14 +78,8 @@ class CApplicationInit(CResource):
                     )
                     plugins_info['dsod_otheroption'] = json_obj.to_json()
 
-                    table_object_def.column_list.reset()
-                    for column_index in range(table_object_def.column_list.size()):
-                        column = table_object_def.column_list.column_by_index(column_index)
-                        column.set_value(CUtils.dict_value_by_name(plugins_info, column.name, None))
-
                     print('{0}/{1}:{2}'.format(plugins_type, file_main_name, plugins_info))
                     CFactory().give_me_db().execute(sql_unregister_dm_metadata_plugins, plugins_info)
-                    # table_object_def.save_data()
                     CFactory().give_me_db().execute(sql_register_dm_metadata_plugins, plugins_info)
 
     def register_dm_modules(self):
@@ -113,11 +103,7 @@ class CApplicationInit(CResource):
                 module_obj = CObject.create_module_instance(
                     CSys.get_metadata_data_access_modules_root_name(),
                     module_name,
-                    CResource.DB_Server_ID_Default,
-                    '',
-                    '',
-                    '',
-                    None
+                    CResource.DB_Server_ID_Default
                 )
                 module_info = module_obj.information()
                 CFactory().give_me_db().execute(

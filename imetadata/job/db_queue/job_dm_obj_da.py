@@ -105,14 +105,14 @@ where dso_da_status % 10 = {1}
                     module_obj = CObject.create_module_instance(
                         CSys.get_metadata_data_access_modules_root_name(),
                         file_main_name,
-                        self.get_mission_db_id(),
-                        dso_id,
-                        dso_object_name,
-                        dso_data_type,
-                        dso_quality
+                        self.get_mission_db_id()
                     )
                     module_title = CUtils.dict_value_by_name(module_obj.information(), self.Name_Title, '')
-                    result = CUtils.any_2_str(module_obj.access())
+                    result = CUtils.any_2_str(module_obj.access(dso_id,
+                                                                dso_object_name,
+                                                                dso_data_type,
+                                                                dso_quality)
+                                              )
                     if CResult.result_success(result):
                         module_access = CResult.result_info(result, self.Name_Access, self.DataAccess_Forbid)
                     else:

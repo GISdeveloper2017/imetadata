@@ -24,14 +24,14 @@ class module_distribution(CDAModule):
 
         return info
 
-    def access(self) -> str:
+    def access(self, obj_id, obj_name, obj_type, quality) -> str:
         """
         解析数管中识别出的对象, 与第三方模块的访问能力, 在本方法中进行处理
         返回的json格式字符串中, 是默认的CResult格式, 但是在其中还增加了Access属性, 通过它反馈当前对象是否满足第三方模块的应用要求
         注意: 一定要反馈Access属性
         :return:
         """
-        module_obj_real, result = self.__find_module_obj()
+        module_obj_real, result = self.__find_module_obj(obj_id)
         if not CResult.result_success(result):
             return result
         if module_obj_real is None:
@@ -52,7 +52,7 @@ class module_distribution(CDAModule):
                 )
             )
 
-    def sync(self, object_access) -> str:
+    def sync(self, object_access, obj_id, obj_name, obj_type, quality) -> str:
         """
         处理数管中识别的对象, 与第三方模块的同步
         . 如果第三方模块自行处理, 则无需继承本方法
@@ -63,7 +63,7 @@ class module_distribution(CDAModule):
         """
         # 根据objecttype类型查找distribution文件夹下对应的类文件（识别通过objecttype找object_def表中的dsodtype字段与类对象中的info[self.Name_Type]值相同）
         if CUtils.equal_ignore_case(self.DataAccess_Pass, object_access):
-            distribution_obj_real, result = self.__find_module_obj()
+            distribution_obj_real, result = self.__find_module_obj(obj_id)
             if not CResult.result_success(result):
                 return result
             elif distribution_obj_real is None:
@@ -79,7 +79,7 @@ class module_distribution(CDAModule):
                 '这里需要从ap3系列表中删除记录, 等待实现!'
             )
 
-    def __find_module_obj(self):
+    def __find_module_obj(self, obj_id):
         sql_query = '''
             SELECT
                 dm2_storage_file.dsfid as query_file_id,
@@ -93,7 +93,7 @@ class module_distribution(CDAModule):
                 LEFT JOIN dm2_storage_directory on dm2_storage_directory.dsd_object_id = dm2_storage_object.dsoid
             WHERE
                 dm2_storage_object.dsoid = '{0}'
-        '''.format(self._obj_id)
+        '''.format(obj_id)
         db_id = self._db_id  # 数据库连接标识（查询的dm2的数管库）
         dataset = CFactory().give_me_db(db_id).one_row(sql_query)
         object_id = dataset.value_by_name(0, 'dsoid', '')
