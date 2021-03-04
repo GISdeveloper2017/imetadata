@@ -23,6 +23,9 @@ class CRasterFilePlugins(CFilePlugins):
         information[self.Plugins_Info_ViewEngine] = self.BrowseEngine_Raster  # 通用的影像数据抽取快视图的引擎设置
         information[self.Plugins_Info_Is_Spatial] = self.DB_True
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
+        information[self.Plugins_Info_Spatial_Qa] = self.DB_True
+        information[self.Plugins_Info_Time_Qa] = self.DB_True
+        information[self.Plugins_Info_Visual_Qa] = self.DB_False
         return information
 
     def init_qa_file_list(self, parser: CMetaDataParser) -> list:

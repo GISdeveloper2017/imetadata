@@ -33,6 +33,11 @@ class plugins_1001_0002_bzff(CFilePlugins_keyword):
         information[self.Plugins_Info_HasChildObj] = self.DB_False
         information[self.Plugins_Info_TagsEngine] = None
         information[self.Plugins_Info_Type_Code] = None
+        information[self.Plugins_Info_Spatial_Qa] = self.DB_True
+        information[self.Plugins_Info_Time_Qa] = self.DB_True
+        information[self.Plugins_Info_Visual_Qa] = self.DB_True
+
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_tjht_bzff'
         return information
 
     def get_classified_character_of_object_keyword(self):

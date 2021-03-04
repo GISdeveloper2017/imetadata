@@ -57,6 +57,9 @@ class CSatPlugins(CPlugins):
 
         information[self.Plugins_Info_Is_Spatial] = self.DB_True
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
+        information[self.Plugins_Info_Spatial_Qa] = self.DB_True
+        information[self.Plugins_Info_Time_Qa] = self.DB_True
+        information[self.Plugins_Info_Visual_Qa] = self.DB_True
 
         information[self.Plugins_Info_MetaDataEngine] = None
         information[self.Plugins_Info_BusMetaDataEngine] = self.Engine_Custom

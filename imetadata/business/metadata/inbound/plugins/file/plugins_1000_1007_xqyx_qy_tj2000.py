@@ -26,7 +26,7 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
         information[self.Plugins_Info_Group_Title] = '成果影像'
         information[self.Plugins_Info_Type] = '区域镶嵌'
         information[self.Plugins_Info_Type_Title] = '区域镶嵌'
-        information[self.Plugins_Info_Type_Code] = '10001007'
+        information[self.Plugins_Info_Type_Code] = '02010601'
         information[self.Plugins_Info_Is_Spatial] = self.DB_True
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
         information[self.Plugins_Info_MetaDataEngine] = self.MetaDataEngine_Raster
@@ -40,6 +40,7 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
         information[self.Plugins_Info_Coordinate_System] = 'tj2000'
         information[self.Plugins_Info_Coordinate_System_Title] = '2000天津城市坐标系'
         information[self.Plugins_Info_yuji] = '区域镶嵌'
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_tjch_xqyx'
         return information
 
     def classified(self):
@@ -380,18 +381,18 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
                 self.Name_Result: self.QA_Result_Error,
                 self.Name_NotNull: True,
                 self.Name_DataType: self.value_type_string,
-                self.Name_Width: 20
-            },
-            {
-                self.Name_Type: self.QA_Type_XML_Node_Exist,
-                self.Name_XPath: "//item[@name='Description']",
-                self.Name_ID: 'Description',
-                self.Name_Title: 'Description',
-                self.Name_Group: self.QA_Group_Data_Integrity,
-                self.Name_Result: self.QA_Result_Error,
-                self.Name_DataType: self.value_type_string,
-                self.Name_Width: 500
+                self.Name_Width: 50
             }
+            # {
+            #     self.Name_Type: self.QA_Type_XML_Node_Exist,
+            #     self.Name_XPath: "//item[@name='Description']",
+            #     self.Name_ID: 'Description',
+            #     self.Name_Title: 'Description',
+            #     self.Name_Group: self.QA_Group_Data_Integrity,
+            #     self.Name_Result: self.QA_Result_Error,
+            #     self.Name_DataType: self.value_type_string,
+            #     self.Name_Width: 500
+            # }
         ]
 
     def parser_metadata_time_list(self, parser: CMetaDataParser) -> list:

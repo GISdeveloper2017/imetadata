@@ -19,6 +19,10 @@ class plugins_1000_1013_ffyx_qt(plugins_1000_1002_ffyx_tj2000):
 
         information[self.Plugins_Info_Coordinate_System] = ''
         information[self.Plugins_Info_Coordinate_System_Title] = ''
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_tjch_ffyx_qt'
+        information[self.Plugins_Info_Spatial_Qa] = self.DB_False
+        information[self.Plugins_Info_Time_Qa] = self.DB_True
+        information[self.Plugins_Info_Visual_Qa] = self.DB_False
         return information
 
     def get_classified_character_of_object_keyword(self):

@@ -15,11 +15,14 @@ class plugins_1000_1015_xqyx_qy_qt(plugins_1000_1007_xqyx_qy_tj2000):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type_Code] = '10001015'
 
         information[self.Plugins_Info_Coordinate_System] = ''
         information[self.Plugins_Info_Coordinate_System_Title] = ''
         information[self.Plugins_Info_yuji] = '区域镶嵌'
+        information[self.Plugins_Info_Module_Distribute_Engine] = 'distribution_tjch_xqyx_qt'
+        information[self.Plugins_Info_Spatial_Qa] = self.DB_False
+        information[self.Plugins_Info_Time_Qa] = self.DB_True
+        information[self.Plugins_Info_Visual_Qa] = self.DB_False
         return information
 
     def get_classified_character_of_object_keyword(self):

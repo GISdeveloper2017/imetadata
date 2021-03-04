@@ -9,7 +9,7 @@ class plugins_1000_1016_xqyx_sy_qt(plugins_1000_1015_xqyx_qy_qt):
 
     def get_information(self) -> dict:
         information = super().get_information()
-        information[self.Plugins_Info_Type_Code] = '10001016'
+        information[self.Plugins_Info_Type_Code] = '02010602'
 
         information[self.Plugins_Info_Coordinate_System] = ''
         information[self.Plugins_Info_Coordinate_System_Title] = ''

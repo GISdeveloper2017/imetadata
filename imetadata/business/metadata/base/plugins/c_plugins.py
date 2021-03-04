@@ -114,6 +114,12 @@ class CPlugins(CResource):
     Plugins_Info_Is_Spatial = 'dsod_is_spatial'
     # 插件-对象是否允许包含子对象
     Plugins_Info_Is_Dataset = 'dsod_is_dataset'
+    # 插件-是否需要质检空间信息
+    Plugins_Info_Spatial_Qa = 'dsod_spatial_qa'
+    # 插件-是否需要质检时间信息
+    Plugins_Info_Time_Qa = 'dsod_time_qa'
+    # 插件-是否需要质检可视信息
+    Plugins_Info_Visual_Qa = 'dsod_visual_qa'
 
     # 插件处理引擎-内置-元数据处理
     Plugins_Info_MetaDataEngine = 'dsod_metadata_engine'
@@ -192,6 +198,9 @@ class CPlugins(CResource):
         information[self.Plugins_Info_Project_ID] = None
         information[self.Plugins_Info_Is_Spatial] = self.DB_False
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
+        information[self.Plugins_Info_Spatial_Qa] = self.DB_False
+        information[self.Plugins_Info_Time_Qa] = self.DB_False
+        information[self.Plugins_Info_Visual_Qa] = self.DB_False
         return information
 
     def get_id(self) -> str:
@@ -326,7 +335,133 @@ class CPlugins(CResource):
         :param parser:
         :return:
         """
-        pass
+        # 空间信息质检
+        Spatial_Qa = CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Spatial_Qa, '')
+        if not CUtils.equal_ignore_case(Spatial_Qa, self.DB_False):
+            sql_select_spatial = """
+            select dso_prj_proj4,dso_prj_coordinate from dm2_storage_object
+                where dsoid = '{0}'""".format(parser.object_id)
+            record_select_spatial = CFactory().give_me_db(self.file_info.db_server_id).one_row(sql_select_spatial)
+            dso_prj_proj4 = record_select_spatial.value_by_name(0, 'dso_prj_proj4', '')
+            dso_prj_coordinate = record_select_spatial.value_by_name(0, 'dso_prj_coordinate', '')
+            if not CUtils.equal_ignore_case(dso_prj_proj4, ''):
+                parser.metadata.quality.append_metadata_bus_quality(
+                    {
+                        self.Name_ID: 'proj4',
+                        self.Name_Title: '坐标投影-proj4',
+                        self.Name_Group: self.QA_Group_Data_Integrity,
+                        self.Name_Result: self.QA_Result_Pass,
+                        self.Name_Message: '{0}的坐标投影-proj4信息提取成功，完成入库'.format(parser.object_name)
+                    }
+                )
+            else:
+                parser.metadata.quality.append_metadata_bus_quality(
+                    {
+                        self.Name_ID: 'proj4',
+                        self.Name_Title: '坐标投影-proj4',
+                        self.Name_Group: self.QA_Group_Data_Integrity,
+                        self.Name_Result: self.QA_Result_Error,
+                        self.Name_Message: '{0}的坐标投影-proj4信提取失败，未能成功入库，请检查！'.format(parser.object_name)
+                    }
+                )
+            if not CUtils.equal_ignore_case(dso_prj_coordinate, ''):
+                parser.metadata.quality.append_metadata_bus_quality(
+                    {
+                        self.Name_ID: 'coordinate',
+                        self.Name_Title: '坐标投影-坐标系',
+                        self.Name_Group: self.QA_Group_Data_Integrity,
+                        self.Name_Result: self.QA_Result_Pass,
+                        self.Name_Message: '{0}的坐标投影-坐标系信息提取成功，完成入库'.format(parser.object_name)
+                    }
+                )
+            else:
+                parser.metadata.quality.append_metadata_bus_quality(
+                    {
+                        self.Name_ID: 'coordinate',
+                        self.Name_Title: '坐标投影-坐标系',
+                        self.Name_Group: self.QA_Group_Data_Integrity,
+                        self.Name_Result: self.QA_Result_Error,
+                        self.Name_Message: '{0}的坐标投影-坐标系信息提取失败，未能成功入库，请检查！'.format(parser.object_name)
+
+                    }
+                )
+        # 可视信息质检
+        Visual_Qa = CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Visual_Qa, '')
+        if not CUtils.equal_ignore_case(Visual_Qa, self.DB_False):
+            sql_select_visual = """
+                select dso_browser,dso_thumb from dm2_storage_object
+                where dsoid = '{0}'""".format(parser.object_id)
+            record_select_visual = CFactory().give_me_db(self.file_info.db_server_id).one_row(sql_select_visual)
+            dso_browser = record_select_visual.value_by_name(0, 'dso_browser', '')
+            dso_thumb = record_select_visual.value_by_name(0, 'dso_thumb', '')
+            if not CUtils.equal_ignore_case(dso_browser, ''):
+                parser.metadata.quality.append_metadata_bus_quality(
+                    {
+                        self.Name_ID: 'browser',
+                        self.Name_Title: '快视图',
+                        self.Name_Group: self.QA_Group_Data_Integrity,
+                        self.Name_Result: self.QA_Result_Pass,
+                        self.Name_Message: '{0}的快视图信息提取成功，完成入库'.format(parser.object_name)
+                    }
+                )
+            else:
+                parser.metadata.quality.append_metadata_bus_quality(
+                    {
+                        self.Name_ID: 'browser',
+                        self.Name_Title: '快视图',
+                        self.Name_Group: self.QA_Group_Data_Integrity,
+                        self.Name_Result: self.QA_Result_Error,
+                        self.Name_Message: '{0}的快视图信提取失败，未能成功入库，请检查！'.format(parser.object_name)
+                    }
+                )
+            if not CUtils.equal_ignore_case(dso_thumb, ''):
+                parser.metadata.quality.append_metadata_bus_quality(
+                    {
+                        self.Name_ID: 'thumb',
+                        self.Name_Title: '拇指图',
+                        self.Name_Group: self.QA_Group_Data_Integrity,
+                        self.Name_Result: self.QA_Result_Pass,
+                        self.Name_Message: '{0}的拇指图信息提取成功，完成入库'.format(parser.object_name)
+                    }
+                )
+            else:
+                parser.metadata.quality.append_metadata_bus_quality(
+                    {
+                        self.Name_ID: 'thumb',
+                        self.Name_Title: '拇指图',
+                        self.Name_Group: self.QA_Group_Data_Integrity,
+                        self.Name_Result: self.QA_Result_Error,
+                        self.Name_Message: '{0}的拇指图信息提取失败，未能成功入库，请检查！'.format(parser.object_name)
+
+                    }
+                )
+        # 时间信息质检
+        Time_Qa = CUtils.dict_value_by_name(self.get_information(), self.Plugins_Info_Time_Qa, '')
+        if not CUtils.equal_ignore_case(Time_Qa, self.DB_False):
+            sql_select_time = """
+                select dso_time from dm2_storage_object where dsoid = '{0}'""".format(parser.object_id)
+            dso_time = CFactory().give_me_db(self.file_info.db_server_id).one_value(sql_select_time)
+            if not CUtils.equal_ignore_case(dso_time, ''):
+                parser.metadata.quality.append_metadata_bus_quality(
+                    {
+                        self.Name_ID: 'time',
+                        self.Name_Title: '时间',
+                        self.Name_Group: self.QA_Group_Data_Integrity,
+                        self.Name_Result: self.QA_Result_Pass,
+                        self.Name_Message: '{0}的时间信息提取成功，完成入库'.format(parser.object_name)
+                    }
+                )
+            else:
+                parser.metadata.quality.append_metadata_bus_quality(
+                    {
+                        self.Name_ID: 'time',
+                        self.Name_Title: '时间',
+                        self.Name_Group: self.QA_Group_Data_Integrity,
+                        self.Name_Result: self.QA_Result_Error,
+                        self.Name_Message: '{0}的时间信息提取失败，未能成功入库，请检查！'.format(parser.object_name)
+
+                    }
+                )
 
     def parser_last_process(self, parser: CParser) -> str:
         """
@@ -625,7 +760,7 @@ class CPlugins(CResource):
                     and (not CUtils.text_is_date_day(time_text)) \
                     or (CUtils.equal_ignore_case(start_time_text, '')) \
                     or (CUtils.equal_ignore_case(end_time_text, '')):
-                    # 从数据库中查询为标准格式（2020，202009，2020Q1），如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
+                # 从数据库中查询为标准格式（2020，202009，2020Q1），如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
                 # time_text_temp = time_text.replace('-', '').replace('/', '').replace('\\', '').replace('.', '').replace('年', '').replace('月', '')
                 time_text_standard = CUtils.standard_datetime_format(time_text, time_text)
                 if not CUtils.equal_ignore_case(time_text_standard, ''):
@@ -672,7 +807,7 @@ class CPlugins(CResource):
             if (not CUtils.equal_ignore_case(start_time_text, '')) \
                     and (not CUtils.text_is_datetime(start_time_text)) \
                     and (not CUtils.text_is_date_day(start_time_text)):
-                    # 从数据库中查询为标准格式（2020，202009，2020Q1），如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
+                # 从数据库中查询为标准格式（2020，202009，2020Q1），如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
                 # time_text_temp = time_text.replace('-', '').replace('/', '').replace('\\', '').replace('.', '').replace('年', '').replace('月', '')
                 time_text_standard = CUtils.standard_datetime_format(start_time_text, start_time_text)
                 if not CUtils.equal_ignore_case(time_text_standard, ''):
@@ -705,7 +840,7 @@ class CPlugins(CResource):
             if (not CUtils.equal_ignore_case(end_time_text, '')) \
                     and (not CUtils.text_is_datetime(end_time_text)) \
                     and (not CUtils.text_is_date_day(end_time_text)):
-                    # 从数据库中查询为标准格式（2020，202009，2020Q1），如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
+                # 从数据库中查询为标准格式（2020，202009，2020Q1），如2020-09，2020/09,2020.09,2020年09月，2020，2020年，2020Q1
                 # time_text_temp = time_text.replace('-', '').replace('/', '').replace('\\', '').replace('.', '').replace('年', '').replace('月', '')
                 time_text_standard = CUtils.standard_datetime_format(end_time_text, end_time_text)
                 if not CUtils.equal_ignore_case(time_text_standard, ''):

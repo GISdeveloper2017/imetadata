@@ -22,6 +22,9 @@ class CDirPlugins_keyword(CDirPlugins):
         information[self.Plugins_Info_TagsEngine] = None
         information[self.Plugins_Info_DetailEngine] = None
         information[self.Plugins_Info_Module_Distribute_Engine] = None  # 同步的引擎，值是发布同步用的类的名字
+        information[self.Plugins_Info_Spatial_Qa] = self.DB_False
+        information[self.Plugins_Info_Time_Qa] = self.DB_True
+        information[self.Plugins_Info_Visual_Qa] = self.DB_False
         return information
 
     def classified(self):

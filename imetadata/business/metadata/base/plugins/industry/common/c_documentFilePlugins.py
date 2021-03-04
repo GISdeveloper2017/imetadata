@@ -20,6 +20,9 @@ class CDocumentFilePlugins(CFilePlugins):
         information[self.Plugins_Info_DetailEngine] = self.DetailEngine_File_Itself
         information[self.Plugins_Info_Is_Spatial] = self.DB_False
         information[self.Plugins_Info_Is_Dataset] = self.DB_False
+        information[self.Plugins_Info_Spatial_Qa] = self.DB_False
+        information[self.Plugins_Info_Time_Qa] = self.DB_True
+        information[self.Plugins_Info_Visual_Qa] = self.DB_False
         return information
 
     def get_classified_character(self):

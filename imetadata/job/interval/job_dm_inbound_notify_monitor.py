@@ -56,7 +56,6 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                     select count(*)
                     from dm2_storage_obj_na
                     where dson_app_id in ($module_name_list)
-                          and  dson_object_access = 'pass'
                           and  dson_object_id in (
                                 select dsoid
                                 from dm2_storage_object 
@@ -90,7 +89,6 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                     select count(*)
                     from dm2_storage_obj_na
                     where dson_notify_status in ({0}, {1})
-                          and  dson_object_access = 'pass'
                           and  dson_app_id in ($module_name_list)
                           and  dson_object_id in (
                                 select dsoid
@@ -115,7 +113,6 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                     select count(*)
                     from dm2_storage_obj_na
                     where dson_notify_status = {0}
-                          and  dson_object_access = 'pass'
                           and  dson_app_id in ($module_name_list)
                           and  dson_object_id in (
                                 select dsoid
@@ -135,7 +132,7 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                 )
 
                 if record_total_count != record_finished_count:
-                    message = '入库任务[{0}]下的数据正在通知其他子系统, 共有[{1}]个, 已正确完成[{2}]个, 失败[{3}]个...'.format(
+                    message = '入库任务[{0}]下的数据正在通知其他子系统, 共有[{1}]个, 已处理[{2}]个, 失败[{3}]个...'.format(
                         ds_ib_id,
                         record_total_count,
                         record_finished_count,
@@ -144,7 +141,7 @@ class job_dm_inbound_notify_monitor(CTimeJob):
                     CLogger().debug(message)
                     self.update_inbound_na_progress(ds_ib_id, CResult.merge_result(self.Failure, message))
                 else:
-                    message = '入库任务[{0}]下的数据已经通知其他子系统, 共有[{1}]个, 已正确完成[{2}]个, 失败[{3}]个, 请检查修正! '.format(
+                    message = '入库任务[{0}]下的数据已经通知其他子系统, 共有[{1}]个, 已处理[{2}]个, 失败[{3}]个, 请检查修正! '.format(
                         ds_ib_id,
                         record_total_count,
                         record_finished_count,

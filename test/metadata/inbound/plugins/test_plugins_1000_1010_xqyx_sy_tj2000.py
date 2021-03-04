@@ -28,13 +28,6 @@ class Test_plugins_1000_1010_xqyx_sy_tj2000(Plugins_Test_Base):
                 self.Name_Test_file_path: '202008{0}镶嵌影像成果{0}市域镶嵌{0}2000天津城市坐标系{0}tianjin_202008_bj2_08m_tj2000.img'.format(CFile.sep()),
                 self.Name_Test_object_confirm: self.Object_Confirm_IKnown,
                 self.Name_Test_object_name: 'tianjin_202008_bj2_08m_tj2000'
-            },
-            {
-                self.Name_Test_File_Type: self.FileType_File,
-                self.Name_Test_file_path: '202008{0}影像时相接边图{0}市域镶嵌{0}2000天津城市坐标系{0}202008_时相接边图_tj2000.shp'.format(
-                    CFile.sep()),
-                self.Name_Test_object_confirm: self.Object_Confirm_IKnown_Not,
-                self.Name_Test_object_name: None
             }
         ]
 
