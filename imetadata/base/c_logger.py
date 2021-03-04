@@ -41,3 +41,10 @@ class CLogger:
             logging.critical(msg, args, kwargs)
         else:
             print('critical: ' + str(msg))
+
+    @staticmethod
+    def error(msg, *args, **kwargs):
+        if len(logging.root.handlers) != 0:
+            logging.error(msg, args, kwargs)
+        else:
+            print('error: ' + str(msg))
