@@ -14,6 +14,7 @@ class CDAModule(CResource):
     _db_id: str
 
     def __init__(self, db_id):
+        super().__init__()
         self._db_id = db_id
 
     def information(self) -> dict:
