@@ -191,7 +191,7 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
                 file_main_name
             )
             if len(pathdata_list) > 0:
-                pathdata = pathdata_list[0][0]
+                pathdata = CUtils.any_2_str(pathdata_list[0])
             else:
                 pathdata = ''
         else:
@@ -200,7 +200,7 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
                 file_path
             )
             if len(pathdata_list) > 0:
-                pathdata = pathdata_list[0][0]
+                pathdata = CUtils.any_2_str(pathdata_list[0])
             else:
                 pathdata = ''
         node_item2 = xml_obj.create_element(node_root, 'item')
@@ -213,7 +213,7 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
                 file_main_name
             )
             if len(pathdata_list) > 0:
-                pixelsize = pixelsize_list[0][0]
+                pixelsize = CUtils.any_2_str(pixelsize_list[0])
             else:
                 pixelsize = ''
         elif CUtils.text_match_re(file_main_name, r'.*_.{3}_.*_' + self.get_coordinate_system()):
@@ -222,16 +222,15 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
                 file_main_name
             )
             if len(pathdata_list) > 0:
-                pixelsize = pixelsize_list[0][0]
+                pixelsize = CUtils.any_2_str(pixelsize_list[0])
             else:
                 pixelsize = ''
         else:
             pixelsize = ''
-        pixelsize = CUtils.any_2_str(pixelsize)
         if CUtils.text_match_re(pixelsize, r'^\d+[a-zA-z]+$'):
             pixelsize_list = re.findall(r'(\d+)[a-zA-z]+', pixelsize)
             if len(pathdata_list) > 0:
-                pixelsize = pixelsize_list[0][0]
+                pixelsize = CUtils.any_2_str(pixelsize_list[0])
 
         if len(pixelsize) == 2:
             pixelsize_value = '{0}.{1}'.format(pixelsize[:1], pixelsize[-1:])
@@ -247,7 +246,7 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
                 file_main_name
             )
             if len(pathdata_list) > 0:
-                SatelliteID = SatelliteID_list[0][0]
+                SatelliteID = CUtils.any_2_str(SatelliteID_list[0])
             else:
                 SatelliteID = ''
         elif CUtils.text_match_re(file_main_name, r'.*_.{3}_.*_' + self.get_coordinate_system()):
@@ -256,7 +255,7 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
                 file_main_name
             )
             if len(pathdata_list) > 0:
-                SatelliteID = SatelliteID_list[0][0]
+                SatelliteID = CUtils.any_2_str(SatelliteID_list[0])
             else:
                 SatelliteID = ''
         else:
@@ -271,7 +270,7 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
                 file_main_name
             )
             if len(pathdata_list) > 0:
-                GeographicName = GeographicName_list[0][0]
+                GeographicName = CUtils.any_2_str(GeographicName_list[0])
             else:
                 GeographicName = ''
         elif CUtils.text_match_re(file_main_name, r'.*_.{3}_.*_' + self.get_coordinate_system()):
@@ -280,7 +279,7 @@ class plugins_1000_1007_xqyx_qy_tj2000(CFilePlugins_keyword):
                 file_main_name
             )
             if len(pathdata_list) > 0:
-                GeographicName = GeographicName_list[0][0]
+                GeographicName = CUtils.any_2_str(GeographicName_list[0])
             else:
                 GeographicName = ''
         else:

@@ -136,7 +136,7 @@ class plugins_1001_0002_bzff(CFilePlugins_keyword):
             parser.file_info.file_path
         )
         if len(pathdata_list) > 0:
-            pathdata = pathdata_list[0][0]
+            pathdata = CUtils.any_2_str(pathdata_list[0])
         else:
             pathdata = ''
         node_item2 = xml_obj.create_element(node_root, 'item')
@@ -171,7 +171,7 @@ class plugins_1001_0002_bzff(CFilePlugins_keyword):
             parser.file_info.file_path
         )
         if len(SatelliteID_list) > 0:
-            SatelliteID = SatelliteID_list[0][2]
+            SatelliteID = CUtils.any_2_str(SatelliteID_list[0][2])
         else:
             SatelliteID = ''
         node_item4 = xml_obj.create_element(node_root, 'item')
@@ -186,7 +186,7 @@ class plugins_1001_0002_bzff(CFilePlugins_keyword):
             parser.file_info.file_path
         )
         if len(GeographicName_list) > 0:
-            GeographicName = GeographicName_list[0][0]
+            GeographicName = CUtils.any_2_str(GeographicName_list[0])
             if CUtils.text_match_re(GeographicName, '[-_/]$'):
                 GeographicName = GeographicName[:-1]
             GeographicName = CFile.file_main_name(GeographicName)

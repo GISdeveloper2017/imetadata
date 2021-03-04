@@ -161,7 +161,7 @@ class plugins_1000_1013_ffyx_qt(plugins_1000_1002_ffyx_tj2000):
             file_path
         )
         if len(pathdata_list) > 0:
-            pathdata = pathdata_list[0][0]
+            pathdata = CUtils.any_2_str(pathdata_list[0])
         else:
             pathdata = ''
         node_item2 = xml_obj.create_element(node_root, 'item')

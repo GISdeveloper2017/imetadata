@@ -1545,9 +1545,9 @@ COMMENT ON COLUMN "public"."dm2_storage_inbound_log"."dsilobjectid" IS '外键�
 COMMENT ON COLUMN "public"."dm2_storage_inbound_log"."dsilbusstatus" IS '业务状态';
 
 ALTER TABLE "public"."dm2_storage_inbound_log"
-  ADD COLUMN "dsilsourcepath" varchar(2000),
-  ADD COLUMN "dsiltargetpath" varchar(2000);
+  ADD COLUMN "dsiltargetstorageid" varchar(100),
+  ADD COLUMN "dsiltargetsubpath" varchar(2000);
 
-COMMENT ON COLUMN "public"."dm2_storage_inbound_log"."dsilsourcepath" IS '源目录';
+COMMENT ON COLUMN "public"."dm2_storage_inbound_log"."dsiltargetstorageid" IS '目标目录的storage表dstid';
 
-COMMENT ON COLUMN "public"."dm2_storage_inbound_log"."dsiltargetpath" IS '目标目录';
+COMMENT ON COLUMN "public"."dm2_storage_inbound_log"."dsiltargetsubpath" IS '存入的相对目录名称';
