@@ -171,7 +171,7 @@ WHERE
                             CFactory().give_me_db(self.get_mission_db_id()).execute(
                                 '''
                                 update dp_gis_storage 
-                                set dgsstatus = 0,
+                                set dgsstatus = 1,
                                 dgsserverid = :server_id,
                                 dgsmounturl = :linux_path,
                                 dgslastmodifytime = :lastmodifytime,
@@ -262,7 +262,7 @@ WHERE
                                     CFactory().give_me_db(self.get_mission_db_id()).execute(
                                         '''
                                         update dp_gis_storage 
-                                        set dgsstatus = 0,
+                                        set dgsstatus = 1,
                                         dgsserverid = :server_id,
                                         dgsmounturl = :linux_path,
                                         dgslastmodifytime = :lastmodifytime,
