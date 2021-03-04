@@ -11,10 +11,14 @@ class module_data2service(CDAModule):
     数据服务发布模块
     """
 
+    def __init__(self, db_id):
+        super().__init__(db_id)
+        # 在这里将所有dp_dm2_auto_deploy配置读取到cdataset里
+
     def information(self) -> dict:
         info = super().information()
         info[self.Name_Title] = '数据服务发布'
-        info[self.Name_Enable] = False
+        info[self.Name_Enable] = True
 
         return info
 

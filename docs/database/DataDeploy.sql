@@ -1191,7 +1191,7 @@ create table if not exists dp_dm2_auto_deploy
     ddad_startdate      date,
     ddad_enddate        date,
     ddad_spatial        Geometry,
-    ddad_servicetype    varchar(1000)                  default 'wms,wmts'::character varying,
+    ddad_servicetype    varchar(100)                   default 'image'::character varying,
     ddad_service        jsonb,
     ddad_memo           text,
     ddad_enable         integer                        default -1,

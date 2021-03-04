@@ -44,7 +44,17 @@ class CMDObjectCatalog(CResource):
                 (not CUtils.equal_ignore_case(module_name, '')):
             # sql_where = "dm2_storage_object.dso_da_result#>>'{{{0},result}}'='pass'".format(module_name)
             sql_from = ', dm2_storage_obj_na '
-            sql_where = " dm2_storage_obj_na.dson_app_id = 'module_name' and dm2_storage_obj_na.dson_object_access = 'pass' "
+            sql_where = " dm2_storage_obj_na.dson_app_id = 'module_name' "
+
+        condition_obj_access = search_json_obj.xpath_one(self.Name_Access, self.DataAccess_Pass)
+        if not CUtils.equal_ignore_case(condition_obj_access, ''):
+            condition = "dm2_storage_obj_na.dson_object_access = '{0}'".format(CUtils.any_2_str(condition_obj_access))
+            sql_where = CUtils.str_append(sql_where, condition, ' and ')
+
+        condition_inbound_id = search_json_obj.xpath_one(self.Name_InBound, None)
+        if not CUtils.equal_ignore_case(condition_inbound_id, ''):
+            condition = "dm2_storage_obj.dso_ib_id = '{0}'".format(CUtils.any_2_str(condition_inbound_id))
+            sql_where = CUtils.str_append(sql_where, condition, ' and ')
 
         condition_tag = search_json_obj.xpath_one(self.Name_Tag, None)
         if condition_tag is not None:
@@ -84,12 +94,12 @@ class CMDObjectCatalog(CResource):
 
             sql_where = CUtils.str_append(sql_where, condition, ' and ')
 
-        condition_group = search_json_obj.xpath_one(self.Name_Type, None)
+        condition_group = search_json_obj.xpath_one(self.Name_Group, None)
         if condition_group is not None:
             if isinstance(condition_group, list):
-                condition = self.__condition_list_2_sql('dm2_storage_object_def.dsodtype', condition_group, True)
+                condition = self.__condition_list_2_sql('dm2_storage_object_def.dsodgroup', condition_group, True)
             else:
-                condition = self.__condition_value_like_2_sql('dm2_storage_object_def.dsodtype', condition_group, True)
+                condition = self.__condition_value_like_2_sql('dm2_storage_object_def.dsodgroup', condition_group, True)
 
             sql_where = CUtils.str_append(sql_where, condition, ' and ')
 
