@@ -20,10 +20,10 @@ from imetadata.base.c_settings import CSettings
 application = CSettings(
     {
         'application': {
-            'id': None,
+            'id': 'm1',
             'debug': -1,
-            'directory': '/Users/wangxiya/Documents/Develop/tsdb',
-            'name': 'tsdb'
+            'directory': 'C:/Users/MIRACLE/imetadata',
+            'name': 'imetadata'
         },
         'project': {
             'id': None,
@@ -34,9 +34,9 @@ application = CSettings(
             {
                 'id': '0',
                 'type': 'postgresql',
-                'host': '127.0.0.1',
+                'host': '192.168.178.1',
                 'port': '5432',
-                'database': 'atplatform5',
+                'database': 'atplatform4',
                 'username': 'postgres',
                 'password': 'postgres'
             }
@@ -45,33 +45,32 @@ application = CSettings(
             'srid': 4326
         },
         'directory': {
-            'work': '/Users/wangxiya/Documents/我的测试数据/90.工作',
+            'work': 'D:/即时服务数管/工作目录',
             'test': {
-                'data': 'D:/work/测试数据'
-            },
-            'not_inbound': '',
+                'data': 'D:/work/测试数据/数据入库3/入库存储/国土行业/国土数据/test'
+            }
         },
         'data2service': {
             'system': {
                 'connect': {
-                    'host': '127.0.0.1',
-                    'username': '',
-                    'password': '',
+                    'host': '192.168.178.138',
+                    'username': 'root',
+                    'password': 'centos',
                     'port': 22
-                }
+                },
             },
             'local_dir': '/home/geocube/local',
             "update_cache": "mapproxy-seed  -f  $yaml_file$  -s  $seed_yaml$  -c  20 -q",
-            "tindex_dir": "F:/work/debug/tileIndex",
-            "map_dir": "F:/work/debug/tileIndex",
-            "yaml_dir": "F:/work/debug/tileIndex",
-            "seed_dir": "F:/work/debug/tileIndex",
-            "wsgi_dir": "F:/work/debug/tileIndex",
-            "conf_dir": "F:/work/debug/tileIndex",
+            "tindex_dir": "/home/geocube/map/tileIndex",
+            "map_dir": "/home/geocube/map/mapfile",
+            "yaml_dir": "/home/geocube/local/geocube_mapproxy",
+            "seed_dir": "/home/geocube/local/geocube_mapproxy",
+            "wsgi_dir": "/home/geocube/local/geocube_wsgi",
+            "conf_dir": "/home/geocube/local/httpd-2.4.43/conf",
             "service_yaml": {
-                "server_bin": "F:/work/debug/tileIndex",
-                "server_dir": "F:/work/debug/tileIndex",
-                "cache_dir": "F:/work/debug/tileIndex/service_cache_$orderid$"
+                "server_bin": "/home/geocube/local/mapserver-7.6.0/bin/mapserv",
+                "server_dir": "/home/geocube/local/mapserver-7.6.0/bin",
+                "cache_dir": "/home/extendStore/service_cache_$orderid$/"
             },
             "seed_yaml": {
                 "min_level": "1",
@@ -80,7 +79,7 @@ application = CSettings(
                 "coverages": "  $kid$:\n    bbox: [$seed_bbox$]\n    srs: \"EPSG:4326\"\n"
             },
             "qld_conf": {
-                "conf_path": "F:/work/debug/tileIndex/geocube.conf",
+                "conf_path": "/home/geocube/local/httpd-2.4.43/conf/geocube.conf",
                 "wsgi_script": "WSGIScriptAlias /$aliasname$ $wsgi_file$"
             },
             "multiapp": "true"
@@ -89,7 +88,7 @@ application = CSettings(
             'title': '数管配置',
             'directory': {
                 'title': '数管常规目录设置, 包括元数据存储目录',
-                'view': '/Users/wangxiya/Documents/我的测试数据/80.快视图'
+                'view': 'D:/即时服务数管/view/80.快视图'
             },
             'time': {
                 'query': 'select starttime, endtime from ro_global_dim_time where (gdtquickcode = :value or gdtTitle = :value) and gdtparentid <> \'-1\''
@@ -188,8 +187,7 @@ application = CSettings(
                             'plugins_8050_guoqing_scene_noblock',
                             'plugins_8051_guoqing_scene_block',
                             'plugins_8052_guoqing_frame'
-                        ],
-                        'keyword': '国情影像'
+                        ]
                     },
                     {
                         'plugin': [
@@ -197,6 +195,18 @@ application = CSettings(
                             'plugins_8060_custom'
                         ],
                         'keyword': '自定义影像'
+                    },
+                    {
+                        'plugin': [
+                            'plugins_1000_0001_tjch_frame_2000gjbz'
+                        ],
+                        'keyword': '2000国家标准坐标系'
+                    },
+                    {
+                        'plugin': [
+                            'plugins_1000_0002_tjch_frame_2000tjcs'
+                        ],
+                        'keyword': '2000天津城市坐标系'
                     }
                 ]
             },
