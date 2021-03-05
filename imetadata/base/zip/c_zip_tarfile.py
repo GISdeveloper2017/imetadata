@@ -43,3 +43,9 @@ class CZip_TarFile(CZipBase):
     @classmethod
     def i_can_read(cls, file_name):
         return tarfile.is_tarfile(file_name)
+
+    def new(self, flag):
+        pass
+
+    def add_file_or_path(self, file: dict):
+        pass

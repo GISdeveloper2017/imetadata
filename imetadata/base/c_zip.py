@@ -40,6 +40,7 @@ class CZip:
         CFile.check_and_create_directory_itself(target_path)
         self.__zip_obj.extract_all(target_path)
 
+
     def close(self):
         if self.__zip_obj is not None:
             self.__zip_obj.close()

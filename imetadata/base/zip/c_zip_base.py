@@ -33,3 +33,11 @@ class CZipBase:
     @abstractmethod
     def close(self):
         pass
+
+    @abstractmethod
+    def new(self, flag):
+        pass
+
+    @abstractmethod
+    def add_file_or_path(self, file:dict):
+        pass

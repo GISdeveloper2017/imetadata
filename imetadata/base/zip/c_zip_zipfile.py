@@ -6,6 +6,8 @@
 import zipfile
 
 from imetadata.base.c_file import CFile
+from imetadata.base.c_resource import CResource
+from imetadata.base.c_utils import CUtils
 from imetadata.base.zip.c_zip_base import CZipBase
 
 
@@ -41,6 +43,21 @@ class CZip_ZipFile(CZipBase):
     def close(self):
         if self.__zip_obj__ is not None:
             self.__zip_obj__.close()
+
+    def new(self, flag):
+        if flag == 0:
+            compression = zipfile.ZIP_DEFLATED
+        elif flag == 1:
+            compression = zipfile.ZIP_STORED
+        CFile.check_and_create_directory(self.__file_name__)
+        self.__zip_obj__ = zipfile.ZipFile(self.__file_name__, 'a', compression)
+
+    # 压缩文件
+    def add_file_or_path(self, file:dict):
+        file_src = CUtils.dict_value_by_name(file, CResource.Name_Source, None)
+        for path in file_src:
+            self.__zip_obj__.write(path)
+            print("把文件%s归档到压缩文件%s中"%(path, self.__file_name__))
 
     @classmethod
     def i_can_read(cls, filename):
